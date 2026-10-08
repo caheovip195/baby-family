@@ -1,0 +1,10 @@
+# Đa ngôn ngữ (tài liệu kỹ thuật 22.12). Sinh code: `make l10n` (hoặc tự chạy khi `flutter pub get`).
+arb-dir: lib/l10n/arb
+template-arb-file: app_vi.arb
+output-dir: lib/generated/l10n
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+preferred-supported-locales: [vi]
+nullable-getter: false
+required-resource-attributes: true
+untranslated-messages-file: build/l10n_untranslated.json

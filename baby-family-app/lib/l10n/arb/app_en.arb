@@ -1,0 +1,33 @@
+{
+  "@@locale": "en",
+
+  "appName": "Baby Family",
+
+  "commonContinue": "Continue",
+  "commonStart": "Get started",
+  "commonCancel": "Cancel",
+  "commonConfirm": "Confirm",
+  "commonRetry": "Try again",
+  "commonClose": "Close",
+  "commonCopyError": "Copy error",
+  "commonDaysLeft": "{count, plural, =0{Today is the last day} =1{1 day left} other{{count} days left}}",
+  "commonUpdatedAt": "Updated at {time}",
+
+  "errorGeneric": "Something went wrong. Please try again.",
+  "errorNetwork": "Can't reach the server. Please check your connection and try again.",
+  "errorRenewSessionNetwork": "Can't reach the server to renew your session. Please check your connection and try again.",
+  "errorSessionExpired": "Your session has expired. Please sign in again.",
+  "errorUpgradeRequired": "This version of the app is out of date. Please update to continue.",
+  "errorStartupTitle": "The app couldn't start",
+  "errorStartupDescription": "Please reopen the app. If the problem persists, send the details below to our support team:",
+
+  "languagePickerTitle": "Choose language",
+
+  "welcomeSlide1Title": "Keep your child's journey",
+  "welcomeSlide1Description": "From the first ultrasound to the first wobbly steps — every moment stays private to your family.",
+  "welcomeSlide2Title": "Papa & Mama caring together",
+  "welcomeSlide2Description": "Small daily missions help Papa and Mama share childcare without having to remind each other.",
+  "welcomeSlide3Title": "Grandparents along for the ride",
+  "welcomeSlide3Description": "Invite grandparents and relatives to watch your little one grow — safely, no social network needed.",
+  "welcomeHaveInviteCode": "I have an invite code"
+}

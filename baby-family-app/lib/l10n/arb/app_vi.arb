@@ -1,0 +1,65 @@
+{
+  "@@locale": "vi",
+  "@@context": "Ngôn ngữ gốc (template). Thêm key mới ở đây trước, rồi dịch sang các file app_<locale>.arb khác. Quy ước tên key: <khuVuc><Man><MucDich> (tài liệu kỹ thuật 22.12).",
+
+  "appName": "Baby Family",
+  "@appName": {"description": "Tên ứng dụng hiển thị trong app"},
+
+  "commonContinue": "Tiếp tục",
+  "@commonContinue": {"description": "Nút đi tiếp dùng chung"},
+  "commonStart": "Bắt đầu",
+  "@commonStart": {"description": "Nút bắt đầu (cuối onboarding/welcome)"},
+  "commonCancel": "Huỷ",
+  "@commonCancel": {"description": "Nút huỷ dùng chung"},
+  "commonConfirm": "Xác nhận",
+  "@commonConfirm": {"description": "Nút xác nhận dùng chung"},
+  "commonRetry": "Thử lại",
+  "@commonRetry": {"description": "Nút thử lại khi lỗi"},
+  "commonClose": "Đóng",
+  "@commonClose": {"description": "Nút đóng dùng chung"},
+  "commonCopyError": "Sao chép lỗi",
+  "@commonCopyError": {"description": "Nút sao chép nội dung lỗi"},
+  "commonDaysLeft": "{count, plural, =0{Hôm nay là ngày cuối} other{Còn {count} ngày}}",
+  "@commonDaysLeft": {
+    "description": "Số ngày còn lại (dùng thử, lời mời...). Mẫu ICU plural.",
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "commonUpdatedAt": "Cập nhật lúc {time}",
+  "@commonUpdatedAt": {
+    "description": "Mẫu placeholder ngày giờ theo locale",
+    "placeholders": {"time": {"type": "DateTime", "format": "Hm"}}
+  },
+
+  "errorGeneric": "Có lỗi xảy ra, vui lòng thử lại.",
+  "@errorGeneric": {"description": "Lỗi chung khi không có message từ server"},
+  "errorNetwork": "Không kết nối được máy chủ. Vui lòng kiểm tra mạng và thử lại.",
+  "@errorNetwork": {"description": "Lỗi mạng / timeout"},
+  "errorRenewSessionNetwork": "Không kết nối được máy chủ để gia hạn phiên đăng nhập. Vui lòng kiểm tra mạng và thử lại.",
+  "@errorRenewSessionNetwork": {"description": "Gia hạn phiên thất bại do mạng"},
+  "errorSessionExpired": "Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.",
+  "@errorSessionExpired": {"description": "401 — phải đăng nhập lại"},
+  "errorUpgradeRequired": "Phiên bản ứng dụng đã cũ. Vui lòng cập nhật để tiếp tục sử dụng.",
+  "@errorUpgradeRequired": {"description": "426 — bắt buộc cập nhật app"},
+  "errorStartupTitle": "Không khởi động được ứng dụng",
+  "@errorStartupTitle": {"description": "Tiêu đề màn lỗi khởi động"},
+  "errorStartupDescription": "Vui lòng mở lại ứng dụng. Nếu vẫn lỗi, gửi nội dung dưới đây cho bộ phận hỗ trợ:",
+  "@errorStartupDescription": {"description": "Mô tả màn lỗi khởi động"},
+
+  "languagePickerTitle": "Chọn ngôn ngữ",
+  "@languagePickerTitle": {"description": "Tiêu đề bottom sheet chọn ngôn ngữ"},
+
+  "welcomeSlide1Title": "Lưu giữ hành trình của con",
+  "@welcomeSlide1Title": {"description": "ONB-01 slide 1 — tiêu đề"},
+  "welcomeSlide1Description": "Từ ảnh siêu âm đầu tiên đến bước đi chập chững — mọi khoảnh khắc được giữ riêng tư cho gia đình.",
+  "@welcomeSlide1Description": {"description": "ONB-01 slide 1 — mô tả"},
+  "welcomeSlide2Title": "Papa & Mama cùng chăm con",
+  "@welcomeSlide2Title": {"description": "ONB-01 slide 2 — tiêu đề"},
+  "welcomeSlide2Description": "Những nhiệm vụ nhỏ mỗi ngày giúp Papa và Mama chia sẻ việc chăm con mà không cần nhắc nhau.",
+  "@welcomeSlide2Description": {"description": "ONB-01 slide 2 — mô tả"},
+  "welcomeSlide3Title": "Ông bà cùng theo dõi cháu",
+  "@welcomeSlide3Title": {"description": "ONB-01 slide 3 — tiêu đề"},
+  "welcomeSlide3Description": "Mời ông bà, người thân xem cháu lớn lên — an toàn, không cần mạng xã hội.",
+  "@welcomeSlide3Description": {"description": "ONB-01 slide 3 — mô tả"},
+  "welcomeHaveInviteCode": "Tôi đã có mã mời",
+  "@welcomeHaveInviteCode": {"description": "ONB-01 — link nhập mã mời"}
+}

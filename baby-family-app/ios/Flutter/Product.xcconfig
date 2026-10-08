@@ -1,0 +1,5 @@
+// Flavor product (lib/main_pro.dart)
+FLUTTER_FLAVOR=product
+FLUTTER_TARGET=lib/main_pro.dart
+APP_BUNDLE_IDENTIFIER=vn.babyfamily.app
+APP_DISPLAY_NAME=Baby Family

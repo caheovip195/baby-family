@@ -1,0 +1,109 @@
+name: baby_family
+description: "Baby Family - nhật ký em bé, cùng chăm con, gắn kết Bố & Mẹ."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.12.2 <4.0.0"
+  flutter: 3.44.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: 1.0.9
+
+  # --- Kiến trúc: routing, state, network, model ---
+  auto_route: 11.1.0
+  flutter_hooks: 0.21.3+1
+  hooks_riverpod: 3.3.2
+  dio: 5.10.0
+  retrofit: 4.9.2
+  freezed_annotation: 3.1.0
+  json_annotation: 4.11.0
+
+  # --- Lưu trữ & bảo mật ---
+  hive: 2.2.3
+  flutter_secure_storage: 10.3.1
+  encrypt: 5.0.3
+  crypto: 3.0.7
+  path: 1.9.1
+  path_provider: 2.1.6
+
+  # --- Thiết bị & hệ thống ---
+  device_info_plus: 13.2.0
+  package_info_plus: 10.2.0
+  connectivity_plus: 7.2.0
+  permission_handler: 12.0.3
+  url_launcher: 6.3.2
+  share_plus: 13.3.1
+
+  # --- Firebase (push, crash) ---
+  firebase_core: 4.14.0
+  firebase_messaging: 16.6.0
+  firebase_crashlytics: 5.3.0
+  flutter_local_notifications: 22.2.0
+  timezone: 0.11.1
+
+  # --- Media ---
+  image_picker: 1.2.3
+  flutter_image_compress: 2.5.1
+  cached_network_image: 3.4.1
+  video_player: 2.14.1
+  saver_gallery: 5.1.0
+  mobile_scanner: 7.4.0
+
+  # --- UI & tiện ích ---
+  lucide_flutter: 1.23.0
+  auto_size_text: 3.0.0
+  intl: 0.20.2
+  collection: 1.19.1
+  rxdart: 0.28.0
+  uuid: 4.5.3
+  logger: 2.7.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: 6.0.0
+  build_runner: 2.15.0
+  freezed: 3.2.5
+  json_serializable: 6.13.0
+  retrofit_generator: 10.2.7
+  auto_route_generator: 10.5.0
+  flutter_gen_runner: 5.14.1
+  flutter_native_splash: 2.4.8
+  flutter_launcher_icons: 0.14.4
+
+flutter_gen:
+  output: lib/gen/
+  line_length: 80
+
+flutter:
+  uses-material-design: true
+  # Sinh AppLocalizations từ lib/l10n/arb (l10n.yaml).
+  generate: true
+
+  assets:
+    - assets/images/
+    - assets/data/
+
+  # Font theo Design System (tài liệu nghiệp vụ mục 10.3):
+  # Nunito (tiêu đề) + Be Vietnam Pro (nội dung), đóng gói trong app để chạy offline.
+  fonts:
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/Nunito-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Nunito-ExtraBold.ttf
+          weight: 800
+    - family: BeVietnamPro
+      fonts:
+        - asset: assets/fonts/BeVietnamPro-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/BeVietnamPro-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/BeVietnamPro-SemiBold.ttf
+          weight: 600

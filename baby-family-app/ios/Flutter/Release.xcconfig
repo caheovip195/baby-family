@@ -1,0 +1,3 @@
+#include "Generated.xcconfig"
+APP_BUNDLE_IDENTIFIER=vn.babyfamily.app
+APP_DISPLAY_NAME=Baby Family
