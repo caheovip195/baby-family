@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:baby_family/utils/constants/enum.dart';
+import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/helper/app_clock.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -47,6 +48,9 @@ class MockStore extends ChangeNotifier {
       'albums',
       'searchMemories',
       'pastMemories',
+      'trash',
+      'drafts',
+      'pendingPosts',
     ],
     'children': ['children', 'profiles', 'milestoneRecords'],
     'care': [
@@ -56,7 +60,14 @@ class MockStore extends ChangeNotifier {
       'calendarEvents',
       'badges',
     ],
-    'us': ['checkins', 'requests', 'thanks', 'questionAnswers', 'journal'],
+    'us': [
+      'checkins',
+      'requests',
+      'thanks',
+      'questionAnswers',
+      'journal',
+      'bridgeSessions',
+    ],
     'pregnancy': ['prepItems', 'names'],
     'notifications': ['notifications'],
   };
@@ -210,6 +221,7 @@ class MockStore extends ChangeNotifier {
     final us = _fixtures['us'] as Map<String, dynamic>;
     final pregnancy = _fixtures['pregnancy'] as Map<String, dynamic>;
     final memories = _fixtures['memories'] as Map<String, dynamic>;
+    final family = _fixtures['family'] as Map<String, dynamic>;
     _meta
       ..['config'] = _copy(_fixtures['session'])
       ..['catalog'] = _copy(_fixtures['catalog'])
@@ -229,10 +241,18 @@ class MockStore extends ChangeNotifier {
       ..['missionHistory'] = _copy(care['missionHistory'])
       ..['missionSettings'] = _copy(care['missionSettings'])
       ..['coupleSettings'] = _copy(us['coupleSettings'])
-      ..['familySettings'] = _copy(
-        (_fixtures['family'] as Map<String, dynamic>)['familySettings'],
-      )
-      ..['settings'] = _copy(_fixtures['settings']);
+      ..['familySettings'] = _copy(family['familySettings'])
+      ..['settings'] = _copy(_fixtures['settings'])
+      // Batch 3.
+      ..['dayStory'] = _copy(memories['dayStory'])
+      ..['monthRecap'] = _copy(memories['monthRecap'])
+      ..['circlePostDraft'] = _copy(memories['circlePostDraft'])
+      ..['careStats'] = _copy(care['careStats'])
+      ..['bridgeRewrite'] = _copy(us['bridgeRewrite'])
+      ..['coupleWeek'] = _copy(us['coupleWeek'])
+      ..['memberships'] = _copy(family['memberships'])
+      ..['planDetails'] = _copy(family['planDetails'])
+      ..['circlePreferences'] = _copy(family['circlePreferences']);
 
     final actorUserId = actor == 'papa' ? 'u-minh' : 'u-lan';
     final actorMemberId = actor == 'papa' ? 'm-minh' : 'm-lan';
@@ -254,6 +274,31 @@ class MockStore extends ChangeNotifier {
         _removeRelatives();
         _keepOnlyChildren({'bo'});
         _signIn(actorUserId, 'f-lan', actorMemberId);
+      case DemoSeed.partnerLeft:
+        // US-00 / FAM-02: Papa deleted his account — view & download only.
+        _activateRelatives();
+        _tables['members']!.removeWhere((row) => row['id'] == 'm-minh');
+        _family('f-lan')['partnerLeftAt'] = DateTime(
+          2026,
+          10,
+          5,
+          9,
+        ).toIso8601String();
+        _signIn('u-lan', 'f-lan', 'm-lan');
+      case DemoSeed.paymentIssue:
+        _activateRelatives();
+        (_family('f-lan')['plan'] as Map<String, dynamic>)['paymentIssue'] =
+            true;
+        _signIn(actorUserId, 'f-lan', actorMemberId);
+      case DemoSeed.house:
+        _setPlan('f-lan', PlanState.house);
+        _removeRelatives();
+        _signIn(actorUserId, 'f-lan', actorMemberId);
+      case DemoSeed.circlePaused:
+        _setPlan('f-lan', PlanState.family, slotsUsed: 2, slotsMax: 12);
+        find('members', 'm-ba-ngoai')?['paused'] = true;
+        _signIn('u-ba-ngoai', 'f-lan', 'm-ba-ngoai');
+        _tables['memories'] = _copyRows(memories['circleMemories']);
       case DemoSeed.circle:
         _setPlan('f-lan', PlanState.family, slotsUsed: 2, slotsMax: 12);
         _signIn('u-ba-ngoai', 'f-lan', 'm-ba-ngoai');
@@ -273,7 +318,20 @@ class MockStore extends ChangeNotifier {
       _tables['members']!.removeWhere(
         (row) => row['familyId'] == 'f-lan-waiting',
       );
-      _tables['invites']!.removeWhere((row) => row['kind'] == 'partner');
+      // Partner invites only exist for the fresh flow, except the mock codes
+      // of INV-02/03/04 (`mock: true`).
+      _tables['invites']!.removeWhere(
+        (row) => row['kind'] == 'partner' && row['mock'] != true,
+      );
+    }
+    // FAM-02's new partner invite exists only after Papa left.
+    if (seed == DemoSeed.partnerLeft) {
+      final fixture = (_fixtures['family'] as Map<String, dynamic>)['invites'];
+      _tables['invites']!.addAll(
+        _copyRows(fixture).where((row) => row['seed'] == 'partnerLeft'),
+      );
+    } else {
+      _tables['invites']!.removeWhere((row) => row['seed'] == 'partnerLeft');
     }
   }
 
@@ -299,6 +357,20 @@ class MockStore extends ChangeNotifier {
       ..['storageQuotaMb'] = state == PlanState.family ? 204800 : 10240
       ..['relativeSlotsUsed'] = slotsUsed
       ..['relativeSlotsMax'] = slotsMax;
+    if (state == PlanState.trial) {
+      // Trial seeds match the fresh flow: 3 months from “today” (FAM-01
+      // `XwXfH` “Còn 90 ngày · hết hạn 05/01/2027”, SUB-01, ONB-ACT).
+      final today = clock.today;
+      plan
+        ..['startedAt'] = today.toIso8601String()
+        ..['endsAt'] = DateTime(
+          today.year,
+          today.month,
+          today.day + kValueTrialDays,
+          23,
+          59,
+        ).toIso8601String();
+    }
   }
 
   /// Every invited relative has joined (no pending relative invite left).
@@ -316,7 +388,10 @@ class MockStore extends ChangeNotifier {
           ..['childPermissions'] = {'hana': 'comment', 'haru': 'comment'};
       }
     }
-    _tables['invites']!.removeWhere((row) => row['kind'] == 'relative');
+    // Bà nội's invite is used up; FAM-05 keeps Ông nội (pending) & Dì Mai.
+    _tables['invites']!.removeWhere(
+      (row) => row['kind'] == 'relative' && row['keep'] != true,
+    );
   }
 
   /// C-07: the trial has no relatives (their old comments keep the author name).

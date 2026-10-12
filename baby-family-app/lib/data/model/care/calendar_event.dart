@@ -30,6 +30,9 @@ abstract class CalendarEvent with _$CalendarEvent {
     @JsonKey(name: 'reminders') @Default([]) List<String> reminders,
     @JsonKey(name: 'ownerKind') MissionOwnerKind? ownerKind,
     @JsonKey(name: 'missionId') String? missionId,
+
+    /// Ghi chú tự do của sự kiện (CAL-02 “Ghi chú”).
+    @JsonKey(name: 'note') String? note,
   }) = _CalendarEvent;
 
   factory CalendarEvent.fromJson(Map<String, dynamic> json) =>

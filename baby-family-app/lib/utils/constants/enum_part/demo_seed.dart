@@ -20,7 +20,20 @@ enum DemoSeed {
 
   /// Như `active` nhưng đang dùng thử, chưa có người thân (C-07) — biến thể
   /// “FAM-01 · Gia đình (đang dùng thử)”, SUB-01 từ thẻ dùng thử.
-  trial;
+  trial,
+
+  /// Papa đã xoá tài khoản (PARTNER_LEFT): gia đình chỉ xem & tải về,
+  /// Papa & Mama tạm khoá (US-00), mời bạn đời mới (FAM-02).
+  partnerLeft,
+
+  /// Bà ngoại đăng nhập, gia đình tạm dừng chia sẻ với bà (CIR-05).
+  circlePaused,
+
+  /// Như `active` nhưng gia hạn gói chưa thành công (banner SUB-06).
+  paymentIssue,
+
+  /// Như `active` nhưng dùng gói House (SUB-04 nâng cấp lên Family).
+  house;
 
   static DemoSeed fromName(String? name) =>
       DemoSeed.values.where((seed) => seed.name == name).firstOrNull ??

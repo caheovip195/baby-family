@@ -59,6 +59,11 @@ _Memory _$MemoryFromJson(Map<String, dynamic> json) => _Memory(
   perspectivePreview: json['perspectivePreview'] as String?,
   isFavorite: json['isFavorite'] as bool? ?? false,
   pinned: json['pinned'] as bool? ?? false,
+  deletedAt: json['deletedAt'] == null
+      ? null
+      : DateTime.parse(json['deletedAt'] as String),
+  deletedByUserId: json['deletedByUserId'] as String?,
+  rejectReason: json['rejectReason'] as String?,
 );
 
 Map<String, dynamic> _$MemoryToJson(_Memory instance) => <String, dynamic>{
@@ -92,6 +97,9 @@ Map<String, dynamic> _$MemoryToJson(_Memory instance) => <String, dynamic>{
   'perspectivePreview': instance.perspectivePreview,
   'isFavorite': instance.isFavorite,
   'pinned': instance.pinned,
+  'deletedAt': instance.deletedAt?.toIso8601String(),
+  'deletedByUserId': instance.deletedByUserId,
+  'rejectReason': instance.rejectReason,
 };
 
 const _$MemoryKindEnumMap = {

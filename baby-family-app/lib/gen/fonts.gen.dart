@@ -14,6 +14,9 @@ class FontFamily {
   /// Font family: BeVietnamPro
   static const String beVietnamPro = 'BeVietnamPro';
 
+  /// Font family: DancingScript
+  static const String dancingScript = 'DancingScript';
+
   /// Font family: Nunito
   static const String nunito = 'Nunito';
 }

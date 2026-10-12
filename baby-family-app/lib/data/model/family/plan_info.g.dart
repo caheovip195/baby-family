@@ -19,6 +19,7 @@ _PlanInfo _$PlanInfoFromJson(Map<String, dynamic> json) => _PlanInfo(
   storageQuotaMb: (json['storageQuotaMb'] as num?)?.toInt() ?? 0,
   relativeSlotsUsed: (json['relativeSlotsUsed'] as num?)?.toInt() ?? 0,
   relativeSlotsMax: (json['relativeSlotsMax'] as num?)?.toInt() ?? 0,
+  paymentIssue: json['paymentIssue'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$PlanInfoToJson(_PlanInfo instance) => <String, dynamic>{
@@ -29,6 +30,7 @@ Map<String, dynamic> _$PlanInfoToJson(_PlanInfo instance) => <String, dynamic>{
   'storageQuotaMb': instance.storageQuotaMb,
   'relativeSlotsUsed': instance.relativeSlotsUsed,
   'relativeSlotsMax': instance.relativeSlotsMax,
+  'paymentIssue': instance.paymentIssue,
 };
 
 const _$PlanStateEnumMap = {

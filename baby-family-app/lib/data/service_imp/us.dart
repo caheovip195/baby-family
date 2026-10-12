@@ -1,9 +1,15 @@
 import 'package:baby_family/data/dto/couple_today.dart';
+import 'package:baby_family/data/model/us/bridge_next_step.dart';
+import 'package:baby_family/data/model/us/bridge_option.dart';
+import 'package:baby_family/data/model/us/bridge_session.dart';
 import 'package:baby_family/data/model/us/couple_request.dart';
 import 'package:baby_family/data/model/us/couple_settings.dart';
+import 'package:baby_family/data/model/us/couple_week.dart';
 import 'package:baby_family/data/model/us/daily_question.dart';
 import 'package:baby_family/data/model/us/journal_entry.dart';
 import 'package:baby_family/data/model/us/mood_checkin.dart';
+import 'package:baby_family/data/model/us/rewrite_suggestion.dart';
+import 'package:baby_family/data/model/us/safety_hotline.dart';
 import 'package:baby_family/data/model/us/thanks.dart';
 import 'package:baby_family/data/repository/base.dart';
 import 'package:baby_family/data/repository/care.dart';
@@ -389,5 +395,184 @@ class UsServiceImp extends MockServiceImp implements IUsService {
   Future<void> saveCoupleSettings(CoupleSettings settings) async {
     await ready();
     _repository.saveCoupleSettings(settings.toJson());
+  }
+
+  // ------------------------------------------------------------ batch 3
+
+  JsonMap get _bridgeCatalog => Map<String, dynamic>.from(
+    (_repository.catalog()['bridge'] as Map?) ?? const {},
+  );
+
+  @override
+  Future<List<BridgeOption>> bridgeOptions(String group) async {
+    await ready();
+    final partner = _familyRepository
+        .members(familyId)
+        .where(
+          (row) =>
+              row['role'] != FamilyRole.relative.name &&
+              row['userId'] != myUserId,
+        )
+        .map((row) => row['callName'] as String?)
+        .firstOrNull;
+    return [
+      for (final row in (_bridgeCatalog[group] as List?) ?? const [])
+        BridgeOption.fromJson({
+          ...Map<String, dynamic>.from(row as Map),
+          'title': (row['title'] as String).replaceAll(
+            '{partner}',
+            partner ?? '',
+          ),
+        }),
+    ];
+  }
+
+  @override
+  Future<BridgeSession?> bridgeDraft() async {
+    await ready();
+    final row = _repository
+        .bridgeSessions(familyId)
+        .where(
+          (row) =>
+              row['status'] == BridgeStatus.draft.name &&
+              row['initiatorUserId'] == myUserId,
+        )
+        .firstOrNull;
+    return row == null ? null : BridgeSession.fromJson(row);
+  }
+
+  @override
+  Future<void> saveBridgeDraft(BridgeSession draft) async {
+    await ready();
+    if (_repository.bridgeSession(draft.id) == null) {
+      _repository.addBridgeSession({...draft.toJson(), 'familyId': familyId});
+    } else {
+      _repository.updateBridgeSession(draft.id, draft.toJson());
+    }
+  }
+
+  @override
+  Future<BridgeSession?> bridgeSession(String id) async {
+    await ready();
+    final row = _repository.bridgeSession(id);
+    return row == null ? null : BridgeSession.fromJson(row);
+  }
+
+  @override
+  Future<List<BridgeSession>> bridgeSessions() async {
+    await ready();
+    return _repository
+        .bridgeSessions(familyId)
+        .where((row) => row['status'] != BridgeStatus.draft.name)
+        .map(BridgeSession.fromJson)
+        .toList();
+  }
+
+  void _bridge(String id, JsonMap patch) =>
+      _repository.updateBridgeSession(id, patch);
+
+  @override
+  Future<void> sendBridgeInvite(String draftId) async {
+    await ready();
+    _bridge(draftId, {'status': BridgeStatus.invited.name});
+  }
+
+  @override
+  Future<void> joinBridge(String sessionId) async {
+    await ready();
+    _bridge(sessionId, {
+      'status': BridgeStatus.active.name,
+      'startedAt': now.toIso8601String(),
+    });
+  }
+
+  @override
+  Future<void> pauseBridge(String sessionId) async {
+    await ready();
+    _bridge(sessionId, {'status': BridgeStatus.paused.name});
+  }
+
+  Future<void> _patchMyShare(String sessionId, JsonMap patch) async {
+    final session = await bridgeSession(sessionId);
+    if (session == null) {
+      return;
+    }
+    _bridge(sessionId, {
+      'shares': [
+        for (final share in session.shares)
+          share.userId == myUserId
+              ? {...share.toJson(), ...patch}
+              : share.toJson(),
+      ],
+    });
+  }
+
+  @override
+  Future<void> markBridgeUnderstood(String sessionId) async {
+    await _patchMyShare(sessionId, {'understood': true, 'readDone': true});
+    final session = await bridgeSession(sessionId);
+    if (session != null && session.shares.every((share) => share.understood)) {
+      _bridge(sessionId, {'status': BridgeStatus.nextStep.name});
+    }
+  }
+
+  @override
+  Future<void> chooseNextStep(String sessionId, BridgeNextStep step) async {
+    await ready();
+    _bridge(sessionId, {
+      'status': BridgeStatus.nextStep.name,
+      'nextStep': step.toJson(),
+    });
+  }
+
+  @override
+  Future<void> confirmNextStep(String sessionId) async {
+    final session = await bridgeSession(sessionId);
+    final step = session?.nextStep;
+    if (step == null) {
+      return;
+    }
+    _bridge(sessionId, {
+      'nextStep': step
+          .copyWith(agreedUserIds: {...step.agreedUserIds, myUserId}.toList())
+          .toJson(),
+    });
+  }
+
+  @override
+  Future<void> closeBridge(String sessionId) async {
+    final session = await bridgeSession(sessionId);
+    if (session == null) {
+      return;
+    }
+    final agreed = {...session.closeAgreedUserIds, myUserId}.toList();
+    _bridge(sessionId, {
+      'closeAgreedUserIds': agreed,
+      if (agreed.length >= 2) 'status': BridgeStatus.closed.name,
+    });
+  }
+
+  @override
+  Future<RewriteSuggestion?> rewriteSuggestion() async {
+    await ready();
+    final row = _repository.bridgeRewrite();
+    return row.isEmpty ? null : RewriteSuggestion.fromJson(row);
+  }
+
+  @override
+  Future<List<SafetyHotline>> safetyHotlines() async {
+    await ready();
+    return [
+      for (final row
+          in (_repository.catalog()['safetyHotlines'] as List?) ?? const [])
+        SafetyHotline.fromJson(Map<String, dynamic>.from(row as Map)),
+    ];
+  }
+
+  @override
+  Future<CoupleWeek?> coupleWeek() async {
+    await ready();
+    final row = _repository.coupleWeek();
+    return row.isEmpty ? null : CoupleWeek.fromJson(row);
   }
 }

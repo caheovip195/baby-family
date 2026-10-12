@@ -12,6 +12,12 @@ _PlanOffer _$PlanOfferFromJson(Map<String, dynamic> json) => _PlanOffer(
   relativeSlots: (json['relativeSlots'] as num?)?.toInt() ?? 0,
   priceText: json['priceText'] as String? ?? '',
   monthlyText: json['monthlyText'] as String? ?? '',
+  photosPerMemory: (json['photosPerMemory'] as num?)?.toInt(),
+  videoMinutes: (json['videoMinutes'] as num?)?.toInt(),
+  voiceMinutes: (json['voiceMinutes'] as num?)?.toInt(),
+  originalQuality: json['originalQuality'] as bool? ?? false,
+  aiPerMonth: (json['aiPerMonth'] as num?)?.toInt(),
+  digestAndReview: json['digestAndReview'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$PlanOfferToJson(_PlanOffer instance) =>
@@ -21,6 +27,12 @@ Map<String, dynamic> _$PlanOfferToJson(_PlanOffer instance) =>
       'relativeSlots': instance.relativeSlots,
       'priceText': instance.priceText,
       'monthlyText': instance.monthlyText,
+      'photosPerMemory': instance.photosPerMemory,
+      'videoMinutes': instance.videoMinutes,
+      'voiceMinutes': instance.voiceMinutes,
+      'originalQuality': instance.originalQuality,
+      'aiPerMonth': instance.aiPerMonth,
+      'digestAndReview': instance.digestAndReview,
     };
 
 const _$PlanStateEnumMap = {

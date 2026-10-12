@@ -38,9 +38,9 @@
       "coverAsset": "assets/images/design_pregnancyJourneyAsset.jpg"
     },
     {
-      "id": "haru-dup",
+      "id": "khang",
       "familyId": "f-lan",
-      "name": "Haru",
+      "name": "Khang",
       "kind": "baby",
       "birthDate": "2025-04-08T00:00:00.000",
       "colorIndex": 1,
@@ -116,8 +116,8 @@
       "favoriteFood": "Cháo tôm bí đỏ · chuối",
       "favoriteToy": "Xe ô tô gỗ kéo dây",
       "favoriteSong": "Cả nhà thương nhau",
-      "memoryCount": 126,
-      "milestoneCount": 8,
+      "memoryCount": 186,
+      "milestoneCount": 6,
       "letterCount": 2,
       "relativeViewerNames": [
         "Bà nội",
@@ -143,8 +143,15 @@
       "letterCount": 0
     },
     {
-      "childId": "haru-dup",
-      "privateMemoryCount": 0
+      "childId": "khang",
+      "privateMemoryCount": 2,
+      "sharedMemoryCount": 1,
+      "sharedWithChildIds": [
+        "hana"
+      ],
+      "addedByUserId": "u-minh",
+      "addedAt": "2026-10-02T09:00:00.000",
+      "duplicateOfChildId": "haru"
     }
   ],
   "milestoneRecords": [

@@ -43,14 +43,7 @@ class _LetterPaper extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            salutation,
-            style: _scriptStyle.copyWith(
-              fontSize: 24,
-              height: 29 / 24,
-              color: kColorPrimary700A2402F,
-            ),
-          ),
+          Text(salutation, style: AppTypography.handwriting),
           const SizedBox(height: AppSpacing.itemGap),
           TextField(
             controller: body,
@@ -69,15 +62,8 @@ class _LetterPaper extends StatelessWidget {
               signature[index],
               textAlign: TextAlign.end,
               style: index == signature.length - 1
-                  ? _scriptStyle.copyWith(
-                      fontSize: 24,
-                      height: 29 / 24,
-                      color: kColorPrimary700A2402F,
-                    )
-                  : _scriptStyle.copyWith(
-                      fontSize: 20,
-                      height: 24 / 20,
-                      fontWeight: FontWeight.w400,
+                  ? AppTypography.handwriting
+                  : AppTypography.handwritingSmall.copyWith(
                       color: kColorLetterInk4A3F36,
                     ),
             ),

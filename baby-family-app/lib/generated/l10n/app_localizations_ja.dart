@@ -3322,9 +3322,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get invViewOnly => '閲覧のみ';
 
   @override
-  String get invNameSeparator => '、';
-
-  @override
   String get homeMorning => 'おはようございます、';
 
   @override
@@ -4221,9 +4218,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get calendarNote => 'メモ';
-
-  @override
-  String get calendarDraftNote => 'おばあちゃんの好きな塩卵スポンジケーキを予約';
 
   @override
   String get calendarNoteHint => 'メモを追加…';
@@ -6054,4 +6048,70 @@ class AppLocalizationsJa extends AppLocalizations {
   String memAlbumCount(int count) {
     return '$count件のアルバム';
   }
+
+  @override
+  String get usBridgeRewriteTitle => 'やさしく書き直す';
+
+  @override
+  String get usBridgeNextStepTitle => '次の小さな一歩';
+
+  @override
+  String get usSafetyTitle => '安全サポート';
+
+  @override
+  String get recapDayTitle => '今日のストーリー';
+
+  @override
+  String get recapMonthTitle => '月齢の振り返り';
+
+  @override
+  String get careStatsTitle => '統計';
+
+  @override
+  String get memTrashTitle => 'ゴミ箱';
+
+  @override
+  String get memDraftsTitle => '下書き';
+
+  @override
+  String get memPendingTitle => '承認待ち';
+
+  @override
+  String get childArchiveTitle => '子どもをアーカイブまたは削除';
+
+  @override
+  String get circleTabHome => '孫';
+
+  @override
+  String get circleTabMemories => '思い出';
+
+  @override
+  String get circleTabPost => '写真を投稿';
+
+  @override
+  String get circleTabMe => '自分';
+
+  @override
+  String get circlePostTitle => '孫の写真を投稿';
+
+  @override
+  String get circleMemoryDetailTitle => '思い出の詳細';
+
+  @override
+  String get circlePausedTitle => '家族の共有が一時停止中';
+
+  @override
+  String get circleLeaveTitle => '家族を離れる';
+
+  @override
+  String get billingPlanTitle => '家族のプラン';
+
+  @override
+  String get familyInvitePartnerTitle => 'パートナーを招待';
+
+  @override
+  String get familyPendingInvitesTitle => '保留中の招待';
+
+  @override
+  String get settingsBlockedTitle => 'ブロック中の人';
 }

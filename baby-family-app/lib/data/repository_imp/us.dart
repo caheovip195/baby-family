@@ -68,4 +68,28 @@ class UsRepositoryImp extends MockRepositoryImp implements IUsRepository {
   @override
   void saveCoupleSettings(JsonMap settings) =>
       saveMeta('coupleSettings', settings);
+
+  @override
+  List<JsonMap> bridgeSessions(String familyId) =>
+      rows('bridgeSessions', (row) => row['familyId'] == familyId);
+
+  @override
+  JsonMap? bridgeSession(String id) => row('bridgeSessions', id);
+
+  @override
+  JsonMap addBridgeSession(JsonMap session) =>
+      insert('bridgeSessions', session);
+
+  @override
+  void updateBridgeSession(String id, JsonMap patch) =>
+      this.patch('bridgeSessions', id, patch);
+
+  @override
+  JsonMap bridgeRewrite() => metaSection('bridgeRewrite');
+
+  @override
+  JsonMap coupleWeek() => metaSection('coupleWeek');
+
+  @override
+  JsonMap catalog() => metaSection('catalog');
 }

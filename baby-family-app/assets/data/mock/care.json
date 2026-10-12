@@ -724,7 +724,8 @@
     "reminders": [
       "dayBefore0900",
       "morning"
-    ]
+    ],
+    "note": "Đặt bánh bông lan trứng muối Bà thích"
   },
   "missionHistory": [
     {
@@ -1155,6 +1156,43 @@
           "ja": "赤ちゃんの家事"
         }
       }
+    ]
+  },
+  "careStats": {
+    "weekStart": "2026-09-28T00:00:00.000",
+    "weekEnd": "2026-10-04T00:00:00.000",
+    "total": 32,
+    "bloomDays": 5,
+    "categories": [
+      {
+        "code": "care",
+        "count": 12
+      },
+      {
+        "code": "bonding",
+        "count": 8
+      },
+      {
+        "code": "outing",
+        "count": 3
+      },
+      {
+        "code": "support",
+        "count": 4
+      },
+      {
+        "code": "together",
+        "count": 5
+      }
+    ],
+    "bloomed": [
+      true,
+      true,
+      false,
+      true,
+      true,
+      false,
+      true
     ]
   }
 }

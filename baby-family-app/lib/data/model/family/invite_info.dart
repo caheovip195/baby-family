@@ -30,6 +30,12 @@ abstract class InviteInfo with _$InviteInfo {
     @JsonKey(name: 'openedAt') DateTime? openedAt,
     @JsonKey(name: 'expiresAt') DateTime? expiresAt,
     @JsonKey(name: 'status') @Default('open') String status,
+
+    /// Ghi chú quan hệ do bố mẹ nhập (“Bố của Papa”) — FAM-05.
+    @JsonKey(name: 'relationNote') String? relationNote,
+
+    /// Bố/Mẹ xác nhận lần cuối khi người được mời tham gia (INV-04).
+    @JsonKey(name: 'requiresApproval') @Default(false) bool requiresApproval,
   }) = _InviteInfo;
 
   factory InviteInfo.fromJson(Map<String, dynamic> json) =>

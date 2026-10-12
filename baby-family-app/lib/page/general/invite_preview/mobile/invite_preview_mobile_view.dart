@@ -7,6 +7,7 @@ import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
 import 'package:baby_family/utils/helper/person_name.dart';
+import 'package:baby_family/utils/helper/relative_text.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/router/session_route.dart';
@@ -67,7 +68,7 @@ class InvitePreviewMobileView extends HookConsumerWidget {
       displayName: invite.inviterName ?? '',
     );
     String names(List<Child> children) =>
-        children.map((child) => child.name).join(l10n.invNameSeparator);
+        joinNames(l10n, [for (final child in children) child.name]);
     final permission = invite.canComment
         ? l10n.circleViewComment
         : l10n.invViewOnly;

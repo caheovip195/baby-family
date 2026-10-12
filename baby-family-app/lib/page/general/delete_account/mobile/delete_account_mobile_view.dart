@@ -89,6 +89,7 @@ class DeleteAccountMobileView extends HookConsumerWidget {
             ? DeleteAccountController.stepCount
             : controller.screen,
         stepCount: DeleteAccountController.stepCount,
+        currentStepOnly: true,
         onBack: back,
       ),
       body: body,

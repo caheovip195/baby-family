@@ -1,5 +1,6 @@
 import 'package:baby_family/data/dto/fetal_size.dart';
 import 'package:baby_family/data/model/child/child.dart';
+import 'package:baby_family/data/model/child/child_archive_info.dart';
 import 'package:baby_family/data/model/child/child_profile.dart';
 import 'package:baby_family/data/model/memory/chapter_summary.dart';
 import 'package:baby_family/data/model/memory/child_memory_stats.dart';
@@ -245,7 +246,15 @@ class ChildServiceImp extends MockServiceImp implements IChildService {
   Future<ChildProfile?> profile(String childId) async {
     await ready();
     final row = _repository.profile(childId);
-    return row == null ? null : ChildProfile.fromJson(row);
+    if (row == null) {
+      return null;
+    }
+    // Số ký ức / cột mốc lấy từ cùng nguồn với MEM-01, MEM-22 (stats) để mọi
+    // màn khớp nhau (CHD-01).
+    final counts = await stats(childId);
+    return ChildProfile.fromJson(
+      row,
+    ).copyWith(memoryCount: counts.memories, milestoneCount: counts.firsts);
   }
 
   @override
@@ -280,5 +289,40 @@ class ChildServiceImp extends MockServiceImp implements IChildService {
     for (var index = 0; index < childIds.length; index++) {
       _repository.updateChild(childIds[index], {'order': index});
     }
+  }
+
+  // ------------------------------------------------------------ batch 3
+
+  /// CHD-05: lưu trữ ít nhất 7 ngày trước khi xoá vĩnh viễn.
+  static const _archiveDaysBeforeDelete = 7;
+
+  @override
+  Future<ChildArchiveInfo> archiveInfo(String childId) async {
+    await ready();
+    final child = _repository.child(childId);
+    final profile = _repository.profile(childId) ?? const {};
+    final archivedAt = child?['archivedAt'] as String?;
+    final base = archivedAt == null ? today : DateTime.parse(archivedAt);
+    return ChildArchiveInfo.fromJson({
+      'childId': childId,
+      'addedByUserId': profile['addedByUserId'],
+      'addedAt': profile['addedAt'],
+      'duplicateOfChildId': profile['duplicateOfChildId'],
+      'privateMemoryCount': profile['privateMemoryCount'] ?? 0,
+      'sharedMemoryCount': profile['sharedMemoryCount'] ?? 0,
+      'sharedWithChildIds': profile['sharedWithChildIds'] ?? const [],
+      'archivedAt': archivedAt,
+      'deletableFrom': DateTime(
+        base.year,
+        base.month,
+        base.day + _archiveDaysBeforeDelete,
+      ).toIso8601String(),
+    });
+  }
+
+  @override
+  Future<void> deleteChild(String childId) async {
+    await ready();
+    _repository.updateChild(childId, {'familyId': 'deleted'});
   }
 }

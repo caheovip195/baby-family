@@ -11,6 +11,9 @@ import 'package:lucide_flutter/lucide_flutter.dart';
 /// phải là ô 44×44 cho [trailing].
 ///
 /// [step] bắt đầu từ 1; không truyền [stepCount] thì không vẽ chấm.
+/// [currentStepOnly]: chỉ bước hiện tại dài 24 (bước đã qua 8 `primary-500`,
+/// bước sau 8 `border`) — luồng xoá tài khoản SET-09 (`fU1MN`…`sOUEE`);
+/// onboarding giữ mặc định (mọi bước đã qua đều dài).
 class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   const AppTopBar({
     this.step,
@@ -20,6 +23,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
     this.trailing,
     this.title,
     this.backgroundColor,
+    this.currentStepOnly = false,
     super.key,
   });
 
@@ -32,6 +36,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   /// Tiêu đề thay cho chấm tiến trình (màn chi tiết đơn giản).
   final String? title;
   final Color? backgroundColor;
+  final bool currentStepOnly;
 
   @override
   Size get preferredSize => const Size.fromHeight(AppSpacing.topBarHeight);
@@ -48,7 +53,11 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
           )
         : (stepCount == null
               ? const SizedBox.shrink()
-              : _StepDots(step: step ?? 1, count: stepCount!));
+              : _StepDots(
+                  step: step ?? 1,
+                  count: stepCount!,
+                  currentOnly: currentStepOnly,
+                ));
     return Material(
       color: AppColors.resolve(context, backgroundColor ?? kColorBgFFFBF7),
       child: SafeArea(
@@ -92,10 +101,15 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class _StepDots extends StatelessWidget {
-  const _StepDots({required this.step, required this.count});
+  const _StepDots({
+    required this.step,
+    required this.count,
+    required this.currentOnly,
+  });
 
   final int step;
   final int count;
+  final bool currentOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +120,9 @@ class _StepDots extends StatelessWidget {
           if (index > 1) const SizedBox(width: AppSpacing.compact),
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            width: index <= step ? AppSpacing.s6 : AppSpacing.s2,
+            width: (currentOnly ? index == step : index <= step)
+                ? AppSpacing.s6
+                : AppSpacing.s2,
             height: AppSpacing.compact,
             decoration: BoxDecoration(
               color: AppColors.resolve(

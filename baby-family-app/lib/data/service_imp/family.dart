@@ -1,8 +1,10 @@
 import 'package:baby_family/data/dto/account_settings_summary.dart';
 import 'package:baby_family/data/model/family/family.dart';
+import 'package:baby_family/data/model/family/family_membership.dart';
 import 'package:baby_family/data/model/family/family_settings.dart';
 import 'package:baby_family/data/model/family/invite_info.dart';
 import 'package:baby_family/data/model/family/member.dart';
+import 'package:baby_family/data/model/family/plan_details.dart';
 import 'package:baby_family/data/model/family/plan_offer.dart';
 import 'package:baby_family/data/repository/family.dart';
 import 'package:baby_family/data/service/family.dart';
@@ -250,5 +252,81 @@ class FamilyServiceImp extends MockServiceImp implements IFamilyService {
       'coverAsset': ?settings.coverAsset,
     });
     _repository.saveFamilySettings(settings.toJson());
+  }
+
+  // ------------------------------------------------------------ batch 3
+
+  /// FAM-05: lời mời người thân hết hạn sau 14 ngày.
+  static const _relativeInviteDays = 14;
+
+  @override
+  Future<PlanDetails?> planDetails() async {
+    final family = await currentFamily();
+    if (family == null) {
+      return null;
+    }
+    final details = _repository.planDetails();
+    final quota = _repository.config()['aiQuota'] as Map<String, dynamic>?;
+    return PlanDetails.fromJson({
+      ...details,
+      'plan': family.plan.toJson(),
+      'aiRemaining': quota?['remaining'] ?? 0,
+      'aiTotal': quota?['total'] ?? 0,
+      'relativeNames': [
+        for (final member in await members())
+          if (member.role == FamilyRole.relative &&
+              member.status == MemberStatus.active)
+            member.callName,
+      ],
+    });
+  }
+
+  @override
+  Future<List<FamilyMembership>> memberships() async {
+    await ready();
+    return _repository
+        .memberships(myUserId)
+        .map(FamilyMembership.fromJson)
+        .toList();
+  }
+
+  @override
+  Future<void> switchFamily(String familyId) async {
+    await ready();
+  }
+
+  @override
+  Future<List<InviteInfo>> relativeInvites() async {
+    await ready();
+    return _repository
+        .invites(familyId)
+        .where((row) => row['kind'] == InviteKind.relative.name)
+        .map(InviteInfo.fromJson)
+        .toList();
+  }
+
+  @override
+  Future<void> resendInvite(String inviteId) async {
+    await ready();
+    _repository.updateInvite(inviteId, {'sentAt': now.toIso8601String()});
+  }
+
+  @override
+  Future<void> revokeInvite(String inviteId) async {
+    await ready();
+    _repository.updateInvite(inviteId, {'status': 'revoked'});
+  }
+
+  @override
+  Future<void> renewInvite(String inviteId) async {
+    await ready();
+    _repository.updateInvite(inviteId, {
+      'status': 'open',
+      'sentAt': now.toIso8601String(),
+      'openedAt': null,
+      'expiresAt': now
+          .add(const Duration(days: _relativeInviteDays))
+          .toIso8601String(),
+    });
   }
 }

@@ -98,4 +98,7 @@ class CareRepositoryImp extends MockRepositoryImp implements ICareRepository {
   @override
   void saveMissionSettings(JsonMap settings) =>
       saveMeta('missionSettings', settings);
+
+  @override
+  JsonMap careStats() => metaSection('careStats');
 }

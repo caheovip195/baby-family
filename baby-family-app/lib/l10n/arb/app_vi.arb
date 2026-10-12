@@ -4811,10 +4811,6 @@
   "@invViewOnly": {
     "description": "INV-01 — quyền với bé"
   },
-  "invNameSeparator": ", ",
-  "@invNameSeparator": {
-    "description": "Dấu ngăn danh sách tên bé"
-  },
   "homeMorning": "Chào buổi sáng,",
   "@homeMorning": {
     "description": "HOME-01 — lời chào buổi sáng"
@@ -6242,10 +6238,6 @@
   "calendarNote": "Ghi chú",
   "@calendarNote": {
     "description": "CAL-02"
-  },
-  "calendarDraftNote": "Đặt bánh bông lan trứng muối Bà thích",
-  "@calendarDraftNote": {
-    "description": "CAL-02 ghi chú mẫu điền sẵn (thiết kế)"
   },
   "calendarNoteHint": "Thêm ghi chú…",
   "@calendarNoteHint": {
@@ -9021,5 +9013,93 @@
         "type": "int"
       }
     }
+  },
+  "usBridgeRewriteTitle": "Viết lại nhẹ nhàng",
+  "@usBridgeRewriteTitle": {
+    "description": "US-09 title"
+  },
+  "usBridgeNextStepTitle": "Một bước nhỏ tiếp theo",
+  "@usBridgeNextStepTitle": {
+    "description": "US-12 title"
+  },
+  "usSafetyTitle": "Hỗ trợ an toàn",
+  "@usSafetyTitle": {
+    "description": "US-13 title"
+  },
+  "recapDayTitle": "Câu chuyện ngày",
+  "@recapDayTitle": {
+    "description": "REC-01 title"
+  },
+  "recapMonthTitle": "Tháng tuổi",
+  "@recapMonthTitle": {
+    "description": "REC-03 title"
+  },
+  "careStatsTitle": "Thống kê",
+  "@careStatsTitle": {
+    "description": "CARE-11 title"
+  },
+  "memTrashTitle": "Thùng rác",
+  "@memTrashTitle": {
+    "description": "MEM-17 title"
+  },
+  "memDraftsTitle": "Nháp",
+  "@memDraftsTitle": {
+    "description": "MEM-18 title"
+  },
+  "memPendingTitle": "Chờ duyệt",
+  "@memPendingTitle": {
+    "description": "MEM-19 title"
+  },
+  "childArchiveTitle": "Lưu trữ hoặc xoá bé",
+  "@childArchiveTitle": {
+    "description": "CHD-05 title"
+  },
+  "circleTabHome": "Cháu yêu",
+  "@circleTabHome": {
+    "description": "Circle tab bar"
+  },
+  "circleTabMemories": "Ký ức",
+  "@circleTabMemories": {
+    "description": "Circle tab bar"
+  },
+  "circleTabPost": "Đăng ảnh",
+  "@circleTabPost": {
+    "description": "Circle tab bar"
+  },
+  "circleTabMe": "Tôi",
+  "@circleTabMe": {
+    "description": "Circle tab bar"
+  },
+  "circlePostTitle": "Đăng ảnh cho cháu",
+  "@circlePostTitle": {
+    "description": "CIR-04 title"
+  },
+  "circleMemoryDetailTitle": "Chi tiết ký ức",
+  "@circleMemoryDetailTitle": {
+    "description": "CIR-03 title"
+  },
+  "circlePausedTitle": "Gia đình tạm dừng chia sẻ",
+  "@circlePausedTitle": {
+    "description": "CIR-05 title"
+  },
+  "circleLeaveTitle": "Rời gia đình",
+  "@circleLeaveTitle": {
+    "description": "SET-10 title"
+  },
+  "billingPlanTitle": "Gói của gia đình",
+  "@billingPlanTitle": {
+    "description": "SUB-03 title"
+  },
+  "familyInvitePartnerTitle": "Mời bạn đời cùng tham gia",
+  "@familyInvitePartnerTitle": {
+    "description": "FAM-02 title"
+  },
+  "familyPendingInvitesTitle": "Lời mời đang chờ",
+  "@familyPendingInvitesTitle": {
+    "description": "FAM-05 title"
+  },
+  "settingsBlockedTitle": "Người bị chặn",
+  "@settingsBlockedTitle": {
+    "description": "SET-13 title"
   }
 }

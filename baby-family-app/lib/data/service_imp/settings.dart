@@ -1,3 +1,5 @@
+import 'package:baby_family/data/model/settings/ai_settings.dart';
+import 'package:baby_family/data/model/settings/blocked_person.dart';
 import 'package:baby_family/data/model/settings/data_export_info.dart';
 import 'package:baby_family/data/model/settings/data_export_job.dart';
 import 'package:baby_family/data/model/settings/delete_account_info.dart';
@@ -181,5 +183,76 @@ class SettingsServiceImp extends MockServiceImp implements ISettingsService {
   Future<HelpInfo> help() async {
     await ready();
     return HelpInfo.fromJson(_repository.section('help'));
+  }
+
+  // ------------------------------------------------------------ batch 3
+
+  @override
+  Future<AiSettings> aiSettings() async {
+    await ready();
+    final saved = _repository.section('ai');
+    final features =
+        (saved['features'] as List?) ??
+        (_repository.catalog()['aiFeatures'] as List?) ??
+        const [];
+    return AiSettings.fromJson({...saved, 'features': features});
+  }
+
+  @override
+  Future<void> saveAiSettings(AiSettings settings) async {
+    await ready();
+    _repository.saveSection('ai', settings.toJson());
+  }
+
+  @override
+  Future<List<BlockedPerson>> blockedPeople() async {
+    await ready();
+    return _repository
+        .sectionList('blocked')
+        .map(BlockedPerson.fromJson)
+        .toList();
+  }
+
+  void _setBlockedCount(int count) {
+    final privacy = _repository.section('privacy');
+    _repository.saveSection('privacy', {...privacy, 'blockedCount': count});
+  }
+
+  @override
+  Future<void> blockMember(
+    String memberId, {
+    bool removeFromFamily = false,
+  }) async {
+    await ready();
+    final member = _familyRepository.member(memberId);
+    if (member == null) {
+      return;
+    }
+    final blocked = [
+      ..._repository.sectionList('blocked'),
+      {
+        'id': 'b-$memberId',
+        'name': member['callName'] ?? member['displayName'] ?? '',
+        'blockedAt': now.toIso8601String(),
+      },
+    ];
+    _repository.saveSectionList('blocked', blocked);
+    _setBlockedCount(blocked.length);
+    if (removeFromFamily) {
+      _familyRepository.updateMember(memberId, {
+        'status': MemberStatus.removed.name,
+      });
+    }
+  }
+
+  @override
+  Future<void> unblock(String blockedId) async {
+    await ready();
+    final blocked = _repository
+        .sectionList('blocked')
+        .where((row) => row['id'] != blockedId)
+        .toList();
+    _repository.saveSectionList('blocked', blocked);
+    _setBlockedCount(blocked.length);
   }
 }

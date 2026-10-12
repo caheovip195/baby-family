@@ -161,7 +161,7 @@ void main() {
       const InviteCodeRoute(),
       InvitePreviewRoute(code: 'K7Q29MXA'),
       const CircleWaitingRoute(),
-      const CircleHomeRoute(),
+      const CircleShellRoute(children: [CircleHomeRoute()]),
       MemoryComposerRoute(kind: 'photo'),
       MemoryDetailRoute(memoryId: 'm-hana-holds-haru'),
       MemoryPerspectiveRoute(memoryId: 'm-hana-holds-haru'),
@@ -222,11 +222,39 @@ void main() {
       const DeleteAccountRoute(),
       const HelpRoute(),
       const AboutRoute(),
+      // Batch 3.
+      const BridgeStartRoute(),
+      const BridgeRewriteRoute(),
+      BridgeInviteRoute(sessionId: 'br-1'),
+      BridgeSessionRoute(sessionId: 'br-1'),
+      BridgeNextStepRoute(sessionId: 'br-1'),
+      const SafetySupportRoute(),
+      const CoupleWeekRoute(),
+      DayStoryRoute(childId: 'haru'),
+      MonthRecapRoute(childId: 'haru'),
+      const CareStatsRoute(),
+      const TrashRoute(),
+      const DraftsRoute(),
+      const PendingReviewRoute(),
+      ChildArchiveRoute(childId: 'khang'),
+      const CircleShellRoute(children: [CircleChildRoute()]),
+      const CircleShellRoute(children: [CirclePostRoute()]),
+      const CircleShellRoute(children: [CircleMeRoute()]),
+      CircleMemoryDetailRoute(memoryId: 'c-haru-roll'),
+      const CirclePausedRoute(),
+      const LeaveFamilyRoute(),
+      const FamilyPlanRoute(),
+      const UpgradePlanRoute(),
+      const PartnerInviteRoute(),
+      const PendingInvitesRoute(),
+      const AiSettingsRoute(),
+      const BlockedPeopleRoute(),
     ];
     for (final route in routes) {
-      testWidgets(route.routeName, (tester) async {
+      final top = route.initialChildren?.lastOrNull ?? route;
+      testWidgets(top.routeName, (tester) async {
         final router = await pumpRoute(tester, route);
-        expect(router.topRoute.name, route.routeName);
+        expect(router.topRoute.name, top.routeName);
         expect(tester.takeException(), isNull);
       });
     }

@@ -4,6 +4,9 @@ part of '../mobile/delete_account_mobile_view.dart';
 /// đình, phần Papa & Mama, gợi ý xuất dữ liệu → SET-08. Parent duy nhất
 /// (`sA3Ch`): chọn “Mời Parent khác trước” hoặc “Xoá cả gia đình”.
 class _FamilyStep extends StatelessWidget {
+  /// Tiêu đề thẻ lựa chọn của `sA3Ch` (16 thay vì 18 của component).
+  static const _choiceTitleSize = 16.0;
+
   const _FamilyStep({
     required this.controller,
     required this.info,
@@ -36,6 +39,9 @@ class _FamilyStep extends StatelessWidget {
             description: l10n.setDelInviteParentHint,
             icon: LucideIcons.userPlus,
             iconBackground: kColorSurfaceFFFFFF,
+            titleFontSize: _choiceTitleSize,
+            selectedBorderColor: kColorPrimary300F7A796,
+            selectedBorderWidth: 1,
             selected: invite,
             onTap: () => controller.setInviteParentFirst(true),
           ),
@@ -48,6 +54,9 @@ class _FamilyStep extends StatelessWidget {
             icon: LucideIcons.trash2,
             color: kColorErrorD14B4B,
             iconBackground: kColorSurfaceVariantF7F1EC,
+            titleFontSize: _choiceTitleSize,
+            selectedBorderColor: kColorPrimary300F7A796,
+            selectedBorderWidth: 1,
             selected: !invite,
             onTap: () => controller.setInviteParentFirst(false),
           ),

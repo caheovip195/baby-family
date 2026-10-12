@@ -2,15 +2,20 @@ import 'package:baby_family/data/dto/memory_search_result.dart';
 import 'package:baby_family/data/model/memory/album.dart';
 import 'package:baby_family/data/model/memory/bump_photo.dart';
 import 'package:baby_family/data/model/memory/collection_summary.dart';
+import 'package:baby_family/data/model/memory/day_story.dart';
 import 'package:baby_family/data/model/memory/memory.dart';
 import 'package:baby_family/data/model/memory/memory_comment.dart';
+import 'package:baby_family/data/model/memory/memory_draft_item.dart';
 import 'package:baby_family/data/model/memory/memory_perspective.dart';
 import 'package:baby_family/data/model/memory/memory_prompt.dart';
 import 'package:baby_family/data/model/memory/milestone_group.dart';
 import 'package:baby_family/data/model/memory/milestone_item.dart';
 import 'package:baby_family/data/model/memory/milestone_option.dart';
+import 'package:baby_family/data/model/memory/month_recap.dart';
 import 'package:baby_family/data/model/memory/monthly_photo.dart';
 import 'package:baby_family/data/model/memory/on_this_day_group.dart';
+import 'package:baby_family/data/model/memory/report_reason.dart';
+import 'package:baby_family/data/model/memory/report_receipt.dart';
 import 'package:baby_family/data/model/memory/story_item.dart';
 import 'package:baby_family/data/model/memory/weekly_recap.dart';
 import 'package:baby_family/data/service/base.dart';
@@ -163,4 +168,51 @@ abstract class IMemoryService extends IBaseService {
 
   /// REC-02: tổng kết tuần này.
   Future<WeeklyRecap?> weeklyRecap();
+
+  // --- Batch 3 ---
+
+  /// MEM-17: ký ức đã xoá (giữ 30 ngày), mới xoá trước.
+  Future<List<Memory>> trash();
+
+  /// Ngày còn lại trước khi xoá hẳn (`deletedAt` + 30 − hôm nay).
+  int trashDaysLeft(Memory memory);
+
+  Future<void> restoreMemory(String memoryId);
+
+  Future<void> deleteForever(String memoryId);
+
+  /// MEM-18: nháp của tôi (trên máy trước, đã lưu trên tài khoản sau).
+  Future<List<MemoryDraftItem>> drafts();
+
+  Future<void> deleteDraft(String draftId);
+
+  /// MEM-19: ảnh người thân đăng chờ duyệt, mới nhất trước.
+  Future<List<Memory>> pendingPosts();
+
+  Future<void> approvePost(String postId, {List<String>? childIds});
+
+  Future<void> rejectPost(String postId, {String? reason});
+
+  /// MEM-19 lý do từ chối mẫu (đã dịch).
+  Future<List<String>> rejectReasons();
+
+  /// RPT-01: lý do báo cáo (đã dịch).
+  Future<List<ReportReason>> reportReasons();
+
+  /// RPT-01 → RPT-01b.
+  Future<ReportReceipt> submitReport({
+    required String targetId,
+    required String reasonCode,
+    String? note,
+    bool hideForMe = false,
+    bool removeFromFamily = false,
+  });
+
+  /// REC-01: câu chuyện ngày (AI viết, bạn sửa).
+  Future<DayStory?> dayStory({String? childId});
+
+  Future<void> saveDayStory(DayStory story);
+
+  /// REC-03: tổng kết tháng tuổi.
+  Future<MonthRecap?> monthRecap({String? childId});
 }

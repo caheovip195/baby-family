@@ -36,4 +36,20 @@ abstract class IUsRepository extends IBaseRepository {
   JsonMap coupleSettings();
 
   void saveCoupleSettings(JsonMap settings);
+
+  // --- Batch 3 (US-08…14) ---
+  List<JsonMap> bridgeSessions(String familyId);
+
+  JsonMap? bridgeSession(String id);
+
+  JsonMap addBridgeSession(JsonMap session);
+
+  void updateBridgeSession(String id, JsonMap patch);
+
+  JsonMap bridgeRewrite();
+
+  JsonMap coupleWeek();
+
+  /// `catalog.json` (bridge, safetyHotlines…).
+  JsonMap catalog();
 }

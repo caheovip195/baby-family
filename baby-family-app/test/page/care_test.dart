@@ -2,11 +2,13 @@ import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/data/provider/care.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/router/app_router.dart';
+import 'package:baby_family/utils/widget/child_switcher.dart';
 import 'package:baby_family/utils/widget/mission_card.dart';
 import 'package:baby_family/utils/widget/mission_completion_sheet.dart';
 import 'package:baby_family/utils/widget/mission_swap_sheet.dart';
 import 'package:baby_family/utils/widget/mission_template_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -183,6 +185,30 @@ void main() {
       await tester.tap(find.text('Tắm cho Haru buổi tối'));
       await tester.pumpAndSettle();
       expect(router.topRoute.name, MissionDetailRoute.name);
+    });
+
+    testWidgets('header ⋯ → CARE-08 / CARE-10 / CARE-12 sheet', (tester) async {
+      final router = await pumpRoute(tester, _careShell);
+      bool truncated(Finder finder) => tester
+          .renderObject<RenderParagraph>(
+            find.descendant(of: finder, matching: find.byType(RichText)),
+          )
+          .didExceedMaxLines;
+      expect(truncated(find.text('Chăm con').first), isFalse);
+      expect(truncated(find.text('Cả nhà').first), isFalse);
+      for (final (label, route) in [
+        ('Lịch sử nhiệm vụ', MissionHistoryRoute.name),
+        ('Huy hiệu của nhà mình', BadgesRoute.name),
+        ('Cài đặt nhiệm vụ', MissionSettingsRoute.name),
+      ]) {
+        await tester.tap(find.byTooltip('Thêm'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(label));
+        await tester.pumpAndSettle();
+        expect(router.topRoute.name, route);
+        await router.maybePop();
+        await tester.pumpAndSettle();
+      }
     });
 
     testWidgets('partner tab: quick thanks', (tester) async {

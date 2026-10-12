@@ -49,7 +49,7 @@ final _screens = <String, (PageRouteInfo, DemoSeed, String)>{
   'SUB-07': (const ExpiredRoute(), DemoSeed.expired, 'mama'),
   'SET-01': (const SettingsRoute(), DemoSeed.active, 'papa'),
   'SET-06': (const DisplaySettingsRoute(), DemoSeed.active, 'mama'),
-  'CIR-01': (const CircleHomeRoute(), DemoSeed.circle, 'mama'),
+  'CIR-01': (const CircleShellRoute(children: [CircleHomeRoute()]), DemoSeed.circle, 'mama'),
 };
 
 void main() {
@@ -78,7 +78,7 @@ void main() {
     testWidgets('design qa CIR-01 dark', (tester) async {
       await pumpRoute(
         tester,
-        const CircleHomeRoute(),
+        const CircleShellRoute(children: [CircleHomeRoute()]),
         seed: DemoSeed.circle,
         themeMode: ThemeMode.dark,
       );
@@ -117,7 +117,7 @@ void main() {
       await pumpRoute(tester, const FamilyRoute(), seed: DemoSeed.trial);
       expect(find.text('Nhà Lan'), findsOneWidget);
       expect(find.text('Dùng thử miễn phí'), findsOneWidget);
-      expect(find.text('Còn 62 ngày · hết hạn 08/12/2026'), findsOneWidget);
+      expect(find.text('Còn 90 ngày · hết hạn 05/01/2027'), findsOneWidget);
       expect(find.text('3,2 GB / 10 GB'), findsOneWidget);
       expect(find.text('Mama (bạn)'), findsOneWidget);
       expect(find.text('Thai 24 tuần · dự sinh 24/01/2027'), findsOneWidget);
@@ -194,7 +194,7 @@ void main() {
       await pumpRoute(tester, const SettingsRoute());
       expect(find.text('Lan'), findsOneWidget);
       expect(find.text('Mama · Nhà Lan'), findsOneWidget);
-      expect(find.text('28/30 lượt'), findsOneWidget);
+      expect(find.text('286/300 lượt'), findsOneWidget);
       expect(find.text('Tiếng Việt'), findsOneWidget);
       expect(find.text('Face ID'), findsOneWidget);
       expect(find.text('Gói Family'), findsOneWidget);
@@ -267,7 +267,7 @@ void main() {
         seed: DemoSeed.trial,
       );
       await _tap(tester, find.text('Gói & thanh toán'));
-      expect(find.text('Dùng thử còn 62 ngày'), findsOneWidget);
+      expect(find.text('Dùng thử còn 90 ngày'), findsOneWidget);
       await _tap(tester, find.text('House'));
       expect(find.text('Nâng cấp House · 399.000đ'), findsOneWidget);
       await _tap(tester, find.byTooltip('Đóng'));
@@ -311,7 +311,7 @@ void main() {
     testWidgets('greets the relative and shows Haru’s latest memory', (
       tester,
     ) async {
-      await pumpRoute(tester, const CircleHomeRoute(), seed: DemoSeed.circle);
+      await pumpRoute(tester, const CircleShellRoute(children: [CircleHomeRoute()]), seed: DemoSeed.circle);
       expect(find.text('Chào Bà ngoại'), findsOneWidget);
       expect(find.text('Cháu yêu của bà'), findsOneWidget);
       expect(find.text('Haru · 17 tháng 29 ngày'), findsOneWidget);
@@ -323,13 +323,13 @@ void main() {
     });
 
     testWidgets('kid chips switch the child', (tester) async {
-      await pumpRoute(tester, const CircleHomeRoute(), seed: DemoSeed.circle);
+      await pumpRoute(tester, const CircleShellRoute(children: [CircleHomeRoute()]), seed: DemoSeed.circle);
       await _tap(tester, find.text('Hana'));
       expect(find.text('Hana · 2 tuổi 4 tháng'), findsOneWidget);
     });
 
     testWidgets('Thả tim and Gửi lời chúc (mock)', (tester) async {
-      await pumpRoute(tester, const CircleHomeRoute(), seed: DemoSeed.circle);
+      await pumpRoute(tester, const CircleShellRoute(children: [CircleHomeRoute()]), seed: DemoSeed.circle);
       await _tap(tester, find.text('Thả tim'));
       expect(find.text('Đã thả tim cho Haru 💛'), findsOneWidget);
       await _tap(tester, find.text('Gửi lời chúc'));

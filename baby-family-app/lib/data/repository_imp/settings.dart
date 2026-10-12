@@ -20,4 +20,22 @@ class SettingsRepositoryImp extends MockRepositoryImp
     raw[key] = value;
     saveMeta('settings', raw);
   }
+
+  @override
+  List<JsonMap> sectionList(String key) => [
+    for (final row in (_all[key] as List?) ?? const [])
+      Map<String, dynamic>.from(row as Map),
+  ];
+
+  @override
+  void saveSectionList(String key, List<JsonMap> value) {
+    final raw = Map<String, dynamic>.from(
+      (store.meta['settings'] as Map?) ?? const {},
+    );
+    raw[key] = value;
+    saveMeta('settings', raw);
+  }
+
+  @override
+  JsonMap catalog() => metaSection('catalog');
 }

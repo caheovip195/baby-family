@@ -261,3 +261,27 @@ do agent tự đặt tên (06/10, 09/10, 11/10).
   Markdown; kết quả validation cuối lưu tại session chung BF-20261011-006.
 - Liên quan BF-20261011-007: Thêm root `.gitignore` cho local env/build/cache;
   giữ source, file generated Flutter được quản lý và các file lịch sử.
+
+## 2026-10-12 — Dọn việc còn lại sau đợt 2 (cleanup & đồng bộ story v2)
+
+- Font Dancing Script (OFL, google/fonts) đóng gói: `assets/fonts/DancingScript-Variable.ttf`
+  + `DancingScript-OFL.txt`, family `DancingScript` trong pubspec; token
+  `AppTypography.handwriting` (24/700) / `handwritingSmall` (20/400) dùng ở MEM-14
+  (giấy thư, phong bì) thay Nunito nghiêng; `design_qa.dart` nạp font. Golden khớp `Q4HQel`.
+- CAL-02: `CalendarEvent.note` (freezed/json), lưu từ form; bản nháp mẫu có ghi chú
+  trong `care.json` (bỏ key l10n `calendarDraftNote`). CARE-07 không hiện ghi chú (frame không vẽ).
+- CARE-01: nút ⋯ 40 cạnh nút lịch → sheet dùng chung `lib/utils/widget/care_more_sheet.dart`
+  (Lịch sử nhiệm vụ / Huy hiệu / Cài đặt nhiệm vụ), CARE-09 dùng chung sheet này;
+  tiêu đề không còn khoảng cách cố định để vừa 390 dp (như Pencil). Pencil: thêm ⋯ vào
+  jhh4V, J0I7c, qkr1a, b75gi7, AJPzj.
+- Kit: `AppTopBar(currentStepOnly:)` (SET-09: chỉ bước hiện tại dài; onboarding giữ
+  mặc định), `AppChoiceCard(titleFontSize, selectedBorderColor, selectedBorderWidth)` (SET-09b `sA3Ch`).
+- Dữ liệu/thiết kế: CHD-01 lấy số ký ức/cột mốc từ stats (186 · 6, Pencil sửa theo);
+  HOME-03 Pencil “4 tên dự định”; MEM-25 Pencil “4/4” (dữ liệu 4 story, story 20:05 là
+  cuối); INV-01 Bà nội theo dõi Hana + Haru (fixture + Pencil BSCuD), bỏ bé lưu trữ khỏi
+  “không thấy”; ONB-07 lời mời đầu tiên của phiên dùng mã K7Q29MXA; seed trial/pregnant
+  hết hạn hôm nay + 90 ngày = 05/01/2027 (Pencil XwXfH, OUXZg, zKXgc; SUB-07 aZ9MZ
+  06/10/2027); ảnh Haru (toddler) mới cho Pencil (42 node) và `demo_haru.jpg`.
+- Kiểm chứng: `make runner`, `make check` (509 test pass), build iOS simulator staging (active).
+- Còn mở: ảnh stock Haru trông khoảng 2–3 tuổi (hơi lớn so với 18 tháng); golden CHD-01
+  chưa hiện ảnh avatar/cover (có từ trước).

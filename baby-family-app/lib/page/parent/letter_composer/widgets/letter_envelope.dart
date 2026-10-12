@@ -61,9 +61,7 @@ class _LetterEnvelope extends StatelessWidget {
                   name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: _scriptStyle.copyWith(
-                    fontSize: 24,
-                    height: 29 / 24,
+                  style: AppTypography.handwriting.copyWith(
                     color: kColorEnvelopeInk7A4E2E,
                   ),
                 ),

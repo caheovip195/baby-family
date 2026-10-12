@@ -1,3 +1,5 @@
+import 'package:baby_family/data/model/settings/ai_settings.dart';
+import 'package:baby_family/data/model/settings/blocked_person.dart';
 import 'package:baby_family/data/model/settings/data_export_info.dart';
 import 'package:baby_family/data/model/settings/delete_account_info.dart';
 import 'package:baby_family/data/model/settings/help_info.dart';
@@ -51,4 +53,19 @@ abstract class ISettingsService extends IBaseService {
 
   /// SET-11.
   Future<HelpInfo> help();
+
+  // --- Batch 3 (SET-05, SET-13, RPT-02) ---
+
+  /// SET-05.
+  Future<AiSettings> aiSettings();
+
+  Future<void> saveAiSettings(AiSettings settings);
+
+  /// SET-13.
+  Future<List<BlockedPerson>> blockedPeople();
+
+  /// RPT-02 “Chặn” (tuỳ chọn gỡ khỏi gia đình luôn).
+  Future<void> blockMember(String memberId, {bool removeFromFamily = false});
+
+  Future<void> unblock(String blockedId);
 }

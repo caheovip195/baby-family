@@ -27,6 +27,22 @@ class AboutRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [AiSettingsPage]
+class AiSettingsRoute extends PageRouteInfo<void> {
+  const AiSettingsRoute({List<PageRouteInfo>? children})
+    : super(AiSettingsRoute.name, initialChildren: children);
+
+  static const String name = 'AiSettingsRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const AiSettingsPage();
+    },
+  );
+}
+
+/// generated route for
 /// [AlbumDetailPage]
 class AlbumDetailRoute extends PageRouteInfo<AlbumDetailRouteArgs> {
   AlbumDetailRoute({
@@ -280,6 +296,212 @@ class BirthRouteArgs {
 }
 
 /// generated route for
+/// [BlockedPeoplePage]
+class BlockedPeopleRoute extends PageRouteInfo<void> {
+  const BlockedPeopleRoute({List<PageRouteInfo>? children})
+    : super(BlockedPeopleRoute.name, initialChildren: children);
+
+  static const String name = 'BlockedPeopleRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const BlockedPeoplePage();
+    },
+  );
+}
+
+/// generated route for
+/// [BridgeInvitePage]
+class BridgeInviteRoute extends PageRouteInfo<BridgeInviteRouteArgs> {
+  BridgeInviteRoute({
+    required String sessionId,
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
+         BridgeInviteRoute.name,
+         args: BridgeInviteRouteArgs(sessionId: sessionId, key: key),
+         rawPathParams: {'sessionId': sessionId},
+         initialChildren: children,
+       );
+
+  static const String name = 'BridgeInviteRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final pathParams = data.inheritedPathParams;
+      final args = data.argsAs<BridgeInviteRouteArgs>(
+        orElse: () =>
+            BridgeInviteRouteArgs(sessionId: pathParams.getString('sessionId')),
+      );
+      return BridgeInvitePage(sessionId: args.sessionId, key: args.key);
+    },
+  );
+}
+
+class BridgeInviteRouteArgs {
+  const BridgeInviteRouteArgs({required this.sessionId, this.key});
+
+  final String sessionId;
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'BridgeInviteRouteArgs{sessionId: $sessionId, key: $key}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! BridgeInviteRouteArgs) return false;
+    return sessionId == other.sessionId && key == other.key;
+  }
+
+  @override
+  int get hashCode => sessionId.hashCode ^ key.hashCode;
+}
+
+/// generated route for
+/// [BridgeNextStepPage]
+class BridgeNextStepRoute extends PageRouteInfo<BridgeNextStepRouteArgs> {
+  BridgeNextStepRoute({
+    required String sessionId,
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
+         BridgeNextStepRoute.name,
+         args: BridgeNextStepRouteArgs(sessionId: sessionId, key: key),
+         rawPathParams: {'sessionId': sessionId},
+         initialChildren: children,
+       );
+
+  static const String name = 'BridgeNextStepRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final pathParams = data.inheritedPathParams;
+      final args = data.argsAs<BridgeNextStepRouteArgs>(
+        orElse: () => BridgeNextStepRouteArgs(
+          sessionId: pathParams.getString('sessionId'),
+        ),
+      );
+      return BridgeNextStepPage(sessionId: args.sessionId, key: args.key);
+    },
+  );
+}
+
+class BridgeNextStepRouteArgs {
+  const BridgeNextStepRouteArgs({required this.sessionId, this.key});
+
+  final String sessionId;
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'BridgeNextStepRouteArgs{sessionId: $sessionId, key: $key}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! BridgeNextStepRouteArgs) return false;
+    return sessionId == other.sessionId && key == other.key;
+  }
+
+  @override
+  int get hashCode => sessionId.hashCode ^ key.hashCode;
+}
+
+/// generated route for
+/// [BridgeRewritePage]
+class BridgeRewriteRoute extends PageRouteInfo<void> {
+  const BridgeRewriteRoute({List<PageRouteInfo>? children})
+    : super(BridgeRewriteRoute.name, initialChildren: children);
+
+  static const String name = 'BridgeRewriteRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const BridgeRewritePage();
+    },
+  );
+}
+
+/// generated route for
+/// [BridgeSessionPage]
+class BridgeSessionRoute extends PageRouteInfo<BridgeSessionRouteArgs> {
+  BridgeSessionRoute({
+    required String sessionId,
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
+         BridgeSessionRoute.name,
+         args: BridgeSessionRouteArgs(sessionId: sessionId, key: key),
+         rawPathParams: {'sessionId': sessionId},
+         initialChildren: children,
+       );
+
+  static const String name = 'BridgeSessionRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final pathParams = data.inheritedPathParams;
+      final args = data.argsAs<BridgeSessionRouteArgs>(
+        orElse: () => BridgeSessionRouteArgs(
+          sessionId: pathParams.getString('sessionId'),
+        ),
+      );
+      return BridgeSessionPage(sessionId: args.sessionId, key: args.key);
+    },
+  );
+}
+
+class BridgeSessionRouteArgs {
+  const BridgeSessionRouteArgs({required this.sessionId, this.key});
+
+  final String sessionId;
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'BridgeSessionRouteArgs{sessionId: $sessionId, key: $key}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! BridgeSessionRouteArgs) return false;
+    return sessionId == other.sessionId && key == other.key;
+  }
+
+  @override
+  int get hashCode => sessionId.hashCode ^ key.hashCode;
+}
+
+/// generated route for
+/// [BridgeStartPage]
+class BridgeStartRoute extends PageRouteInfo<void> {
+  const BridgeStartRoute({List<PageRouteInfo>? children})
+    : super(BridgeStartRoute.name, initialChildren: children);
+
+  static const String name = 'BridgeStartRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const BridgeStartPage();
+    },
+  );
+}
+
+/// generated route for
 /// [CalendarPage]
 class CalendarRoute extends PageRouteInfo<void> {
   const CalendarRoute({List<PageRouteInfo>? children})
@@ -291,6 +513,22 @@ class CalendarRoute extends PageRouteInfo<void> {
     name,
     builder: (data) {
       return const CalendarPage();
+    },
+  );
+}
+
+/// generated route for
+/// [CareStatsPage]
+class CareStatsRoute extends PageRouteInfo<void> {
+  const CareStatsRoute({List<PageRouteInfo>? children})
+    : super(CareStatsRoute.name, initialChildren: children);
+
+  static const String name = 'CareStatsRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const CareStatsPage();
     },
   );
 }
@@ -325,6 +563,58 @@ class ChildAddRoute extends PageRouteInfo<void> {
       return const ChildAddPage();
     },
   );
+}
+
+/// generated route for
+/// [ChildArchivePage]
+class ChildArchiveRoute extends PageRouteInfo<ChildArchiveRouteArgs> {
+  ChildArchiveRoute({
+    required String childId,
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
+         ChildArchiveRoute.name,
+         args: ChildArchiveRouteArgs(childId: childId, key: key),
+         rawPathParams: {'childId': childId},
+         initialChildren: children,
+       );
+
+  static const String name = 'ChildArchiveRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final pathParams = data.inheritedPathParams;
+      final args = data.argsAs<ChildArchiveRouteArgs>(
+        orElse: () =>
+            ChildArchiveRouteArgs(childId: pathParams.getString('childId')),
+      );
+      return ChildArchivePage(childId: args.childId, key: args.key);
+    },
+  );
+}
+
+class ChildArchiveRouteArgs {
+  const ChildArchiveRouteArgs({required this.childId, this.key});
+
+  final String childId;
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'ChildArchiveRouteArgs{childId: $childId, key: $key}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! ChildArchiveRouteArgs) return false;
+    return childId == other.childId && key == other.key;
+  }
+
+  @override
+  int get hashCode => childId.hashCode ^ key.hashCode;
 }
 
 /// generated route for
@@ -448,6 +738,22 @@ class ChildrenRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [CircleChildPage]
+class CircleChildRoute extends PageRouteInfo<void> {
+  const CircleChildRoute({List<PageRouteInfo>? children})
+    : super(CircleChildRoute.name, initialChildren: children);
+
+  static const String name = 'CircleChildRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const CircleChildPage();
+    },
+  );
+}
+
+/// generated route for
 /// [CircleHomePage]
 class CircleHomeRoute extends PageRouteInfo<void> {
   const CircleHomeRoute({List<PageRouteInfo>? children})
@@ -459,6 +765,124 @@ class CircleHomeRoute extends PageRouteInfo<void> {
     name,
     builder: (data) {
       return const CircleHomePage();
+    },
+  );
+}
+
+/// generated route for
+/// [CircleMePage]
+class CircleMeRoute extends PageRouteInfo<void> {
+  const CircleMeRoute({List<PageRouteInfo>? children})
+    : super(CircleMeRoute.name, initialChildren: children);
+
+  static const String name = 'CircleMeRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const CircleMePage();
+    },
+  );
+}
+
+/// generated route for
+/// [CircleMemoryDetailPage]
+class CircleMemoryDetailRoute
+    extends PageRouteInfo<CircleMemoryDetailRouteArgs> {
+  CircleMemoryDetailRoute({
+    required String memoryId,
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
+         CircleMemoryDetailRoute.name,
+         args: CircleMemoryDetailRouteArgs(memoryId: memoryId, key: key),
+         rawPathParams: {'memoryId': memoryId},
+         initialChildren: children,
+       );
+
+  static const String name = 'CircleMemoryDetailRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final pathParams = data.inheritedPathParams;
+      final args = data.argsAs<CircleMemoryDetailRouteArgs>(
+        orElse: () => CircleMemoryDetailRouteArgs(
+          memoryId: pathParams.getString('memoryId'),
+        ),
+      );
+      return CircleMemoryDetailPage(memoryId: args.memoryId, key: args.key);
+    },
+  );
+}
+
+class CircleMemoryDetailRouteArgs {
+  const CircleMemoryDetailRouteArgs({required this.memoryId, this.key});
+
+  final String memoryId;
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'CircleMemoryDetailRouteArgs{memoryId: $memoryId, key: $key}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! CircleMemoryDetailRouteArgs) return false;
+    return memoryId == other.memoryId && key == other.key;
+  }
+
+  @override
+  int get hashCode => memoryId.hashCode ^ key.hashCode;
+}
+
+/// generated route for
+/// [CirclePausedPage]
+class CirclePausedRoute extends PageRouteInfo<void> {
+  const CirclePausedRoute({List<PageRouteInfo>? children})
+    : super(CirclePausedRoute.name, initialChildren: children);
+
+  static const String name = 'CirclePausedRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const CirclePausedPage();
+    },
+  );
+}
+
+/// generated route for
+/// [CirclePostPage]
+class CirclePostRoute extends PageRouteInfo<void> {
+  const CirclePostRoute({List<PageRouteInfo>? children})
+    : super(CirclePostRoute.name, initialChildren: children);
+
+  static const String name = 'CirclePostRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const CirclePostPage();
+    },
+  );
+}
+
+/// generated route for
+/// [CircleShellPage]
+class CircleShellRoute extends PageRouteInfo<void> {
+  const CircleShellRoute({List<PageRouteInfo>? children})
+    : super(CircleShellRoute.name, initialChildren: children);
+
+  static const String name = 'CircleShellRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const CircleShellPage();
     },
   );
 }
@@ -564,6 +988,71 @@ class CoupleTabRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [CoupleWeekPage]
+class CoupleWeekRoute extends PageRouteInfo<void> {
+  const CoupleWeekRoute({List<PageRouteInfo>? children})
+    : super(CoupleWeekRoute.name, initialChildren: children);
+
+  static const String name = 'CoupleWeekRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const CoupleWeekPage();
+    },
+  );
+}
+
+/// generated route for
+/// [DayStoryPage]
+class DayStoryRoute extends PageRouteInfo<DayStoryRouteArgs> {
+  DayStoryRoute({String? childId, Key? key, List<PageRouteInfo>? children})
+    : super(
+        DayStoryRoute.name,
+        args: DayStoryRouteArgs(childId: childId, key: key),
+        rawQueryParams: {'childId': childId},
+        initialChildren: children,
+      );
+
+  static const String name = 'DayStoryRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final queryParams = data.queryParams;
+      final args = data.argsAs<DayStoryRouteArgs>(
+        orElse: () =>
+            DayStoryRouteArgs(childId: queryParams.optString('childId')),
+      );
+      return DayStoryPage(childId: args.childId, key: args.key);
+    },
+  );
+}
+
+class DayStoryRouteArgs {
+  const DayStoryRouteArgs({this.childId, this.key});
+
+  final String? childId;
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'DayStoryRouteArgs{childId: $childId, key: $key}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! DayStoryRouteArgs) return false;
+    return childId == other.childId && key == other.key;
+  }
+
+  @override
+  int get hashCode => childId.hashCode ^ key.hashCode;
+}
+
+/// generated route for
 /// [DeleteAccountPage]
 class DeleteAccountRoute extends PageRouteInfo<void> {
   const DeleteAccountRoute({List<PageRouteInfo>? children})
@@ -645,6 +1134,22 @@ class DisplaySettingsRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [DraftsPage]
+class DraftsRoute extends PageRouteInfo<void> {
+  const DraftsRoute({List<PageRouteInfo>? children})
+    : super(DraftsRoute.name, initialChildren: children);
+
+  static const String name = 'DraftsRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const DraftsPage();
+    },
+  );
+}
+
+/// generated route for
 /// [EventCreatePage]
 class EventCreateRoute extends PageRouteInfo<void> {
   const EventCreateRoute({List<PageRouteInfo>? children})
@@ -688,6 +1193,22 @@ class FamilyRoute extends PageRouteInfo<void> {
     name,
     builder: (data) {
       return const FamilyPage();
+    },
+  );
+}
+
+/// generated route for
+/// [FamilyPlanPage]
+class FamilyPlanRoute extends PageRouteInfo<void> {
+  const FamilyPlanRoute({List<PageRouteInfo>? children})
+    : super(FamilyPlanRoute.name, initialChildren: children);
+
+  static const String name = 'FamilyPlanRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const FamilyPlanPage();
     },
   );
 }
@@ -870,6 +1391,22 @@ class InvitePreviewRouteArgs {
 
   @override
   int get hashCode => code.hashCode ^ key.hashCode;
+}
+
+/// generated route for
+/// [LeaveFamilyPage]
+class LeaveFamilyRoute extends PageRouteInfo<void> {
+  const LeaveFamilyRoute({List<PageRouteInfo>? children})
+    : super(LeaveFamilyRoute.name, initialChildren: children);
+
+  static const String name = 'LeaveFamilyRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const LeaveFamilyPage();
+    },
+  );
 }
 
 /// generated route for
@@ -1512,6 +2049,55 @@ class MissionSettingsRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [MonthRecapPage]
+class MonthRecapRoute extends PageRouteInfo<MonthRecapRouteArgs> {
+  MonthRecapRoute({String? childId, Key? key, List<PageRouteInfo>? children})
+    : super(
+        MonthRecapRoute.name,
+        args: MonthRecapRouteArgs(childId: childId, key: key),
+        rawQueryParams: {'childId': childId},
+        initialChildren: children,
+      );
+
+  static const String name = 'MonthRecapRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final queryParams = data.queryParams;
+      final args = data.argsAs<MonthRecapRouteArgs>(
+        orElse: () =>
+            MonthRecapRouteArgs(childId: queryParams.optString('childId')),
+      );
+      return MonthRecapPage(childId: args.childId, key: args.key);
+    },
+  );
+}
+
+class MonthRecapRouteArgs {
+  const MonthRecapRouteArgs({this.childId, this.key});
+
+  final String? childId;
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'MonthRecapRouteArgs{childId: $childId, key: $key}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! MonthRecapRouteArgs) return false;
+    return childId == other.childId && key == other.key;
+  }
+
+  @override
+  int get hashCode => childId.hashCode ^ key.hashCode;
+}
+
+/// generated route for
 /// [MonthlyCameraPage]
 class MonthlyCameraRoute extends PageRouteInfo<MonthlyCameraRouteArgs> {
   MonthlyCameraRoute({
@@ -1862,6 +2448,54 @@ class OnboardingWaitingRoute extends PageRouteInfo<void> {
     name,
     builder: (data) {
       return const OnboardingWaitingPage();
+    },
+  );
+}
+
+/// generated route for
+/// [PartnerInvitePage]
+class PartnerInviteRoute extends PageRouteInfo<void> {
+  const PartnerInviteRoute({List<PageRouteInfo>? children})
+    : super(PartnerInviteRoute.name, initialChildren: children);
+
+  static const String name = 'PartnerInviteRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const PartnerInvitePage();
+    },
+  );
+}
+
+/// generated route for
+/// [PendingInvitesPage]
+class PendingInvitesRoute extends PageRouteInfo<void> {
+  const PendingInvitesRoute({List<PageRouteInfo>? children})
+    : super(PendingInvitesRoute.name, initialChildren: children);
+
+  static const String name = 'PendingInvitesRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const PendingInvitesPage();
+    },
+  );
+}
+
+/// generated route for
+/// [PendingReviewPage]
+class PendingReviewRoute extends PageRouteInfo<void> {
+  const PendingReviewRoute({List<PageRouteInfo>? children})
+    : super(PendingReviewRoute.name, initialChildren: children);
+
+  static const String name = 'PendingReviewRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const PendingReviewPage();
     },
   );
 }
@@ -2292,6 +2926,22 @@ class RequestDetailRouteArgs {
 }
 
 /// generated route for
+/// [SafetySupportPage]
+class SafetySupportRoute extends PageRouteInfo<void> {
+  const SafetySupportRoute({List<PageRouteInfo>? children})
+    : super(SafetySupportRoute.name, initialChildren: children);
+
+  static const String name = 'SafetySupportRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const SafetySupportPage();
+    },
+  );
+}
+
+/// generated route for
 /// [SecuritySettingsPage]
 class SecuritySettingsRoute extends PageRouteInfo<void> {
   const SecuritySettingsRoute({List<PageRouteInfo>? children})
@@ -2404,6 +3054,38 @@ class ThanksWallRoute extends PageRouteInfo<void> {
     name,
     builder: (data) {
       return const ThanksWallPage();
+    },
+  );
+}
+
+/// generated route for
+/// [TrashPage]
+class TrashRoute extends PageRouteInfo<void> {
+  const TrashRoute({List<PageRouteInfo>? children})
+    : super(TrashRoute.name, initialChildren: children);
+
+  static const String name = 'TrashRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const TrashPage();
+    },
+  );
+}
+
+/// generated route for
+/// [UpgradePlanPage]
+class UpgradePlanRoute extends PageRouteInfo<void> {
+  const UpgradePlanRoute({List<PageRouteInfo>? children})
+    : super(UpgradePlanRoute.name, initialChildren: children);
+
+  static const String name = 'UpgradePlanRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const UpgradePlanPage();
     },
   );
 }

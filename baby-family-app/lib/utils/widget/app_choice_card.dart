@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 /// [color]); tiêu đề 18/700 Nunito, mô tả 13 (line-height 1.4); radio 24
 /// viền 2. Khi chọn: nền `primary-50`, viền 2 `primary-500`, radio
 /// `primary-600` + chấm 12. Dùng ở ONB-03, ONB-04, PREG-06…
+///
+/// Biến thể SET-09b (`sA3Ch`): [titleFontSize] 16, viền chọn 1
+/// `primary-300` ([selectedBorderColor], [selectedBorderWidth]).
 class AppChoiceCard extends StatelessWidget {
   const AppChoiceCard({
     required this.title,
@@ -16,6 +19,9 @@ class AppChoiceCard extends StatelessWidget {
     required this.onTap,
     this.color = kColorPrimary600C2513F,
     this.iconBackground = kColorPrimary100FFE3DC,
+    this.titleFontSize = 18,
+    this.selectedBorderColor = kColorPrimary500EE7B67,
+    this.selectedBorderWidth = 2,
     super.key,
   });
 
@@ -28,6 +34,13 @@ class AppChoiceCard extends StatelessWidget {
   /// Màu icon (ví dụ `secondary-700` cho “Người thân”).
   final Color color;
   final Color iconBackground;
+
+  /// Cỡ tiêu đề (mặc định 18 như component; SET-09b dùng 16).
+  final double titleFontSize;
+
+  /// Viền khi chọn (mặc định 2 `primary-500`; SET-09b 1 `primary-300`).
+  final Color selectedBorderColor;
+  final double selectedBorderWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -48,16 +61,19 @@ class AppChoiceCard extends StatelessWidget {
           side: BorderSide(
             color: AppColors.resolve(
               context,
-              selected ? kColorPrimary500EE7B67 : kColorBorderEADFD6,
+              selected ? selectedBorderColor : kColorBorderEADFD6,
             ),
-            width: selected ? 2 : 1,
+            width: selected ? selectedBorderWidth : 1,
           ),
         ),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onTap,
           child: Padding(
-            padding: EdgeInsets.all(selected ? 15 : AppSpacing.s4),
+            // Giữ kích thước thẻ khi viền chọn dày hơn 1.
+            padding: EdgeInsets.all(
+              AppSpacing.s4 - (selected ? selectedBorderWidth - 1 : 0),
+            ),
             child: Row(
               children: [
                 Container(
@@ -82,7 +98,10 @@ class AppChoiceCard extends StatelessWidget {
                         title,
                         style: AppTypography.adapt(
                           context,
-                          AppTypography.h3.copyWith(height: 25 / 18),
+                          AppTypography.h3.copyWith(
+                            fontSize: titleFontSize,
+                            height: 25 / 18,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 2),

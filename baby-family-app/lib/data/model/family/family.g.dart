@@ -22,6 +22,9 @@ _Family _$FamilyFromJson(Map<String, dynamic> json) => _Family(
   plan: json['plan'] == null
       ? const PlanInfo()
       : PlanInfo.fromJson(json['plan'] as Map<String, dynamic>),
+  partnerLeftAt: json['partnerLeftAt'] == null
+      ? null
+      : DateTime.parse(json['partnerLeftAt'] as String),
 );
 
 Map<String, dynamic> _$FamilyToJson(_Family instance) => <String, dynamic>{
@@ -34,4 +37,5 @@ Map<String, dynamic> _$FamilyToJson(_Family instance) => <String, dynamic>{
   'setupCompleted': instance.setupCompleted,
   'timezone': instance.timezone,
   'plan': instance.plan.toJson(),
+  'partnerLeftAt': instance.partnerLeftAt?.toIso8601String(),
 };

@@ -21,6 +21,10 @@
     {
       "id": "u-ong-ngoai",
       "displayName": "Ông ngoại"
+    },
+    {
+      "id": "u-khoa",
+      "displayName": "Khoa"
     }
   ],
   "families": [
@@ -50,6 +54,21 @@
       "createdAt": "2026-10-07T20:10:00.000",
       "setupCompleted": false,
       "timezone": "Asia/Ho_Chi_Minh",
+      "plan": {
+        "state": "trial",
+        "storageUsedMb": 0,
+        "storageQuotaMb": 10240,
+        "relativeSlotsUsed": 0,
+        "relativeSlotsMax": 0
+      }
+    },
+    {
+      "id": "f-khoa",
+      "name": "Nhà Khoa",
+      "coverIndex": 1,
+      "setupCompleted": false,
+      "timezone": "Asia/Ho_Chi_Minh",
+      "createdAt": "2026-10-06T20:00:00.000",
       "plan": {
         "state": "trial",
         "storageUsedMb": 0,
@@ -95,12 +114,14 @@
       "joinedAt": null,
       "relation": "grandmaPaternal",
       "grantedChildIds": [
-        "hana"
+        "hana",
+        "haru"
       ],
       "canComment": true,
       "canPost": false,
       "childPermissions": {
-        "hana": "comment"
+        "hana": "comment",
+        "haru": "comment"
       },
       "allowDownload": true,
       "postedCount": 6,
@@ -167,6 +188,18 @@
       "joinedAt": "2026-10-07T20:10:00.000",
       "slot": "a",
       "isAdmin": true
+    },
+    {
+      "id": "m-khoa",
+      "familyId": "f-khoa",
+      "userId": "u-khoa",
+      "role": "father",
+      "slot": "a",
+      "status": "active",
+      "displayName": "Khoa",
+      "callName": "Bố",
+      "isAdmin": true,
+      "joinedAt": "2026-10-06T20:00:00.000"
     }
   ],
   "invites": [
@@ -191,12 +224,13 @@
       "familyId": "f-lan",
       "inviterMemberId": "m-lan",
       "memberId": "m-ba-noi",
-      "message": "Mẹ ơi, mẹ vào xem ảnh Hana nhé",
+      "message": "Mẹ ơi, mẹ vào xem ảnh Hana với Haru nhé",
       "role": "relative",
       "relation": "grandmaPaternal",
       "callName": "Bà nội",
       "grantedChildIds": [
-        "hana"
+        "hana",
+        "haru"
       ],
       "canComment": true,
       "canPost": true,
@@ -204,6 +238,102 @@
       "sentAt": "2026-10-07T18:00:00.000",
       "expiresAt": "2026-10-14T18:00:00.000",
       "status": "open"
+    },
+    {
+      "id": "inv-expired",
+      "code": "HETHAN01",
+      "kind": "partner",
+      "familyId": "f-lan",
+      "inviterMemberId": "m-lan",
+      "role": "father",
+      "callName": "Papa",
+      "status": "expired",
+      "expiresAt": "2026-09-30T20:00:00.000",
+      "mock": true
+    },
+    {
+      "id": "inv-khoa",
+      "code": "KHOA2026",
+      "kind": "partner",
+      "familyId": "f-khoa",
+      "inviterMemberId": "m-khoa",
+      "role": "mother",
+      "callName": "Mẹ",
+      "status": "open",
+      "sentAt": "2026-10-06T20:10:00.000",
+      "expiresAt": "2026-10-13T20:10:00.000",
+      "mock": true
+    },
+    {
+      "id": "inv-confirm",
+      "code": "CHOXN001",
+      "kind": "partner",
+      "familyId": "f-lan",
+      "inviterMemberId": "m-lan",
+      "role": "father",
+      "callName": "Papa",
+      "status": "pendingApproval",
+      "requiresApproval": true,
+      "sentAt": "2026-10-07T20:15:00.000",
+      "expiresAt": "2026-10-14T20:15:00.000",
+      "mock": true
+    },
+    {
+      "id": "inv-new-partner",
+      "code": "R4TB2HWN",
+      "kind": "partner",
+      "familyId": "f-lan",
+      "inviterMemberId": "m-lan",
+      "role": "father",
+      "callName": "Papa",
+      "status": "open",
+      "requiresApproval": true,
+      "link": "https://babyfamily.vn/invite/R4TB2HWN",
+      "sentAt": "2026-10-07T20:00:00.000",
+      "expiresAt": "2026-10-14T20:00:00.000",
+      "seed": "partnerLeft"
+    },
+    {
+      "id": "inv-ong-noi",
+      "code": "ONGNOI14",
+      "kind": "relative",
+      "familyId": "f-lan",
+      "inviterMemberId": "m-lan",
+      "role": "relative",
+      "relation": "grandpaPaternal",
+      "callName": "Ông nội",
+      "relationNote": "Bố của Papa",
+      "grantedChildIds": [
+        "hana",
+        "haru"
+      ],
+      "canComment": true,
+      "canPost": false,
+      "status": "open",
+      "link": "https://babyfamily.vn/invite/ONGNOI14",
+      "sentAt": "2026-10-07T09:00:00.000",
+      "expiresAt": "2026-10-21T09:00:00.000",
+      "keep": true
+    },
+    {
+      "id": "inv-di-mai",
+      "code": "DIMAI930",
+      "kind": "relative",
+      "familyId": "f-lan",
+      "inviterMemberId": "m-lan",
+      "role": "relative",
+      "relation": "auntUncle",
+      "callName": "Dì Mai",
+      "relationNote": "Em gái của Mama",
+      "grantedChildIds": [
+        "hana"
+      ],
+      "canComment": false,
+      "canPost": false,
+      "status": "expired",
+      "sentAt": "2026-09-16T10:00:00.000",
+      "expiresAt": "2026-09-30T10:00:00.000",
+      "keep": true
     }
   ],
   "familySettings": {
@@ -215,5 +345,81 @@
     "showLunar": true,
     "milestonesByLunar": true,
     "contentLanguage": "vi"
+  },
+  "memberships": {
+    "u-lan": [
+      {
+        "familyId": "f-lan",
+        "familyName": "Nhà Lan",
+        "role": "mother",
+        "callName": "Mama",
+        "childNames": [
+          "Hana",
+          "Haru",
+          "Bơ"
+        ],
+        "partnerName": "Papa Minh",
+        "current": true
+      },
+      {
+        "familyId": "f-tuan",
+        "familyName": "Nhà anh Tuấn",
+        "role": "relative",
+        "callName": "Cô Lan",
+        "childNames": [
+          "Bin"
+        ],
+        "permissionSummary": {
+          "vi": "Xem + Bình luận",
+          "en": "View + Comment",
+          "zh": "查看 + 评论",
+          "ja": "閲覧 + コメント"
+        }
+      }
+    ],
+    "u-ba-ngoai": [
+      {
+        "familyId": "f-lan",
+        "familyName": "Nhà Lan",
+        "role": "relative",
+        "callName": "Bà ngoại",
+        "childNames": [
+          "Hana",
+          "Haru"
+        ],
+        "current": true
+      }
+    ]
+  },
+  "planDetails": {
+    "payerUserId": "u-lan",
+    "channel": "App Store",
+    "videoMaxMinutes": 10,
+    "photosPerMemory": 50,
+    "aiRenewsAt": "2026-11-01T00:00:00.000",
+    "storage": [
+      {
+        "kind": "photo",
+        "usedMb": 2150
+      },
+      {
+        "kind": "video",
+        "usedMb": 922
+      },
+      {
+        "kind": "audio",
+        "usedMb": 205
+      }
+    ]
+  },
+  "circlePreferences": {
+    "u-ba-ngoai": {
+      "instantPhotos": false,
+      "dailyDigest": true,
+      "digestTime": "19:00",
+      "relationNote": "Mẹ của Mama",
+      "postedPhotos": 18,
+      "postedComments": 42
+    }
   }
 }

@@ -15,7 +15,9 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$InviteInfo {
 
-@JsonKey(name: 'id') String get id;@JsonKey(name: 'code') String get code;@JsonKey(name: 'kind') InviteKind get kind;@JsonKey(name: 'familyId') String get familyId;@JsonKey(name: 'familyName') String? get familyName;@JsonKey(name: 'inviterName') String? get inviterName;@JsonKey(name: 'inviterCallName') String? get inviterCallName;@JsonKey(name: 'inviterAvatarAsset') String? get inviterAvatarAsset;@JsonKey(name: 'memberId') String? get memberId;@JsonKey(name: 'message') String? get message;@JsonKey(name: 'role') FamilyRole get role;@JsonKey(name: 'relation') RelativeRelation? get relation;@JsonKey(name: 'callName') String? get callName;@JsonKey(name: 'grantedChildIds') List<String> get grantedChildIds;@JsonKey(name: 'canComment') bool get canComment;@JsonKey(name: 'canPost') bool get canPost;@JsonKey(name: 'link') String? get link;@JsonKey(name: 'sentAt') DateTime? get sentAt;@JsonKey(name: 'openedAt') DateTime? get openedAt;@JsonKey(name: 'expiresAt') DateTime? get expiresAt;@JsonKey(name: 'status') String get status;
+@JsonKey(name: 'id') String get id;@JsonKey(name: 'code') String get code;@JsonKey(name: 'kind') InviteKind get kind;@JsonKey(name: 'familyId') String get familyId;@JsonKey(name: 'familyName') String? get familyName;@JsonKey(name: 'inviterName') String? get inviterName;@JsonKey(name: 'inviterCallName') String? get inviterCallName;@JsonKey(name: 'inviterAvatarAsset') String? get inviterAvatarAsset;@JsonKey(name: 'memberId') String? get memberId;@JsonKey(name: 'message') String? get message;@JsonKey(name: 'role') FamilyRole get role;@JsonKey(name: 'relation') RelativeRelation? get relation;@JsonKey(name: 'callName') String? get callName;@JsonKey(name: 'grantedChildIds') List<String> get grantedChildIds;@JsonKey(name: 'canComment') bool get canComment;@JsonKey(name: 'canPost') bool get canPost;@JsonKey(name: 'link') String? get link;@JsonKey(name: 'sentAt') DateTime? get sentAt;@JsonKey(name: 'openedAt') DateTime? get openedAt;@JsonKey(name: 'expiresAt') DateTime? get expiresAt;@JsonKey(name: 'status') String get status;/// Ghi chú quan hệ do bố mẹ nhập (“Bố của Papa”) — FAM-05.
+@JsonKey(name: 'relationNote') String? get relationNote;/// Bố/Mẹ xác nhận lần cuối khi người được mời tham gia (INV-04).
+@JsonKey(name: 'requiresApproval') bool get requiresApproval;
 /// Create a copy of InviteInfo
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +30,16 @@ $InviteInfoCopyWith<InviteInfo> get copyWith => _$InviteInfoCopyWithImpl<InviteI
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is InviteInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.code, code) || other.code == code)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.familyId, familyId) || other.familyId == familyId)&&(identical(other.familyName, familyName) || other.familyName == familyName)&&(identical(other.inviterName, inviterName) || other.inviterName == inviterName)&&(identical(other.inviterCallName, inviterCallName) || other.inviterCallName == inviterCallName)&&(identical(other.inviterAvatarAsset, inviterAvatarAsset) || other.inviterAvatarAsset == inviterAvatarAsset)&&(identical(other.memberId, memberId) || other.memberId == memberId)&&(identical(other.message, message) || other.message == message)&&(identical(other.role, role) || other.role == role)&&(identical(other.relation, relation) || other.relation == relation)&&(identical(other.callName, callName) || other.callName == callName)&&const DeepCollectionEquality().equals(other.grantedChildIds, grantedChildIds)&&(identical(other.canComment, canComment) || other.canComment == canComment)&&(identical(other.canPost, canPost) || other.canPost == canPost)&&(identical(other.link, link) || other.link == link)&&(identical(other.sentAt, sentAt) || other.sentAt == sentAt)&&(identical(other.openedAt, openedAt) || other.openedAt == openedAt)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is InviteInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.code, code) || other.code == code)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.familyId, familyId) || other.familyId == familyId)&&(identical(other.familyName, familyName) || other.familyName == familyName)&&(identical(other.inviterName, inviterName) || other.inviterName == inviterName)&&(identical(other.inviterCallName, inviterCallName) || other.inviterCallName == inviterCallName)&&(identical(other.inviterAvatarAsset, inviterAvatarAsset) || other.inviterAvatarAsset == inviterAvatarAsset)&&(identical(other.memberId, memberId) || other.memberId == memberId)&&(identical(other.message, message) || other.message == message)&&(identical(other.role, role) || other.role == role)&&(identical(other.relation, relation) || other.relation == relation)&&(identical(other.callName, callName) || other.callName == callName)&&const DeepCollectionEquality().equals(other.grantedChildIds, grantedChildIds)&&(identical(other.canComment, canComment) || other.canComment == canComment)&&(identical(other.canPost, canPost) || other.canPost == canPost)&&(identical(other.link, link) || other.link == link)&&(identical(other.sentAt, sentAt) || other.sentAt == sentAt)&&(identical(other.openedAt, openedAt) || other.openedAt == openedAt)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.relationNote, relationNote) || other.relationNote == relationNote)&&(identical(other.requiresApproval, requiresApproval) || other.requiresApproval == requiresApproval));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,code,kind,familyId,familyName,inviterName,inviterCallName,inviterAvatarAsset,memberId,message,role,relation,callName,const DeepCollectionEquality().hash(grantedChildIds),canComment,canPost,link,sentAt,openedAt,expiresAt,status]);
+int get hashCode => Object.hashAll([runtimeType,id,code,kind,familyId,familyName,inviterName,inviterCallName,inviterAvatarAsset,memberId,message,role,relation,callName,const DeepCollectionEquality().hash(grantedChildIds),canComment,canPost,link,sentAt,openedAt,expiresAt,status,relationNote,requiresApproval]);
 
 @override
 String toString() {
-  return 'InviteInfo(id: $id, code: $code, kind: $kind, familyId: $familyId, familyName: $familyName, inviterName: $inviterName, inviterCallName: $inviterCallName, inviterAvatarAsset: $inviterAvatarAsset, memberId: $memberId, message: $message, role: $role, relation: $relation, callName: $callName, grantedChildIds: $grantedChildIds, canComment: $canComment, canPost: $canPost, link: $link, sentAt: $sentAt, openedAt: $openedAt, expiresAt: $expiresAt, status: $status)';
+  return 'InviteInfo(id: $id, code: $code, kind: $kind, familyId: $familyId, familyName: $familyName, inviterName: $inviterName, inviterCallName: $inviterCallName, inviterAvatarAsset: $inviterAvatarAsset, memberId: $memberId, message: $message, role: $role, relation: $relation, callName: $callName, grantedChildIds: $grantedChildIds, canComment: $canComment, canPost: $canPost, link: $link, sentAt: $sentAt, openedAt: $openedAt, expiresAt: $expiresAt, status: $status, relationNote: $relationNote, requiresApproval: $requiresApproval)';
 }
 
 
@@ -48,7 +50,7 @@ abstract mixin class $InviteInfoCopyWith<$Res>  {
   factory $InviteInfoCopyWith(InviteInfo value, $Res Function(InviteInfo) _then) = _$InviteInfoCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'code') String code,@JsonKey(name: 'kind') InviteKind kind,@JsonKey(name: 'familyId') String familyId,@JsonKey(name: 'familyName') String? familyName,@JsonKey(name: 'inviterName') String? inviterName,@JsonKey(name: 'inviterCallName') String? inviterCallName,@JsonKey(name: 'inviterAvatarAsset') String? inviterAvatarAsset,@JsonKey(name: 'memberId') String? memberId,@JsonKey(name: 'message') String? message,@JsonKey(name: 'role') FamilyRole role,@JsonKey(name: 'relation') RelativeRelation? relation,@JsonKey(name: 'callName') String? callName,@JsonKey(name: 'grantedChildIds') List<String> grantedChildIds,@JsonKey(name: 'canComment') bool canComment,@JsonKey(name: 'canPost') bool canPost,@JsonKey(name: 'link') String? link,@JsonKey(name: 'sentAt') DateTime? sentAt,@JsonKey(name: 'openedAt') DateTime? openedAt,@JsonKey(name: 'expiresAt') DateTime? expiresAt,@JsonKey(name: 'status') String status
+@JsonKey(name: 'id') String id,@JsonKey(name: 'code') String code,@JsonKey(name: 'kind') InviteKind kind,@JsonKey(name: 'familyId') String familyId,@JsonKey(name: 'familyName') String? familyName,@JsonKey(name: 'inviterName') String? inviterName,@JsonKey(name: 'inviterCallName') String? inviterCallName,@JsonKey(name: 'inviterAvatarAsset') String? inviterAvatarAsset,@JsonKey(name: 'memberId') String? memberId,@JsonKey(name: 'message') String? message,@JsonKey(name: 'role') FamilyRole role,@JsonKey(name: 'relation') RelativeRelation? relation,@JsonKey(name: 'callName') String? callName,@JsonKey(name: 'grantedChildIds') List<String> grantedChildIds,@JsonKey(name: 'canComment') bool canComment,@JsonKey(name: 'canPost') bool canPost,@JsonKey(name: 'link') String? link,@JsonKey(name: 'sentAt') DateTime? sentAt,@JsonKey(name: 'openedAt') DateTime? openedAt,@JsonKey(name: 'expiresAt') DateTime? expiresAt,@JsonKey(name: 'status') String status,@JsonKey(name: 'relationNote') String? relationNote,@JsonKey(name: 'requiresApproval') bool requiresApproval
 });
 
 
@@ -65,7 +67,7 @@ class _$InviteInfoCopyWithImpl<$Res>
 
 /// Create a copy of InviteInfo
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? code = null,Object? kind = null,Object? familyId = null,Object? familyName = freezed,Object? inviterName = freezed,Object? inviterCallName = freezed,Object? inviterAvatarAsset = freezed,Object? memberId = freezed,Object? message = freezed,Object? role = null,Object? relation = freezed,Object? callName = freezed,Object? grantedChildIds = null,Object? canComment = null,Object? canPost = null,Object? link = freezed,Object? sentAt = freezed,Object? openedAt = freezed,Object? expiresAt = freezed,Object? status = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? code = null,Object? kind = null,Object? familyId = null,Object? familyName = freezed,Object? inviterName = freezed,Object? inviterCallName = freezed,Object? inviterAvatarAsset = freezed,Object? memberId = freezed,Object? message = freezed,Object? role = null,Object? relation = freezed,Object? callName = freezed,Object? grantedChildIds = null,Object? canComment = null,Object? canPost = null,Object? link = freezed,Object? sentAt = freezed,Object? openedAt = freezed,Object? expiresAt = freezed,Object? status = null,Object? relationNote = freezed,Object? requiresApproval = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
@@ -88,7 +90,9 @@ as String?,sentAt: freezed == sentAt ? _self.sentAt : sentAt // ignore: cast_nul
 as DateTime?,openedAt: freezed == openedAt ? _self.openedAt : openedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,expiresAt: freezed == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,
+as String,relationNote: freezed == relationNote ? _self.relationNote : relationNote // ignore: cast_nullable_to_non_nullable
+as String?,requiresApproval: null == requiresApproval ? _self.requiresApproval : requiresApproval // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -168,7 +172,7 @@ return $default(_that);case _:
 
 @JsonSerializable(explicitToJson: true)
 class _InviteInfo implements InviteInfo {
-  const _InviteInfo({@JsonKey(name: 'id') required this.id, @JsonKey(name: 'code') required this.code, @JsonKey(name: 'kind') required this.kind, @JsonKey(name: 'familyId') required this.familyId, @JsonKey(name: 'familyName') this.familyName, @JsonKey(name: 'inviterName') this.inviterName, @JsonKey(name: 'inviterCallName') this.inviterCallName, @JsonKey(name: 'inviterAvatarAsset') this.inviterAvatarAsset, @JsonKey(name: 'memberId') this.memberId, @JsonKey(name: 'message') this.message, @JsonKey(name: 'role') this.role = FamilyRole.relative, @JsonKey(name: 'relation') this.relation, @JsonKey(name: 'callName') this.callName, @JsonKey(name: 'grantedChildIds') final  List<String> grantedChildIds = const [], @JsonKey(name: 'canComment') this.canComment = false, @JsonKey(name: 'canPost') this.canPost = false, @JsonKey(name: 'link') this.link, @JsonKey(name: 'sentAt') this.sentAt, @JsonKey(name: 'openedAt') this.openedAt, @JsonKey(name: 'expiresAt') this.expiresAt, @JsonKey(name: 'status') this.status = 'open'}): _grantedChildIds = grantedChildIds;
+  const _InviteInfo({@JsonKey(name: 'id') required this.id, @JsonKey(name: 'code') required this.code, @JsonKey(name: 'kind') required this.kind, @JsonKey(name: 'familyId') required this.familyId, @JsonKey(name: 'familyName') this.familyName, @JsonKey(name: 'inviterName') this.inviterName, @JsonKey(name: 'inviterCallName') this.inviterCallName, @JsonKey(name: 'inviterAvatarAsset') this.inviterAvatarAsset, @JsonKey(name: 'memberId') this.memberId, @JsonKey(name: 'message') this.message, @JsonKey(name: 'role') this.role = FamilyRole.relative, @JsonKey(name: 'relation') this.relation, @JsonKey(name: 'callName') this.callName, @JsonKey(name: 'grantedChildIds') final  List<String> grantedChildIds = const [], @JsonKey(name: 'canComment') this.canComment = false, @JsonKey(name: 'canPost') this.canPost = false, @JsonKey(name: 'link') this.link, @JsonKey(name: 'sentAt') this.sentAt, @JsonKey(name: 'openedAt') this.openedAt, @JsonKey(name: 'expiresAt') this.expiresAt, @JsonKey(name: 'status') this.status = 'open', @JsonKey(name: 'relationNote') this.relationNote, @JsonKey(name: 'requiresApproval') this.requiresApproval = false}): _grantedChildIds = grantedChildIds;
   factory _InviteInfo.fromJson(Map<String, dynamic> json) => _$InviteInfoFromJson(json);
 
 @override@JsonKey(name: 'id') final  String id;
@@ -198,6 +202,10 @@ class _InviteInfo implements InviteInfo {
 @override@JsonKey(name: 'openedAt') final  DateTime? openedAt;
 @override@JsonKey(name: 'expiresAt') final  DateTime? expiresAt;
 @override@JsonKey(name: 'status') final  String status;
+/// Ghi chú quan hệ do bố mẹ nhập (“Bố của Papa”) — FAM-05.
+@override@JsonKey(name: 'relationNote') final  String? relationNote;
+/// Bố/Mẹ xác nhận lần cuối khi người được mời tham gia (INV-04).
+@override@JsonKey(name: 'requiresApproval') final  bool requiresApproval;
 
 /// Create a copy of InviteInfo
 /// with the given fields replaced by the non-null parameter values.
@@ -212,16 +220,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _InviteInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.code, code) || other.code == code)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.familyId, familyId) || other.familyId == familyId)&&(identical(other.familyName, familyName) || other.familyName == familyName)&&(identical(other.inviterName, inviterName) || other.inviterName == inviterName)&&(identical(other.inviterCallName, inviterCallName) || other.inviterCallName == inviterCallName)&&(identical(other.inviterAvatarAsset, inviterAvatarAsset) || other.inviterAvatarAsset == inviterAvatarAsset)&&(identical(other.memberId, memberId) || other.memberId == memberId)&&(identical(other.message, message) || other.message == message)&&(identical(other.role, role) || other.role == role)&&(identical(other.relation, relation) || other.relation == relation)&&(identical(other.callName, callName) || other.callName == callName)&&const DeepCollectionEquality().equals(other._grantedChildIds, _grantedChildIds)&&(identical(other.canComment, canComment) || other.canComment == canComment)&&(identical(other.canPost, canPost) || other.canPost == canPost)&&(identical(other.link, link) || other.link == link)&&(identical(other.sentAt, sentAt) || other.sentAt == sentAt)&&(identical(other.openedAt, openedAt) || other.openedAt == openedAt)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _InviteInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.code, code) || other.code == code)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.familyId, familyId) || other.familyId == familyId)&&(identical(other.familyName, familyName) || other.familyName == familyName)&&(identical(other.inviterName, inviterName) || other.inviterName == inviterName)&&(identical(other.inviterCallName, inviterCallName) || other.inviterCallName == inviterCallName)&&(identical(other.inviterAvatarAsset, inviterAvatarAsset) || other.inviterAvatarAsset == inviterAvatarAsset)&&(identical(other.memberId, memberId) || other.memberId == memberId)&&(identical(other.message, message) || other.message == message)&&(identical(other.role, role) || other.role == role)&&(identical(other.relation, relation) || other.relation == relation)&&(identical(other.callName, callName) || other.callName == callName)&&const DeepCollectionEquality().equals(other._grantedChildIds, _grantedChildIds)&&(identical(other.canComment, canComment) || other.canComment == canComment)&&(identical(other.canPost, canPost) || other.canPost == canPost)&&(identical(other.link, link) || other.link == link)&&(identical(other.sentAt, sentAt) || other.sentAt == sentAt)&&(identical(other.openedAt, openedAt) || other.openedAt == openedAt)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.relationNote, relationNote) || other.relationNote == relationNote)&&(identical(other.requiresApproval, requiresApproval) || other.requiresApproval == requiresApproval));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,code,kind,familyId,familyName,inviterName,inviterCallName,inviterAvatarAsset,memberId,message,role,relation,callName,const DeepCollectionEquality().hash(_grantedChildIds),canComment,canPost,link,sentAt,openedAt,expiresAt,status]);
+int get hashCode => Object.hashAll([runtimeType,id,code,kind,familyId,familyName,inviterName,inviterCallName,inviterAvatarAsset,memberId,message,role,relation,callName,const DeepCollectionEquality().hash(_grantedChildIds),canComment,canPost,link,sentAt,openedAt,expiresAt,status,relationNote,requiresApproval]);
 
 @override
 String toString() {
-  return 'InviteInfo(id: $id, code: $code, kind: $kind, familyId: $familyId, familyName: $familyName, inviterName: $inviterName, inviterCallName: $inviterCallName, inviterAvatarAsset: $inviterAvatarAsset, memberId: $memberId, message: $message, role: $role, relation: $relation, callName: $callName, grantedChildIds: $grantedChildIds, canComment: $canComment, canPost: $canPost, link: $link, sentAt: $sentAt, openedAt: $openedAt, expiresAt: $expiresAt, status: $status)';
+  return 'InviteInfo(id: $id, code: $code, kind: $kind, familyId: $familyId, familyName: $familyName, inviterName: $inviterName, inviterCallName: $inviterCallName, inviterAvatarAsset: $inviterAvatarAsset, memberId: $memberId, message: $message, role: $role, relation: $relation, callName: $callName, grantedChildIds: $grantedChildIds, canComment: $canComment, canPost: $canPost, link: $link, sentAt: $sentAt, openedAt: $openedAt, expiresAt: $expiresAt, status: $status, relationNote: $relationNote, requiresApproval: $requiresApproval)';
 }
 
 
@@ -232,7 +240,7 @@ abstract mixin class _$InviteInfoCopyWith<$Res> implements $InviteInfoCopyWith<$
   factory _$InviteInfoCopyWith(_InviteInfo value, $Res Function(_InviteInfo) _then) = __$InviteInfoCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'code') String code,@JsonKey(name: 'kind') InviteKind kind,@JsonKey(name: 'familyId') String familyId,@JsonKey(name: 'familyName') String? familyName,@JsonKey(name: 'inviterName') String? inviterName,@JsonKey(name: 'inviterCallName') String? inviterCallName,@JsonKey(name: 'inviterAvatarAsset') String? inviterAvatarAsset,@JsonKey(name: 'memberId') String? memberId,@JsonKey(name: 'message') String? message,@JsonKey(name: 'role') FamilyRole role,@JsonKey(name: 'relation') RelativeRelation? relation,@JsonKey(name: 'callName') String? callName,@JsonKey(name: 'grantedChildIds') List<String> grantedChildIds,@JsonKey(name: 'canComment') bool canComment,@JsonKey(name: 'canPost') bool canPost,@JsonKey(name: 'link') String? link,@JsonKey(name: 'sentAt') DateTime? sentAt,@JsonKey(name: 'openedAt') DateTime? openedAt,@JsonKey(name: 'expiresAt') DateTime? expiresAt,@JsonKey(name: 'status') String status
+@JsonKey(name: 'id') String id,@JsonKey(name: 'code') String code,@JsonKey(name: 'kind') InviteKind kind,@JsonKey(name: 'familyId') String familyId,@JsonKey(name: 'familyName') String? familyName,@JsonKey(name: 'inviterName') String? inviterName,@JsonKey(name: 'inviterCallName') String? inviterCallName,@JsonKey(name: 'inviterAvatarAsset') String? inviterAvatarAsset,@JsonKey(name: 'memberId') String? memberId,@JsonKey(name: 'message') String? message,@JsonKey(name: 'role') FamilyRole role,@JsonKey(name: 'relation') RelativeRelation? relation,@JsonKey(name: 'callName') String? callName,@JsonKey(name: 'grantedChildIds') List<String> grantedChildIds,@JsonKey(name: 'canComment') bool canComment,@JsonKey(name: 'canPost') bool canPost,@JsonKey(name: 'link') String? link,@JsonKey(name: 'sentAt') DateTime? sentAt,@JsonKey(name: 'openedAt') DateTime? openedAt,@JsonKey(name: 'expiresAt') DateTime? expiresAt,@JsonKey(name: 'status') String status,@JsonKey(name: 'relationNote') String? relationNote,@JsonKey(name: 'requiresApproval') bool requiresApproval
 });
 
 
@@ -249,7 +257,7 @@ class __$InviteInfoCopyWithImpl<$Res>
 
 /// Create a copy of InviteInfo
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? code = null,Object? kind = null,Object? familyId = null,Object? familyName = freezed,Object? inviterName = freezed,Object? inviterCallName = freezed,Object? inviterAvatarAsset = freezed,Object? memberId = freezed,Object? message = freezed,Object? role = null,Object? relation = freezed,Object? callName = freezed,Object? grantedChildIds = null,Object? canComment = null,Object? canPost = null,Object? link = freezed,Object? sentAt = freezed,Object? openedAt = freezed,Object? expiresAt = freezed,Object? status = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? code = null,Object? kind = null,Object? familyId = null,Object? familyName = freezed,Object? inviterName = freezed,Object? inviterCallName = freezed,Object? inviterAvatarAsset = freezed,Object? memberId = freezed,Object? message = freezed,Object? role = null,Object? relation = freezed,Object? callName = freezed,Object? grantedChildIds = null,Object? canComment = null,Object? canPost = null,Object? link = freezed,Object? sentAt = freezed,Object? openedAt = freezed,Object? expiresAt = freezed,Object? status = null,Object? relationNote = freezed,Object? requiresApproval = null,}) {
   return _then(_InviteInfo(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
@@ -272,7 +280,9 @@ as String?,sentAt: freezed == sentAt ? _self.sentAt : sentAt // ignore: cast_nul
 as DateTime?,openedAt: freezed == openedAt ? _self.openedAt : openedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,expiresAt: freezed == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,
+as String,relationNote: freezed == relationNote ? _self.relationNote : relationNote // ignore: cast_nullable_to_non_nullable
+as String?,requiresApproval: null == requiresApproval ? _self.requiresApproval : requiresApproval // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

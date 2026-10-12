@@ -68,4 +68,31 @@ class FamilyRepositoryImp extends MockRepositoryImp
   @override
   void saveFamilySettings(JsonMap settings) =>
       saveMeta('familySettings', settings);
+
+  @override
+  List<JsonMap> memberships(String userId) => [
+    for (final row
+        in ((store.meta['memberships'] as Map?)?[userId] as List?) ?? const [])
+      store.localized(Map<String, dynamic>.from(row as Map)),
+  ];
+
+  @override
+  JsonMap planDetails() => metaSection('planDetails');
+
+  @override
+  JsonMap circlePreferences(String userId) => Map<String, dynamic>.from(
+    ((store.meta['circlePreferences'] as Map?)?[userId] as Map?) ?? const {},
+  );
+
+  @override
+  void saveCirclePreferences(String userId, JsonMap preferences) {
+    final all = Map<String, dynamic>.from(
+      (store.meta['circlePreferences'] as Map?) ?? const {},
+    );
+    all[userId] = preferences;
+    saveMeta('circlePreferences', all);
+  }
+
+  @override
+  void removeMember(String id) => removeRow('members', id);
 }

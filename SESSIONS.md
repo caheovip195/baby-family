@@ -101,3 +101,31 @@ Các mục 001–005 được **ghi bù ngày 2026-10-11** từ hội thoại hi
 - Kiểm chứng: DEVOPS chạy 48 assertions `git check-ignore` cho root rules đạt; root chạy thêm 28 assertions cuối đạt, gồm exception env mẫu backend, role/log files, source Flutter và migrations. Reviewer độc lập xác nhận exception và các file cần giữ. Không in nội dung secrets, không stage/untrack/xóa file.
 - Còn lại: Không trong phạm vi bổ sung rule. `.DS_Store` đã tracked trước đó vẫn được Git quản lý; thêm ignore không tự gỡ file khỏi index hoặc lịch sử.
 - Product history: [BF-20261011-007](PRODUCT_ANALYTICS_HISTORY.md#bf-20261011-007).
+
+<a id="bf-20261012-001"></a>
+## BF-20261012-001 — Làm nốt đợt 3 các màn còn thiếu (thiết kế + Flutter)
+
+- Ngày làm: 2026-10-12 (Asia/Ho_Chi_Minh); entry tạo lúc 2026-10-12T19:20:00+07:00, giờ nhận yêu cầu chính xác không có nguồn.
+- Yêu cầu: “Làm nốt cho t đợt 3 đi” — vẽ và code các màn còn lại theo đặc tả mục 9 (Cầu nối, Tuần của hai ta, tổng kết, gói dịch vụ, lời mời, người thân, báo cáo/chặn, thùng rác/nháp/chờ duyệt, cài đặt còn lại).
+- Liên quan: Các đợt dựng UI trước trong cùng chat (đợt 1, 2; chưa có mã vì diễn ra trước khi áp dụng quy tắc nhật ký).
+- Role: Chủ trì ORCHESTRATOR; DESIGN (3 sub-agent vẽ Pencil), MOBILE (sub-agent nền móng + sub-agent theo khu vực), BA (đối chiếu luồng/BR theo đặc tả), SECURITY_PRIVACY (US-13 hỗ trợ an toàn, RPT, quyền người thân), TESTER/QUALITY (test + review của agent chính), DATA_ANALYST (impact note).
+- Trạng thái: Đang thực hiện.
+- Phân tích: Quy trình như đợt 2: vẽ frame Pencil trước (nguồn sự thật UI) → thêm route/skeleton/mock typed → sub-agent khu vực code theo frame → agent chính chạy make check, build simulator. Mock-only, luồng mặc định cho đi qua, dữ liệu theo câu chuyện v2.
+- Kết quả: (đang cập nhật) Đã vẽ 41 frame Pencil ở mục 19–24.
+- Kiểm chứng: (đang cập nhật).
+- Còn lại: Route/skeleton đợt 3, code màn, khung tab người thân, kiểm thử.
+- Product history: [BF-20261012-001](PRODUCT_ANALYTICS_HISTORY.md#bf-20261012-001).
+
+<a id="bf-20261012-002"></a>
+## BF-20261012-002 — Làm các việc còn tồn của đợt 2
+
+- Ngày làm: 2026-10-12 (Asia/Ho_Chi_Minh); entry tạo lúc 2026-10-12T19:20:00+07:00.
+- Yêu cầu: “Với các việc còn lại bên trên nữa” — xử lý danh sách tồn đã báo: font viết tay, ghi chú sự kiện, lối vào Lịch sử/Huy hiệu/Cài đặt nhiệm vụ, lệch kit SET-09, lệch số liệu giữa thiết kế và dữ liệu, ảnh Haru.
+- Liên quan: BF-20261012-001.
+- Role: Chủ trì MOBILE (sub-agent cleanup); DESIGN (sửa frame Pencil); ORCHESTRATOR tổng hợp; TESTER (make check của sub-agent); DATA_ANALYST impact note.
+- Trạng thái: Đang thực hiện.
+- Phân tích: Người dùng chấp thuận tải font Dancing Script (OFL, kho google/fonts) và thêm vào pubspec. Lệch số liệu giải quyết theo dữ liệu thật, sửa chữ Pencil cho khớp.
+- Kết quả: (đang cập nhật).
+- Kiểm chứng: (đang cập nhật).
+- Còn lại: (đang cập nhật).
+- Product history: [BF-20261012-002](PRODUCT_ANALYTICS_HISTORY.md#bf-20261012-002).

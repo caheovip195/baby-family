@@ -18,6 +18,9 @@ abstract class Family with _$Family {
     @JsonKey(name: 'setupCompleted') @Default(false) bool setupCompleted,
     @JsonKey(name: 'timezone') String? timezone,
     @JsonKey(name: 'plan') @Default(PlanInfo()) PlanInfo plan,
+
+    /// PARTNER_LEFT (US-00, FAM-02): bạn đời đã xoá tài khoản — chỉ xem & tải về.
+    @JsonKey(name: 'partnerLeftAt') DateTime? partnerLeftAt,
   }) = _Family;
 
   factory Family.fromJson(Map<String, dynamic> json) => _$FamilyFromJson(json);

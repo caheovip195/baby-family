@@ -3310,9 +3310,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get invViewOnly => '仅查看';
 
   @override
-  String get invNameSeparator => '、';
-
-  @override
   String get homeMorning => '早上好，';
 
   @override
@@ -4208,9 +4205,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get calendarNote => '备注';
-
-  @override
-  String get calendarDraftNote => '订奶奶爱吃的咸蛋海绵蛋糕';
 
   @override
   String get calendarNoteHint => '添加备注…';
@@ -6034,4 +6028,70 @@ class AppLocalizationsZh extends AppLocalizations {
   String memAlbumCount(int count) {
     return '$count 个相册';
   }
+
+  @override
+  String get usBridgeRewriteTitle => '温柔改写';
+
+  @override
+  String get usBridgeNextStepTitle => '下一个小步骤';
+
+  @override
+  String get usSafetyTitle => '安全支持';
+
+  @override
+  String get recapDayTitle => '今日故事';
+
+  @override
+  String get recapMonthTitle => '月龄回顾';
+
+  @override
+  String get careStatsTitle => '统计';
+
+  @override
+  String get memTrashTitle => '回收站';
+
+  @override
+  String get memDraftsTitle => '草稿';
+
+  @override
+  String get memPendingTitle => '待审核';
+
+  @override
+  String get childArchiveTitle => '归档或删除宝宝';
+
+  @override
+  String get circleTabHome => '宝贝';
+
+  @override
+  String get circleTabMemories => '回忆';
+
+  @override
+  String get circleTabPost => '发照片';
+
+  @override
+  String get circleTabMe => '我';
+
+  @override
+  String get circlePostTitle => '为宝贝发照片';
+
+  @override
+  String get circleMemoryDetailTitle => '回忆详情';
+
+  @override
+  String get circlePausedTitle => '家庭暂停分享';
+
+  @override
+  String get circleLeaveTitle => '离开家庭';
+
+  @override
+  String get billingPlanTitle => '家庭套餐';
+
+  @override
+  String get familyInvitePartnerTitle => '邀请伴侣加入';
+
+  @override
+  String get familyPendingInvitesTitle => '待处理的邀请';
+
+  @override
+  String get settingsBlockedTitle => '已屏蔽的人';
 }

@@ -31,6 +31,17 @@ _ChildProfile _$ChildProfileFromJson(Map<String, dynamic> json) =>
               ?.map((e) => e as String)
               .toList() ??
           const [],
+      addedByUserId: json['addedByUserId'] as String?,
+      addedAt: json['addedAt'] == null
+          ? null
+          : DateTime.parse(json['addedAt'] as String),
+      duplicateOfChildId: json['duplicateOfChildId'] as String?,
+      sharedMemoryCount: (json['sharedMemoryCount'] as num?)?.toInt() ?? 0,
+      sharedWithChildIds:
+          (json['sharedWithChildIds'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$ChildProfileToJson(_ChildProfile instance) =>
@@ -49,4 +60,9 @@ Map<String, dynamic> _$ChildProfileToJson(_ChildProfile instance) =>
       'letterCount': instance.letterCount,
       'privateMemoryCount': instance.privateMemoryCount,
       'relativeViewerNames': instance.relativeViewerNames,
+      'addedByUserId': instance.addedByUserId,
+      'addedAt': instance.addedAt?.toIso8601String(),
+      'duplicateOfChildId': instance.duplicateOfChildId,
+      'sharedMemoryCount': instance.sharedMemoryCount,
+      'sharedWithChildIds': instance.sharedWithChildIds,
     };

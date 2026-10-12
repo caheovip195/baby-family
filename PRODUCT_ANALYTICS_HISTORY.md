@@ -108,3 +108,33 @@ Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hi�
 - Kết quả / trạng thái: Hoàn thành. Root rules đạt 48 assertions; 28 checks cuối gồm env mẫu backend/source/migrations/roles/logs đạt và được review độc lập. Không đổi dependency ứng dụng, không untrack/xóa/stage file.
 - Theo dõi: File đã tracked không tự bị loại; `.DS_Store` hiện thuộc trường hợp này. Không khẳng định đã làm sạch toàn bộ lịch sử Git, không có metric sản phẩm mới.
 - Session: [BF-20261011-007](SESSIONS.md#bf-20261011-007).
+
+<a id="bf-20261012-001"></a>
+## BF-20261012-001 — Hoàn thiện bộ màn còn thiếu (đợt 3)
+
+- Ngày làm: 2026-10-12 (Asia/Ho_Chi_Minh); entry tạo lúc 2026-10-12T19:20:00+07:00.
+- Yêu cầu: Vẽ và code các màn còn lại của đặc tả mục 9 (đợt 3).
+- Role: ORCHESTRATOR, DESIGN, MOBILE, BA, SECURITY_PRIVACY, DATA_ANALYST.
+- Vấn đề / mục tiêu: Mọi lối vào trong app mở được màn thật đúng thiết kế (hết "Sắp ra mắt"), đủ luồng Papa & Mama (Cầu nối), người thân (Circle), gói dịch vụ và quản trị dữ liệu.
+- Quan sát: Đặc tả mục 9 liệt kê ~36 màn chưa có thiết kế/app sau đợt 2; app đang chạy dữ liệu mock.
+- Phân tích / quyết định: Giữ quy trình thiết kế trước rồi code; nhánh an toàn chỉ dùng số chính thức 111/113/115; người thân có thanh tab riêng theo đặc tả 9.14.
+- Tác động: Thêm màn/luồng UI mock; chưa đổi API/backend; không thêm tracking.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo (mock UI).
+- Kết quả / trạng thái: Đang thực hiện.
+- Theo dõi: Cập nhật sau khi code và kiểm thử xong.
+- Session: [BF-20261012-001](SESSIONS.md#bf-20261012-001).
+
+<a id="bf-20261012-002"></a>
+## BF-20261012-002 — Đồng bộ thiết kế và dữ liệu mẫu, xử lý việc tồn
+
+- Ngày làm: 2026-10-12 (Asia/Ho_Chi_Minh); entry tạo lúc 2026-10-12T19:20:00+07:00.
+- Yêu cầu: Xử lý các việc tồn của đợt 2.
+- Role: MOBILE, DESIGN, ORCHESTRATOR, DATA_ANALYST.
+- Vấn đề / mục tiêu: Thiết kế và app hiển thị cùng một câu chuyện/số liệu; bổ sung font và trường dữ liệu còn thiếu.
+- Quan sát: Nhiều chỗ lệch số giữa frame và dữ liệu mock (mã mời, ngày hết dùng thử, số tên, bộ đếm story, số cột mốc).
+- Phân tích / quyết định: Dữ liệu thật là nguồn đúng; sửa chữ Pencil cho khớp. Dùng thử hết hạn 05/01/2027 (hôm nay + 90 ngày).
+- Tác động: Không đổi hành vi nghiệp vụ; chỉ UI/dữ liệu mock và font.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo.
+- Kết quả / trạng thái: Đang thực hiện.
+- Theo dõi: Cập nhật khi xong.
+- Session: [BF-20261012-002](SESSIONS.md#bf-20261012-002).

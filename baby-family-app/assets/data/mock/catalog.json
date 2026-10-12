@@ -180,7 +180,13 @@
         "en": "≈ 33,000₫ / month",
         "zh": "约 33,000越南盾 / 月",
         "ja": "約 33,000ドン / 月"
-      }
+      },
+      "photosPerMemory": 30,
+      "videoMinutes": 3,
+      "voiceMinutes": 5,
+      "originalQuality": false,
+      "aiPerMonth": 100,
+      "digestAndReview": false
     },
     {
       "code": "family",
@@ -197,7 +203,13 @@
         "en": "≈ 50,000₫ / month",
         "zh": "约 50,000越南盾 / 月",
         "ja": "約 50,000ドン / 月"
-      }
+      },
+      "photosPerMemory": 50,
+      "videoMinutes": 10,
+      "voiceMinutes": 10,
+      "originalQuality": true,
+      "aiPerMonth": 300,
+      "digestAndReview": true
     }
   ],
   "memoryDrafts": {
@@ -595,5 +607,408 @@
         }
       }
     ]
-  }
+  },
+  "reportReasons": [
+    {
+      "code": "inappropriate",
+      "title": {
+        "vi": "Không phù hợp",
+        "en": "Inappropriate",
+        "zh": "不当内容",
+        "ja": "不適切"
+      }
+    },
+    {
+      "code": "harassment",
+      "title": {
+        "vi": "Quấy rối",
+        "en": "Harassment",
+        "zh": "骚扰",
+        "ja": "嫌がらせ"
+      }
+    },
+    {
+      "code": "privacy",
+      "title": {
+        "vi": "Vấn đề quyền riêng tư",
+        "en": "Privacy issue",
+        "zh": "隐私问题",
+        "ja": "プライバシーの問題"
+      }
+    },
+    {
+      "code": "child_safety",
+      "priority": true,
+      "title": {
+        "vi": "Lo ngại an toàn trẻ em",
+        "en": "Child safety concern",
+        "zh": "儿童安全隐患",
+        "ja": "子どもの安全への懸念"
+      },
+      "hint": {
+        "vi": "Ưu tiên cao nhất · xử lý trong 24 giờ",
+        "en": "Highest priority · handled within 24 hours",
+        "zh": "最高优先级 · 24小时内处理",
+        "ja": "最優先 · 24時間以内に対応"
+      },
+      "note": {
+        "vi": "Ký ức sẽ được ẩn tạm thời ngay khi bạn gửi, cho đến khi xem xét xong.",
+        "en": "The memory is hidden right away until the review is done.",
+        "zh": "提交后该回忆会立即暂时隐藏，直至审核完成。",
+        "ja": "送信するとすぐに、確認が終わるまで思い出は一時的に非表示になります。"
+      }
+    },
+    {
+      "code": "spam",
+      "title": {
+        "vi": "Spam",
+        "en": "Spam",
+        "zh": "垃圾信息",
+        "ja": "スパム"
+      }
+    },
+    {
+      "code": "ai_content",
+      "title": {
+        "vi": "Nội dung AI có vấn đề",
+        "en": "Problematic AI content",
+        "zh": "AI内容有问题",
+        "ja": "AIの内容に問題"
+      }
+    },
+    {
+      "code": "other",
+      "title": {
+        "vi": "Khác",
+        "en": "Other",
+        "zh": "其他",
+        "ja": "その他"
+      }
+    }
+  ],
+  "rejectReasons": [
+    {
+      "vi": "Ảnh này nhà mình muốn giữ riêng",
+      "en": "We’d like to keep this photo private",
+      "zh": "这张照片我们想保留在家里",
+      "ja": "この写真は家族だけにしておきたいです"
+    }
+  ],
+  "safetyHotlines": [
+    {
+      "number": "113",
+      "title": {
+        "vi": "Công an",
+        "en": "Police",
+        "zh": "公安",
+        "ja": "警察"
+      },
+      "hint": {
+        "vi": "Khi khẩn cấp · Miễn phí",
+        "en": "Emergencies · Free",
+        "zh": "紧急情况 · 免费",
+        "ja": "緊急時 · 無料"
+      }
+    },
+    {
+      "number": "115",
+      "title": {
+        "vi": "Cấp cứu",
+        "en": "Ambulance",
+        "zh": "急救",
+        "ja": "救急"
+      },
+      "hint": {
+        "vi": "Khi cần y tế gấp · Miễn phí",
+        "en": "Urgent medical help · Free",
+        "zh": "紧急医疗 · 免费",
+        "ja": "急な医療 · 無料"
+      }
+    },
+    {
+      "number": "111",
+      "title": {
+        "vi": "Tổng đài quốc gia bảo vệ trẻ em",
+        "en": "National child protection hotline",
+        "zh": "国家儿童保护热线",
+        "ja": "全国子ども保護ホットライン"
+      },
+      "hint": {
+        "vi": "Hỗ trợ an toàn của trẻ · Miễn phí",
+        "en": "Child safety support · Free",
+        "zh": "儿童安全支持 · 免费",
+        "ja": "子どもの安全サポート · 無料"
+      }
+    }
+  ],
+  "bridge": {
+    "feelings": [
+      {
+        "code": "exhausted",
+        "title": {
+          "vi": "Kiệt sức",
+          "en": "Exhausted",
+          "zh": "筋疲力尽",
+          "ja": "へとへと"
+        }
+      },
+      {
+        "code": "overwhelmed",
+        "title": {
+          "vi": "Quá tải",
+          "en": "Overwhelmed",
+          "zh": "不堪重负",
+          "ja": "いっぱいいっぱい"
+        }
+      },
+      {
+        "code": "misunderstood",
+        "title": {
+          "vi": "Bị hiểu lầm",
+          "en": "Misunderstood",
+          "zh": "被误解",
+          "ja": "誤解されている"
+        }
+      }
+    ],
+    "needs": [
+      {
+        "code": "space",
+        "icon": "door-open",
+        "title": {
+          "vi": "Không gian riêng",
+          "en": "Some space",
+          "zh": "独处空间",
+          "ja": "ひとりの時間"
+        }
+      },
+      {
+        "code": "listened",
+        "icon": "ear",
+        "title": {
+          "vi": "Được lắng nghe",
+          "en": "To be heard",
+          "zh": "被倾听",
+          "ja": "聞いてほしい"
+        }
+      },
+      {
+        "code": "apology",
+        "icon": "message-circle-heart",
+        "title": {
+          "vi": "Một lời xin lỗi",
+          "en": "An apology",
+          "zh": "一句道歉",
+          "ja": "ひとことの謝罪"
+        }
+      },
+      {
+        "code": "practical_help",
+        "icon": "hand-helping",
+        "title": {
+          "vi": "Giúp đỡ thực tế",
+          "en": "Practical help",
+          "zh": "实际帮助",
+          "ja": "具体的な手助け"
+        }
+      },
+      {
+        "code": "calm_talk",
+        "icon": "messages-square",
+        "title": {
+          "vi": "Nói chuyện bình tĩnh",
+          "en": "A calm talk",
+          "zh": "心平气和地谈谈",
+          "ja": "落ち着いて話す"
+        }
+      },
+      {
+        "code": "care",
+        "icon": "heart",
+        "title": {
+          "vi": "Sự quan tâm",
+          "en": "Some care",
+          "zh": "关心",
+          "ja": "気づかい"
+        }
+      }
+    ],
+    "nextSteps": [
+      {
+        "code": "rest_20",
+        "icon": "coffee",
+        "title": {
+          "vi": "Nghỉ 20 phút",
+          "en": "A 20-minute break",
+          "zh": "休息20分钟",
+          "ja": "20分休む"
+        }
+      },
+      {
+        "code": "hug",
+        "icon": "heart",
+        "title": {
+          "vi": "Ôm nhau",
+          "en": "A hug",
+          "zh": "拥抱",
+          "ja": "ハグする"
+        }
+      },
+      {
+        "code": "watch_kids_30",
+        "icon": "baby",
+        "title": {
+          "vi": "{partner} trông con 30 phút",
+          "en": "{partner} watches the kids for 30 minutes",
+          "zh": "{partner}照看孩子30分钟",
+          "ja": "{partner}が30分子どもを見る"
+        }
+      },
+      {
+        "code": "talk_after_sleep",
+        "icon": "moon",
+        "title": {
+          "vi": "Nói lại sau khi con ngủ",
+          "en": "Talk again after the kids sleep",
+          "zh": "孩子睡后再聊",
+          "ja": "子どもが寝たらまた話す"
+        }
+      },
+      {
+        "code": "request_tomorrow",
+        "icon": "hand-helping",
+        "tag": {
+          "vi": "Lời nhờ",
+          "en": "Request",
+          "zh": "请求",
+          "ja": "お願い"
+        },
+        "title": {
+          "vi": "Nhờ nhau một việc ngày mai",
+          "en": "Ask each other for one thing tomorrow",
+          "zh": "明天互相帮一件事",
+          "ja": "明日ひとつお願いし合う"
+        }
+      },
+      {
+        "code": "schedule_talk",
+        "icon": "alarm-clock",
+        "title": {
+          "vi": "Hẹn giờ nói chuyện",
+          "en": "Set a time to talk",
+          "zh": "约个时间聊聊",
+          "ja": "話す時間を決める"
+        }
+      },
+      {
+        "code": "custom",
+        "icon": "pencil",
+        "title": {
+          "vi": "Tự nhập",
+          "en": "Write your own",
+          "zh": "自己输入",
+          "ja": "自分で入力"
+        }
+      }
+    ]
+  },
+  "aiFeatures": [
+    {
+      "code": "caption",
+      "icon": "message-square-text",
+      "title": {
+        "vi": "Gợi ý chú thích",
+        "en": "Caption suggestions",
+        "zh": "标题建议",
+        "ja": "キャプションの提案"
+      },
+      "sends": {
+        "vi": "Gửi: vài từ bạn gõ, loại ký ức, tuổi bé — không gửi ảnh",
+        "en": "Sends: a few words you type, memory type, child’s age — never photos",
+        "zh": "发送：你输入的几个词、回忆类型、宝宝年龄——不发送照片",
+        "ja": "送信：入力した数語、思い出の種類、子どもの年齢 — 写真は送りません"
+      }
+    },
+    {
+      "code": "day_story",
+      "icon": "book-open",
+      "title": {
+        "vi": "Câu chuyện ngày",
+        "en": "Day story",
+        "zh": "每日故事",
+        "ja": "今日のストーリー"
+      },
+      "sends": {
+        "vi": "Gửi: chú thích và nhiệm vụ bạn tick chọn",
+        "en": "Sends: the captions and missions you tick",
+        "zh": "发送：你勾选的标题和任务",
+        "ja": "送信：チェックしたキャプションとミッション"
+      }
+    },
+    {
+      "code": "mission_suggest",
+      "icon": "list-checks",
+      "title": {
+        "vi": "Gợi ý nhiệm vụ",
+        "en": "Mission suggestions",
+        "zh": "任务建议",
+        "ja": "ミッションの提案"
+      },
+      "sends": {
+        "vi": "Gửi: nhóm tuổi bé, mục ưa thích, tổng hợp 14 ngày",
+        "en": "Sends: age group, favourite categories, 14-day summary",
+        "zh": "发送：年龄段、偏好类别、14天汇总",
+        "ja": "送信：年齢層、好きなカテゴリ、14日間のまとめ"
+      }
+    },
+    {
+      "code": "rewrite",
+      "icon": "pen-line",
+      "title": {
+        "vi": "Viết lại nhẹ nhàng",
+        "en": "Gentle rewrite",
+        "zh": "温和改写",
+        "ja": "やさしく言い換え"
+      },
+      "sends": {
+        "vi": "Gửi: chỉ câu bạn chọn — không bao giờ tự gửi",
+        "en": "Sends: only the sentence you pick — never sent automatically",
+        "zh": "发送：仅你选择的句子——从不自动发送",
+        "ja": "送信：選んだ文だけ — 自動では送りません"
+      }
+    },
+    {
+      "code": "bridge_summary",
+      "icon": "heart-handshake",
+      "enabled": false,
+      "title": {
+        "vi": "Tóm tắt Cầu nối",
+        "en": "Bridge summary",
+        "zh": "心桥摘要",
+        "ja": "かけはしの要約"
+      },
+      "sends": {
+        "vi": "Gửi: chỉ các ý đã chia sẻ trong phiên, không dùng nháp riêng",
+        "en": "Sends: only points shared in the session, never private drafts",
+        "zh": "发送：仅会话中已分享的内容，不使用私人草稿",
+        "ja": "送信：セッションで共有した内容だけ — 下書きは使いません"
+      }
+    },
+    {
+      "code": "recap",
+      "icon": "calendar-heart",
+      "title": {
+        "vi": "Recap tuần",
+        "en": "Weekly recap",
+        "zh": "每周回顾",
+        "ja": "週のふりかえり"
+      },
+      "sends": {
+        "vi": "Gửi: ký ức và hoạt động gia đình trong tuần",
+        "en": "Sends: the week’s memories and family activity",
+        "zh": "发送：本周的回忆和家庭活动",
+        "ja": "送信：今週の思い出と家族の活動"
+      }
+    }
+  ]
 }

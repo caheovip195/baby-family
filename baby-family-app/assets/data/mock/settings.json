@@ -208,7 +208,7 @@
     "familyVisibleMemories": 128,
     "deviceCount": 3,
     "aiFeatures": 2,
-    "blockedCount": 0
+    "blockedCount": 1
   },
   "security": {
     "faceIdLock": true,
@@ -291,5 +291,23 @@
         "ja": "家族の写真をすべて書き出すには？"
       }
     ]
+  },
+  "blocked": [
+    {
+      "id": "b-hanh",
+      "name": "Cô Hạnh",
+      "context": "Người thân ở Nhà anh Tuấn",
+      "blockedAt": "2026-10-02T10:00:00.000"
+    }
+  ],
+  "ai": {
+    "enabled": true,
+    "remaining": 286,
+    "total": 300,
+    "renewsAt": "2026-11-01T00:00:00.000"
+  },
+  "reportSample": {
+    "code": "BC-261007-0482",
+    "status": "reviewing"
   }
 }

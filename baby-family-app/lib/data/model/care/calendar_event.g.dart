@@ -36,6 +36,7 @@ _CalendarEvent _$CalendarEventFromJson(
       const [],
   ownerKind: $enumDecodeNullable(_$MissionOwnerKindEnumMap, json['ownerKind']),
   missionId: json['missionId'] as String?,
+  note: json['note'] as String?,
 );
 
 Map<String, dynamic> _$CalendarEventToJson(_CalendarEvent instance) =>
@@ -57,6 +58,7 @@ Map<String, dynamic> _$CalendarEventToJson(_CalendarEvent instance) =>
       'reminders': instance.reminders,
       'ownerKind': _$MissionOwnerKindEnumMap[instance.ownerKind],
       'missionId': instance.missionId,
+      'note': instance.note,
     };
 
 const _$CalendarEventKindEnumMap = {

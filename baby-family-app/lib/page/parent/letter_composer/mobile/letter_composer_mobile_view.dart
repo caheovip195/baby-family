@@ -23,14 +23,6 @@ part '../widgets/letter_option.dart';
 part '../widgets/letter_paper.dart';
 part '../widgets/letter_recipient_chip.dart';
 
-/// Chữ viết tay của thư (Pencil dùng Dancing Script — app chưa có font này,
-/// dùng Nunito nghiêng thay thế).
-const _scriptStyle = TextStyle(
-  fontFamily: AppTypography.headingFamily,
-  fontStyle: FontStyle.italic,
-  fontWeight: FontWeight.w700,
-);
-
 /// MEM-14 Thư gửi con (Pencil `Q4HQel`).
 class LetterComposerMobileView extends HookConsumerWidget {
   const LetterComposerMobileView({this.childId, super.key});

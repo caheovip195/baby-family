@@ -256,21 +256,26 @@ void main() {
       expect(session.current.role, FamilyRole.father);
     });
 
-    test('relative invite → circle home with Hana only', () async {
+    test('relative invite → circle home with Hana and Haru', () async {
+      // Story v2: Bà nội follows Hana and Haru; the archived duplicate Haru
+      // (CHD-03) is never listed as hidden.
       final c = _container(seed: DemoSeed.fresh);
       final session = c.read(sessionServiceProvider);
       final preview = await session.previewInvite('B4N0I123');
       expect(preview.invite.callName, 'Bà nội');
-      expect(preview.children.map((child) => child.name), ['Hana']);
+      expect(preview.children.map((child) => child.name), ['Hana', 'Haru']);
+      expect(preview.hiddenChildren, isEmpty);
       await session.acceptInvite('B4N0I123');
       await session.signIn(AuthMethod.google);
       await session.saveProfile(name: 'Bà nội');
       expect(session.current.state, SessionState.circleActive);
       final view = await c.read(circleServiceProvider).view();
-      expect(view!.children.map((child) => child.name), ['Hana']);
+      expect(view!.children.map((child) => child.name), ['Hana', 'Haru']);
       expect(
         view.memories.every(
-          (memory) => memory.childIds.every((id) => id == 'hana'),
+          (memory) => memory.childIds.every(
+            (id) => const {'hana', 'haru'}.contains(id),
+          ),
         ),
         isTrue,
       );

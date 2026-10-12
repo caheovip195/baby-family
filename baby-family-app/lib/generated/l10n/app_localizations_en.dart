@@ -3516,9 +3516,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invViewOnly => 'View only';
 
   @override
-  String get invNameSeparator => ', ';
-
-  @override
   String get homeMorning => 'Good morning,';
 
   @override
@@ -4499,10 +4496,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get calendarNote => 'Note';
-
-  @override
-  String get calendarDraftNote =>
-      'Order the salted-egg sponge cake Grandma loves';
 
   @override
   String get calendarNoteHint => 'Add a note…';
@@ -6425,4 +6418,70 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get usBridgeRewriteTitle => 'Gentle rewrite';
+
+  @override
+  String get usBridgeNextStepTitle => 'One small next step';
+
+  @override
+  String get usSafetyTitle => 'Safety support';
+
+  @override
+  String get recapDayTitle => 'Day story';
+
+  @override
+  String get recapMonthTitle => 'Monthly recap';
+
+  @override
+  String get careStatsTitle => 'Stats';
+
+  @override
+  String get memTrashTitle => 'Trash';
+
+  @override
+  String get memDraftsTitle => 'Drafts';
+
+  @override
+  String get memPendingTitle => 'Pending review';
+
+  @override
+  String get childArchiveTitle => 'Archive or delete child';
+
+  @override
+  String get circleTabHome => 'Grandkids';
+
+  @override
+  String get circleTabMemories => 'Memories';
+
+  @override
+  String get circleTabPost => 'Post photos';
+
+  @override
+  String get circleTabMe => 'Me';
+
+  @override
+  String get circlePostTitle => 'Post photos for the grandkids';
+
+  @override
+  String get circleMemoryDetailTitle => 'Memory details';
+
+  @override
+  String get circlePausedTitle => 'Family sharing paused';
+
+  @override
+  String get circleLeaveTitle => 'Leave family';
+
+  @override
+  String get billingPlanTitle => 'Family plan';
+
+  @override
+  String get familyInvitePartnerTitle => 'Invite your partner';
+
+  @override
+  String get familyPendingInvitesTitle => 'Pending invites';
+
+  @override
+  String get settingsBlockedTitle => 'Blocked people';
 }

@@ -1,11 +1,20 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:baby_family/page/circle/circle_child/circle_child_page.dart';
 import 'package:baby_family/page/circle/circle_home/circle_home_page.dart';
+import 'package:baby_family/page/circle/circle_me/circle_me_page.dart';
+import 'package:baby_family/page/circle/circle_memory_detail/circle_memory_detail_page.dart';
+import 'package:baby_family/page/circle/circle_paused/circle_paused_page.dart';
+import 'package:baby_family/page/circle/circle_post/circle_post_page.dart';
+import 'package:baby_family/page/circle/circle_shell/circle_shell_page.dart';
 import 'package:baby_family/page/circle/circle_waiting/circle_waiting_page.dart';
+import 'package:baby_family/page/circle/leave_family/leave_family_page.dart';
 import 'package:baby_family/page/general/about/about_page.dart';
+import 'package:baby_family/page/general/ai_settings/ai_settings_page.dart';
 import 'package:baby_family/page/general/auth/auth_page.dart';
 import 'package:baby_family/page/general/auth_otp/auth_otp_page.dart';
 import 'package:baby_family/page/general/auth_phone/auth_phone_page.dart';
 import 'package:baby_family/page/general/auth_profile/auth_profile_page.dart';
+import 'package:baby_family/page/general/blocked_people/blocked_people_page.dart';
 import 'package:baby_family/page/general/delete_account/delete_account_page.dart';
 import 'package:baby_family/page/general/display_settings/display_settings_page.dart';
 import 'package:baby_family/page/general/expired/expired_page.dart';
@@ -38,18 +47,29 @@ import 'package:baby_family/page/parent/albums/albums_page.dart';
 import 'package:baby_family/page/parent/baby_names/baby_names_page.dart';
 import 'package:baby_family/page/parent/badges/badges_page.dart';
 import 'package:baby_family/page/parent/birth/birth_page.dart';
+import 'package:baby_family/page/parent/bridge_invite/bridge_invite_page.dart';
+import 'package:baby_family/page/parent/bridge_next_step/bridge_next_step_page.dart';
+import 'package:baby_family/page/parent/bridge_rewrite/bridge_rewrite_page.dart';
+import 'package:baby_family/page/parent/bridge_session/bridge_session_page.dart';
+import 'package:baby_family/page/parent/bridge_start/bridge_start_page.dart';
 import 'package:baby_family/page/parent/calendar/calendar_page.dart';
+import 'package:baby_family/page/parent/care_stats/care_stats_page.dart';
 import 'package:baby_family/page/parent/care_tab/care_tab_page.dart';
 import 'package:baby_family/page/parent/child_add/child_add_page.dart';
+import 'package:baby_family/page/parent/child_archive/child_archive_page.dart';
 import 'package:baby_family/page/parent/child_edit/child_edit_page.dart';
 import 'package:baby_family/page/parent/child_profile/child_profile_page.dart';
 import 'package:baby_family/page/parent/children/children_page.dart';
 import 'package:baby_family/page/parent/collection_detail/collection_detail_page.dart';
 import 'package:baby_family/page/parent/couple_settings/couple_settings_page.dart';
 import 'package:baby_family/page/parent/couple_tab/couple_tab_page.dart';
+import 'package:baby_family/page/parent/couple_week/couple_week_page.dart';
+import 'package:baby_family/page/parent/day_story/day_story_page.dart';
 import 'package:baby_family/page/parent/diary_editor/diary_editor_page.dart';
+import 'package:baby_family/page/parent/drafts/drafts_page.dart';
 import 'package:baby_family/page/parent/event_create/event_create_page.dart';
 import 'package:baby_family/page/parent/family/family_page.dart';
+import 'package:baby_family/page/parent/family_plan/family_plan_page.dart';
 import 'package:baby_family/page/parent/family_settings/family_settings_page.dart';
 import 'package:baby_family/page/parent/family_tree/family_tree_page.dart';
 import 'package:baby_family/page/parent/firsts/firsts_page.dart';
@@ -70,9 +90,13 @@ import 'package:baby_family/page/parent/mission_detail/mission_detail_page.dart'
 import 'package:baby_family/page/parent/mission_history/mission_history_page.dart';
 import 'package:baby_family/page/parent/mission_library/mission_library_page.dart';
 import 'package:baby_family/page/parent/mission_settings/mission_settings_page.dart';
+import 'package:baby_family/page/parent/month_recap/month_recap_page.dart';
 import 'package:baby_family/page/parent/monthly_camera/monthly_camera_page.dart';
 import 'package:baby_family/page/parent/monthly_photos/monthly_photos_page.dart';
 import 'package:baby_family/page/parent/on_this_day/on_this_day_page.dart';
+import 'package:baby_family/page/parent/partner_invite/partner_invite_page.dart';
+import 'package:baby_family/page/parent/pending_invites/pending_invites_page.dart';
+import 'package:baby_family/page/parent/pending_review/pending_review_page.dart';
 import 'package:baby_family/page/parent/photo_viewer/photo_viewer_page.dart';
 import 'package:baby_family/page/parent/pregnancy_archive/pregnancy_archive_page.dart';
 import 'package:baby_family/page/parent/pregnancy_journey/pregnancy_journey_page.dart';
@@ -81,8 +105,11 @@ import 'package:baby_family/page/parent/relative_detail/relative_detail_page.dar
 import 'package:baby_family/page/parent/relative_invite/relative_invite_page.dart';
 import 'package:baby_family/page/parent/request_compose/request_compose_page.dart';
 import 'package:baby_family/page/parent/request_detail/request_detail_page.dart';
+import 'package:baby_family/page/parent/safety_support/safety_support_page.dart';
 import 'package:baby_family/page/parent/thanks_compose/thanks_compose_page.dart';
 import 'package:baby_family/page/parent/thanks_wall/thanks_wall_page.dart';
+import 'package:baby_family/page/parent/trash/trash_page.dart';
+import 'package:baby_family/page/parent/upgrade_plan/upgrade_plan_page.dart';
 import 'package:baby_family/page/parent/weekly_recap/weekly_recap_page.dart';
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:flutter/widgets.dart';
@@ -165,7 +192,28 @@ class AppRouter extends RootStackRouter {
       page: CircleWaitingRoute.page,
       path: '/circle/waiting',
     ).route(),
-    AutoRouteCustom(page: CircleHomeRoute.page, path: '/circle').route(),
+    AutoRouteCustom(
+      page: CirclePausedRoute.page,
+      path: '/circle/paused',
+    ).route(),
+    AutoRouteCustom(page: LeaveFamilyRoute.page, path: '/circle/leave').route(),
+    AutoRouteCustom(
+      page: CircleMemoryDetailRoute.page,
+      path: '/circle/memory/:memoryId',
+    ).route(),
+    // Shell người thân 4 tab (Pencil LXpog).
+    AutoRouteCustom(page: CircleShellRoute.page, path: '/circle').route(
+      children: [
+        AutoRouteCustom(
+          page: CircleHomeRoute.page,
+          path: 'home',
+          initial: true,
+        ),
+        AutoRouteCustom(page: CircleChildRoute.page, path: 'child'),
+        AutoRouteCustom(page: CirclePostRoute.page, path: 'post'),
+        AutoRouteCustom(page: CircleMeRoute.page, path: 'me'),
+      ],
+    ),
 
     // --- App chính: shell 4 tab (Pencil luKhc) ---
     AutoRouteCustom(page: MainShellRoute.page, path: '/main').route(
@@ -367,6 +415,58 @@ class AppRouter extends RootStackRouter {
     ).route(),
     AutoRouteCustom(page: HelpRoute.page, path: '/settings/help').route(),
     AutoRouteCustom(page: AboutRoute.page, path: '/settings/about').route(),
+
+    // --- Batch 3 (Pencil frames, 2026-10-12) ---
+    AutoRouteCustom(
+      page: BridgeStartRoute.page,
+      path: '/us/bridge/new',
+    ).route(),
+    AutoRouteCustom(
+      page: BridgeRewriteRoute.page,
+      path: '/us/bridge/rewrite',
+    ).route(),
+    AutoRouteCustom(
+      page: BridgeInviteRoute.page,
+      path: '/us/bridge/:sessionId/invite',
+    ).route(),
+    AutoRouteCustom(
+      page: BridgeNextStepRoute.page,
+      path: '/us/bridge/:sessionId/next',
+    ).route(),
+    AutoRouteCustom(
+      page: BridgeSessionRoute.page,
+      path: '/us/bridge/:sessionId',
+    ).route(),
+    AutoRouteCustom(page: SafetySupportRoute.page, path: '/us/safety').route(),
+    AutoRouteCustom(page: CoupleWeekRoute.page, path: '/us/week').route(),
+    AutoRouteCustom(page: DayStoryRoute.page, path: '/recap/day').route(),
+    AutoRouteCustom(page: MonthRecapRoute.page, path: '/recap/month').route(),
+    AutoRouteCustom(page: CareStatsRoute.page, path: '/care/stats').route(),
+    AutoRouteCustom(page: TrashRoute.page, path: '/trash').route(),
+    AutoRouteCustom(page: DraftsRoute.page, path: '/drafts').route(),
+    AutoRouteCustom(page: PendingReviewRoute.page, path: '/review').route(),
+    AutoRouteCustom(
+      page: ChildArchiveRoute.page,
+      path: '/child/:childId/archive',
+    ).route(),
+    AutoRouteCustom(page: FamilyPlanRoute.page, path: '/billing/plan').route(),
+    AutoRouteCustom(
+      page: UpgradePlanRoute.page,
+      path: '/billing/upgrade',
+    ).route(),
+    AutoRouteCustom(
+      page: PartnerInviteRoute.page,
+      path: '/family/invite-partner',
+    ).route(),
+    AutoRouteCustom(
+      page: PendingInvitesRoute.page,
+      path: '/family/invites',
+    ).route(),
+    AutoRouteCustom(page: AiSettingsRoute.page, path: '/settings/ai').route(),
+    AutoRouteCustom(
+      page: BlockedPeopleRoute.page,
+      path: '/settings/blocked',
+    ).route(),
   ];
 }
 

@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Family {
 
-@JsonKey(name: 'id') String get id;@JsonKey(name: 'name') String get name;@JsonKey(name: 'coverIndex') int get coverIndex;@JsonKey(name: 'coverAsset') String? get coverAsset;@JsonKey(name: 'createdAt') DateTime? get createdAt;@JsonKey(name: 'activatedAt') DateTime? get activatedAt;@JsonKey(name: 'setupCompleted') bool get setupCompleted;@JsonKey(name: 'timezone') String? get timezone;@JsonKey(name: 'plan') PlanInfo get plan;
+@JsonKey(name: 'id') String get id;@JsonKey(name: 'name') String get name;@JsonKey(name: 'coverIndex') int get coverIndex;@JsonKey(name: 'coverAsset') String? get coverAsset;@JsonKey(name: 'createdAt') DateTime? get createdAt;@JsonKey(name: 'activatedAt') DateTime? get activatedAt;@JsonKey(name: 'setupCompleted') bool get setupCompleted;@JsonKey(name: 'timezone') String? get timezone;@JsonKey(name: 'plan') PlanInfo get plan;/// PARTNER_LEFT (US-00, FAM-02): bạn đời đã xoá tài khoản — chỉ xem & tải về.
+@JsonKey(name: 'partnerLeftAt') DateTime? get partnerLeftAt;
 /// Create a copy of Family
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +29,16 @@ $FamilyCopyWith<Family> get copyWith => _$FamilyCopyWithImpl<Family>(this as Fam
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Family&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.coverIndex, coverIndex) || other.coverIndex == coverIndex)&&(identical(other.coverAsset, coverAsset) || other.coverAsset == coverAsset)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.activatedAt, activatedAt) || other.activatedAt == activatedAt)&&(identical(other.setupCompleted, setupCompleted) || other.setupCompleted == setupCompleted)&&(identical(other.timezone, timezone) || other.timezone == timezone)&&(identical(other.plan, plan) || other.plan == plan));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Family&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.coverIndex, coverIndex) || other.coverIndex == coverIndex)&&(identical(other.coverAsset, coverAsset) || other.coverAsset == coverAsset)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.activatedAt, activatedAt) || other.activatedAt == activatedAt)&&(identical(other.setupCompleted, setupCompleted) || other.setupCompleted == setupCompleted)&&(identical(other.timezone, timezone) || other.timezone == timezone)&&(identical(other.plan, plan) || other.plan == plan)&&(identical(other.partnerLeftAt, partnerLeftAt) || other.partnerLeftAt == partnerLeftAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,coverIndex,coverAsset,createdAt,activatedAt,setupCompleted,timezone,plan);
+int get hashCode => Object.hash(runtimeType,id,name,coverIndex,coverAsset,createdAt,activatedAt,setupCompleted,timezone,plan,partnerLeftAt);
 
 @override
 String toString() {
-  return 'Family(id: $id, name: $name, coverIndex: $coverIndex, coverAsset: $coverAsset, createdAt: $createdAt, activatedAt: $activatedAt, setupCompleted: $setupCompleted, timezone: $timezone, plan: $plan)';
+  return 'Family(id: $id, name: $name, coverIndex: $coverIndex, coverAsset: $coverAsset, createdAt: $createdAt, activatedAt: $activatedAt, setupCompleted: $setupCompleted, timezone: $timezone, plan: $plan, partnerLeftAt: $partnerLeftAt)';
 }
 
 
@@ -48,7 +49,7 @@ abstract mixin class $FamilyCopyWith<$Res>  {
   factory $FamilyCopyWith(Family value, $Res Function(Family) _then) = _$FamilyCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'name') String name,@JsonKey(name: 'coverIndex') int coverIndex,@JsonKey(name: 'coverAsset') String? coverAsset,@JsonKey(name: 'createdAt') DateTime? createdAt,@JsonKey(name: 'activatedAt') DateTime? activatedAt,@JsonKey(name: 'setupCompleted') bool setupCompleted,@JsonKey(name: 'timezone') String? timezone,@JsonKey(name: 'plan') PlanInfo plan
+@JsonKey(name: 'id') String id,@JsonKey(name: 'name') String name,@JsonKey(name: 'coverIndex') int coverIndex,@JsonKey(name: 'coverAsset') String? coverAsset,@JsonKey(name: 'createdAt') DateTime? createdAt,@JsonKey(name: 'activatedAt') DateTime? activatedAt,@JsonKey(name: 'setupCompleted') bool setupCompleted,@JsonKey(name: 'timezone') String? timezone,@JsonKey(name: 'plan') PlanInfo plan,@JsonKey(name: 'partnerLeftAt') DateTime? partnerLeftAt
 });
 
 
@@ -65,7 +66,7 @@ class _$FamilyCopyWithImpl<$Res>
 
 /// Create a copy of Family
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? coverIndex = null,Object? coverAsset = freezed,Object? createdAt = freezed,Object? activatedAt = freezed,Object? setupCompleted = null,Object? timezone = freezed,Object? plan = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? coverIndex = null,Object? coverAsset = freezed,Object? createdAt = freezed,Object? activatedAt = freezed,Object? setupCompleted = null,Object? timezone = freezed,Object? plan = null,Object? partnerLeftAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -76,7 +77,8 @@ as DateTime?,activatedAt: freezed == activatedAt ? _self.activatedAt : activated
 as DateTime?,setupCompleted: null == setupCompleted ? _self.setupCompleted : setupCompleted // ignore: cast_nullable_to_non_nullable
 as bool,timezone: freezed == timezone ? _self.timezone : timezone // ignore: cast_nullable_to_non_nullable
 as String?,plan: null == plan ? _self.plan : plan // ignore: cast_nullable_to_non_nullable
-as PlanInfo,
+as PlanInfo,partnerLeftAt: freezed == partnerLeftAt ? _self.partnerLeftAt : partnerLeftAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 /// Create a copy of Family
@@ -165,7 +167,7 @@ return $default(_that);case _:
 
 @JsonSerializable(explicitToJson: true)
 class _Family implements Family {
-  const _Family({@JsonKey(name: 'id') required this.id, @JsonKey(name: 'name') required this.name, @JsonKey(name: 'coverIndex') this.coverIndex = 0, @JsonKey(name: 'coverAsset') this.coverAsset, @JsonKey(name: 'createdAt') this.createdAt, @JsonKey(name: 'activatedAt') this.activatedAt, @JsonKey(name: 'setupCompleted') this.setupCompleted = false, @JsonKey(name: 'timezone') this.timezone, @JsonKey(name: 'plan') this.plan = const PlanInfo()});
+  const _Family({@JsonKey(name: 'id') required this.id, @JsonKey(name: 'name') required this.name, @JsonKey(name: 'coverIndex') this.coverIndex = 0, @JsonKey(name: 'coverAsset') this.coverAsset, @JsonKey(name: 'createdAt') this.createdAt, @JsonKey(name: 'activatedAt') this.activatedAt, @JsonKey(name: 'setupCompleted') this.setupCompleted = false, @JsonKey(name: 'timezone') this.timezone, @JsonKey(name: 'plan') this.plan = const PlanInfo(), @JsonKey(name: 'partnerLeftAt') this.partnerLeftAt});
   factory _Family.fromJson(Map<String, dynamic> json) => _$FamilyFromJson(json);
 
 @override@JsonKey(name: 'id') final  String id;
@@ -177,6 +179,8 @@ class _Family implements Family {
 @override@JsonKey(name: 'setupCompleted') final  bool setupCompleted;
 @override@JsonKey(name: 'timezone') final  String? timezone;
 @override@JsonKey(name: 'plan') final  PlanInfo plan;
+/// PARTNER_LEFT (US-00, FAM-02): bạn đời đã xoá tài khoản — chỉ xem & tải về.
+@override@JsonKey(name: 'partnerLeftAt') final  DateTime? partnerLeftAt;
 
 /// Create a copy of Family
 /// with the given fields replaced by the non-null parameter values.
@@ -191,16 +195,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Family&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.coverIndex, coverIndex) || other.coverIndex == coverIndex)&&(identical(other.coverAsset, coverAsset) || other.coverAsset == coverAsset)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.activatedAt, activatedAt) || other.activatedAt == activatedAt)&&(identical(other.setupCompleted, setupCompleted) || other.setupCompleted == setupCompleted)&&(identical(other.timezone, timezone) || other.timezone == timezone)&&(identical(other.plan, plan) || other.plan == plan));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Family&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.coverIndex, coverIndex) || other.coverIndex == coverIndex)&&(identical(other.coverAsset, coverAsset) || other.coverAsset == coverAsset)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.activatedAt, activatedAt) || other.activatedAt == activatedAt)&&(identical(other.setupCompleted, setupCompleted) || other.setupCompleted == setupCompleted)&&(identical(other.timezone, timezone) || other.timezone == timezone)&&(identical(other.plan, plan) || other.plan == plan)&&(identical(other.partnerLeftAt, partnerLeftAt) || other.partnerLeftAt == partnerLeftAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,coverIndex,coverAsset,createdAt,activatedAt,setupCompleted,timezone,plan);
+int get hashCode => Object.hash(runtimeType,id,name,coverIndex,coverAsset,createdAt,activatedAt,setupCompleted,timezone,plan,partnerLeftAt);
 
 @override
 String toString() {
-  return 'Family(id: $id, name: $name, coverIndex: $coverIndex, coverAsset: $coverAsset, createdAt: $createdAt, activatedAt: $activatedAt, setupCompleted: $setupCompleted, timezone: $timezone, plan: $plan)';
+  return 'Family(id: $id, name: $name, coverIndex: $coverIndex, coverAsset: $coverAsset, createdAt: $createdAt, activatedAt: $activatedAt, setupCompleted: $setupCompleted, timezone: $timezone, plan: $plan, partnerLeftAt: $partnerLeftAt)';
 }
 
 
@@ -211,7 +215,7 @@ abstract mixin class _$FamilyCopyWith<$Res> implements $FamilyCopyWith<$Res> {
   factory _$FamilyCopyWith(_Family value, $Res Function(_Family) _then) = __$FamilyCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'name') String name,@JsonKey(name: 'coverIndex') int coverIndex,@JsonKey(name: 'coverAsset') String? coverAsset,@JsonKey(name: 'createdAt') DateTime? createdAt,@JsonKey(name: 'activatedAt') DateTime? activatedAt,@JsonKey(name: 'setupCompleted') bool setupCompleted,@JsonKey(name: 'timezone') String? timezone,@JsonKey(name: 'plan') PlanInfo plan
+@JsonKey(name: 'id') String id,@JsonKey(name: 'name') String name,@JsonKey(name: 'coverIndex') int coverIndex,@JsonKey(name: 'coverAsset') String? coverAsset,@JsonKey(name: 'createdAt') DateTime? createdAt,@JsonKey(name: 'activatedAt') DateTime? activatedAt,@JsonKey(name: 'setupCompleted') bool setupCompleted,@JsonKey(name: 'timezone') String? timezone,@JsonKey(name: 'plan') PlanInfo plan,@JsonKey(name: 'partnerLeftAt') DateTime? partnerLeftAt
 });
 
 
@@ -228,7 +232,7 @@ class __$FamilyCopyWithImpl<$Res>
 
 /// Create a copy of Family
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? coverIndex = null,Object? coverAsset = freezed,Object? createdAt = freezed,Object? activatedAt = freezed,Object? setupCompleted = null,Object? timezone = freezed,Object? plan = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? coverIndex = null,Object? coverAsset = freezed,Object? createdAt = freezed,Object? activatedAt = freezed,Object? setupCompleted = null,Object? timezone = freezed,Object? plan = null,Object? partnerLeftAt = freezed,}) {
   return _then(_Family(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -239,7 +243,8 @@ as DateTime?,activatedAt: freezed == activatedAt ? _self.activatedAt : activated
 as DateTime?,setupCompleted: null == setupCompleted ? _self.setupCompleted : setupCompleted // ignore: cast_nullable_to_non_nullable
 as bool,timezone: freezed == timezone ? _self.timezone : timezone // ignore: cast_nullable_to_non_nullable
 as String?,plan: null == plan ? _self.plan : plan // ignore: cast_nullable_to_non_nullable
-as PlanInfo,
+as PlanInfo,partnerLeftAt: freezed == partnerLeftAt ? _self.partnerLeftAt : partnerLeftAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 

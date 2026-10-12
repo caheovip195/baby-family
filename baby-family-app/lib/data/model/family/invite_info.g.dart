@@ -40,6 +40,8 @@ _InviteInfo _$InviteInfoFromJson(Map<String, dynamic> json) => _InviteInfo(
       ? null
       : DateTime.parse(json['expiresAt'] as String),
   status: json['status'] as String? ?? 'open',
+  relationNote: json['relationNote'] as String?,
+  requiresApproval: json['requiresApproval'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$InviteInfoToJson(_InviteInfo instance) =>
@@ -65,6 +67,8 @@ Map<String, dynamic> _$InviteInfoToJson(_InviteInfo instance) =>
       'openedAt': instance.openedAt?.toIso8601String(),
       'expiresAt': instance.expiresAt?.toIso8601String(),
       'status': instance.status,
+      'relationNote': instance.relationNote,
+      'requiresApproval': instance.requiresApproval,
     };
 
 const _$InviteKindEnumMap = {

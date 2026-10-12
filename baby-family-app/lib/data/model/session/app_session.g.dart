@@ -47,6 +47,7 @@ const _$SessionStateEnumMap = {
   SessionState.active: 'active',
   SessionState.circleWaiting: 'circleWaiting',
   SessionState.circleActive: 'circleActive',
+  SessionState.circlePaused: 'circlePaused',
   SessionState.expired: 'expired',
 };
 

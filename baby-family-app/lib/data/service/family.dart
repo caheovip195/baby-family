@@ -1,8 +1,10 @@
 import 'package:baby_family/data/dto/account_settings_summary.dart';
 import 'package:baby_family/data/model/family/family.dart';
+import 'package:baby_family/data/model/family/family_membership.dart';
 import 'package:baby_family/data/model/family/family_settings.dart';
 import 'package:baby_family/data/model/family/invite_info.dart';
 import 'package:baby_family/data/model/family/member.dart';
+import 'package:baby_family/data/model/family/plan_details.dart';
 import 'package:baby_family/data/model/family/plan_offer.dart';
 import 'package:baby_family/data/service/base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
@@ -81,4 +83,25 @@ abstract class IFamilyService extends IBaseService {
   Future<FamilySettings> familySettings();
 
   Future<void> saveFamilySettings(FamilySettings settings);
+
+  // --- Batch 3 (SUB-03, FAM-05/08) ---
+
+  /// SUB-03: gói của gia đình (người thanh toán, dung lượng, AI, giới hạn).
+  Future<PlanDetails?> planDetails();
+
+  /// FAM-08 / CIR-06: các gia đình của tài khoản.
+  Future<List<FamilyMembership>> memberships();
+
+  /// FAM-08: mock chỉ đổi cờ `current` (gia đình khác không có dữ liệu).
+  Future<void> switchFamily(String familyId);
+
+  /// FAM-05: mọi lời mời người thân (đang chờ + đã hết hạn).
+  Future<List<InviteInfo>> relativeInvites();
+
+  Future<void> resendInvite(String inviteId);
+
+  Future<void> revokeInvite(String inviteId);
+
+  /// FAM-05 “Tạo lời mời mới” cho lời mời đã hết hạn (14 ngày).
+  Future<void> renewInvite(String inviteId);
 }

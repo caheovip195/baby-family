@@ -33,4 +33,15 @@ abstract class IFamilyRepository extends IBaseRepository {
   JsonMap familySettings();
 
   void saveFamilySettings(JsonMap settings);
+
+  // --- Batch 3 (FAM-05/08, SUB-03, CIR-06) ---
+  List<JsonMap> memberships(String userId);
+
+  JsonMap planDetails();
+
+  JsonMap circlePreferences(String userId);
+
+  void saveCirclePreferences(String userId, JsonMap preferences);
+
+  void removeMember(String id);
 }

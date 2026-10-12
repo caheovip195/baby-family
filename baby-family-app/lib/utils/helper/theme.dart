@@ -10,6 +10,9 @@ abstract final class AppTypography {
   static const headingFamily = 'Nunito';
   static const bodyFamily = 'BeVietnamPro';
 
+  /// Chữ viết tay (Dancing Script) — chỉ cho giấy viết thư / phong bì MEM-14.
+  static const handwritingFamily = 'DancingScript';
+
   /// Hỗ trợ cỡ chữ hệ thống tới 200% (chế độ chữ lớn cho ông bà).
   static const maximumScale = 2.0;
 
@@ -144,6 +147,26 @@ abstract final class AppTypography {
     fontSize: 20,
     height: 27 / 20,
     fontWeight: FontWeight.w800,
+    color: kColorTextPrimary2E2A27,
+  );
+
+  /// Chữ viết tay lớn (MEM-14 lời mở đầu, tên ký, tên trên phong bì): 24/700.
+  static const handwriting = TextStyle(
+    letterSpacing: 0,
+    fontFamily: handwritingFamily,
+    fontSize: 24,
+    height: 29 / 24,
+    fontWeight: FontWeight.w700,
+    color: kColorPrimary700A2402F,
+  );
+
+  /// Chữ viết tay nhỏ (MEM-14 “Yêu con,”): 20/400.
+  static const handwritingSmall = TextStyle(
+    letterSpacing: 0,
+    fontFamily: handwritingFamily,
+    fontSize: 20,
+    height: 24 / 20,
+    fontWeight: FontWeight.w400,
     color: kColorTextPrimary2E2A27,
   );
 
@@ -285,6 +308,9 @@ abstract final class AppSpacing {
   /// TabBar (Pencil luKhc): cao 84 (gồm 20 đệm đáy), tab rộng 76, FAB 60.
   static const tabBarHeight = 84.0;
   static const tabItemWidth = 76.0;
+
+  /// Tab của Circle shell (Pencil `LXpog`).
+  static const circleTabItemWidth = 80.0;
   static const fabSize = 60.0;
 }
 

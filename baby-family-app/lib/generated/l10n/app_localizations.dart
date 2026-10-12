@@ -5538,12 +5538,6 @@ abstract class AppLocalizations {
   /// **'Chỉ xem'**
   String get invViewOnly;
 
-  /// Dấu ngăn danh sách tên bé
-  ///
-  /// In vi, this message translates to:
-  /// **', '**
-  String get invNameSeparator;
-
   /// HOME-01 — lời chào buổi sáng
   ///
   /// In vi, this message translates to:
@@ -6677,12 +6671,6 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Ghi chú'**
   String get calendarNote;
-
-  /// CAL-02 ghi chú mẫu điền sẵn (thiết kế)
-  ///
-  /// In vi, this message translates to:
-  /// **'Đặt bánh bông lan trứng muối Bà thích'**
-  String get calendarDraftNote;
 
   /// CAL-02 gợi ý ghi chú
   ///
@@ -9521,6 +9509,138 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'{count} album'**
   String memAlbumCount(int count);
+
+  /// US-09 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Viết lại nhẹ nhàng'**
+  String get usBridgeRewriteTitle;
+
+  /// US-12 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Một bước nhỏ tiếp theo'**
+  String get usBridgeNextStepTitle;
+
+  /// US-13 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Hỗ trợ an toàn'**
+  String get usSafetyTitle;
+
+  /// REC-01 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Câu chuyện ngày'**
+  String get recapDayTitle;
+
+  /// REC-03 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Tháng tuổi'**
+  String get recapMonthTitle;
+
+  /// CARE-11 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Thống kê'**
+  String get careStatsTitle;
+
+  /// MEM-17 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Thùng rác'**
+  String get memTrashTitle;
+
+  /// MEM-18 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Nháp'**
+  String get memDraftsTitle;
+
+  /// MEM-19 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Chờ duyệt'**
+  String get memPendingTitle;
+
+  /// CHD-05 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Lưu trữ hoặc xoá bé'**
+  String get childArchiveTitle;
+
+  /// Circle tab bar
+  ///
+  /// In vi, this message translates to:
+  /// **'Cháu yêu'**
+  String get circleTabHome;
+
+  /// Circle tab bar
+  ///
+  /// In vi, this message translates to:
+  /// **'Ký ức'**
+  String get circleTabMemories;
+
+  /// Circle tab bar
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng ảnh'**
+  String get circleTabPost;
+
+  /// Circle tab bar
+  ///
+  /// In vi, this message translates to:
+  /// **'Tôi'**
+  String get circleTabMe;
+
+  /// CIR-04 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng ảnh cho cháu'**
+  String get circlePostTitle;
+
+  /// CIR-03 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiết ký ức'**
+  String get circleMemoryDetailTitle;
+
+  /// CIR-05 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Gia đình tạm dừng chia sẻ'**
+  String get circlePausedTitle;
+
+  /// SET-10 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Rời gia đình'**
+  String get circleLeaveTitle;
+
+  /// SUB-03 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Gói của gia đình'**
+  String get billingPlanTitle;
+
+  /// FAM-02 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Mời bạn đời cùng tham gia'**
+  String get familyInvitePartnerTitle;
+
+  /// FAM-05 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời mời đang chờ'**
+  String get familyPendingInvitesTitle;
+
+  /// SET-13 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Người bị chặn'**
+  String get settingsBlockedTitle;
 }
 
 class _AppLocalizationsDelegate

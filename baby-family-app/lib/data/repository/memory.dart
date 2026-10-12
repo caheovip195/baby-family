@@ -56,4 +56,32 @@ abstract class IMemoryRepository extends IBaseRepository {
   void saveSearchRecents(List<String> recents);
 
   JsonMap weeklyRecap();
+
+  // --- Batch 3 (MEM-17/18/19, REC-01/03, CIR-04) ---
+  List<JsonMap> trash(String familyId);
+
+  void restoreFromTrash(String id);
+
+  void removeFromTrash(String id);
+
+  List<JsonMap> drafts(String userId);
+
+  void removeDraft(String id);
+
+  List<JsonMap> pendingPosts(String familyId);
+
+  JsonMap addPendingPost(JsonMap post);
+
+  /// Duyệt: chuyển bài người thân đăng sang ký ức.
+  void approvePendingPost(String id, JsonMap patch);
+
+  void removePendingPost(String id);
+
+  JsonMap dayStory();
+
+  void saveDayStory(JsonMap story);
+
+  JsonMap monthRecap();
+
+  JsonMap circlePostDraft();
 }

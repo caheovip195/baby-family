@@ -32,7 +32,7 @@ const kNarrowSize = Size(360, 780);
 
 bool _fontsLoaded = false;
 
-/// Loads Nunito, Be Vietnam Pro and the Lucide icon font so goldens show real
+/// Loads Nunito, Be Vietnam Pro, Dancing Script and the Lucide icon font so goldens show real
 /// text and icons instead of Ahem boxes. Call once in `setUpAll`.
 Future<void> loadAppFonts() async {
   if (_fontsLoaded) {
@@ -55,6 +55,7 @@ Future<void> loadAppFonts() async {
     'assets/fonts/BeVietnamPro-Medium.ttf',
     'assets/fonts/BeVietnamPro-SemiBold.ttf',
   ]);
+  await load('DancingScript', ['assets/fonts/DancingScript-Variable.ttf']);
   // Package fonts are registered as `packages/<package>/<family>`.
   await load('packages/lucide_flutter/LucideIcons', [
     'packages/lucide_flutter/assets/lucide.ttf',

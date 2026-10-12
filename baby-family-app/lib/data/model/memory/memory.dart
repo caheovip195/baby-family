@@ -41,6 +41,13 @@ abstract class Memory with _$Memory {
     @JsonKey(name: 'perspectivePreview') String? perspectivePreview,
     @JsonKey(name: 'isFavorite') @Default(false) bool isFavorite,
     @JsonKey(name: 'pinned') @Default(false) bool pinned,
+
+    /// MEM-17: ngày xoá / người xoá (thùng rác giữ 30 ngày).
+    @JsonKey(name: 'deletedAt') DateTime? deletedAt,
+    @JsonKey(name: 'deletedByUserId') String? deletedByUserId,
+
+    /// MEM-19: lý do từ chối ảnh người thân đăng.
+    @JsonKey(name: 'rejectReason') String? rejectReason,
   }) = _Memory;
 
   const Memory._();

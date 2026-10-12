@@ -26,6 +26,15 @@ abstract class ChildProfile with _$ChildProfile {
     @JsonKey(name: 'relativeViewerNames')
     @Default([])
     List<String> relativeViewerNames,
+
+    /// CHD-05.
+    @JsonKey(name: 'addedByUserId') String? addedByUserId,
+    @JsonKey(name: 'addedAt') DateTime? addedAt,
+    @JsonKey(name: 'duplicateOfChildId') String? duplicateOfChildId,
+    @JsonKey(name: 'sharedMemoryCount') @Default(0) int sharedMemoryCount,
+    @JsonKey(name: 'sharedWithChildIds')
+    @Default([])
+    List<String> sharedWithChildIds,
   }) = _ChildProfile;
 
   factory ChildProfile.fromJson(Map<String, dynamic> json) =>

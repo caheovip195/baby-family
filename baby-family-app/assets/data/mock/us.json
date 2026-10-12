@@ -223,5 +223,135 @@
     "quietTo": "06:30",
     "bridgeRetentionDays": 30,
     "journalFaceIdLock": true
+  },
+  "bridgeSessions": [
+    {
+      "id": "br-draft",
+      "familyId": "f-lan",
+      "status": "draft",
+      "initiatorUserId": "u-lan",
+      "wizardStep": 3,
+      "privateNote": "Đêm qua Haru dậy 3 lần, em dỗ một mình. Sáng nay anh lại hỏi sao em cáu. Em không cáu anh, em chỉ mệt lắm rồi và cần anh đỡ một tay…",
+      "shares": [
+        {
+          "userId": "u-lan",
+          "feelings": [
+            "exhausted",
+            "overwhelmed"
+          ],
+          "needs": [
+            "practical_help",
+            "care"
+          ],
+          "topic": "Chăm Haru",
+          "message": "Mấy đêm nay em dậy với Haru một mình và em thấy kiệt sức. Em muốn mình chia nhau việc dậy đêm, anh nhé."
+        }
+      ]
+    },
+    {
+      "id": "br-1",
+      "familyId": "f-lan",
+      "status": "active",
+      "initiatorUserId": "u-lan",
+      "startedAt": "2026-10-07T21:10:00.000",
+      "wizardStep": 5,
+      "retentionDays": 30,
+      "shares": [
+        {
+          "userId": "u-lan",
+          "feelings": [
+            "exhausted",
+            "overwhelmed"
+          ],
+          "needs": [
+            "practical_help",
+            "care"
+          ],
+          "topic": "Chăm Haru",
+          "message": "Mấy đêm nay em dậy với Haru một mình và em thấy kiệt sức. Em muốn mình chia nhau việc dậy đêm, anh nhé."
+        },
+        {
+          "userId": "u-minh",
+          "feelings": [
+            "misunderstood",
+            "exhausted"
+          ],
+          "needs": [
+            "listened",
+            "calm_talk"
+          ],
+          "message": "Anh không biết em mệt đến vậy. Anh muốn nghe em nói.",
+          "understood": true,
+          "readDone": true
+        }
+      ],
+      "nextStep": {
+        "code": "watch_kids_30",
+        "whenLabel": {
+          "vi": "Tối nay · 21:30",
+          "en": "Tonight · 21:30",
+          "zh": "今晚 · 21:30",
+          "ja": "今夜 · 21:30"
+        },
+        "at": "2026-10-07T21:30:00.000",
+        "childIds": [
+          "haru"
+        ],
+        "reminder": true,
+        "reminderAt": "2026-10-07T21:25:00.000",
+        "agreedUserIds": [
+          "u-minh"
+        ]
+      },
+      "closeAgreedUserIds": [
+        "u-minh"
+      ]
+    }
+  ],
+  "bridgeRewrite": {
+    "original": "Anh chẳng bao giờ dậy đêm với con, lúc nào cũng để em lo hết.",
+    "selected": "neutral",
+    "edited": "Mấy đêm nay em dậy với Haru một mình và em thấy kiệt sức. Em muốn mình chia nhau việc dậy đêm, anh nhé.",
+    "options": [
+      {
+        "tone": "neutral",
+        "text": "Mấy đêm nay em dậy với Haru một mình và em thấy kiệt sức. Em muốn mình chia nhau việc dậy đêm."
+      },
+      {
+        "tone": "warm",
+        "text": "Em biết anh cũng mệt. Mấy đêm nay em dỗ Haru một mình nên em đuối lắm — mình cùng tính chuyện chia ca đêm nhé? 💛"
+      },
+      {
+        "tone": "short",
+        "text": "Em cần anh thay em dậy đêm với Haru vài hôm."
+      }
+    ]
+  },
+  "coupleWeek": {
+    "start": "2026-09-28T00:00:00.000",
+    "end": "2026-10-04T00:00:00.000",
+    "headline": {
+      "vi": "Một tuần hai bạn luôn để ý đến nhau 💜",
+      "en": "A week of looking out for each other 💜",
+      "zh": "这一周你们一直在彼此关心 💜",
+      "ja": "おたがいを気づかった一週間 💜"
+    },
+    "checkins": 9,
+    "requestsHelped": 4,
+    "thanks": 6,
+    "togetherMissions": 2,
+    "highlightThanks": "Cảm ơn em đã dỗ Haru ngủ để anh được nghỉ một chút.",
+    "highlightByUserId": "u-minh",
+    "highlightAt": "2026-10-03T21:00:00.000",
+    "together": [
+      {
+        "title": "Uống trà cùng nhau sau khi con ngủ",
+        "date": "2026-09-29T00:00:00.000"
+      },
+      {
+        "title": "Đi dạo 15 phút quanh nhà",
+        "date": "2026-10-04T00:00:00.000"
+      }
+    ]
   }
 }

@@ -16,6 +16,9 @@ abstract class PlanInfo with _$PlanInfo {
     @JsonKey(name: 'storageQuotaMb') @Default(0) int storageQuotaMb,
     @JsonKey(name: 'relativeSlotsUsed') @Default(0) int relativeSlotsUsed,
     @JsonKey(name: 'relativeSlotsMax') @Default(0) int relativeSlotsMax,
+
+    /// SUB-06: gia hạn chưa thành công (gói vẫn hoạt động).
+    @JsonKey(name: 'paymentIssue') @Default(false) bool paymentIssue,
   }) = _PlanInfo;
 
   factory PlanInfo.fromJson(Map<String, dynamic> json) =>

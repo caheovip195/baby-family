@@ -16,7 +16,8 @@ void main() {
       SessionState.activatedSetup: OnboardingActivatedRoute.name,
       SessionState.active: MainShellRoute.name,
       SessionState.circleWaiting: CircleWaitingRoute.name,
-      SessionState.circleActive: CircleHomeRoute.name,
+      SessionState.circleActive: CircleShellRoute.name,
+      SessionState.circlePaused: CirclePausedRoute.name,
       SessionState.expired: ExpiredRoute.name,
     };
     for (final state in SessionState.values) {

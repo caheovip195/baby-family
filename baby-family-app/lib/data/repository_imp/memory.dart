@@ -108,4 +108,68 @@ class MemoryRepositoryImp extends MockRepositoryImp
 
   @override
   JsonMap weeklyRecap() => metaSection('weeklyRecap');
+
+  @override
+  List<JsonMap> trash(String familyId) =>
+      rows('trash', (row) => row['familyId'] == familyId);
+
+  @override
+  void restoreFromTrash(String id) {
+    final row = store.find('trash', id);
+    if (row == null) {
+      return;
+    }
+    store.remove('trash', id);
+    store
+        .table('memories')
+        .add(
+          Map<String, dynamic>.of(row)
+            ..remove('deletedAt')
+            ..remove('deletedByUserId'),
+        );
+    store.commit();
+  }
+
+  @override
+  void removeFromTrash(String id) => removeRow('trash', id);
+
+  @override
+  List<JsonMap> drafts(String userId) =>
+      rows('drafts', (row) => row['userId'] == userId);
+
+  @override
+  void removeDraft(String id) => removeRow('drafts', id);
+
+  @override
+  List<JsonMap> pendingPosts(String familyId) =>
+      rows('pendingPosts', (row) => row['familyId'] == familyId);
+
+  @override
+  JsonMap addPendingPost(JsonMap post) => insert('pendingPosts', post);
+
+  @override
+  void approvePendingPost(String id, JsonMap patch) {
+    final row = store.find('pendingPosts', id);
+    if (row == null) {
+      return;
+    }
+    store.remove('pendingPosts', id);
+    store.table('memories').insert(0, {...row, ...patch});
+    store.commit();
+  }
+
+  @override
+  void removePendingPost(String id) => removeRow('pendingPosts', id);
+
+  @override
+  JsonMap dayStory() => metaSection('dayStory');
+
+  @override
+  void saveDayStory(JsonMap story) => saveMeta('dayStory', story);
+
+  @override
+  JsonMap monthRecap() => metaSection('monthRecap');
+
+  @override
+  JsonMap circlePostDraft() => metaSection('circlePostDraft');
 }

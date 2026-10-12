@@ -30,13 +30,18 @@ enum SessionState {
   /// Người thân đã tham gia gia đình → CIR-01.
   circleActive,
 
+  /// Gia đình tạm dừng chia sẻ với người thân này → CIR-05.
+  circlePaused,
+
   /// Hết dùng thử/gói → SUB-07 (BR-056).
   expired;
 
   bool get isParentActive => this == SessionState.active;
 
   bool get isCircle =>
-      this == SessionState.circleWaiting || this == SessionState.circleActive;
+      this == SessionState.circleWaiting ||
+      this == SessionState.circleActive ||
+      this == SessionState.circlePaused;
 
   /// Đang trong luồng thiết lập (đăng nhập/onboarding) — chưa vào app chính.
   bool get isOnboarding => const {

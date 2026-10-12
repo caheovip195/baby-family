@@ -19,7 +19,8 @@ PageRouteInfo routeForSession(AppSession session) {
     SessionState.activatedSetup => const OnboardingActivatedRoute(),
     SessionState.active => const MainShellRoute(),
     SessionState.circleWaiting => const CircleWaitingRoute(),
-    SessionState.circleActive => const CircleHomeRoute(),
+    SessionState.circleActive => const CircleShellRoute(),
+    SessionState.circlePaused => const CirclePausedRoute(),
     SessionState.expired => const ExpiredRoute(),
   };
 }

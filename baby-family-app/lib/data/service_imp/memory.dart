@@ -2,15 +2,20 @@ import 'package:baby_family/data/dto/memory_search_result.dart';
 import 'package:baby_family/data/model/memory/album.dart';
 import 'package:baby_family/data/model/memory/bump_photo.dart';
 import 'package:baby_family/data/model/memory/collection_summary.dart';
+import 'package:baby_family/data/model/memory/day_story.dart';
 import 'package:baby_family/data/model/memory/memory.dart';
 import 'package:baby_family/data/model/memory/memory_comment.dart';
+import 'package:baby_family/data/model/memory/memory_draft_item.dart';
 import 'package:baby_family/data/model/memory/memory_perspective.dart';
 import 'package:baby_family/data/model/memory/memory_prompt.dart';
 import 'package:baby_family/data/model/memory/milestone_group.dart';
 import 'package:baby_family/data/model/memory/milestone_item.dart';
 import 'package:baby_family/data/model/memory/milestone_option.dart';
+import 'package:baby_family/data/model/memory/month_recap.dart';
 import 'package:baby_family/data/model/memory/monthly_photo.dart';
 import 'package:baby_family/data/model/memory/on_this_day_group.dart';
+import 'package:baby_family/data/model/memory/report_reason.dart';
+import 'package:baby_family/data/model/memory/report_receipt.dart';
 import 'package:baby_family/data/model/memory/story_item.dart';
 import 'package:baby_family/data/model/memory/weekly_recap.dart';
 import 'package:baby_family/data/repository/base.dart';
@@ -730,5 +735,140 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
     await ready();
     final row = _repository.weeklyRecap();
     return row.isEmpty ? null : WeeklyRecap.fromJson(row);
+  }
+
+  // ------------------------------------------------------------ batch 3
+
+  /// Thùng rác giữ 30 ngày (mục 7.x, MEM-17).
+  static const _trashDays = 30;
+
+  @override
+  Future<List<Memory>> trash() async {
+    await ready();
+    return _repository.trash(familyId).map(Memory.fromJson).toList()..sort(
+      (a, b) =>
+          (b.deletedAt ?? b.occurredAt).compareTo(a.deletedAt ?? a.occurredAt),
+    );
+  }
+
+  @override
+  int trashDaysLeft(Memory memory) {
+    final deleted = memory.deletedAt;
+    if (deleted == null) {
+      return _trashDays;
+    }
+    final day = DateTime(deleted.year, deleted.month, deleted.day);
+    return (_trashDays - today.difference(day).inDays).clamp(0, _trashDays);
+  }
+
+  @override
+  Future<void> restoreMemory(String memoryId) async {
+    await ready();
+    _repository.restoreFromTrash(memoryId);
+  }
+
+  @override
+  Future<void> deleteForever(String memoryId) async {
+    await ready();
+    _repository.removeFromTrash(memoryId);
+  }
+
+  @override
+  Future<List<MemoryDraftItem>> drafts() async {
+    await ready();
+    final all = _repository.drafts(myUserId).map(MemoryDraftItem.fromJson);
+    return [
+      ...all.where((draft) => draft.location == DraftLocation.device),
+      ...all.where((draft) => draft.location == DraftLocation.cloud),
+    ];
+  }
+
+  @override
+  Future<void> deleteDraft(String draftId) async {
+    await ready();
+    _repository.removeDraft(draftId);
+  }
+
+  @override
+  Future<List<Memory>> pendingPosts() async {
+    await ready();
+    return _repository.pendingPosts(familyId).map(Memory.fromJson).toList()
+      ..sort((a, b) => b.occurredAt.compareTo(a.occurredAt));
+  }
+
+  @override
+  Future<void> approvePost(String postId, {List<String>? childIds}) async {
+    await ready();
+    _repository.approvePendingPost(postId, {
+      'childIds': ?childIds,
+      ChildServiceImp.localKey: true,
+    });
+  }
+
+  @override
+  Future<void> rejectPost(String postId, {String? reason}) async {
+    await ready();
+    _repository.removePendingPost(postId);
+  }
+
+  @override
+  Future<List<String>> rejectReasons() async {
+    await ready();
+    return ((_repository.catalog()['rejectReasons'] as List?) ?? const [])
+        .cast<String>();
+  }
+
+  @override
+  Future<List<ReportReason>> reportReasons() async {
+    await ready();
+    return [
+      for (final row
+          in (_repository.catalog()['reportReasons'] as List?) ?? const [])
+        ReportReason.fromJson(Map<String, dynamic>.from(row as Map)),
+    ];
+  }
+
+  @override
+  Future<ReportReceipt> submitReport({
+    required String targetId,
+    required String reasonCode,
+    String? note,
+    bool hideForMe = false,
+    bool removeFromFamily = false,
+  }) async {
+    await ready();
+    if (removeFromFamily) {
+      _repository.updateMemory(targetId, {
+        'visibility': MemoryVisibility.onlyMe.name,
+      });
+    }
+    // Mock receipt: the design's sample code (RPT-01b).
+    return ReportReceipt(code: 'BC-261007-0482', createdAt: now);
+  }
+
+  @override
+  Future<DayStory?> dayStory({String? childId}) async {
+    await ready();
+    final row = _repository.dayStory();
+    if (row.isEmpty || (childId != null && row['childId'] != childId)) {
+      return null;
+    }
+    return DayStory.fromJson(row);
+  }
+
+  @override
+  Future<void> saveDayStory(DayStory story) async {
+    await ready();
+    _repository.saveDayStory(story.toJson());
+  }
+
+  @override
+  Future<MonthRecap?> monthRecap({String? childId}) async {
+    await ready();
+    final row = _repository.monthRecap();
+    if (row.isEmpty || (childId != null && row['childId'] != childId)) {
+      return null;
+    }
+    return MonthRecap.fromJson(row);
   }
 }

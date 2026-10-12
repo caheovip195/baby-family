@@ -2,6 +2,7 @@ import 'package:baby_family/data/dto/care_board.dart';
 import 'package:baby_family/data/dto/mission_completion.dart';
 import 'package:baby_family/data/dto/mission_draft.dart';
 import 'package:baby_family/data/model/care/calendar_event.dart';
+import 'package:baby_family/data/model/care/care_stats.dart';
 import 'package:baby_family/data/model/care/family_badge.dart';
 import 'package:baby_family/data/model/care/family_tree.dart';
 import 'package:baby_family/data/model/care/hearts_entry.dart';
@@ -573,5 +574,14 @@ class CareServiceImp extends MockServiceImp implements ICareService {
   Future<void> saveMissionSettings(MissionSettings settings) async {
     await ready();
     _repository.saveMissionSettings(settings.toJson());
+  }
+
+  // ------------------------------------------------------------ batch 3
+
+  @override
+  Future<CareStats?> careStats() async {
+    await ready();
+    final row = _repository.careStats();
+    return row.isEmpty ? null : CareStats.fromJson(row);
   }
 }

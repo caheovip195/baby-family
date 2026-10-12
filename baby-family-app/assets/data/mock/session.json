@@ -5,8 +5,8 @@
   "defaultPartnerName": "Minh",
   "trialDays": 90,
   "aiQuota": {
-    "remaining": 28,
-    "total": 30
+    "remaining": 286,
+    "total": 300
   },
   "appLock": "Face ID",
   "samples": {

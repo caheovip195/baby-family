@@ -48,4 +48,7 @@ abstract class ICareRepository extends IBaseRepository {
   JsonMap missionSettings();
 
   void saveMissionSettings(JsonMap settings);
+
+  // --- Batch 3 (CARE-11) ---
+  JsonMap careStats();
 }

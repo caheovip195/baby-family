@@ -49,9 +49,12 @@ class EventCreateMobileView extends HookConsumerWidget {
     final controller = ref.watch(eventCreateControllerProvider);
     final l10n = context.l10n;
     final title = useTextEditingController();
-    final note = useTextEditingController(text: l10n.calendarDraftNote);
+    final note = useTextEditingController();
     useEffect(() {
-      controller.init().then((_) => title.text = controller.event.title);
+      controller.init().then((_) {
+        title.text = controller.event.title;
+        note.text = controller.event.note ?? '';
+      });
       return null;
     }, const []);
 
@@ -203,6 +206,7 @@ class EventCreateMobileView extends HookConsumerWidget {
             label: l10n.calendarNote,
             hint: l10n.calendarNoteHint,
             controller: note,
+            onChanged: controller.setNote,
           ),
           const SizedBox(height: AppSpacing.s5),
           AppButton(

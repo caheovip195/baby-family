@@ -1,5 +1,6 @@
 import 'package:baby_family/data/dto/fetal_size.dart';
 import 'package:baby_family/data/model/child/child.dart';
+import 'package:baby_family/data/model/child/child_archive_info.dart';
 import 'package:baby_family/data/model/child/child_profile.dart';
 import 'package:baby_family/data/model/memory/chapter_summary.dart';
 import 'package:baby_family/data/model/memory/child_memory_stats.dart';
@@ -64,4 +65,12 @@ abstract class IChildService extends IBaseService {
 
   /// CHD-03: sắp xếp thứ tự hiển thị (kéo thả).
   Future<void> reorderChildren(List<String> childIds);
+
+  // --- Batch 3 (CHD-05) ---
+
+  /// Tác động khi lưu trữ / xoá vĩnh viễn; `deletableFrom` = lưu trữ + 7 ngày.
+  Future<ChildArchiveInfo> archiveInfo(String childId);
+
+  /// CHD-05b: xoá vĩnh viễn (chỉ khi đã lưu trữ đủ 7 ngày — mock không chặn).
+  Future<void> deleteChild(String childId);
 }

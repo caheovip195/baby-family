@@ -1,8 +1,14 @@
 import 'package:baby_family/data/dto/couple_today.dart';
+import 'package:baby_family/data/model/us/bridge_next_step.dart';
+import 'package:baby_family/data/model/us/bridge_option.dart';
+import 'package:baby_family/data/model/us/bridge_session.dart';
 import 'package:baby_family/data/model/us/couple_request.dart';
 import 'package:baby_family/data/model/us/couple_settings.dart';
+import 'package:baby_family/data/model/us/couple_week.dart';
 import 'package:baby_family/data/model/us/journal_entry.dart';
 import 'package:baby_family/data/model/us/mood_checkin.dart';
+import 'package:baby_family/data/model/us/rewrite_suggestion.dart';
+import 'package:baby_family/data/model/us/safety_hotline.dart';
 import 'package:baby_family/data/model/us/thanks.dart';
 import 'package:baby_family/data/service/base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
@@ -97,4 +103,49 @@ abstract class IUsService extends IBaseService {
   Future<CoupleSettings> coupleSettings();
 
   Future<void> saveCoupleSettings(CoupleSettings settings);
+
+  // --- Batch 3 (US-08…14) ---
+
+  /// Catalog Cầu nối (đã dịch): `feelings`, `needs`, `nextSteps`
+  /// (`{partner}` trong tiêu đề = tên gọi bạn đời).
+  Future<List<BridgeOption>> bridgeOptions(String group);
+
+  /// US-08: nháp riêng của tôi (bước 3/5 theo thiết kế).
+  Future<BridgeSession?> bridgeDraft();
+
+  Future<void> saveBridgeDraft(BridgeSession draft);
+
+  /// US-10/11/12: phiên đang mở giữa hai người (không gồm nháp).
+  Future<BridgeSession?> bridgeSession(String id);
+
+  Future<List<BridgeSession>> bridgeSessions();
+
+  /// Gửi lời mời từ nháp → `invited`.
+  Future<void> sendBridgeInvite(String draftId);
+
+  /// US-10 “Tham gia ngay” → `active`.
+  Future<void> joinBridge(String sessionId);
+
+  /// US-10 “Để sau” / US-11 “Tạm dừng”.
+  Future<void> pauseBridge(String sessionId);
+
+  /// US-11 “Mình hiểu”.
+  Future<void> markBridgeUnderstood(String sessionId);
+
+  /// US-12: chọn / xác nhận bước tiếp theo.
+  Future<void> chooseNextStep(String sessionId, BridgeNextStep step);
+
+  Future<void> confirmNextStep(String sessionId);
+
+  /// US-12b: đóng phiên khi cả hai đồng ý.
+  Future<void> closeBridge(String sessionId);
+
+  /// US-09: câu gốc + 3 gợi ý viết lại.
+  Future<RewriteSuggestion?> rewriteSuggestion();
+
+  /// US-13: số khẩn cấp.
+  Future<List<SafetyHotline>> safetyHotlines();
+
+  /// US-14: tuần của hai ta.
+  Future<CoupleWeek?> coupleWeek();
 }

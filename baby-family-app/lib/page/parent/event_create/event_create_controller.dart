@@ -78,6 +78,9 @@ class EventCreateController extends BaseNotifier {
 
   void setTitle(String value) => event = event.copyWith(title: value);
 
+  void setNote(String value) =>
+      event = event.copyWith(note: value.trim().isEmpty ? null : value.trim());
+
   void setKind(CalendarEventKind kind) => _update(event.copyWith(kind: kind));
 
   void setLunar(bool value) => _update(event.copyWith(lunar: value));

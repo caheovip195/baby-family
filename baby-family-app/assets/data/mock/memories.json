@@ -844,6 +844,24 @@
       "authorRole": "father",
       "body": "Dạ, Hana thương em lắm ông ạ",
       "createdAt": "2026-10-07T20:05:00.000"
+    },
+    {
+      "id": "cc-1",
+      "memoryId": "c-haru-roll",
+      "authorId": "u-ong-ngoai",
+      "authorName": "Ông ngoại",
+      "authorRole": "relative",
+      "body": "Cháu ông giỏi quá! Cuối tuần ông bà lên chơi với cháu nhé.",
+      "createdAt": "2026-10-07T18:00:00.000"
+    },
+    {
+      "id": "cc-2",
+      "memoryId": "c-haru-roll",
+      "authorId": "u-ba-ngoai",
+      "authorName": "Bà ngoại",
+      "authorRole": "relative",
+      "body": "Đi vững lắm rồi cháu ơi, bà thương 🥰",
+      "createdAt": "2026-10-07T18:10:00.000"
     }
   ],
   "perspectives": [
@@ -1070,8 +1088,8 @@
       "familyId": "f-lan",
       "kind": "photo",
       "authorId": "u-lan",
-      "occurredAt": "2026-10-07T18:25:00.000",
-      "createdAt": "2026-10-07T18:25:00.000",
+      "occurredAt": "2026-10-07T17:30:00.000",
+      "createdAt": "2026-10-07T17:30:00.000",
       "childIds": [
         "haru"
       ],
@@ -1079,6 +1097,15 @@
       "body": "Hôm nay con tự đi được 5 bước rồi!",
       "mediaAssets": [
         "assets/images/demo_circle_hero.jpg"
+      ],
+      "reactions": {
+        "❤️": 6
+      },
+      "reactorNames": [
+        "Bà ngoại",
+        "Bà nội",
+        "Ông ngoại",
+        "Papa"
       ]
     },
     {
@@ -1094,7 +1121,8 @@
       "visibility": "family",
       "mediaAssets": [
         "assets/images/demo_circle_1.jpg"
-      ]
+      ],
+      "title": "Đi giày mới"
     },
     {
       "id": "c-haru-week-2",
@@ -1109,7 +1137,8 @@
       "visibility": "family",
       "mediaAssets": [
         "assets/images/demo_circle_2.jpg"
-      ]
+      ],
+      "title": "Ăn chuối một mình"
     },
     {
       "id": "c-haru-week-3",
@@ -1187,6 +1216,111 @@
       "mediaAssets": [
         "assets/images/design_bump_23.jpg"
       ]
+    },
+    {
+      "id": "c-haru-m17-0",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-lan",
+      "occurredAt": "2026-08-12T10:00:00.000",
+      "createdAt": "2026-08-12T10:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "mediaAssets": [
+        "assets/images/design_monthly_3.jpg"
+      ]
+    },
+    {
+      "id": "c-haru-m17-1",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-lan",
+      "occurredAt": "2026-08-18T10:00:00.000",
+      "createdAt": "2026-08-18T10:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "mediaAssets": [
+        "assets/images/design_monthly_4.jpg"
+      ]
+    },
+    {
+      "id": "c-haru-m17-2",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-lan",
+      "occurredAt": "2026-08-24T10:00:00.000",
+      "createdAt": "2026-08-24T10:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "mediaAssets": [
+        "assets/images/design_monthly_5.jpg"
+      ]
+    },
+    {
+      "id": "c-first-steps",
+      "familyId": "f-lan",
+      "kind": "milestone",
+      "authorId": "u-lan",
+      "occurredAt": "2026-08-11T16:00:00.000",
+      "createdAt": "2026-08-11T16:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "title": "Haru tự đi được rồi!",
+      "milestoneCode": "first_step",
+      "milestoneTitle": {
+        "vi": "Bước đi đầu tiên",
+        "en": "First steps",
+        "zh": "第一步",
+        "ja": "はじめの一歩"
+      }
+    },
+    {
+      "id": "c-first-mama",
+      "familyId": "f-lan",
+      "kind": "milestone",
+      "authorId": "u-minh",
+      "occurredAt": "2026-07-18T16:00:00.000",
+      "createdAt": "2026-07-18T16:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "title": "Haru gọi “Mẹ” rồi!",
+      "milestoneCode": "call_mama",
+      "milestoneTitle": {
+        "vi": "Gọi “Mẹ”",
+        "en": "Said “Mama”",
+        "zh": "叫“妈妈”",
+        "ja": "「ママ」と呼んだ"
+      }
+    },
+    {
+      "id": "c-first-roll",
+      "familyId": "f-lan",
+      "kind": "milestone",
+      "authorId": "u-lan",
+      "occurredAt": "2025-08-10T16:20:00.000",
+      "createdAt": "2025-08-10T16:20:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "title": "Haru lẫy được rồi!",
+      "milestoneCode": "roll_over",
+      "milestoneTitle": {
+        "vi": "Biết lẫy",
+        "en": "Rolled over",
+        "zh": "翻身",
+        "ja": "寝返り"
+      }
     }
   ],
   "albums": [
@@ -1747,5 +1881,305 @@
       "ja": "家族みんなで"
     },
     "togetherBody": "Tối thứ Ba cả nhà dạo công viên, Hana chơi xích đu cả tiếng."
+  },
+  "trash": [
+    {
+      "id": "t-nap-ba",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-lan",
+      "occurredAt": "2026-09-30T13:00:00.000",
+      "createdAt": "2026-09-30T13:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "title": "Haru ngủ trưa ở nhà bà",
+      "mediaAssets": [
+        "assets/images/design_homeChildToday3Asset.jpg",
+        "assets/images/design_homeChildToday4Asset.jpg"
+      ],
+      "commentCount": 3,
+      "reactions": {
+        "❤️": 5
+      },
+      "deletedAt": "2026-09-30T20:00:00.000",
+      "deletedByUserId": "u-lan"
+    },
+    {
+      "id": "t-park",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-minh",
+      "occurredAt": "2026-09-20T16:00:00.000",
+      "createdAt": "2026-09-20T16:00:00.000",
+      "childIds": [
+        "hana",
+        "haru"
+      ],
+      "visibility": "family",
+      "title": "Đi công viên Thống Nhất",
+      "mediaAssets": [
+        "assets/images/design_homeWeek3Asset.jpg",
+        "assets/images/design_homeWeek4Asset.jpg",
+        "assets/images/demo_circle_1.jpg",
+        "assets/images/demo_circle_2.jpg"
+      ],
+      "deletedAt": "2026-09-21T09:00:00.000",
+      "deletedByUserId": "u-minh"
+    },
+    {
+      "id": "t-room",
+      "familyId": "f-lan",
+      "kind": "diary",
+      "authorId": "u-lan",
+      "occurredAt": "2026-09-04T21:00:00.000",
+      "createdAt": "2026-09-04T21:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "title": "Đêm đầu Haru ngủ phòng riêng",
+      "deletedAt": "2026-09-10T22:00:00.000",
+      "deletedByUserId": "u-lan"
+    }
+  ],
+  "drafts": [
+    {
+      "id": "dr-shoes",
+      "kind": "photo",
+      "title": "Haru đi giày mới",
+      "childIds": [
+        "haru"
+      ],
+      "updatedAt": "2026-10-06T21:40:00.000",
+      "location": "device",
+      "mediaAssets": [
+        "assets/images/design_homeChildToday1Asset.jpg"
+      ],
+      "extraCount": 3,
+      "userId": "u-lan"
+    },
+    {
+      "id": "dr-song",
+      "kind": "voice",
+      "title": "Hana hát “Cả nhà thương nhau”",
+      "childIds": [
+        "hana"
+      ],
+      "updatedAt": "2026-10-07T08:15:00.000",
+      "location": "device",
+      "voiceDurationSec": 42,
+      "userId": "u-lan"
+    },
+    {
+      "id": "dr-letter",
+      "kind": "letter",
+      "title": "Thư gửi Haru tròn 18 tháng",
+      "childIds": [
+        "haru"
+      ],
+      "updatedAt": "2026-10-06T22:15:00.000",
+      "location": "cloud",
+      "deviceName": "iPad",
+      "userId": "u-lan"
+    },
+    {
+      "id": "dr-socks",
+      "kind": "keepsake",
+      "title": "Kỷ vật: đôi tất đầu tiên",
+      "childIds": [
+        "haru"
+      ],
+      "updatedAt": "2026-09-28T20:02:00.000",
+      "location": "cloud",
+      "mediaAssets": [
+        "assets/images/design_keepsake.jpg"
+      ],
+      "userId": "u-lan"
+    }
+  ],
+  "pendingPosts": [
+    {
+      "id": "pp-chao",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-ba-ngoai",
+      "occurredAt": "2026-10-06T16:20:00.000",
+      "createdAt": "2026-10-06T16:20:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "body": "Haru sang nhà bà chơi, ăn hết bát cháo bà nấu 😋",
+      "mediaAssets": [
+        "assets/images/demo_circle_hero.jpg",
+        "assets/images/demo_circle_1.jpg",
+        "assets/images/demo_circle_2.jpg"
+      ]
+    },
+    {
+      "id": "pp-tam",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-ba-ngoai",
+      "occurredAt": "2026-10-05T09:12:00.000",
+      "createdAt": "2026-10-05T09:12:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "body": "Haru tắm chậu ngoài sân nhà bà, nghịch nước mãi không chịu lên",
+      "mediaAssets": [
+        "assets/images/demo_circle_3.jpg"
+      ]
+    },
+    {
+      "id": "pp-meo",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-ba-ngoai",
+      "occurredAt": "2026-09-29T15:00:00.000",
+      "createdAt": "2026-09-29T15:00:00.000",
+      "childIds": [
+        "hana"
+      ],
+      "visibility": "family",
+      "body": "Hana vẽ tặng bà con mèo",
+      "mediaAssets": [
+        "assets/images/design_homeWeek1Asset.jpg"
+      ]
+    }
+  ],
+  "dayStory": {
+    "date": "2026-10-07T00:00:00.000",
+    "childId": "haru",
+    "title": "Ngày cuối của tháng 17 🌼",
+    "aiGenerated": true,
+    "body": "Sáng nay Haru tự đi được 5 bước tới chỗ Bà ngoại rồi cười tít mắt khi được ôm. Chiều, con cùng Papa xếp hình thành một ngôi nhà nhỏ. Lúc Mama đi làm về, Haru lẫm chẫm ra cửa gọi “Mẹ” thật to. Một ngày cuối tháng 17 thật đáng nhớ!",
+    "coverAsset": "assets/images/demo_circle_hero.jpg",
+    "visibility": "parents",
+    "photoAssets": [
+      "assets/images/demo_circle_hero.jpg",
+      "assets/images/design_homeChildToday2Asset.jpg"
+    ],
+    "items": [
+      {
+        "id": "ds-1",
+        "title": "Tự đi được 5 bước tới chỗ Bà ngoại",
+        "kindCode": "photo",
+        "time": "09:40",
+        "icon": "footprints"
+      },
+      {
+        "id": "ds-2",
+        "title": "Chơi xếp hình với Haru 10 phút",
+        "kindCode": "mission",
+        "time": "16:15",
+        "icon": "blocks"
+      },
+      {
+        "id": "ds-3",
+        "title": "Gọi “Mẹ” khi Mama về",
+        "kindCode": "voice",
+        "time": "17:20",
+        "icon": "mic"
+      },
+      {
+        "id": "ds-4",
+        "title": "Ăn hết bát cháo bí đỏ",
+        "kindCode": "photo",
+        "time": "11:30",
+        "icon": "utensils",
+        "selected": false
+      }
+    ]
+  },
+  "monthRecap": {
+    "childId": "haru",
+    "monthIndex": 18,
+    "start": "2026-09-08T00:00:00.000",
+    "end": "2026-10-07T00:00:00.000",
+    "pageCount": 6,
+    "headline": {
+      "vi": "Một tháng con lớn thật nhanh 🌱",
+      "en": "A month of growing so fast 🌱",
+      "zh": "这个月长得好快 🌱",
+      "ja": "あっという間に大きくなったひと月 🌱"
+    },
+    "moments": 46,
+    "firsts": 2,
+    "voices": 5,
+    "previousPhotoAsset": "assets/images/design_monthly_5.jpg",
+    "firstMemories": [
+      {
+        "id": "mr-spoon",
+        "familyId": "f-lan",
+        "kind": "milestone",
+        "authorId": "u-lan",
+        "occurredAt": "2026-09-20T12:00:00.000",
+        "createdAt": "2026-09-20T12:00:00.000",
+        "childIds": [
+          "haru"
+        ],
+        "visibility": "family",
+        "title": "Tự cầm thìa xúc ăn"
+      },
+      {
+        "id": "mr-bye",
+        "familyId": "f-lan",
+        "kind": "milestone",
+        "authorId": "u-minh",
+        "occurredAt": "2026-09-13T18:00:00.000",
+        "createdAt": "2026-09-13T18:00:00.000",
+        "childIds": [
+          "haru"
+        ],
+        "visibility": "family",
+        "title": "Vẫy tay chào “bai bai”"
+      }
+    ],
+    "voiceMemories": [
+      {
+        "id": "mr-me",
+        "familyId": "f-lan",
+        "kind": "voice",
+        "authorId": "u-ba-ngoai",
+        "occurredAt": "2026-10-07T17:20:00.000",
+        "createdAt": "2026-10-07T17:20:00.000",
+        "childIds": [
+          "haru"
+        ],
+        "visibility": "family",
+        "title": "“Mẹ!” — khi Mama đi làm về",
+        "voiceDurationSec": 4
+      },
+      {
+        "id": "mr-ba",
+        "familyId": "f-lan",
+        "kind": "voice",
+        "authorId": "u-minh",
+        "occurredAt": "2026-09-21T19:00:00.000",
+        "createdAt": "2026-09-21T19:00:00.000",
+        "childIds": [
+          "haru"
+        ],
+        "visibility": "family",
+        "title": "“Bà… bà” — gọi Bà nội qua video",
+        "voiceDurationSec": 7
+      }
+    ]
+  },
+  "circlePostDraft": {
+    "mediaAssets": [
+      "assets/images/demo_circle_hero.jpg",
+      "assets/images/demo_circle_1.jpg",
+      "assets/images/demo_circle_3.jpg"
+    ],
+    "childIds": [
+      "haru"
+    ],
+    "takenAt": "2026-10-07T00:00:00.000",
+    "message": "Haru sang nhà bà chơi, cứ đòi bà dắt ra ngõ xem gà 🐓"
   }
 }

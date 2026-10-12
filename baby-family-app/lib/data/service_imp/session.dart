@@ -74,9 +74,13 @@ class SessionServiceImp extends MockServiceImp implements ISessionService {
       };
     }
     if (member['role'] == FamilyRole.relative.name) {
-      return member['status'] == MemberStatus.active.name
-          ? SessionState.circleActive
-          : SessionState.circleWaiting;
+      if (member['status'] != MemberStatus.active.name) {
+        return SessionState.circleWaiting;
+      }
+      // CIR-05: the family paused sharing with this relative.
+      return member['paused'] == true
+          ? SessionState.circlePaused
+          : SessionState.circleActive;
     }
     final familyId = member['familyId'] as String;
     final family = _familyRepository.family(familyId);
@@ -87,7 +91,10 @@ class SessionServiceImp extends MockServiceImp implements ISessionService {
               row['role'] != FamilyRole.relative.name &&
               row['status'] == MemberStatus.active.name,
         );
-    if (family == null || parents.length < 2) {
+    // PARTNER_LEFT (US-00): the remaining parent keeps using the app in
+    // view & download mode instead of going back to ONB-WAIT.
+    final partnerLeft = family?['partnerLeftAt'] != null;
+    if (family == null || (parents.length < 2 && !partnerLeft)) {
       return SessionState.waitingPartner;
     }
     if ((family['plan'] as JsonMap?)?['state'] == PlanState.expired.name) {
@@ -207,9 +214,18 @@ class SessionServiceImp extends MockServiceImp implements ISessionService {
       'isAdmin': true,
       'joinedAt': now.toIso8601String(),
     });
+    // ONB-07 (Pencil `tIOQ7`): lời mời đầu tiên của phiên dùng mã mẫu
+    // “K7Q2 · 9MXA”; các gia đình tạo sau nhận mã sinh từ id.
+    final sampleCode =
+        sessionRepository.config()['partnerInviteCode'] as String?;
+    final useSample = sampleCode != null && raw['sampleInviteIssued'] != true;
+    if (useSample) {
+      sessionRepository.patchSession({'sampleInviteIssued': true});
+    }
     _familyRepository.addInvite({
-      'code':
-          'BF${(familyId.hashCode.abs() % 1000000).toString().padLeft(6, '0')}',
+      'code': useSample
+          ? sampleCode
+          : 'BF${(familyId.hashCode.abs() % 1000000).toString().padLeft(6, '0')}',
       'kind': InviteKind.partner.name,
       'familyId': familyId,
       'inviterMemberId': member['id'],
@@ -349,16 +365,37 @@ class SessionServiceImp extends MockServiceImp implements ISessionService {
     final hidden = <Child>[
       for (final row in _childRepository.children(info.familyId))
         if (row['kind'] == ChildKind.baby.name &&
+            row['archived'] != true &&
             !info.grantedChildIds.contains(row['id']))
           Child.fromJson(row),
     ];
     _familyRepository.updateInvite(info.id, {
       'openedAt': now.toIso8601String(),
     });
+    // Batch 3: INV-02/03/04 states from the invite status (mock codes
+    // HETHAN01, KHOA2026, CHOXN001).
+    final me = _familyRepository.member(myMemberId);
+    final parentElsewhere =
+        info.kind == InviteKind.partner &&
+        me != null &&
+        me['role'] != FamilyRole.relative.name &&
+        me['familyId'] != info.familyId;
+    final state = switch (info.status) {
+      'expired' || 'revoked' => InvitePreviewState.invalid,
+      'pendingApproval' => InvitePreviewState.waitingConfirm,
+      _ when parentElsewhere => InvitePreviewState.alreadyParent,
+      _ => InvitePreviewState.valid,
+    };
     return InvitePreviewData(
       invite: info,
       children: children,
       hiddenChildren: info.kind == InviteKind.relative ? hidden : const [],
+      state: state,
+      currentFamilyName: parentElsewhere
+          ? (_familyRepository.family(me['familyId'] as String?)?['name']
+                as String?)
+          : null,
+      currentCallName: parentElsewhere ? me['callName'] as String? : null,
     );
   }
 

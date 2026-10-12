@@ -3386,9 +3386,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get invViewOnly => 'Chỉ xem';
 
   @override
-  String get invNameSeparator => ', ';
-
-  @override
   String get homeMorning => 'Chào buổi sáng,';
 
   @override
@@ -4288,9 +4285,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get calendarNote => 'Ghi chú';
-
-  @override
-  String get calendarDraftNote => 'Đặt bánh bông lan trứng muối Bà thích';
 
   @override
   String get calendarNoteHint => 'Thêm ghi chú…';
@@ -6149,4 +6143,70 @@ class AppLocalizationsVi extends AppLocalizations {
   String memAlbumCount(int count) {
     return '$count album';
   }
+
+  @override
+  String get usBridgeRewriteTitle => 'Viết lại nhẹ nhàng';
+
+  @override
+  String get usBridgeNextStepTitle => 'Một bước nhỏ tiếp theo';
+
+  @override
+  String get usSafetyTitle => 'Hỗ trợ an toàn';
+
+  @override
+  String get recapDayTitle => 'Câu chuyện ngày';
+
+  @override
+  String get recapMonthTitle => 'Tháng tuổi';
+
+  @override
+  String get careStatsTitle => 'Thống kê';
+
+  @override
+  String get memTrashTitle => 'Thùng rác';
+
+  @override
+  String get memDraftsTitle => 'Nháp';
+
+  @override
+  String get memPendingTitle => 'Chờ duyệt';
+
+  @override
+  String get childArchiveTitle => 'Lưu trữ hoặc xoá bé';
+
+  @override
+  String get circleTabHome => 'Cháu yêu';
+
+  @override
+  String get circleTabMemories => 'Ký ức';
+
+  @override
+  String get circleTabPost => 'Đăng ảnh';
+
+  @override
+  String get circleTabMe => 'Tôi';
+
+  @override
+  String get circlePostTitle => 'Đăng ảnh cho cháu';
+
+  @override
+  String get circleMemoryDetailTitle => 'Chi tiết ký ức';
+
+  @override
+  String get circlePausedTitle => 'Gia đình tạm dừng chia sẻ';
+
+  @override
+  String get circleLeaveTitle => 'Rời gia đình';
+
+  @override
+  String get billingPlanTitle => 'Gói của gia đình';
+
+  @override
+  String get familyInvitePartnerTitle => 'Mời bạn đời cùng tham gia';
+
+  @override
+  String get familyPendingInvitesTitle => 'Lời mời đang chờ';
+
+  @override
+  String get settingsBlockedTitle => 'Người bị chặn';
 }
