@@ -1,0 +1,186 @@
+{
+  "prepItems": [
+    {
+      "id": "pr-bag",
+      "familyId": "f-lan",
+      "pregnancyId": "bo",
+      "group": "bag",
+      "title": {
+        "vi": "Túi đồ đi sinh cho mẹ",
+        "en": "Mama’s hospital bag",
+        "zh": "Mama的待产包",
+        "ja": "Mamaの出産バッグ"
+      },
+      "done": false,
+      "ownerUserId": null,
+      "together": true,
+      "requestedFromPartner": false,
+      "isCustom": false
+    },
+    {
+      "id": "pr-clothes",
+      "familyId": "f-lan",
+      "pregnancyId": "bo",
+      "group": "bag",
+      "title": {
+        "vi": "Quần áo sơ sinh 3 bộ",
+        "en": "Three newborn outfits",
+        "zh": "3套新生儿衣服",
+        "ja": "新生児の服3組"
+      },
+      "done": true,
+      "ownerUserId": "u-lan",
+      "together": false,
+      "requestedFromPartner": false,
+      "isCustom": false
+    },
+    {
+      "id": "pr-diapers",
+      "familyId": "f-lan",
+      "pregnancyId": "bo",
+      "group": "bag",
+      "title": {
+        "vi": "Bỉm & khăn sữa",
+        "en": "Diapers & muslin cloths",
+        "zh": "尿布和纱布巾",
+        "ja": "おむつとガーゼ"
+      },
+      "done": false,
+      "ownerUserId": "u-minh",
+      "together": false,
+      "requestedFromPartner": true,
+      "isCustom": false
+    },
+    {
+      "id": "pr-papers",
+      "familyId": "f-lan",
+      "pregnancyId": "bo",
+      "group": "papers",
+      "title": {
+        "vi": "CCCD, sổ khám thai, BHYT",
+        "en": "ID, pregnancy records, insurance",
+        "zh": "身份证、产检记录、医保",
+        "ja": "身分証・妊婦健診記録・保険証"
+      },
+      "done": false,
+      "ownerUserId": "u-lan",
+      "together": false,
+      "requestedFromPartner": false,
+      "isCustom": false
+    },
+    {
+      "id": "pr-registration",
+      "familyId": "f-lan",
+      "pregnancyId": "bo",
+      "group": "papers",
+      "title": {
+        "vi": "Tìm hiểu thủ tục khai sinh",
+        "en": "Check birth registration",
+        "zh": "了解出生登记手续",
+        "ja": "出生届の手続きを確認"
+      },
+      "done": true,
+      "ownerUserId": "u-lan",
+      "together": false,
+      "requestedFromPartner": false,
+      "isCustom": false
+    },
+    {
+      "id": "pr-crib",
+      "familyId": "f-lan",
+      "pregnancyId": "bo",
+      "group": "nursery",
+      "title": {
+        "vi": "Giường cũi & đệm",
+        "en": "Crib & mattress",
+        "zh": "婴儿床和床垫",
+        "ja": "ベビーベッドとマットレス"
+      },
+      "done": true,
+      "ownerUserId": null,
+      "together": true,
+      "requestedFromPartner": false,
+      "isCustom": false
+    },
+    {
+      "id": "pr-curtains",
+      "familyId": "f-lan",
+      "pregnancyId": "bo",
+      "group": "nursery",
+      "title": {
+        "vi": "Lắp rèm cản sáng",
+        "en": "Install blackout curtains",
+        "zh": "安装遮光窗帘",
+        "ja": "遮光カーテンの取り付け"
+      },
+      "done": false,
+      "ownerUserId": "u-minh",
+      "together": false,
+      "requestedFromPartner": true,
+      "isCustom": false
+    }
+  ],
+  "names": [
+    {
+      "id": "n-1",
+      "familyId": "f-lan",
+      "pregnancyId": "bo",
+      "name": "An Nhiên",
+      "meaning": "Bình yên, tự tại",
+      "addedByUserId": "u-lan",
+      "likedByUserIds": [
+        "u-lan",
+        "u-minh"
+      ],
+      "createdAt": "2026-08-01T21:00:00.000"
+    },
+    {
+      "id": "n-2",
+      "familyId": "f-lan",
+      "pregnancyId": "bo",
+      "name": "Bảo Châu",
+      "meaning": "Viên ngọc quý của nhà",
+      "addedByUserId": "u-minh",
+      "likedByUserIds": [
+        "u-minh"
+      ],
+      "createdAt": "2026-08-03T21:00:00.000"
+    },
+    {
+      "id": "n-3",
+      "familyId": "f-lan",
+      "pregnancyId": "bo",
+      "name": "Minh Anh",
+      "meaning": "Thông minh, sáng sủa",
+      "addedByUserId": "u-lan",
+      "likedByUserIds": [
+        "u-lan"
+      ],
+      "createdAt": "2026-08-10T21:00:00.000"
+    },
+    {
+      "id": "n-4",
+      "familyId": "f-lan",
+      "pregnancyId": "bo",
+      "name": "Khánh Linh",
+      "meaning": "Tiếng chuông vui, linh hoạt",
+      "addedByUserId": "u-minh",
+      "likedByUserIds": [],
+      "createdAt": "2026-09-01T21:00:00.000"
+    }
+  ],
+  "prepHiddenCounts": {
+    "done": 9,
+    "total": 23
+  },
+  "birthDrafts": {
+    "bo": {
+      "birthDate": "2027-01-20T00:00:00.000",
+      "birthTime": "06:45",
+      "gender": "girl",
+      "weightKg": 3.2,
+      "heightCm": 50,
+      "photoAsset": "assets/images/design_birthWelcomeAsset.jpg"
+    }
+  }
+}

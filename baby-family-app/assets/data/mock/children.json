@@ -1,0 +1,194 @@
+{
+  "children": [
+    {
+      "id": "hana",
+      "familyId": "f-lan",
+      "name": "Hana",
+      "kind": "baby",
+      "birthDate": "2024-06-01T00:00:00.000",
+      "colorIndex": 0,
+      "gender": "girl",
+      "avatarAsset": "assets/images/demo_hana.jpg"
+    },
+    {
+      "id": "haru",
+      "familyId": "f-lan",
+      "name": "Haru",
+      "kind": "baby",
+      "birthDate": "2025-04-08T00:00:00.000",
+      "colorIndex": 1,
+      "gender": "boy",
+      "avatarAsset": "assets/images/demo_haru.jpg",
+      "coverAsset": "assets/images/design_monthlyCameraAsset.jpg",
+      "lunarBirthDay": 11,
+      "lunarBirthMonth": 3,
+      "birthTime": "06:45"
+    },
+    {
+      "id": "bo",
+      "familyId": "f-lan",
+      "name": "Bơ",
+      "kind": "pregnancy",
+      "dueDate": "2027-01-24T00:00:00.000",
+      "colorIndex": 3,
+      "gender": "unknown",
+      "carrierUserId": "u-lan",
+      "pregnancyOrder": 3,
+      "babyCount": 1,
+      "coverAsset": "assets/images/design_pregnancyJourneyAsset.jpg"
+    },
+    {
+      "id": "haru-dup",
+      "familyId": "f-lan",
+      "name": "Haru",
+      "kind": "baby",
+      "birthDate": "2025-04-08T00:00:00.000",
+      "colorIndex": 1,
+      "gender": "boy",
+      "archived": true,
+      "archivedAt": "2026-10-02T10:00:00.000",
+      "lunarBirthDay": 11,
+      "lunarBirthMonth": 3
+    }
+  ],
+  "stats": {
+    "children": {
+      "hana": {
+        "memories": 62,
+        "firsts": 12,
+        "voices": 5,
+        "quotes": 34
+      },
+      "haru": {
+        "memories": 186,
+        "firsts": 6,
+        "voices": 9,
+        "quotes": 0
+      },
+      "bo": {
+        "memories": 23,
+        "firsts": 4,
+        "voices": 2,
+        "quotes": 0
+      }
+    },
+    "chapters": [
+      {
+        "childId": "haru",
+        "monthIndex": 18,
+        "memories": 31,
+        "firsts": 2,
+        "voices": 4,
+        "coverAsset": "assets/images/design_memoryDetailAsset.jpg"
+      },
+      {
+        "childId": "haru",
+        "monthIndex": 17,
+        "memories": 42,
+        "firsts": 1,
+        "voices": 3,
+        "coverAsset": "assets/images/design_memoryPreviousChapterAsset.jpg"
+      }
+    ],
+    "week": {
+      "moments": 24,
+      "firsts": 2,
+      "quotes": 1,
+      "thumbnails": [
+        "assets/images/design_homeWeek1Asset.jpg",
+        "assets/images/design_homeWeek2Asset.jpg",
+        "assets/images/design_homeWeek3Asset.jpg",
+        "assets/images/design_homeWeek4Asset.jpg"
+      ]
+    }
+  },
+  "profiles": [
+    {
+      "childId": "haru",
+      "fullName": "Nguyễn Minh Khang",
+      "gestationWeeks": 39,
+      "showBirthTimeToRelatives": false,
+      "nameStory": "“Haru” nghĩa là mùa xuân. Mama đặt vì con đến như một mùa xuân thứ hai của nhà mình. Tên khai sinh Minh Khang do ông nội chọn.",
+      "nameGivenBy": [
+        "Mama",
+        "Ông nội"
+      ],
+      "favoriteFood": "Cháo tôm bí đỏ · chuối",
+      "favoriteToy": "Xe ô tô gỗ kéo dây",
+      "favoriteSong": "Cả nhà thương nhau",
+      "memoryCount": 126,
+      "milestoneCount": 8,
+      "letterCount": 2,
+      "relativeViewerNames": [
+        "Bà nội",
+        "Bà ngoại",
+        "Ông ngoại"
+      ]
+    },
+    {
+      "childId": "hana",
+      "memoryCount": 62,
+      "milestoneCount": 12,
+      "letterCount": 1,
+      "relativeViewerNames": [
+        "Bà nội",
+        "Bà ngoại",
+        "Ông ngoại"
+      ]
+    },
+    {
+      "childId": "bo",
+      "memoryCount": 23,
+      "milestoneCount": 4,
+      "letterCount": 0
+    },
+    {
+      "childId": "haru-dup",
+      "privateMemoryCount": 0
+    }
+  ],
+  "milestoneRecords": [
+    {
+      "id": "mr-birth",
+      "childId": "haru",
+      "code": "birth",
+      "recordedAt": "2025-04-08T00:00:00.000"
+    },
+    {
+      "id": "mr-month",
+      "childId": "haru",
+      "code": "full_month",
+      "recordedAt": "2025-05-08T00:00:00.000"
+    },
+    {
+      "id": "mr-100",
+      "childId": "haru",
+      "code": "hundred_days",
+      "recordedAt": "2025-07-17T00:00:00.000"
+    },
+    {
+      "id": "mr-mid",
+      "childId": "haru",
+      "code": "first_mid_autumn",
+      "recordedAt": "2025-10-06T00:00:00.000"
+    },
+    {
+      "id": "mr-tet",
+      "childId": "haru",
+      "code": "first_tet",
+      "recordedAt": "2026-02-17T00:00:00.000"
+    },
+    {
+      "id": "mr-bday",
+      "childId": "haru",
+      "code": "first_birthday",
+      "recordedAt": "2026-04-08T00:00:00.000"
+    },
+    {
+      "id": "mr-maternal",
+      "childId": "haru",
+      "code": "visit_maternal",
+      "recordedAt": "2026-09-14T00:00:00.000"
+    }
+  ]
+}

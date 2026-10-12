@@ -1,0 +1,180 @@
+{
+  "notifications": [
+    {
+      "id": "nt-support-u-lan",
+      "familyId": "f-lan",
+      "recipientUserId": "u-lan",
+      "group": "us",
+      "kind": "support",
+      "text": {
+        "vi": "Mama đang cần một chút hỗ trợ. Xem nhé?",
+        "en": "Mama needs a little help. Take a look?",
+        "zh": "Mama 需要一点帮助。看看吧？",
+        "ja": "Mama が少しサポートを必要としています。見てみますか？"
+      },
+      "createdAt": "2026-10-07T20:20:00.000",
+      "unread": true,
+      "route": "/main/us"
+    },
+    {
+      "id": "nt-request-u-lan",
+      "familyId": "f-lan",
+      "recipientUserId": "u-lan",
+      "group": "us",
+      "kind": "request",
+      "text": {
+        "vi": "Mama nhờ Papa: Tắm cho Haru tối nay",
+        "en": "Mama asks Papa: Bathe Haru tonight",
+        "zh": "Mama 请 Papa：今晚给 Haru 洗澡",
+        "ja": "Mama から Papa へ：今夜 Haru をお風呂に"
+      },
+      "createdAt": "2026-10-07T19:25:00.000",
+      "unread": true,
+      "route": "/us/request/rq-1"
+    },
+    {
+      "id": "nt-comment-u-lan",
+      "familyId": "f-lan",
+      "recipientUserId": "u-lan",
+      "group": "family",
+      "kind": "comment",
+      "text": {
+        "vi": "Bà ngoại đã gửi lời chúc cho Haru",
+        "en": "Grandma sent Haru a wish",
+        "zh": "外婆给 Haru 送来了祝福",
+        "ja": "おばあちゃんが Haru にメッセージを送りました"
+      },
+      "createdAt": "2026-10-07T17:25:00.000",
+      "unread": false,
+      "route": "/memory/m-hana-holds-haru"
+    },
+    {
+      "id": "nt-tree-u-lan",
+      "familyId": "f-lan",
+      "recipientUserId": "u-lan",
+      "group": "family",
+      "kind": "tree",
+      "text": {
+        "vi": "Cây gia đình lên cấp 4 — Cây xanh!",
+        "en": "Family tree reached level 4 — Green tree!",
+        "zh": "家庭树升至4级——绿树！",
+        "ja": "家族の木がレベル4に — 緑の木！"
+      },
+      "createdAt": "2026-10-06T20:15:00.000",
+      "unread": false,
+      "route": "/care/tree"
+    },
+    {
+      "id": "nt-trial-u-lan",
+      "familyId": "f-lan",
+      "recipientUserId": "u-lan",
+      "group": "family",
+      "kind": "trial",
+      "text": {
+        "vi": "Dùng thử còn 62 ngày. Xem các gói cho cả nhà.",
+        "en": "62 trial days left. View family plans.",
+        "zh": "试用期还剩62天。查看全家套餐。",
+        "ja": "お試し期間は残り62日。家族向けプランを見てみましょう。"
+      },
+      "createdAt": "2026-10-06T09:00:00.000",
+      "unread": false,
+      "route": "/billing/plans"
+    },
+    {
+      "id": "nt-support-u-minh",
+      "familyId": "f-lan",
+      "recipientUserId": "u-minh",
+      "group": "us",
+      "kind": "support",
+      "text": {
+        "vi": "Mama đang cần một chút hỗ trợ. Xem nhé?",
+        "en": "Mama needs a little help. Take a look?",
+        "zh": "Mama 需要一点帮助。看看吧？",
+        "ja": "Mama が少しサポートを必要としています。見てみますか？"
+      },
+      "createdAt": "2026-10-07T20:20:00.000",
+      "unread": true,
+      "route": "/main/us"
+    },
+    {
+      "id": "nt-request-u-minh",
+      "familyId": "f-lan",
+      "recipientUserId": "u-minh",
+      "group": "us",
+      "kind": "request",
+      "text": {
+        "vi": "Mama nhờ Papa: Tắm cho Haru tối nay",
+        "en": "Mama asks Papa: Bathe Haru tonight",
+        "zh": "Mama 请 Papa：今晚给 Haru 洗澡",
+        "ja": "Mama から Papa へ：今夜 Haru をお風呂に"
+      },
+      "createdAt": "2026-10-07T19:25:00.000",
+      "unread": true,
+      "route": "/us/request/rq-1"
+    },
+    {
+      "id": "nt-comment-u-minh",
+      "familyId": "f-lan",
+      "recipientUserId": "u-minh",
+      "group": "family",
+      "kind": "comment",
+      "text": {
+        "vi": "Bà ngoại đã gửi lời chúc cho Haru",
+        "en": "Grandma sent Haru a wish",
+        "zh": "外婆给 Haru 送来了祝福",
+        "ja": "おばあちゃんが Haru にメッセージを送りました"
+      },
+      "createdAt": "2026-10-07T17:25:00.000",
+      "unread": false,
+      "route": "/memory/m-hana-holds-haru"
+    },
+    {
+      "id": "nt-tree-u-minh",
+      "familyId": "f-lan",
+      "recipientUserId": "u-minh",
+      "group": "family",
+      "kind": "tree",
+      "text": {
+        "vi": "Cây gia đình lên cấp 4 — Cây xanh!",
+        "en": "Family tree reached level 4 — Green tree!",
+        "zh": "家庭树升至4级——绿树！",
+        "ja": "家族の木がレベル4に — 緑の木！"
+      },
+      "createdAt": "2026-10-06T20:15:00.000",
+      "unread": false,
+      "route": "/care/tree"
+    },
+    {
+      "id": "nt-trial-u-minh",
+      "familyId": "f-lan",
+      "recipientUserId": "u-minh",
+      "group": "family",
+      "kind": "trial",
+      "text": {
+        "vi": "Dùng thử còn 62 ngày. Xem các gói cho cả nhà.",
+        "en": "62 trial days left. View family plans.",
+        "zh": "试用期还剩62天。查看全家套餐。",
+        "ja": "お試し期間は残り62日。家族向けプランを見てみましょう。"
+      },
+      "createdAt": "2026-10-06T09:00:00.000",
+      "unread": false,
+      "route": "/billing/plans"
+    },
+    {
+      "id": "nt-circle-ba-ngoai",
+      "familyId": "f-lan",
+      "recipientUserId": "u-ba-ngoai",
+      "group": "family",
+      "kind": "memory",
+      "text": {
+        "vi": "Mama vừa thêm ảnh mới của Hana & Haru",
+        "en": "Mama added new photos of Hana & Haru",
+        "zh": "Mama 刚添加了 Hana 和 Haru 的新照片",
+        "ja": "Mama が Hana と Haru の新しい写真を追加しました"
+      },
+      "createdAt": "2026-10-07T18:30:00.000",
+      "unread": true,
+      "route": "/circle"
+    }
+  ]
+}

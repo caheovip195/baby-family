@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:baby_family/data/repository/app_setting.dart';
 import 'package:baby_family/data/repository_imp/app_setting.dart';
 import 'package:baby_family/data/service/app_setting.dart';
 import 'package:baby_family/data/service_imp/base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
+import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/helper/app_l10n.dart';
 import 'package:baby_family/utils/helper/local_store.dart';
 import 'package:intl/intl.dart';
@@ -20,10 +23,17 @@ class AppSettingServiceImp extends BaseServiceImp
   Future<void> changeLanguage(AppLanguage language) async {
     await _repository.saveLanguage(language);
     Intl.defaultLocale = language.code;
-    if (await LocalStore().getAuthCertificate() == null) {
+    unawaited(_syncLanguageToServer(language));
+  }
+
+  Future<void> _syncLanguageToServer(AppLanguage language) async {
+    if (kValueDemoEnabled) {
       return;
     }
     try {
+      if (await LocalStore().getAuthCertificate() == null) {
+        return;
+      }
       await _repository.syncLanguageToServer(language);
     } catch (e) {
       // Thử lại ở lần mở app sau (bootstrap gửi Accept-Language).

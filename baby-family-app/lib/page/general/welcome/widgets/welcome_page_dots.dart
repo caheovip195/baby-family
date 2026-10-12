@@ -7,22 +7,26 @@ class _WelcomePageDots extends StatelessWidget {
   final int currentIndex;
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(count, (index) {
-        final isActive = index == currentIndex;
-        return AnimatedContainer(
+  Widget build(BuildContext context) => Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      for (var index = 0; index < count; index++) ...[
+        if (index > 0) const SizedBox(width: AppSpacing.s2),
+        AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          margin: const EdgeInsets.symmetric(horizontal: AppSpacing.s1),
-          width: isActive ? 24 : 8,
-          height: 8,
+          width: index == currentIndex ? AppSpacing.s6 : AppSpacing.s2,
+          height: AppSpacing.s2,
           decoration: BoxDecoration(
-            color: isActive ? kColorPrimary500EE7B67 : kColorBorderEADFD6,
+            color: AppColors.resolve(
+              context,
+              index == currentIndex
+                  ? kColorPrimary500EE7B67
+                  : kColorBorderEADFD6,
+            ),
             borderRadius: BorderRadius.circular(AppRadius.full),
           ),
-        );
-      }),
-    );
-  }
+        ),
+      ],
+    ],
+  );
 }

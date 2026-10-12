@@ -89,6 +89,7 @@ flutter:
   assets:
     - assets/images/
     - assets/data/
+    - assets/data/mock/
 
   # Font theo Design System (tài liệu nghiệp vụ mục 10.3):
   # Nunito (tiêu đề) + Be Vietnam Pro (nội dung), đóng gói trong app để chạy offline.

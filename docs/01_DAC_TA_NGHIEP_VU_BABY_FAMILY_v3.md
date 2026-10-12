@@ -2300,7 +2300,8 @@ Mở link tới nội dung không có quyền → màn “Nội dung không kh�
 | `primary-100` | `#FFE3DC` | `#3D231D` | Nền chip được chọn, nền thẻ gợi ý |
 | `primary-300` | `#F7A796` | `#C9705F` | Minh hoạ, viền nhấn |
 | `primary-500` | `#EE7B67` *(San hô ấm — màu thương hiệu)* | `#F4917F` | Logo, icon nổi bật, nút FAB “+”, Hearts |
-| `primary-600` | `#C2513F` | `#F7A796` | **Nút chính (nền) + chữ trắng** (đạt AA ≥ 4.5:1), link |
+| `primary-600` | `#C2513F` | `#F7A796` | **Nút chính (nền)**, link; dùng chữ `on-primary` để đạt AA ≥ 4.5:1 |
+| `on-primary` | `#FFFFFF` | `#2A1A16` | Chữ/icon trên nút chính, khớp biến `on-primary` trong Pencil |
 | `primary-700` | `#A2402F` | `#FFC2B5` | Trạng thái nhấn (pressed) |
 | `secondary-100` | `#E4F2EA` | `#1C2B23` | Nền nhóm Chăm con |
 | `secondary-500` | `#6FAE8E` *(Xanh lá mạ)* | `#86C3A3` | Hoàn thành nhiệm vụ, Cây gia đình |
@@ -2310,7 +2311,7 @@ Mở link tới nội dung không có quyền → màn “Nội dung không kh�
 | `us-50` | `#F6F2FC` | `#1F1A2B` | **Nền toàn bộ Papa & Mama Space** |
 | `us-100` | `#EAE2F8` | `#2C2440` | Thẻ trong Papa & Mama |
 | `us-500` | `#9B85D1` *(Tím oải hương)* | `#B5A3E3` | Icon, nhấn Papa & Mama |
-| `us-700` | `#6A549F` | `#D2C6F0` | Nút chính trong Papa & Mama (chữ trắng) |
+| `us-700` | `#6A549F` | `#D2C6F0` | Nút chính trong Papa & Mama (chữ `on-primary`) |
 
 #### Màu trung tính (ấm)
 
@@ -2374,9 +2375,16 @@ Mở link tới nội dung không có quyền → màn “Nội dung không kh�
 - Hỗ trợ **Dynamic Type / Font scale** của hệ thống tới 200%; layout không vỡ ở 130%.
 - **Chế độ chữ lớn** (Cài đặt): nhân 1.2 toàn bộ scale; mặc định gợi ý cho người thân trên 55 tuổi (người dùng tự chọn).
 
+Các biến thể chữ nhỏ theo component Pencil dùng cùng font: `text14` 14/18,
+`small` 12/15, `tiny` 11/14, `micro` 10/13 (Be Vietnam Pro);
+`title17` 17/23 weight 800, `title16` 16/22 weight 700,
+`title20` 20/27 weight 800 (Nunito). Nhãn bottom tab 11/14, weight 500,
+mục chọn weight 700; không thêm letter spacing cho chữ nhỏ.
+
 ### 10.4 Khoảng cách & lưới (Spacing)
 
 - Hệ **4pt**: `space-1`=4, `2`=8, `3`=12, `4`=16, `5`=20, `6`=24, `8`=32, `10`=40, `12`=48, `16`=64.
+- Component Pencil còn dùng `compact`=6, `itemGap`=10, `cardInset`=14, `sectionGap`=18; dùng các token này khi frame có kích thước tương ứng.
 - Lề màn hình: **20** (tối thiểu 16 trên máy nhỏ ≤ 360dp).
 - Khoảng cách giữa các khối trên Trang chủ: 24. Giữa các thẻ trong danh sách: 12. Padding trong thẻ: 16.
 - Lưới ảnh: khoảng cách 2 (lưới Ảnh) / 4 (lưới trong thẻ).
@@ -2430,7 +2438,7 @@ Dark mode: thay bóng bằng `surface` sáng hơn 1 bậc + viền `border`.
 | **Card – Memory** | radius 20, `elev-1`, ảnh tràn trên, nội dung padding 16 |
 | **Card – Mission** | radius 16, nền `surface`, trái: ô tròn hoàn thành 28 (viền `secondary-500`, xong → tick trắng nền `secondary-500`), giữa: tên + meta, phải: avatar người làm/bé |
 | **Card – Lời nhờ** | Như Mission nhưng nền `accent-100`, viền `accent-500`; không có ô hoàn thành mà có nút Nhận / Hôm nay không được |
-| **Bottom sheet** | Radius trên 28, tay kéo 36×4, padding 20 |
+| **Bottom sheet** | Radius trên 28, tay kéo 36×4, padding 20; scrim light #2E2A2799 (`kColorSheetScrim2E2A27Alpha60`), dark #00000099 |
 | **Dialog** | Radius 24, tối đa 2 nút; hành động phá huỷ: chữ `error` (không nền đỏ lớn) |
 | **Snackbar** | Nền `text-primary`, chữ `bg`, radius 14, có nút Hoàn tác |
 | **Visibility pill** | Icon 🔒/👫/👨‍👩‍👧‍👦 + chữ ngắn, `caption`, nền `surface-variant` |

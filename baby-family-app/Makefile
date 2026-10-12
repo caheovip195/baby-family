@@ -3,7 +3,7 @@ FLUTTER := $(FVM) flutter
 DART := $(FVM) dart
 
 .PHONY: setup get clean force runner l10n w format analyze test check \
-	stg-run pro-run stg-apk pro-apk pro-aab stg-ipa pro-ipa icon
+	stg-run mock-run pro-run stg-apk pro-apk pro-aab stg-ipa pro-ipa icon
 
 ## Cài đúng Flutter của project (.fvmrc) và tải package
 setup:
@@ -50,6 +50,9 @@ check: l10n format analyze test
 ## --- Chạy debug ---
 stg-run:
 	$(FLUTTER) run --debug -t lib/main_dev.dart --flavor staging
+
+mock-run:
+	$(FLUTTER) run --debug -t lib/main_dev.dart --flavor staging --dart-define=BABY_FAMILY_DEMO=active
 
 pro-run:
 	$(FLUTTER) run --debug -t lib/main_pro.dart --flavor product

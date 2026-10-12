@@ -18,6 +18,8 @@
 	<array>
 		<string>vi</string>
 		<string>en</string>
+		<string>zh</string>
+		<string>ja</string>
 	</array>
 	<key>CFBundleName</key>
 	<string>Baby Family</string>

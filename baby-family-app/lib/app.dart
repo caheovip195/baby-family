@@ -1,6 +1,5 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/data/provider/app_setting.dart';
-import 'package:baby_family/data/provider/auth.dart';
 import 'package:baby_family/generated/l10n/app_localizations.dart';
 import 'package:baby_family/page/application_base.dart';
 import 'package:baby_family/utils/helper/broadcast_manager.dart';
@@ -29,38 +28,49 @@ class RootApp extends BaseHookWidget {
     }, []);
 
     final language = ref.watch(appLanguageProvider);
-    final mediaQuery = MediaQuery.of(context);
-    return MediaQuery(
-      data: mediaQuery.copyWith(
-        textScaler: AppTypography.readableTextScaler(mediaQuery.textScaler),
-      ),
-      child: MaterialApp.router(
-        onGenerateTitle: (context) => AppLocalizations.of(context).appName,
-        debugShowCheckedModeBanner: false,
-        scaffoldMessengerKey: scaffoldMessengerKey,
-        theme: AppTheme.light(),
-        locale: language.locale,
-        supportedLocales: AppLocalizations.supportedLocales,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        routerConfig: appRouter.config(
-          navigatorObservers: () => [AutoRouteObserver()],
-          deepLinkBuilder: (platformDeepLink) async {
-            final session = await ref.read(authProvider).currentSession();
-            if (session != null) {
-              // TODO(team): điều hướng theo trạng thái gia đình/gói
-              // (tài liệu kỹ thuật 22.4: ONB-03, ONB-WAIT, CIR-WAIT, SUB-07,
-              // HOME-01, CIR-01) khi có các màn này.
-              return DeepLink.single(const WelcomeRoute());
-            }
-            return DeepLink.single(const WelcomeRoute());
-          },
-          placeholder: (context) => const Material(
-            child: Center(
-              child: SizedBox(
-                width: 28,
-                height: 28,
-                child: CircularProgressIndicator(),
+    final appearance = ref.watch(appAppearanceProvider);
+    final appScale = ref.watch(appTextScaleProvider);
+    final reduceMotion = ref.watch(appReduceMotionProvider);
+    return MaterialApp.router(
+      builder: (context, child) {
+        final mediaQuery = MediaQuery.of(context);
+        return MediaQuery(
+          data: mediaQuery.copyWith(
+            disableAnimations: mediaQuery.disableAnimations || reduceMotion,
+            textScaler: AppTypography.readableTextScaler(
+              TextScaler.linear(
+                (mediaQuery.textScaler.scale(14) / 14) * appScale,
               ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+      onGenerateTitle: (context) => AppLocalizations.of(context).appName,
+      debugShowCheckedModeBanner: false,
+      scaffoldMessengerKey: scaffoldMessengerKey,
+      theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
+      themeMode: appearance,
+      locale: language.locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      routerConfig: appRouter.config(
+        navigatorObservers: () => [AutoRouteObserver()],
+        // Mọi lần mở app đi qua Splash (SPL-01) — Splash đọc phiên rồi
+        // điều hướng (`routeForSession`). Deep link hợp lệ được giữ nguyên.
+        deepLinkBuilder: (platformDeepLink) {
+          if (platformDeepLink.isValid && platformDeepLink.path != '/') {
+            return platformDeepLink;
+          }
+          return DeepLink.single(const SplashRoute());
+        },
+        placeholder: (context) => const Material(
+          child: Center(
+            child: SizedBox(
+              width: 28,
+              height: 28,
+              child: CircularProgressIndicator(),
             ),
           ),
         ),

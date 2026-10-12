@@ -17,3 +17,5 @@
 # skill_9.md - Skill 9: Model, DTO & Enum Placement (bắt buộc sửa)
 
 # skill_10.md - Skill 10: Đa ngôn ngữ (l10n) — bắt buộc
+
+# skill_11.md - Skill 11: Dùng chung Widget, Helper, Extension & Constant (bắt buộc sửa)

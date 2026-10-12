@@ -1,4 +1,5 @@
 import 'package:baby_family/utils/constants/colors.dart';
+import 'package:baby_family/utils/helper/theme.dart';
 import 'package:flutter/material.dart';
 
 import 'loading_progress.dart';
@@ -58,7 +59,10 @@ class BaseScaffold extends StatelessWidget {
               child: Scaffold(
                 body: body,
                 appBar: appBar,
-                backgroundColor: backgroundColor ?? kColorBgFFFBF7,
+                backgroundColor: AppColors.resolve(
+                  context,
+                  backgroundColor ?? kColorBgFFFBF7,
+                ),
                 extendBody: extendBody,
                 bottomNavigationBar: bottomNavigationBar,
                 floatingActionButton: floatingActionButton,
@@ -67,10 +71,10 @@ class BaseScaffold extends StatelessWidget {
             ),
           ),
           if (isLoading)
-            const Positioned.fill(
+            Positioned.fill(
               child: ColoredBox(
-                color: kColorOverlay2E2A27Alpha48,
-                child: Center(
+                color: AppColors.resolve(context, kColorOverlay2E2A27Alpha48),
+                child: const Center(
                   child: CircleLoadingProgress(
                     color: kColorWhite,
                     width: 3,

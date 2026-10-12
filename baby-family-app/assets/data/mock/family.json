@@ -1,0 +1,219 @@
+{
+  "users": [
+    {
+      "id": "u-lan",
+      "displayName": "Lan",
+      "phone": "+84912345678"
+    },
+    {
+      "id": "u-minh",
+      "displayName": "Minh",
+      "phone": "+84987654321"
+    },
+    {
+      "id": "u-ba-noi",
+      "displayName": "Bà nội"
+    },
+    {
+      "id": "u-ba-ngoai",
+      "displayName": "Bà ngoại"
+    },
+    {
+      "id": "u-ong-ngoai",
+      "displayName": "Ông ngoại"
+    }
+  ],
+  "families": [
+    {
+      "id": "f-lan",
+      "name": "Nhà Lan",
+      "coverIndex": 0,
+      "coverAsset": "assets/images/demo_memory.jpg",
+      "createdAt": "2026-09-09T08:00:00.000",
+      "activatedAt": "2026-09-09T09:00:00.000",
+      "setupCompleted": true,
+      "timezone": "Asia/Ho_Chi_Minh",
+      "plan": {
+        "state": "family",
+        "startedAt": "2026-09-09T09:00:00.000",
+        "endsAt": "2026-12-08T23:59:00.000",
+        "storageUsedMb": 3277,
+        "storageQuotaMb": 204800,
+        "relativeSlotsUsed": 3,
+        "relativeSlotsMax": 12
+      }
+    },
+    {
+      "id": "f-lan-waiting",
+      "name": "Nhà Lan",
+      "coverIndex": 0,
+      "createdAt": "2026-10-07T20:10:00.000",
+      "setupCompleted": false,
+      "timezone": "Asia/Ho_Chi_Minh",
+      "plan": {
+        "state": "trial",
+        "storageUsedMb": 0,
+        "storageQuotaMb": 10240,
+        "relativeSlotsUsed": 0,
+        "relativeSlotsMax": 0
+      }
+    }
+  ],
+  "members": [
+    {
+      "id": "m-lan",
+      "familyId": "f-lan",
+      "userId": "u-lan",
+      "role": "mother",
+      "status": "active",
+      "displayName": "Lan",
+      "callName": "Mama",
+      "joinedAt": "2026-09-09T09:00:00.000",
+      "slot": "a",
+      "isAdmin": true
+    },
+    {
+      "id": "m-minh",
+      "familyId": "f-lan",
+      "userId": "u-minh",
+      "role": "father",
+      "status": "active",
+      "displayName": "Minh",
+      "callName": "Papa",
+      "joinedAt": "2026-09-09T09:00:00.000",
+      "slot": "b",
+      "isAdmin": true
+    },
+    {
+      "id": "m-ba-noi",
+      "familyId": "f-lan",
+      "userId": "u-ba-noi",
+      "role": "relative",
+      "status": "pending",
+      "displayName": "Bà nội",
+      "callName": "Bà nội",
+      "joinedAt": null,
+      "relation": "grandmaPaternal",
+      "grantedChildIds": [
+        "hana"
+      ],
+      "canComment": true,
+      "canPost": false,
+      "childPermissions": {
+        "hana": "comment"
+      },
+      "allowDownload": true,
+      "postedCount": 6,
+      "phoneMasked": "••• ••• 517"
+    },
+    {
+      "id": "m-ba-ngoai",
+      "familyId": "f-lan",
+      "userId": "u-ba-ngoai",
+      "role": "relative",
+      "status": "active",
+      "displayName": "Bà ngoại",
+      "callName": "Bà ngoại",
+      "joinedAt": "2026-08-12T10:00:00.000",
+      "relation": "grandmaMaternal",
+      "grantedChildIds": [
+        "hana",
+        "haru",
+        "bo"
+      ],
+      "canComment": true,
+      "canPost": true,
+      "childPermissions": {
+        "hana": "comment",
+        "haru": "contribute",
+        "bo": "view"
+      },
+      "allowDownload": false,
+      "lastActiveAt": "2026-10-07T18:25:00.000",
+      "phoneMasked": "••• ••• 892",
+      "postedCount": 14
+    },
+    {
+      "id": "m-ong-ngoai",
+      "familyId": "f-lan",
+      "userId": "u-ong-ngoai",
+      "role": "relative",
+      "status": "active",
+      "displayName": "Ông ngoại",
+      "callName": "Ông ngoại",
+      "joinedAt": "2026-09-12T10:05:00.000",
+      "relation": "grandpaMaternal",
+      "grantedChildIds": [
+        "hana",
+        "haru"
+      ],
+      "canComment": true,
+      "canPost": false,
+      "childPermissions": {
+        "hana": "comment",
+        "haru": "view"
+      },
+      "postedCount": 3,
+      "phoneMasked": "••• ••• 230"
+    },
+    {
+      "id": "m-lan-w",
+      "familyId": "f-lan-waiting",
+      "userId": "u-lan",
+      "role": "mother",
+      "status": "active",
+      "displayName": "Lan",
+      "callName": "Mama",
+      "joinedAt": "2026-10-07T20:10:00.000",
+      "slot": "a",
+      "isAdmin": true
+    }
+  ],
+  "invites": [
+    {
+      "id": "inv-partner",
+      "code": "K7Q29MXA",
+      "kind": "partner",
+      "familyId": "f-lan-waiting",
+      "inviterMemberId": "m-lan-w",
+      "message": "Anh ơi vào cùng lưu ảnh con nhé 💛",
+      "role": "father",
+      "callName": "Papa",
+      "link": "https://babyfamily.vn/invite/K7Q29MXA",
+      "sentAt": "2026-10-07T20:15:00.000",
+      "expiresAt": "2026-10-14T20:15:00.000",
+      "status": "open"
+    },
+    {
+      "id": "inv-ba-noi",
+      "code": "B4N0I123",
+      "kind": "relative",
+      "familyId": "f-lan",
+      "inviterMemberId": "m-lan",
+      "memberId": "m-ba-noi",
+      "message": "Mẹ ơi, mẹ vào xem ảnh Hana nhé",
+      "role": "relative",
+      "relation": "grandmaPaternal",
+      "callName": "Bà nội",
+      "grantedChildIds": [
+        "hana"
+      ],
+      "canComment": true,
+      "canPost": true,
+      "link": "https://babyfamily.vn/invite/B4N0I123",
+      "sentAt": "2026-10-07T18:00:00.000",
+      "expiresAt": "2026-10-14T18:00:00.000",
+      "status": "open"
+    }
+  ],
+  "familySettings": {
+    "defaultVisibility": "family",
+    "approveRelativePhotos": true,
+    "relativesSeeTree": true,
+    "milestoneSuggestions": true,
+    "timezoneLabel": "GMT+7 · Hà Nội",
+    "showLunar": true,
+    "milestonesByLunar": true,
+    "contentLanguage": "vi"
+  }
+}

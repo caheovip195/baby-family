@@ -1,0 +1,6 @@
+interface:
+  display_name: "Baby Family Team"
+  short_description: "Điều phối role và ghi lịch sử Baby Family"
+  default_prompt: "Dùng $baby-family-team để chọn role phù hợp, phân tích task và cập nhật hai nhật ký dự án Baby Family."
+policy:
+  allow_implicit_invocation: true

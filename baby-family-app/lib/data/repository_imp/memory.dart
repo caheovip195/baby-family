@@ -1,0 +1,111 @@
+import 'package:baby_family/data/repository/base.dart';
+import 'package:baby_family/data/repository/memory.dart';
+import 'package:baby_family/data/repository_imp/mock_repository.dart';
+
+class MemoryRepositoryImp extends MockRepositoryImp
+    implements IMemoryRepository {
+  MemoryRepositoryImp(super.store);
+
+  @override
+  List<JsonMap> memories(String familyId) =>
+      rows('memories', (row) => row['familyId'] == familyId);
+
+  @override
+  JsonMap? memory(String id) => row('memories', id);
+
+  @override
+  JsonMap addMemory(JsonMap memory) => insert('memories', memory);
+
+  @override
+  void updateMemory(String id, JsonMap patch) =>
+      this.patch('memories', id, patch);
+
+  @override
+  List<JsonMap> comments(String memoryId) =>
+      rows('comments', (row) => row['memoryId'] == memoryId);
+
+  @override
+  JsonMap addComment(JsonMap comment) {
+    final value = {'id': store.newId('c'), ...comment};
+    store.table('comments').add(value);
+    store.commit();
+    return store.localized(value);
+  }
+
+  @override
+  List<JsonMap> perspectives(String memoryId) =>
+      rows('perspectives', (row) => row['memoryId'] == memoryId);
+
+  @override
+  JsonMap addPerspective(JsonMap perspective) =>
+      insert('perspectives', perspective);
+
+  @override
+  void updatePerspective(String id, JsonMap patch) =>
+      this.patch('perspectives', id, patch);
+
+  @override
+  JsonMap? story(String id) => row('stories', id);
+
+  @override
+  List<JsonMap> stories(String familyId) =>
+      rows('stories', (row) => row['familyId'] == familyId);
+
+  @override
+  void updateStory(String id, JsonMap patch) =>
+      this.patch('stories', id, patch);
+
+  @override
+  List<JsonMap> collections() => rows('collections');
+
+  @override
+  JsonMap catalog() =>
+      store.localized(Map<String, dynamic>.from(store.meta['catalog'] as Map));
+
+  @override
+  List<JsonMap> albums(String familyId) =>
+      rows('albums', (row) => row['familyId'] == familyId);
+
+  @override
+  JsonMap? album(String id) => row('albums', id);
+
+  @override
+  JsonMap addAlbum(JsonMap album) => insert('albums', album);
+
+  @override
+  void updateAlbum(String id, JsonMap patch) => this.patch('albums', id, patch);
+
+  @override
+  void removeAlbum(String id) => removeRow('albums', id);
+
+  @override
+  void updateComment(String id, JsonMap patch) =>
+      this.patch('comments', id, patch);
+
+  @override
+  void removeComment(String id) {
+    store
+        .table('comments')
+        .removeWhere((row) => row['id'] == id || row['parentId'] == id);
+    store.commit();
+  }
+
+  @override
+  List<JsonMap> searchMemories(String familyId) =>
+      rows('searchMemories', (row) => row['familyId'] == familyId);
+
+  @override
+  List<JsonMap> pastMemories(String familyId) =>
+      rows('pastMemories', (row) => row['familyId'] == familyId);
+
+  @override
+  List<String> searchRecents() =>
+      ((store.meta['searchRecents'] as List?) ?? const []).cast<String>();
+
+  @override
+  void saveSearchRecents(List<String> recents) =>
+      saveMeta('searchRecents', recents);
+
+  @override
+  JsonMap weeklyRecap() => metaSection('weeklyRecap');
+}

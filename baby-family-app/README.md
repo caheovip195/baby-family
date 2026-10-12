@@ -26,6 +26,23 @@ make check      # format + analyze + test trước khi tạo MR
 | staging | `lib/main_dev.dart` | `vn.babyfamily.app.staging` | SBaby Family | `https://api-staging.babyfamily.vn` |
 | product | `lib/main_pro.dart` | `vn.babyfamily.app` | Baby Family | `https://api.babyfamily.vn` |
 
+## Chạy bản mock các màn
+
+Bản hiện tại bật dữ liệu mẫu mặc định, chạy offline với dữ liệu ở
+`assets/data/demo_family.json`. Các thao tác thêm/sửa/hoàn thành giữ trong bộ nhớ
+cho tới khi đóng app; ngôn ngữ được lưu qua LocalStore.
+
+```bash
+make stg-run   # seed `fresh`: Splash → Welcome, đi qua luồng đăng nhập/onboarding mẫu
+make mock-run  # seed `active`: Splash → Main shell (Mama Lan, “Nhà Lan”)
+```
+
+Chọn bộ dữ liệu mẫu bằng `--dart-define=BABY_FAMILY_DEMO=fresh|active|pregnant|circle|expired`
+và người đăng nhập bằng `--dart-define=BABY_FAMILY_ACTOR=mama|papa`. Luồng mock
+“đi xuyên qua”: OTP/mã mời nhận mọi giá trị (mẫu: OTP **123456**, mã bạn đời
+**K7Q29MXA**, mã người thân **B4N0I123**). Bảng route, seed và quy ước xem
+[MOCK_SCREENS.md](MOCK_SCREENS.md).
+
 ## Cấu trúc
 
 ```
@@ -64,7 +81,8 @@ Luồng bắt buộc: **Page → Controller → Service → Repository → AppCl
 
 ## Đa ngôn ngữ
 
-- Hỗ trợ **Tiếng Việt** (mặc định) và **English**. Lần đầu mở app theo ngôn ngữ
+- Hỗ trợ **Tiếng Việt** (mặc định), **English**, **简体中文** (tiếng Trung giản thể)
+  và **日本語** (tiếng Nhật). Lần đầu mở app theo ngôn ngữ
   thiết bị (nếu hỗ trợ), người dùng đổi ở Welcome / Cài đặt — áp dụng ngay.
 - Thêm chuỗi: sửa `lib/l10n/arb/app_vi.arb` + dịch ở mọi file ARB → `make l10n`.
 - Dùng `context.l10n.xxx` trong widget, `currentL10n().xxx` ngoài widget.

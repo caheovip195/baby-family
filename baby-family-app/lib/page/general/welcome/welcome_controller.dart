@@ -3,11 +3,12 @@ import 'package:baby_family/page/application_base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:hooks_riverpod/legacy.dart';
 
-final welcomeController = ChangeNotifierProvider.autoDispose<WelcomeController>(
-  WelcomeController.new,
-);
+/// ONB-01 — Welcome 3 slide (tài liệu nghiệp vụ 9.1, Pencil K5UMY/w8tfLj/MOZNu).
+final welcomeControllerProvider =
+    ChangeNotifierProvider.autoDispose<WelcomeController>(
+      WelcomeController.new,
+    );
 
-/// ONB-01 — Welcome (tài liệu nghiệp vụ mục 9.1).
 class WelcomeController extends BaseNotifier {
   WelcomeController(super.ref);
 

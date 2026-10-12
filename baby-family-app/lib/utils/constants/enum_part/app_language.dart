@@ -6,7 +6,9 @@ part of '../enum.dart';
 /// + bản dịch catalog/template ở server. Thứ tự = thứ tự hiển thị ở bộ chọn.
 enum AppLanguage {
   vi('vi', 'Tiếng Việt'),
-  en('en', 'English');
+  en('en', 'English'),
+  zh('zh', '简体中文'),
+  ja('ja', '日本語');
 
   const AppLanguage(this.code, this.nativeName);
 

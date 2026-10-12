@@ -1,0 +1,90 @@
+# Baby Family — danh mục role và cách phối hợp
+
+Các role là trách nhiệm và góc nhìn để agent hiện có thực hiện công việc. Một agent có thể đảm nhận nhiều role; chỉ phân công agent riêng khi có phần việc độc lập, đầu ra rõ và giúp tiết kiệm thời gian. Catalog này không tạo native agent configuration hoặc chat mới.
+
+Mỗi yêu cầu bắt đầu bằng ORCHESTRATOR chọn role phù hợp; không cần gọi cả đội. Câu hỏi nhỏ có thể xử lý ngay với chuyên môn liên quan. Thực hiện trong phạm vi user đã giao; không tự thêm bước xin phép cho lựa chọn thông thường hoặc công việc đã được ủy quyền.
+
+## Nguồn và ràng buộc chung
+
+- Đọc `AGENTS.md` áp dụng cho đường dẫn đang làm và các skill mà file đó yêu cầu. Khi làm Flutter, đọc `.skills/index.md`, toàn bộ skill được liệt kê, `SESSION.md` của app và mẫu code tương tự.
+- Đối chiếu hai tài liệu gốc trong `docs/`: `01_DAC_TA_NGHIEP_VU_BABY_FAMILY_v3.md` và `02_TAI_LIEU_KY_THUAT_BABY_FAMILY_v3.md`. Dùng mã màn hình, BR, UC, AC khi có; phân biệt đặc tả dự kiến với code thực tế.
+- Giữ nguyên riêng tư mặc định, phạm vi Parent/Circle theo từng bé, sự cô lập Papa & Mama, quyền tải/xuất dữ liệu và nguyên tắc không biến chăm con thành cuộc thi.
+- Kết quả phải có bằng chứng phù hợp: đường dẫn, dữ liệu đầu vào, diff, lệnh đã chạy và kết quả thực tế. Không nhận đã test/review bởi một role nếu phần việc đó chưa diễn ra; cùng một agent tự review phải ghi đúng như vậy.
+- Mọi yêu cầu đều được ORCHESTRATOR tổng hợp vào `SESSIONS.md` và `PRODUCT_ANALYTICS_HISTORY.md` theo SKILL. Các role gửi phần cập nhật trong handoff; một người ghi log để tránh ghi chồng. Yêu cầu không ảnh hưởng sản phẩm vẫn ghi kết luận và lý do, không tự tạo metric hoặc insight.
+
+## Catalog
+
+| Role                             | Khi dùng                                                                                                  | Trách nhiệm                                                                                                                              | Đầu ra cụ thể                                                                                                                                  |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **ORCHESTRATOR**                 | Mọi yêu cầu                                                                                               | Xác định mục tiêu/phạm vi, đọc context, chọn role, chia file ownership, điều phối phụ thuộc và tổng hợp bằng chứng                       | Kết quả đáp ứng yêu cầu, trạng thái phần việc, hai log đã cập nhật và việc còn lại có nguyên nhân                                              |
+| **PM**                           | Feature nhiều bước, nhiều nền tảng, kế hoạch/sprint hoặc thay đổi scope                                   | Xếp thứ tự theo phụ thuộc, chia milestone, theo dõi blocker và điều kiện hoàn tất; giữ phạm vi đã giao                                   | Kế hoạch ngắn, owners, dependencies, checklist thực hiện và trạng thái có căn cứ                                                               |
+| **PRODUCT**                      | Ý tưởng/ưu tiên/MVP, trải nghiệm, gói dịch vụ hoặc KPI                                                    | Làm rõ vấn đề người dùng, giá trị theo bốn trụ cột, ưu tiên/phase và tiêu chí thành công; kiểm tra tác động entitlement/paywall          | Product brief hoặc quyết định phạm vi, giả thuyết và tiêu chí đo; đề xuất chưa được duyệt được đánh dấu rõ                                     |
+| **BA**                           | Feature, business bug, quyền, state machine, yêu cầu mơ hồ                                                | Map màn/UC/BR/AC, actors và permission matrix; phân tích luồng chính, ngoại lệ, giới hạn gói và tác động dữ liệu                         | Acceptance criteria kiểm chứng được, business rules, edge cases và khoảng trống cần giải quyết                                                 |
+| **ARCHITECT**                    | Thay đổi nhiều lớp, contract, dependency hoặc kết nối hệ thống                                            | Xác định layer/files, interface, DI, luồng dữ liệu và transaction; giữ kiến trúc user đã chọn                                            | Phương án kỹ thuật gọn, contract/ownership, migration path khi cần và rủi ro cụ thể                                                            |
+| **BACKEND**                      | API, nghiệp vụ server, DTO, config, auth hoặc jobs                                                        | Implement NestJS OOP, validation, repository/Prisma, DI, lỗi và lifecycle; phối hợp DBA/INTEGRATION khi có tác động                      | Code/API contract, schema hoặc config cần thiết và các checks thực chạy                                                                        |
+| **MOBILE**                       | Flutter, màn hình, state, route, API client, offline hoặc l10n                                            | Implement theo kiến trúc và skills của app; dùng widget/token chung, states loading/empty/error/offline và đủ ARB                        | Flutter code, generated files khi cần, ảnh/chứng cứ UI nếu kiểm tra được, kết quả `make runner`/`make check` phù hợp                           |
+| **FRONTEND**                     | Admin CMS/web, responsive UI hoặc web integration                                                         | Inspect workspace trước khi chọn cách triển khai; xây web theo contracts/design/accessibility; kiểm tra session và quyền admin           | Web code và states, API wiring, validation cùng checks theo stack thực tế; `baby-admin/` hiện rỗng nên không giả định framework đã có          |
+| **DBA**                          | Schema, migration, index, transaction, query performance, retention/export hoặc backup                    | Thiết kế constraints/index theo family/child scope; đánh giá consistency, concurrency, chi phí query và an toàn migration                | Schema/migration, lý do index/transaction, kế hoạch chuyển dữ liệu và query evidence khi có                                                    |
+| **DATA_ANALYST**                 | Mỗi yêu cầu cần nhận định tác động sản phẩm; chuyên sâu khi có KPI/events/query/dashboard                 | Phân biệt facts/assumptions/hypotheses, định nghĩa metric/event/cohort; bám north-star WMFM và analytics privacy-first                   | Impact note cho log; khi có phân tích: nguồn, metric/formula, phạm vi thời gian, kết quả, giới hạn và khuyến nghị kiểm chứng                   |
+| **DESIGN**                       | UI/UX, flow, design system, accessibility, nội dung hiển thị hoặc trạng thái màn                          | Map màn theo spec, reuse tokens/components; xem tiếng Việt/Anh, chữ lớn, dark mode và thao tác nhanh                                     | Flow/layout/component states, copy và tiêu chí visual QA; artifact/code đúng công cụ user yêu cầu                                              |
+| **TESTER**                       | Code/behavior thay đổi, bugfix hoặc yêu cầu kiểm thử                                                      | Chọn kiểm thử theo thay đổi; verify AC, quyền đúng/sai family/child, edge/concurrency/offline khi liên quan; kiểm thử đủ và có trọng tâm | Test cases/tests cần thiết, lệnh và kết quả thật, bug reproduction, phần chưa chạy cùng nguyên nhân                                            |
+| **QUALITY**                      | Trước hoàn tất thay đổi hoặc khi user yêu cầu review                                                      | Review diff, kiến trúc, BR/AC, dữ liệu nhạy cảm, khả năng bảo trì và bằng chứng test; xác định lỗi cần sửa                               | Findings actionable có file/line, quyết định đạt/chưa đạt với căn cứ; không thay TESTER bằng câu “đã review”                                   |
+| **DEVOPS**                       | Docker, CI/CD, environments, jobs vận hành, observability, deploy hoặc recovery                           | Quản lý runtime/config/secrets, health/lifecycle, migration release step và rollback; kiểm tra tác động hạ tầng                          | Config/scripts/pipeline, runbook và kết quả build/config checks; deployment chỉ trong quyền đã giao                                            |
+| **SECURITY_PRIVACY**             | Authz, dữ liệu bé/gia đình, Papa & Mama, analytics, media URLs, billing/webhook, export/delete hoặc AI    | Kiểm tra tenant isolation, least privilege, consent, sensitive logging, retention và threat cụ thể của thay đổi                          | Permission/threat checks, tests hoặc fix, xử lý dữ liệu nhạy cảm và rủi ro còn lại có căn cứ                                                   |
+| **INTEGRATION**                  | API mobile/web ↔ backend, push/deep link, storage, Redis/Mongo, Store billing, SDK hoặc external provider | Đồng bộ contract, serialization, errors, retries/idempotency, timeout và lifecycle; verify config/schema hai đầu                         | Contract hoặc adapter/client wiring, compatibility evidence, integration scenarios và config cần thiết                                         |
+| **TECH_WRITER**                  | Hướng dẫn, API/runbook/architecture docs, onboarding hoặc code thay đổi khiến tài liệu lỗi thời           | Viết theo behavior đã verify, giữ thuật ngữ/mã màn/BR/AC và commands chính xác; liên kết source                                          | Tài liệu gọn, ví dụ chạy được và ghi rõ trạng thái implemented/planned khi cần                                                                 |
+| **AI_ENGINEER** _(có điều kiện)_ | Chỉ khi yêu cầu chạm AI phase 1.2 theo nghiệp vụ §7.18/kỹ thuật §17                                       | Thiết kế provider/prompt/structured output, eval tiếng Việt, quota/latency/cost và fallback; phối hợp SECURITY_PRIVACY                   | Prompt/schema versioned, eval cases/kết quả thật và data contract; giữ đầu ra là draft, user chủ động, không đọc nhật ký riêng hoặc tự gửi tin |
+
+Aliases: **DEV_FLUTTER → MOBILE**; **QUALITY_GATE → QUALITY**. Tên role mô tả công việc thực hiện, không ngụ ý có nhân sự hoặc lần review độc lập chưa diễn ra.
+
+## Ranh giới kỹ thuật cần giữ
+
+**Backend:** `controllers/ → services/ → repositories/ → models/`, với `interfaces/services/`, `interfaces/repositories/`, `dto/<resource>/`, `database/`, `config/`, `common/`. Controller gọi service interface; service giữ business orchestration và gọi repository interface. Repository giữ Prisma CRUD/transaction và map row thành model class. Model có attributes/helpers, không database I/O. Contract và Symbol token ở cùng file; bind `useClass` trong AppModule và inject bằng `@Inject(TOKEN)`. Services không import Prisma/concrete repository. DTO types có thể dùng qua `import type`. Giữ generator `npm run generate -- resource <name>` cùng cấu trúc, không thêm feature modules hoặc cây domain/application/infrastructure/presentation.
+
+**Flutter:** `Page (@RoutePage, BaseHookWidget) → Controller (BaseNotifier + ChangeNotifierProvider.autoDispose) → Service (data/service + data/service_imp, qua data/provider) → Repository (data/repository + data/repository_imp) → AppClient (Retrofit) / LocalStore (Hive)`. Giữ auto_route, hooks_riverpod/flutter_hooks, dio/retrofit, freezed/json_serializable, thư mục màn hiện có. Chuỗi UI dùng `context.l10n`, đủ ARB; phần dùng từ hai màn đặt trong `lib/utils/` theo skills. Package/architecture changes tuân theo local AGENTS và quyền user đã giao, không hỏi lại khi đã có authorization phù hợp.
+
+**Dữ liệu/analytics:** không ghi raw baby identifiers, nội dung ký ức, nhật ký riêng, mood chi tiết gắn người hoặc Hearts cá nhân vào analytics/logs. Đối chiếu whitelist sự kiện/thuộc tính và pseudonymous IDs tại kỹ thuật §27.3. SQL/biểu đồ/north-star phải có dataset hoặc giả thuyết được gắn nhãn; không suy ra insight định lượng từ yêu cầu thuần kỹ thuật.
+
+## Routing theo loại yêu cầu
+
+ORCHESTRATOR luôn điều phối/tổng hợp, DATA_ANALYST luôn cung cấp impact note cho log ở mức phù hợp. Bảng dưới chỉ liệt kê phần chuyên môn bổ sung; các role trong cùng ô không nhất thiết đều cần agent riêng.
+
+| Yêu cầu                     | Luồng chính                                                                          | Bổ sung khi có tác động                                                                                   |
+| --------------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| Feature mới                 | PRODUCT/BA → ARCHITECT → BACKEND/MOBILE/FRONTEND → TESTER → QUALITY                  | PM khi nhiều bước; DESIGN cho UX; DBA cho schema; SECURITY_PRIVACY cho quyền/dữ liệu                      |
+| Backend/API/business bug    | BA nếu BR/AC bị ảnh hưởng → BACKEND → TESTER → QUALITY                               | DBA cho persistence/concurrency; INTEGRATION nếu client contract đổi                                      |
+| Flutter/mobile bug          | BA nếu flow thay đổi → MOBILE → TESTER → QUALITY                                     | DESIGN cho visual states; BACKEND/INTEGRATION cho API/offline/push                                        |
+| Web/admin                   | BA/DESIGN → FRONTEND → TESTER → QUALITY                                              | ARCHITECT cho thiết lập stack; BACKEND/INTEGRATION cho API/quyền admin                                    |
+| UI/design system            | DESIGN → MOBILE hoặc FRONTEND → TESTER → QUALITY                                     | BA/PRODUCT nếu thao tác, copy hoặc luồng sản phẩm thay đổi                                                |
+| Database/data migration     | DBA → BACKEND/INTEGRATION → TESTER → QUALITY                                         | ARCHITECT/DEVOPS cho rollout; SECURITY_PRIVACY cho retention/delete/export                                |
+| KPI/events/data analysis    | PRODUCT + DATA_ANALYST → implementation role khi cần → TESTER/QUALITY phù hợp        | BA cho định nghĩa; DBA cho query; SECURITY_PRIVACY cho event properties                                   |
+| Config/dependencies/infra   | BACKEND/MOBILE/FRONTEND hoặc DEVOPS theo workspace → TESTER → QUALITY                | ARCHITECT/INTEGRATION khi thêm provider, SDK hoặc contract; SECURITY_PRIVACY cho secrets                  |
+| Câu hỏi/giải thích          | Role hiểu code/đặc tả liên quan → câu trả lời có nguồn                               | BA/ARCHITECT/DATA_ANALYST theo nội dung; không cài package hoặc sửa code chỉ để giải thích                |
+| Docs/process                | TECH_WRITER + role sở hữu nội dung → review tính chính xác                           | PM/BA/ARCHITECT khi quy trình hoặc quyết định thay đổi; verify links/commands, không chạy test code vô cớ |
+| Deploy/billing/storage/push | DEVOPS hoặc INTEGRATION → BACKEND/MOBILE/FRONTEND → TESTER → QUALITY                 | SECURITY_PRIVACY; DBA/ARCHITECT nếu dữ liệu hoặc lifecycle đổi                                            |
+| AI                          | PRODUCT/BA → AI_ENGINEER + SECURITY_PRIVACY → implementation role → TESTER → QUALITY | DATA_ANALYST cho eval/usage; INTEGRATION/DEVOPS cho provider/runtime                                      |
+
+## Khi nào mở rộng đội
+
+- Thêm role liên quan ngay khi discovery cho thấy schema/transaction, quyền truy cập, UX, contract hai đầu hoặc hạ tầng vượt scope người đang làm; ghi tác động và ownership trước khi sửa phần phụ thuộc.
+- Có thể thêm góc nhìn PERFORMANCE khi có latency/load/query bottleneck; DATA_ENGINEER khi có pipeline/warehouse/backfill; ACCESSIBILITY/L10N khi thay đổi nhiều màn/ngôn ngữ; RELEASE khi có Store submission. Chỉ thêm khi có deliverable cụ thể, không tạo danh hiệu để lấp checklist.
+- Giữ số role/agent nhỏ nhất xử lý đủ yêu cầu. Chia phần read-only/review hoặc các file độc lập để chạy song song; cùng một file có một owner. Handoff tuần tự khi thay đổi contract/schema là điều kiện cho bước tiếp theo.
+- Nếu gặp phụ thuộc ngoài quyền đã giao, hoàn tất phần có thể chuẩn bị/review trong phạm vi hiện tại, nêu chính xác chỗ còn cần input. Không suy diễn việc cần phối hợp thành một vòng approval mới.
+
+## Handoff bắt buộc giữa các role
+
+Mỗi handoff dùng nội dung thực tế, gọn theo task:
+
+```text
+Task/mục tiêu: yêu cầu đang xử lý và tiêu chí hoàn tất.
+Scope/owner: workspace, files sở hữu, ràng buộc và phần không phụ trách.
+Nguồn: spec sections, mã màn/UC/BR/AC, code/contract đã đọc.
+Quyết định/kết quả: thay đổi hoặc kết luận; phân biệt implemented/planned/assumption.
+Contract/data: API/DTO/schema/events/config và tác động tới bên nhận, nếu có.
+Verification: lệnh + pass/fail thực tế; review findings; chưa chạy gì và vì sao.
+Product/analytics: giá trị/tác động, facts vs hypotheses, data source; hoặc không tác động kèm lý do.
+Còn lại: blocker, rủi ro cụ thể, bước tiếp theo và owner.
+Log contribution: thông tin để ORCHESTRATOR cập nhật SESSIONS.md và PRODUCT_ANALYTICS_HISTORY.md.
+```
+
+Người nhận kiểm tra handoff trước khi phụ thuộc vào kết luận. ORCHESTRATOR chỉ báo hoàn tất khi scope đã được xử lý, checks phù hợp có bằng chứng và hai log được cập nhật; nếu có hạn chế phải nêu đúng trạng thái, không đổi thành kết quả pass.

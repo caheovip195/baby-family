@@ -1,0 +1,47 @@
+# Local environment and private credentials
+.env
+.env.*
+!.env.example
+!.env.*.example
+.secrets/
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Node dependencies
+node_modules/
+
+# Build output and caches for each application
+/baby-backend/dist/
+/baby-backend/coverage/
+/baby-backend/.cache/
+/baby-admin/dist/
+/baby-admin/build/
+/baby-admin/coverage/
+/baby-family-app/build/
+/baby-family-app/coverage/
+/.cache/
+*.tsbuildinfo
+
+# Runtime and package-manager logs
+*.log
+npm-debug.log*
+/logs/
+/baby-backend/logs/
+
+# Local IDE state and editor temporary files
+.idea/
+*.iml
+*.ipr
+*.iws
+*.swp
+*.swo
+*~
+
+# Operating-system metadata
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini

@@ -37,17 +37,26 @@ class LanguagePickerSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(context.l10n.languagePickerTitle, style: AppTypography.h3),
+            Text(
+              context.l10n.languagePickerTitle,
+              style: AppTypography.adapt(context, AppTypography.h3),
+            ),
             const SizedBox(height: AppSpacing.s3),
             for (final language in AppLanguage.values)
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 minTileHeight: AppSpacing.minTouchTarget,
-                title: Text(language.nativeName, style: AppTypography.body),
+                title: Text(
+                  language.nativeName,
+                  style: AppTypography.adapt(context, AppTypography.body),
+                ),
                 trailing: language == selected
-                    ? const Icon(
+                    ? Icon(
                         LucideIcons.check,
-                        color: kColorPrimary600C2513F,
+                        color: AppColors.resolve(
+                          context,
+                          kColorPrimary600C2513F,
+                        ),
                         size: 20,
                       )
                     : null,

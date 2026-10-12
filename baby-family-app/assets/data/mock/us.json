@@ -1,0 +1,227 @@
+{
+  "checkins": [
+    {
+      "id": "ck-lan",
+      "familyId": "f-lan",
+      "userId": "u-lan",
+      "mood": "ok",
+      "energy": 3,
+      "needs": [],
+      "shared": true,
+      "createdAt": "2026-10-07T19:00:00.000",
+      "expiresAt": "2026-10-07T23:59:00.000"
+    },
+    {
+      "id": "ck-minh",
+      "familyId": "f-lan",
+      "userId": "u-minh",
+      "mood": "tired",
+      "energy": 2,
+      "needs": [
+        "quiet"
+      ],
+      "needMinutes": 20,
+      "shared": true,
+      "createdAt": "2026-10-07T19:40:00.000",
+      "expiresAt": "2026-10-07T23:59:00.000"
+    }
+  ],
+  "requests": [
+    {
+      "id": "rq-1",
+      "familyId": "f-lan",
+      "kind": "task",
+      "templateCode": "rest",
+      "title": "Cần nghỉ 30 phút — trông Haru giúp",
+      "message": "Em cần nghỉ khoảng 30 phút. Anh trông Haru giúp em nhé? 💛",
+      "childIds": [
+        "haru"
+      ],
+      "dueLabel": "now",
+      "dueAt": "2026-10-07T19:02:00.000",
+      "durationMin": 30,
+      "urgency": "soon",
+      "status": "accepted",
+      "senderId": "u-lan",
+      "receiverId": "u-minh",
+      "sentAt": "2026-10-07T19:02:00.000",
+      "seenAt": "2026-10-07T19:03:00.000",
+      "acceptedAt": "2026-10-07T19:10:00.000",
+      "remindAt": "2026-10-07T19:30:00.000"
+    },
+    {
+      "id": "rq-old",
+      "familyId": "f-lan",
+      "kind": "task",
+      "templateCode": "childcare",
+      "title": "Trông Haru 30 phút",
+      "message": "Anh đi chợ một lát, em trông Haru giúp anh nhé.",
+      "childIds": [
+        "haru"
+      ],
+      "dueLabel": "now",
+      "durationMin": 30,
+      "urgency": "normal",
+      "status": "done",
+      "senderId": "u-minh",
+      "receiverId": "u-lan",
+      "sentAt": "2026-10-06T17:50:00.000",
+      "seenAt": "2026-10-06T17:52:00.000",
+      "acceptedAt": "2026-10-06T17:55:00.000",
+      "doneAt": "2026-10-06T18:40:00.000"
+    }
+  ],
+  "thanks": [
+    {
+      "id": "th-1",
+      "familyId": "f-lan",
+      "fromUserId": "u-minh",
+      "toUserId": "u-lan",
+      "body": "Cảm ơn em đã ru Haru tối qua để anh ngủ thêm một chút 💛",
+      "sticker": "💛",
+      "createdAt": "2026-10-06T07:30:00.000"
+    },
+    {
+      "id": "th-w1",
+      "familyId": "f-lan",
+      "fromUserId": "u-minh",
+      "toUserId": "u-lan",
+      "createdAt": "2026-10-06T06:00:00.000",
+      "body": "Cảm ơn em đã dậy đêm với Haru ba lần mà sáng vẫn cười với anh.",
+      "icon": "sun",
+      "linkedTitle": null,
+      "reactedByUserIds": [
+        "u-lan"
+      ],
+      "wallOrder": 0
+    },
+    {
+      "id": "th-w2",
+      "familyId": "f-lan",
+      "fromUserId": "u-lan",
+      "toUserId": "u-minh",
+      "createdAt": "2026-10-03T14:00:00.000",
+      "body": "Cảm ơn anh đưa Hana đi công viên để em nghỉ trưa một chút.",
+      "icon": "flower-2",
+      "linkedTitle": null,
+      "reactedByUserIds": [],
+      "wallOrder": 1
+    },
+    {
+      "id": "th-w3",
+      "familyId": "f-lan",
+      "fromUserId": "u-minh",
+      "toUserId": "u-lan",
+      "createdAt": "2026-10-01T21:00:00.000",
+      "body": "Cảm ơn em viết thư cho Hana, anh đọc mà rưng rưng.",
+      "icon": "mail",
+      "linkedTitle": "Thư gửi Hana",
+      "reactedByUserIds": [
+        "u-lan"
+      ],
+      "wallOrder": 2
+    },
+    {
+      "id": "th-w4",
+      "familyId": "f-lan",
+      "fromUserId": "u-lan",
+      "toUserId": "u-minh",
+      "createdAt": "2026-10-05T07:00:00.000",
+      "body": "Cảm ơn anh đã tắm cho Haru tối qua, em được ngủ sớm hơn 30 phút.",
+      "icon": "heart",
+      "linkedTitle": "Tắm cho Haru buổi tối",
+      "reactedByUserIds": [
+        "u-minh"
+      ],
+      "wallOrder": 3
+    },
+    {
+      "id": "th-w5",
+      "familyId": "f-lan",
+      "fromUserId": "u-minh",
+      "toUserId": "u-lan",
+      "createdAt": "2026-10-02T08:00:00.000",
+      "body": "Bữa sáng hôm nay ngon lắm. Cảm ơn vợ nhé!",
+      "icon": "coffee",
+      "linkedTitle": null,
+      "reactedByUserIds": [
+        "u-lan"
+      ],
+      "wallOrder": 4
+    },
+    {
+      "id": "th-w6",
+      "familyId": "f-lan",
+      "fromUserId": "u-lan",
+      "toUserId": "u-minh",
+      "createdAt": "2026-10-01T22:00:00.000",
+      "body": "Cảm ơn anh vì cái ôm lúc em mệt.",
+      "icon": "hand-heart",
+      "linkedTitle": null,
+      "reactedByUserIds": [
+        "u-minh"
+      ],
+      "wallOrder": 5
+    }
+  ],
+  "dailyQuestions": [
+    {
+      "vi": "Điều nhỏ nào hôm nay làm bạn mỉm cười?",
+      "en": "What little thing made you smile today?",
+      "zh": "今天哪件小事让你微笑？",
+      "ja": "今日、どんな小さなことに笑顔になりましたか？"
+    }
+  ],
+  "questionAnswers": [],
+  "journal": [
+    {
+      "id": "j-1",
+      "familyId": "f-lan",
+      "userId": "u-lan",
+      "createdAt": "2026-10-06T23:40:00.000",
+      "showTime": true,
+      "mood": "tired",
+      "title": "Đêm thứ ba liền",
+      "photoAsset": "assets/images/design_homeChildToday3Asset.jpg",
+      "body": "Haru dậy ba lần. Mình thấy hơi quá sức, nhưng sáng nay con cười với mình, tự nhiên thấy nhẹ lòng hơn…"
+    },
+    {
+      "id": "j-2",
+      "familyId": "f-lan",
+      "userId": "u-lan",
+      "createdAt": "2026-10-03T15:00:00.000",
+      "mood": "grateful",
+      "title": "Một tiếng ngủ trưa",
+      "sharedExcerpt": true,
+      "body": "Papa tự đưa Hana đi công viên mà không cần mình nhờ. Mình ngủ được trọn một tiếng…"
+    },
+    {
+      "id": "j-3",
+      "familyId": "f-lan",
+      "userId": "u-lan",
+      "createdAt": "2026-10-01T22:00:00.000",
+      "mood": "worried",
+      "title": "Bơ đạp nhiều hơn",
+      "body": "Tuần này Bơ đạp nhiều, mình vừa vui vừa lo không biết có chăm nổi ba bé không…"
+    },
+    {
+      "id": "j-4",
+      "familyId": "f-lan",
+      "userId": "u-lan",
+      "createdAt": "2026-09-25T17:00:00.000",
+      "mood": "calm",
+      "title": "Chiều mưa ở nhà",
+      "body": "Cả nhà nằm nghe mưa, Hana kể chuyện cho em Haru nghe bằng thứ ngôn ngữ riêng của con…"
+    }
+  ],
+  "coupleSettings": {
+    "checkinShareMode": "askEachTime",
+    "hideOnLockScreen": true,
+    "faceIdLock": false,
+    "urgentBypassQuiet": false,
+    "quietFrom": "22:00",
+    "quietTo": "06:30",
+    "bridgeRetentionDays": 30,
+    "journalFaceIdLock": true
+  }
+}

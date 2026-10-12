@@ -4,6 +4,20 @@ You are working on the **Baby Family** Flutter app.
 
 Always answer in Vietnamese unless code/comments require English.
 
+## Project roles and mandatory history
+
+For every request, also follow [root AGENTS.md](../AGENTS.md) and the
+[baby-family-team skill](../.agents/skills/baby-family-team/SKILL.md). Select
+relevant roles and record each user question, work date, concise analysis and
+actual results in both root [SESSIONS.md](../SESSIONS.md) and
+[PRODUCT_ANALYTICS_HISTORY.md](../PRODUCT_ANALYTICS_HISTORY.md). The primary
+agent owns these two logs; sub-agents report findings back.
+
+Keep updating this app's `SESSION.md` as required below, referencing the shared
+request ID. Preserve its existing history. `DEV_FLUTTER` maps to `MOBILE` and
+`QUALITY_GATE` maps to `QUALITY` in the shared role catalog. All Flutter skills,
+architecture and workflow rules below still apply.
+
 ## Mandatory Skill Loading
 
 Before starting ANY task, you MUST read:
@@ -59,6 +73,9 @@ Page (@RoutePage, BaseHookWidget)
 - DTO: `lib/data/dto/`. Enum: `lib/utils/constants/enum_part/`.
 - Đa ngôn ngữ: `flutter gen-l10n` (ARB `lib/l10n/arb/`, mặc định `vi`, có `en`);
   mọi chuỗi hiển thị qua `context.l10n` (Skill 10).
+- Dùng chung (Skill 11): widget `lib/utils/widget/`, hàm `lib/utils/helper/`,
+  extension `lib/utils/extension/`, hằng số/màu `lib/utils/constants/` — thứ gì
+  ≥ 2 màn dùng thì không để trong `page/<màn>/widgets` hay controller.
 - Màn: `lib/page/<general|parent|circle>/<screen>/` gồm `<screen>_page.dart`,
   `<screen>_controller.dart`, `mobile/<screen>_mobile_view.dart`,
   `widgets/<widget>.dart`.
@@ -90,3 +107,4 @@ Page (@RoutePage, BaseHookWidget)
 * Never place files outside the defined project structure
 * Never hard-code business mock data (tên bé, ảnh, số liệu) in UI
 * Never hard-code user-facing strings — add them to every ARB file (Skill 10)
+* Never duplicate a widget/helper/extension/constant across screens — anything used by ≥ 2 screens lives in `lib/utils/` (Skill 11)

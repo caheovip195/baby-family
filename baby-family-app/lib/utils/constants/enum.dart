@@ -3,11 +3,54 @@ import 'dart:ui';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'enum_part/app_button_style.dart';
-
 part 'enum_part/app_language.dart';
-
+part 'enum_part/app_text_size.dart';
+part 'enum_part/auth_method.dart';
+part 'enum_part/calendar_event_kind.dart';
+part 'enum_part/comment_action.dart';
+part 'enum_part/checkin_share_mode.dart';
+part 'enum_part/child_gender.dart';
+part 'enum_part/child_kind.dart';
+part 'enum_part/couple_need.dart';
+part 'enum_part/data_export_kind.dart';
+part 'enum_part/data_export_status.dart';
+part 'enum_part/demo_seed.dart';
+part 'enum_part/device_kind.dart';
 part 'enum_part/device_layout_class.dart';
-
 part 'enum_part/device_type.dart';
-
+part 'enum_part/diary_block_kind.dart';
+part 'enum_part/family_role.dart';
+part 'enum_part/family_stage.dart';
 part 'enum_part/flavor.dart';
+part 'enum_part/invite_kind.dart';
+part 'enum_part/journal_mood.dart';
+part 'enum_part/letter_format.dart';
+part 'enum_part/letter_open_mode.dart';
+part 'enum_part/main_tab.dart';
+part 'enum_part/member_status.dart';
+part 'enum_part/memory_filter.dart';
+part 'enum_part/memory_kind.dart';
+part 'enum_part/memory_visibility.dart';
+part 'enum_part/mission_category.dart';
+part 'enum_part/mission_load_level.dart';
+part 'enum_part/mission_owner_kind.dart';
+part 'enum_part/mission_reminder.dart';
+part 'enum_part/mission_repeat.dart';
+part 'enum_part/mission_scope.dart';
+part 'enum_part/mission_source.dart';
+part 'enum_part/mission_status.dart';
+part 'enum_part/mood_code.dart';
+part 'enum_part/notification_group.dart';
+part 'enum_part/notification_kind.dart';
+part 'enum_part/parent_slot.dart';
+part 'enum_part/plan_state.dart';
+part 'enum_part/pregnancy_tab.dart';
+part 'enum_part/prep_group.dart';
+part 'enum_part/quick_create_action.dart';
+part 'enum_part/relative_permission.dart';
+part 'enum_part/relative_relation.dart';
+part 'enum_part/request_kind.dart';
+part 'enum_part/request_status.dart';
+part 'enum_part/request_urgency.dart';
+part 'enum_part/session_state.dart';
+part 'enum_part/trimester.dart';

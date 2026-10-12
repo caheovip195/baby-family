@@ -13,7 +13,12 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.actions,
     this.showBack = true,
     this.onBack,
+    this.leadingIcon = LucideIcons.chevronLeft,
     this.backgroundColor,
+    this.centerTitle,
+    this.titleStyle,
+    this.titleSpacing,
+    this.toolbarHeight = kToolbarHeight,
   });
 
   final String? title;
@@ -21,22 +26,33 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
   final bool showBack;
   final VoidCallback? onBack;
+  final IconData leadingIcon;
   final Color? backgroundColor;
+  final bool? centerTitle;
+  final TextStyle? titleStyle;
+  final double? titleSpacing;
+  final double toolbarHeight;
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => Size.fromHeight(toolbarHeight);
 
   @override
   Widget build(BuildContext context) {
     final canPop = context.router.canPop();
     return AppBar(
-      backgroundColor: backgroundColor ?? kColorBgFFFBF7,
+      toolbarHeight: toolbarHeight,
+      centerTitle: centerTitle,
+      titleSpacing: titleSpacing,
+      backgroundColor: AppColors.resolve(
+        context,
+        backgroundColor ?? kColorBgFFFBF7,
+      ),
       automaticallyImplyLeading: false,
       leading: showBack && (canPop || onBack != null)
           ? IconButton(
-              icon: const Icon(
-                LucideIcons.chevronLeft,
-                color: kColorTextPrimary2E2A27,
+              icon: Icon(
+                leadingIcon,
+                color: AppColors.resolve(context, kColorTextPrimary2E2A27),
                 size: 24,
               ),
               onPressed: onBack ?? () => context.router.maybePop(),
@@ -44,7 +60,15 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
           : null,
       title:
           titleWidget ??
-          (title == null ? null : Text(title!, style: AppTypography.h3)),
+          (title == null
+              ? null
+              : Text(
+                  title!,
+                  style: AppTypography.adapt(
+                    context,
+                    titleStyle ?? AppTypography.h3,
+                  ),
+                )),
       actions: actions,
     );
   }

@@ -28,7 +28,7 @@ class AppDialog extends StatelessWidget {
     return showDialog<T>(
       context: context,
       barrierDismissible: barrierDismissible,
-      barrierColor: kColorOverlay2E2A27Alpha48,
+      barrierColor: AppColors.resolve(context, kColorOverlay2E2A27Alpha48),
       builder: (context) => AppDialog(
         title: title,
         content: content,
@@ -41,7 +41,7 @@ class AppDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: kColorSurfaceFFFFFF,
+      backgroundColor: AppColors.resolve(context, kColorSurfaceFFFFFF),
       surfaceTintColor: kColorTransparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.dialog),
@@ -58,13 +58,18 @@ class AppDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (icon != null) ...[icon!, const SizedBox(height: AppSpacing.s4)],
-            Text(title, textAlign: TextAlign.center, style: AppTypography.h3),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: AppTypography.adapt(context, AppTypography.h3),
+            ),
             const SizedBox(height: AppSpacing.s3),
             Text(
               content,
               textAlign: TextAlign.center,
-              style: AppTypography.body.copyWith(
-                color: kColorTextSecondary6B625B,
+              style: AppTypography.adapt(
+                context,
+                AppTypography.body.copyWith(color: kColorTextSecondary6B625B),
               ),
             ),
             if (actions.isNotEmpty) ...[

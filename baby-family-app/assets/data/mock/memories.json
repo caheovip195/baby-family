@@ -1,0 +1,1751 @@
+{
+  "memories": [
+    {
+      "id": "m-hana-holds-haru",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-lan",
+      "occurredAt": "2026-10-07T18:25:00.000",
+      "createdAt": "2026-10-07T18:25:00.000",
+      "childIds": [
+        "hana",
+        "haru"
+      ],
+      "visibility": "family",
+      "title": "Lần đầu Hana bế em Haru 🥹",
+      "body": "Lần đầu Hana bế em Haru, cả hai cười tít mắt. Chị Hana còn hát ru em nữa 🥹",
+      "mediaAssets": [
+        "assets/images/demo_memory.jpg",
+        "assets/images/design_memoryDetailAsset.jpg",
+        "assets/images/design_perspectiveOriginalAsset.jpg"
+      ],
+      "feeling": "🥹 Xúc động",
+      "people": [
+        "Papa",
+        "Mama",
+        "Hana",
+        "Haru"
+      ],
+      "milestoneTitle": {
+        "vi": "Gặp em lần đầu",
+        "en": "Meeting the baby",
+        "zh": "第一次见弟弟",
+        "ja": "はじめての対面"
+      },
+      "reactions": {
+        "❤️": 3,
+        "🥹": 2
+      },
+      "reactorNames": [
+        "Bà ngoại",
+        "Papa",
+        "Ông ngoại"
+      ],
+      "isFavorite": true
+    },
+    {
+      "id": "m-papa-bath",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-minh",
+      "occurredAt": "2026-10-07T20:05:00.000",
+      "createdAt": "2026-10-07T20:05:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "title": "Buổi tắm tối nay",
+      "mediaAssets": [
+        "assets/images/design_homeFeed1Asset.jpg",
+        "assets/images/design_homeFeed2Asset.jpg",
+        "assets/images/design_homeFeed3Asset.jpg",
+        "assets/images/design_homeChildToday1Asset.jpg",
+        "assets/images/design_homeChildToday2Asset.jpg",
+        "assets/images/design_homeChildToday3Asset.jpg"
+      ]
+    },
+    {
+      "id": "m-voice-laugh",
+      "familyId": "f-lan",
+      "kind": "voice",
+      "authorId": "u-minh",
+      "occurredAt": "2026-10-07T17:50:00.000",
+      "createdAt": "2026-10-07T17:50:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "title": "Tiếng cười giòn tan khi Papa thổi bụng",
+      "voiceDurationSec": 12
+    },
+    {
+      "id": "m-quote-moon",
+      "familyId": "f-lan",
+      "kind": "quote",
+      "authorId": "u-minh",
+      "occurredAt": "2026-10-06T19:30:00.000",
+      "createdAt": "2026-10-06T19:30:00.000",
+      "childIds": [
+        "hana"
+      ],
+      "visibility": "family",
+      "body": "Mẹ ơi, trăng đi theo con kìa! Trăng thích con hả mẹ?",
+      "quoteContext": "Lúc đi dạo buổi tối, nhìn lên trời",
+      "reactions": {
+        "😂": 2,
+        "🥹": 1
+      },
+      "reactorNames": [
+        "Bà ngoại",
+        "Mama",
+        "Ông ngoại"
+      ]
+    },
+    {
+      "id": "m-keepsake-bracelet",
+      "familyId": "f-lan",
+      "kind": "keepsake",
+      "authorId": "u-lan",
+      "occurredAt": "2026-10-03T10:00:00.000",
+      "createdAt": "2026-10-03T10:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "title": "Vòng tay sơ sinh của Haru",
+      "body": "Vòng ghi tên mẹ ở bệnh viện — mẹ giữ lại cho con.",
+      "mediaAssets": [
+        "assets/images/design_keepsake.jpg"
+      ]
+    },
+    {
+      "id": "m-first-roll",
+      "familyId": "f-lan",
+      "kind": "milestone",
+      "authorId": "u-lan",
+      "occurredAt": "2025-08-10T16:20:00.000",
+      "createdAt": "2025-08-10T16:20:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "title": "Haru lẫy được rồi!",
+      "milestoneCode": "roll_over",
+      "milestoneTitle": {
+        "vi": "Lẫy",
+        "en": "Rolled over",
+        "zh": "翻身",
+        "ja": "寝返り"
+      },
+      "mediaAssets": [
+        "assets/images/design_timelineFirstAsset.jpg",
+        "assets/images/design_homeChildFirst1Asset.jpg"
+      ]
+    },
+    {
+      "id": "m-first-laugh",
+      "familyId": "f-lan",
+      "kind": "milestone",
+      "authorId": "u-minh",
+      "occurredAt": "2025-07-28T09:10:00.000",
+      "createdAt": "2025-07-28T09:10:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "title": "Haru cười thành tiếng",
+      "milestoneCode": "laugh_aloud",
+      "milestoneTitle": {
+        "vi": "Cười to",
+        "en": "Laughed aloud",
+        "zh": "大声笑",
+        "ja": "声を出して笑う"
+      },
+      "mediaAssets": [
+        "assets/images/design_homeChildFirst2Asset.jpg"
+      ]
+    },
+    {
+      "id": "m-bo-kick",
+      "familyId": "f-lan",
+      "kind": "milestone",
+      "authorId": "u-lan",
+      "occurredAt": "2026-09-02T15:00:00.000",
+      "createdAt": "2026-09-02T15:00:00.000",
+      "childIds": [
+        "bo"
+      ],
+      "visibility": "family",
+      "title": "Lần đầu bé đạp",
+      "milestoneCode": "first_kick",
+      "milestoneTitle": {
+        "vi": "Bé đạp",
+        "en": "First kick",
+        "zh": "第一次胎动",
+        "ja": "はじめての胎動"
+      },
+      "body": "Như có con cá nhỏ quẫy trong bụng, em bật cười giữa cuộc họp.",
+      "pregnancyWeek": 20,
+      "pregnancyDay": 0,
+      "mediaAssets": [
+        "assets/images/demo_bump.jpg"
+      ]
+    },
+    {
+      "id": "m-bo-ultrasound",
+      "familyId": "f-lan",
+      "kind": "ultrasound",
+      "authorId": "u-lan",
+      "occurredAt": "2026-09-12T10:30:00.000",
+      "createdAt": "2026-09-12T10:30:00.000",
+      "childIds": [
+        "bo"
+      ],
+      "visibility": "family",
+      "title": "Siêu âm tuần 22",
+      "body": "Bơ đang mút tay, cả nhà xem mãi không chán.",
+      "pregnancyWeek": 22,
+      "pregnancyDay": 0,
+      "mediaAssets": [
+        "assets/images/design_ultrasoundAsset.jpg"
+      ]
+    },
+    {
+      "id": "m-bo-song",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-minh",
+      "occurredAt": "2026-10-05T21:00:00.000",
+      "createdAt": "2026-10-05T21:00:00.000",
+      "childIds": [
+        "bo"
+      ],
+      "visibility": "family",
+      "title": "Papa hát, bé đạp liền 3 cái 🎶",
+      "pregnancyWeek": 24,
+      "pregnancyDay": 1,
+      "mediaAssets": [
+        "assets/images/design_pregnancyJourneyAsset.jpg"
+      ]
+    },
+    {
+      "id": "m-bo-bump-13",
+      "familyId": "f-lan",
+      "kind": "bump",
+      "authorId": "u-lan",
+      "occurredAt": "2026-07-19T09:00:00.000",
+      "createdAt": "2026-07-19T09:00:00.000",
+      "childIds": [
+        "bo"
+      ],
+      "visibility": "family",
+      "pregnancyWeek": 13,
+      "pregnancyDay": 0,
+      "mediaAssets": [
+        "assets/images/design_bump_13.jpg"
+      ]
+    },
+    {
+      "id": "m-bo-bump-14",
+      "familyId": "f-lan",
+      "kind": "bump",
+      "authorId": "u-lan",
+      "occurredAt": "2026-07-26T09:00:00.000",
+      "createdAt": "2026-07-26T09:00:00.000",
+      "childIds": [
+        "bo"
+      ],
+      "visibility": "family",
+      "pregnancyWeek": 14,
+      "pregnancyDay": 0,
+      "mediaAssets": [
+        "assets/images/design_bump_14.jpg"
+      ]
+    },
+    {
+      "id": "m-bo-bump-16",
+      "familyId": "f-lan",
+      "kind": "bump",
+      "authorId": "u-lan",
+      "occurredAt": "2026-08-09T09:00:00.000",
+      "createdAt": "2026-08-09T09:00:00.000",
+      "childIds": [
+        "bo"
+      ],
+      "visibility": "family",
+      "pregnancyWeek": 16,
+      "pregnancyDay": 0,
+      "mediaAssets": [
+        "assets/images/design_bump_16.jpg"
+      ]
+    },
+    {
+      "id": "m-bo-bump-17",
+      "familyId": "f-lan",
+      "kind": "bump",
+      "authorId": "u-lan",
+      "occurredAt": "2026-08-16T09:00:00.000",
+      "createdAt": "2026-08-16T09:00:00.000",
+      "childIds": [
+        "bo"
+      ],
+      "visibility": "family",
+      "pregnancyWeek": 17,
+      "pregnancyDay": 0,
+      "mediaAssets": [
+        "assets/images/design_bump_17.jpg"
+      ]
+    },
+    {
+      "id": "m-bo-bump-18",
+      "familyId": "f-lan",
+      "kind": "bump",
+      "authorId": "u-lan",
+      "occurredAt": "2026-08-23T09:00:00.000",
+      "createdAt": "2026-08-23T09:00:00.000",
+      "childIds": [
+        "bo"
+      ],
+      "visibility": "family",
+      "pregnancyWeek": 18,
+      "pregnancyDay": 0,
+      "mediaAssets": [
+        "assets/images/design_bump_18.jpg"
+      ]
+    },
+    {
+      "id": "m-bo-bump-20",
+      "familyId": "f-lan",
+      "kind": "bump",
+      "authorId": "u-lan",
+      "occurredAt": "2026-09-06T09:00:00.000",
+      "createdAt": "2026-09-06T09:00:00.000",
+      "childIds": [
+        "bo"
+      ],
+      "visibility": "family",
+      "pregnancyWeek": 20,
+      "pregnancyDay": 0,
+      "mediaAssets": [
+        "assets/images/design_bump_20.jpg"
+      ]
+    },
+    {
+      "id": "m-bo-bump-21",
+      "familyId": "f-lan",
+      "kind": "bump",
+      "authorId": "u-lan",
+      "occurredAt": "2026-09-13T09:00:00.000",
+      "createdAt": "2026-09-13T09:00:00.000",
+      "childIds": [
+        "bo"
+      ],
+      "visibility": "family",
+      "pregnancyWeek": 21,
+      "pregnancyDay": 0,
+      "mediaAssets": [
+        "assets/images/design_bump_21.jpg"
+      ]
+    },
+    {
+      "id": "m-bo-bump-22",
+      "familyId": "f-lan",
+      "kind": "bump",
+      "authorId": "u-lan",
+      "occurredAt": "2026-09-20T09:00:00.000",
+      "createdAt": "2026-09-20T09:00:00.000",
+      "childIds": [
+        "bo"
+      ],
+      "visibility": "family",
+      "pregnancyWeek": 22,
+      "pregnancyDay": 0,
+      "mediaAssets": [
+        "assets/images/design_bump_22.jpg"
+      ]
+    },
+    {
+      "id": "m-bo-bump-23",
+      "familyId": "f-lan",
+      "kind": "bump",
+      "authorId": "u-lan",
+      "occurredAt": "2026-09-27T09:00:00.000",
+      "createdAt": "2026-09-27T09:00:00.000",
+      "childIds": [
+        "bo"
+      ],
+      "visibility": "family",
+      "pregnancyWeek": 23,
+      "pregnancyDay": 0,
+      "mediaAssets": [
+        "assets/images/design_bump_23.jpg"
+      ]
+    },
+    {
+      "id": "m-bo-positive-test",
+      "familyId": "f-lan",
+      "kind": "milestone",
+      "authorId": "u-lan",
+      "occurredAt": "2026-05-24T07:00:00.000",
+      "createdAt": "2026-05-24T07:00:00.000",
+      "childIds": [
+        "bo"
+      ],
+      "visibility": "family",
+      "title": "Que thử 2 vạch",
+      "milestoneCode": "positive_test",
+      "milestoneTitle": {
+        "vi": "Que 2 vạch",
+        "en": "Positive test",
+        "zh": "验孕两道杠",
+        "ja": "陽性反応"
+      },
+      "pregnancyWeek": 5,
+      "pregnancyDay": 0
+    },
+    {
+      "id": "m-bo-heartbeat",
+      "familyId": "f-lan",
+      "kind": "milestone",
+      "authorId": "u-lan",
+      "occurredAt": "2026-06-14T10:00:00.000",
+      "createdAt": "2026-06-14T10:00:00.000",
+      "childIds": [
+        "bo"
+      ],
+      "visibility": "family",
+      "title": "Lần đầu nghe tim thai",
+      "milestoneCode": "heartbeat",
+      "milestoneTitle": {
+        "vi": "Nghe tim thai",
+        "en": "First heartbeat",
+        "zh": "第一次听到胎心",
+        "ja": "はじめての心音"
+      },
+      "pregnancyWeek": 8,
+      "pregnancyDay": 0
+    },
+    {
+      "id": "m-haru-month-1",
+      "familyId": "f-lan",
+      "kind": "monthlyPhoto",
+      "authorId": "u-lan",
+      "occurredAt": "2025-05-08T09:00:00.000",
+      "createdAt": "2025-05-08T09:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "monthIndex": 1,
+      "mediaAssets": [
+        "assets/images/design_monthly_1.jpg"
+      ]
+    },
+    {
+      "id": "m-haru-month-2",
+      "familyId": "f-lan",
+      "kind": "monthlyPhoto",
+      "authorId": "u-lan",
+      "occurredAt": "2025-06-08T09:00:00.000",
+      "createdAt": "2025-06-08T09:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "monthIndex": 2,
+      "mediaAssets": [
+        "assets/images/design_monthly_2.jpg"
+      ]
+    },
+    {
+      "id": "m-haru-month-3",
+      "familyId": "f-lan",
+      "kind": "monthlyPhoto",
+      "authorId": "u-lan",
+      "occurredAt": "2025-07-08T09:00:00.000",
+      "createdAt": "2025-07-08T09:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "monthIndex": 3,
+      "mediaAssets": [
+        "assets/images/design_monthly_3.jpg"
+      ]
+    },
+    {
+      "id": "m-haru-month-4",
+      "familyId": "f-lan",
+      "kind": "monthlyPhoto",
+      "authorId": "u-lan",
+      "occurredAt": "2025-08-08T09:00:00.000",
+      "createdAt": "2025-08-08T09:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "monthIndex": 4,
+      "mediaAssets": [
+        "assets/images/design_monthly_4.jpg"
+      ]
+    },
+    {
+      "id": "m-haru-month-5",
+      "familyId": "f-lan",
+      "kind": "monthlyPhoto",
+      "authorId": "u-lan",
+      "occurredAt": "2025-09-08T09:00:00.000",
+      "createdAt": "2025-09-08T09:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "monthIndex": 5,
+      "mediaAssets": [
+        "assets/images/design_monthly_5.jpg"
+      ]
+    },
+    {
+      "id": "m-haru-month-6",
+      "familyId": "f-lan",
+      "kind": "monthlyPhoto",
+      "authorId": "u-lan",
+      "occurredAt": "2025-10-08T09:00:00.000",
+      "createdAt": "2025-10-08T09:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "monthIndex": 6,
+      "mediaAssets": [
+        "assets/images/design_homeChildToday1Asset.jpg"
+      ]
+    },
+    {
+      "id": "m-haru-month-7",
+      "familyId": "f-lan",
+      "kind": "monthlyPhoto",
+      "authorId": "u-lan",
+      "occurredAt": "2025-11-08T09:00:00.000",
+      "createdAt": "2025-11-08T09:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "monthIndex": 7,
+      "mediaAssets": [
+        "assets/images/design_homeChildToday2Asset.jpg"
+      ]
+    },
+    {
+      "id": "m-haru-month-8",
+      "familyId": "f-lan",
+      "kind": "monthlyPhoto",
+      "authorId": "u-lan",
+      "occurredAt": "2025-12-08T09:00:00.000",
+      "createdAt": "2025-12-08T09:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "monthIndex": 8,
+      "mediaAssets": [
+        "assets/images/design_homeChildToday3Asset.jpg"
+      ]
+    },
+    {
+      "id": "m-haru-month-9",
+      "familyId": "f-lan",
+      "kind": "monthlyPhoto",
+      "authorId": "u-lan",
+      "occurredAt": "2026-01-08T09:00:00.000",
+      "createdAt": "2026-01-08T09:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "monthIndex": 9,
+      "mediaAssets": [
+        "assets/images/design_homeChildToday4Asset.jpg"
+      ]
+    },
+    {
+      "id": "m-haru-month-10",
+      "familyId": "f-lan",
+      "kind": "monthlyPhoto",
+      "authorId": "u-lan",
+      "occurredAt": "2026-02-08T09:00:00.000",
+      "createdAt": "2026-02-08T09:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "monthIndex": 10,
+      "mediaAssets": [
+        "assets/images/design_homeChildFirst1Asset.jpg"
+      ]
+    },
+    {
+      "id": "m-haru-month-11",
+      "familyId": "f-lan",
+      "kind": "monthlyPhoto",
+      "authorId": "u-lan",
+      "occurredAt": "2026-03-08T09:00:00.000",
+      "createdAt": "2026-03-08T09:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "monthIndex": 11,
+      "mediaAssets": [
+        "assets/images/design_homeChildFirst2Asset.jpg"
+      ]
+    },
+    {
+      "id": "m-haru-month-12",
+      "familyId": "f-lan",
+      "kind": "monthlyPhoto",
+      "authorId": "u-lan",
+      "occurredAt": "2026-04-08T09:00:00.000",
+      "createdAt": "2026-04-08T09:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "monthIndex": 12,
+      "mediaAssets": [
+        "assets/images/design_monthlyCameraAsset.jpg"
+      ]
+    },
+    {
+      "id": "m-haru-month-13",
+      "familyId": "f-lan",
+      "kind": "monthlyPhoto",
+      "authorId": "u-lan",
+      "occurredAt": "2026-05-08T09:00:00.000",
+      "createdAt": "2026-05-08T09:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "monthIndex": 13,
+      "mediaAssets": [
+        "assets/images/design_monthly_1.jpg"
+      ]
+    },
+    {
+      "id": "m-haru-month-14",
+      "familyId": "f-lan",
+      "kind": "monthlyPhoto",
+      "authorId": "u-lan",
+      "occurredAt": "2026-06-08T09:00:00.000",
+      "createdAt": "2026-06-08T09:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "monthIndex": 14,
+      "mediaAssets": [
+        "assets/images/design_monthly_2.jpg"
+      ]
+    },
+    {
+      "id": "m-haru-month-15",
+      "familyId": "f-lan",
+      "kind": "monthlyPhoto",
+      "authorId": "u-lan",
+      "occurredAt": "2026-07-08T09:00:00.000",
+      "createdAt": "2026-07-08T09:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "monthIndex": 15,
+      "mediaAssets": [
+        "assets/images/design_monthly_3.jpg"
+      ]
+    },
+    {
+      "id": "m-haru-month-16",
+      "familyId": "f-lan",
+      "kind": "monthlyPhoto",
+      "authorId": "u-lan",
+      "occurredAt": "2026-08-08T09:00:00.000",
+      "createdAt": "2026-08-08T09:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "monthIndex": 16,
+      "mediaAssets": [
+        "assets/images/design_monthly_4.jpg"
+      ]
+    },
+    {
+      "id": "m-haru-month-17",
+      "familyId": "f-lan",
+      "kind": "monthlyPhoto",
+      "authorId": "u-lan",
+      "occurredAt": "2026-09-08T09:00:00.000",
+      "createdAt": "2026-09-08T09:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "monthIndex": 17,
+      "mediaAssets": [
+        "assets/images/design_monthly_5.jpg"
+      ]
+    },
+    {
+      "id": "m-first-steps",
+      "familyId": "f-lan",
+      "kind": "milestone",
+      "authorId": "u-lan",
+      "occurredAt": "2026-08-11T16:00:00.000",
+      "createdAt": "2026-08-11T16:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "title": "Haru tự đi được rồi!",
+      "milestoneCode": "first_step",
+      "milestoneTitle": {
+        "vi": "Bước đi đầu tiên",
+        "en": "First steps",
+        "zh": "第一步",
+        "ja": "はじめの一歩"
+      },
+      "mediaAssets": [
+        "assets/images/design_timelineFirstAsset.jpg",
+        "assets/images/design_homeChildFirst1Asset.jpg"
+      ]
+    },
+    {
+      "id": "m-first-mama",
+      "familyId": "f-lan",
+      "kind": "milestone",
+      "authorId": "u-minh",
+      "occurredAt": "2026-07-18T16:00:00.000",
+      "createdAt": "2026-07-18T16:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "title": "Haru gọi “Mẹ” rồi!",
+      "milestoneCode": "call_mama",
+      "milestoneTitle": {
+        "vi": "Gọi “Mẹ”",
+        "en": "Said “Mama”",
+        "zh": "叫“妈妈”",
+        "ja": "「ママ」と呼んだ"
+      },
+      "mediaAssets": [
+        "assets/images/design_homeChildFirst2Asset.jpg"
+      ]
+    },
+    {
+      "id": "m-first-sit",
+      "familyId": "f-lan",
+      "kind": "milestone",
+      "authorId": "u-lan",
+      "occurredAt": "2025-10-12T16:00:00.000",
+      "createdAt": "2025-10-12T16:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "title": "Haru ngồi vững rồi",
+      "milestoneCode": "sit_steady",
+      "milestoneTitle": {
+        "vi": "Ngồi vững",
+        "en": "Sitting steadily",
+        "zh": "坐稳",
+        "ja": "おすわり"
+      },
+      "mediaAssets": []
+    },
+    {
+      "id": "m-first-food",
+      "familyId": "f-lan",
+      "kind": "milestone",
+      "authorId": "u-minh",
+      "occurredAt": "2025-10-08T16:00:00.000",
+      "createdAt": "2025-10-08T16:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "title": "Bữa ăn dặm đầu tiên",
+      "milestoneCode": "first_food",
+      "milestoneTitle": {
+        "vi": "Ăn dặm",
+        "en": "First solid food",
+        "zh": "辅食",
+        "ja": "離乳食"
+      },
+      "mediaAssets": []
+    }
+  ],
+  "comments": [
+    {
+      "id": "c-1",
+      "memoryId": "m-hana-holds-haru",
+      "authorId": "u-ba-noi",
+      "authorName": "Bà nội",
+      "authorRole": "relative",
+      "body": "Hai chị em đáng yêu quá, bà nhớ hai cháu ❤️",
+      "createdAt": "2026-10-07T18:25:00.000"
+    },
+    {
+      "id": "c-1a",
+      "memoryId": "m-hana-holds-haru",
+      "parentId": "c-1",
+      "authorId": "u-lan",
+      "authorName": "Mama Lan",
+      "authorRole": "mother",
+      "body": "Cuối tuần cả nhà về thăm bà nhé ạ 🥰",
+      "createdAt": "2026-10-07T19:25:00.000"
+    },
+    {
+      "id": "c-1b",
+      "memoryId": "m-hana-holds-haru",
+      "parentId": "c-1",
+      "authorId": "u-ba-noi",
+      "authorName": "Bà nội",
+      "authorRole": "relative",
+      "body": "Bà đợi nhé!",
+      "createdAt": "2026-10-07T19:40:00.000"
+    },
+    {
+      "id": "c-2",
+      "memoryId": "m-hana-holds-haru",
+      "authorId": "u-minh",
+      "authorName": "Papa Minh",
+      "authorRole": "father",
+      "body": "Hana còn bảo “em nặng quá Mama ơi” 😂",
+      "createdAt": "2026-10-07T19:25:00.000"
+    },
+    {
+      "id": "c-3",
+      "memoryId": "m-hana-holds-haru",
+      "authorId": "u-ong-ngoai",
+      "authorName": "Ông ngoại",
+      "authorRole": "relative",
+      "body": "Cháu ngoại giỏi quá, biết thương em rồi 👏",
+      "createdAt": "2026-10-07T19:55:00.000"
+    },
+    {
+      "id": "c-3a",
+      "memoryId": "m-hana-holds-haru",
+      "parentId": "c-3",
+      "authorId": "u-minh",
+      "authorName": "Papa Minh",
+      "authorRole": "father",
+      "body": "Dạ, Hana thương em lắm ông ạ",
+      "createdAt": "2026-10-07T20:05:00.000"
+    }
+  ],
+  "perspectives": [
+    {
+      "id": "p-1",
+      "memoryId": "m-hana-holds-haru",
+      "authorId": "u-minh",
+      "body": "Anh đứng sau cầm máy mà run tay. Hana cứ thì thầm “em ơi, chị đây” rồi hôn lên trán em — anh chưa bao giờ thấy con nhẹ nhàng như thế.",
+      "mediaAssets": [
+        "assets/images/design_perspectivePhoto1Asset.jpg",
+        "assets/images/design_perspectivePhoto2Asset.jpg"
+      ],
+      "createdAt": "2026-10-07T19:25:00.000"
+    },
+    {
+      "id": "p-2",
+      "memoryId": "m-first-steps",
+      "authorId": "u-minh",
+      "body": "Anh vừa quay đi lấy điện thoại là con buông tay đi luôn, may mà Mama kịp quay lại.",
+      "createdAt": "2026-09-03T18:00:00.000"
+    },
+    {
+      "id": "p-3",
+      "memoryId": "m-bo-kick",
+      "authorId": "u-minh",
+      "body": "Anh áp tai vào mãi mới thấy — bé đạp đúng lúc anh hát.",
+      "createdAt": "2026-09-02T21:00:00.000"
+    },
+    {
+      "id": "p-4",
+      "memoryId": "m-bo-song",
+      "authorId": "u-lan",
+      "body": "Em cũng cảm nhận được, Bơ thích giọng Papa lắm.",
+      "createdAt": "2026-10-05T21:20:00.000"
+    }
+  ],
+  "stories": [
+    {
+      "id": "s-hana-1",
+      "familyId": "f-lan",
+      "childId": "hana",
+      "asset": "assets/images/demo_circle_1.jpg",
+      "authorId": "u-minh",
+      "createdAt": "2026-10-07T09:15:00.000",
+      "seenBy": [
+        "u-lan"
+      ]
+    },
+    {
+      "id": "s-hana-2",
+      "familyId": "f-lan",
+      "childId": "hana",
+      "asset": "assets/images/demo_circle_2.jpg",
+      "authorId": "u-lan",
+      "createdAt": "2026-10-07T11:15:00.000",
+      "seenBy": [
+        "u-lan"
+      ]
+    },
+    {
+      "id": "s-hana-3",
+      "familyId": "f-lan",
+      "childId": "hana",
+      "asset": "assets/images/demo_circle_3.jpg",
+      "authorId": "u-minh",
+      "createdAt": "2026-10-07T13:15:00.000",
+      "seenBy": []
+    },
+    {
+      "id": "s-hana-4",
+      "familyId": "f-lan",
+      "childId": "hana",
+      "asset": "assets/images/design_homeWeek1Asset.jpg",
+      "authorId": "u-lan",
+      "createdAt": "2026-10-07T15:15:00.000",
+      "seenBy": []
+    },
+    {
+      "id": "s-hana-5",
+      "familyId": "f-lan",
+      "childId": "hana",
+      "asset": "assets/images/design_homeWeek2Asset.jpg",
+      "authorId": "u-minh",
+      "createdAt": "2026-10-07T17:15:00.000",
+      "seenBy": []
+    },
+    {
+      "id": "s-haru-1",
+      "familyId": "f-lan",
+      "childId": "haru",
+      "asset": "assets/images/design_memoryStoryAsset.jpg",
+      "authorId": "u-minh",
+      "caption": "Tắm xong là cười toe toét, đòi Papa thổi bụng thêm lần nữa 😆",
+      "createdAt": "2026-10-07T20:05:00.000",
+      "seenBy": [],
+      "memoryId": "m-papa-bath"
+    },
+    {
+      "id": "s-haru-2",
+      "familyId": "f-lan",
+      "childId": "haru",
+      "asset": "assets/images/design_homeChildToday1Asset.jpg",
+      "authorId": "u-minh",
+      "caption": null,
+      "createdAt": "2026-10-07T13:05:00.000",
+      "seenBy": [
+        "u-lan"
+      ]
+    },
+    {
+      "id": "s-haru-3",
+      "familyId": "f-lan",
+      "childId": "haru",
+      "asset": "assets/images/design_homeChildToday2Asset.jpg",
+      "authorId": "u-minh",
+      "caption": null,
+      "createdAt": "2026-10-07T16:05:00.000",
+      "seenBy": [
+        "u-lan"
+      ]
+    },
+    {
+      "id": "s-haru-4",
+      "familyId": "f-lan",
+      "childId": "haru",
+      "asset": "assets/images/design_homeChildToday4Asset.jpg",
+      "authorId": "u-minh",
+      "caption": null,
+      "createdAt": "2026-10-07T19:05:00.000",
+      "seenBy": [
+        "u-lan"
+      ]
+    }
+  ],
+  "collections": [
+    {
+      "code": "monthly",
+      "title": {
+        "vi": "Con lớn từng tháng",
+        "en": "Growing month by month",
+        "zh": "逐月成长",
+        "ja": "月ごとの成長"
+      },
+      "coverAsset": "assets/images/design_collectionMonthlyAsset.jpg"
+    },
+    {
+      "code": "firsts",
+      "title": {
+        "vi": "Những lần đầu",
+        "en": "First moments",
+        "zh": "第一次",
+        "ja": "初めての瞬間"
+      },
+      "coverAsset": "assets/images/design_collectionFirstsAsset.jpg",
+      "count": 6
+    },
+    {
+      "code": "quotes",
+      "title": {
+        "vi": "Câu nói của con",
+        "en": "Little words",
+        "zh": "孩子的话",
+        "ja": "子どもの言葉"
+      },
+      "count": 34
+    },
+    {
+      "code": "voices",
+      "title": {
+        "vi": "Giọng nói",
+        "en": "Voices",
+        "zh": "声音",
+        "ja": "声"
+      },
+      "count": 9
+    },
+    {
+      "code": "letters",
+      "title": {
+        "vi": "Thư gửi con",
+        "en": "Letters to you",
+        "zh": "给孩子的信",
+        "ja": "子どもへの手紙"
+      },
+      "count": 3,
+      "sealed": 1
+    },
+    {
+      "code": "together",
+      "title": {
+        "vi": "Cả hai cùng kể",
+        "en": "Both perspectives",
+        "zh": "共同讲述",
+        "ja": "二人で語る"
+      },
+      "count": 21
+    },
+    {
+      "code": "best",
+      "title": {
+        "vi": "Ảnh đẹp nhất nhà mình",
+        "en": "Family favorites",
+        "zh": "家里最爱的照片",
+        "ja": "家族のお気に入り"
+      },
+      "coverAsset": "assets/images/design_collectionBestAsset.jpg",
+      "count": 15
+    },
+    {
+      "code": "keepsakes",
+      "title": {
+        "vi": "Kỷ vật",
+        "en": "Keepsakes",
+        "zh": "纪念品",
+        "ja": "記念の品"
+      },
+      "coverAsset": "assets/images/design_keepsake.jpg",
+      "count": 4
+    }
+  ],
+  "circleMemories": [
+    {
+      "id": "c-haru-roll",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-lan",
+      "occurredAt": "2026-10-07T18:25:00.000",
+      "createdAt": "2026-10-07T18:25:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "body": "Hôm nay con tự đi được 5 bước rồi!",
+      "mediaAssets": [
+        "assets/images/demo_circle_hero.jpg"
+      ]
+    },
+    {
+      "id": "c-haru-week-1",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-minh",
+      "occurredAt": "2026-10-06T10:00:00.000",
+      "createdAt": "2026-10-06T10:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "mediaAssets": [
+        "assets/images/demo_circle_1.jpg"
+      ]
+    },
+    {
+      "id": "c-haru-week-2",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-lan",
+      "occurredAt": "2026-10-05T09:30:00.000",
+      "createdAt": "2026-10-05T09:30:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "mediaAssets": [
+        "assets/images/demo_circle_2.jpg"
+      ]
+    },
+    {
+      "id": "c-haru-week-3",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-minh",
+      "occurredAt": "2026-10-04T17:00:00.000",
+      "createdAt": "2026-10-04T17:00:00.000",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "family",
+      "mediaAssets": [
+        "assets/images/demo_circle_3.jpg"
+      ]
+    },
+    {
+      "id": "c-hana-holds",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-lan",
+      "occurredAt": "2026-10-07T16:00:00.000",
+      "createdAt": "2026-10-07T16:00:00.000",
+      "childIds": [
+        "hana"
+      ],
+      "visibility": "family",
+      "body": "Lần đầu Hana bế em Haru 🥹",
+      "mediaAssets": [
+        "assets/images/design_memoryDetailAsset.jpg",
+        "assets/images/design_perspectiveOriginalAsset.jpg"
+      ]
+    },
+    {
+      "id": "c-hana-moon",
+      "familyId": "f-lan",
+      "kind": "quote",
+      "authorId": "u-minh",
+      "occurredAt": "2026-10-06T19:30:00.000",
+      "createdAt": "2026-10-06T19:30:00.000",
+      "childIds": [
+        "hana"
+      ],
+      "visibility": "family",
+      "body": "Mẹ ơi, trăng đi theo con kìa! Trăng thích con hả mẹ?",
+      "mediaAssets": []
+    },
+    {
+      "id": "c-bo-song",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-minh",
+      "occurredAt": "2026-10-05T21:00:00.000",
+      "createdAt": "2026-10-05T21:00:00.000",
+      "childIds": [
+        "bo"
+      ],
+      "visibility": "family",
+      "body": "Papa hát, bé đạp liền 3 cái 🎶",
+      "mediaAssets": [
+        "assets/images/design_pregnancyJourneyAsset.jpg"
+      ]
+    },
+    {
+      "id": "c-bo-bump-23",
+      "familyId": "f-lan",
+      "kind": "bump",
+      "authorId": "u-lan",
+      "occurredAt": "2026-09-27T09:00:00.000",
+      "createdAt": "2026-09-27T09:00:00.000",
+      "childIds": [
+        "bo"
+      ],
+      "visibility": "family",
+      "mediaAssets": [
+        "assets/images/design_bump_23.jpg"
+      ]
+    }
+  ],
+  "albums": [
+    {
+      "id": "al-monthly",
+      "familyId": "f-lan",
+      "title": {
+        "vi": "Con lớn từng tháng",
+        "en": "Growing month by month",
+        "zh": "逐月成长",
+        "ja": "月ごとの成長"
+      },
+      "isAuto": true,
+      "autoCode": "monthly",
+      "coverAsset": "assets/images/design_collectionMonthlyAsset.jpg",
+      "coverIcon": null,
+      "memoryCount": 17,
+      "childIds": [
+        "haru"
+      ]
+    },
+    {
+      "id": "al-firsts",
+      "familyId": "f-lan",
+      "title": {
+        "vi": "Những lần đầu",
+        "en": "First moments",
+        "zh": "第一次",
+        "ja": "初めての瞬間"
+      },
+      "isAuto": true,
+      "autoCode": "firsts",
+      "coverAsset": "assets/images/design_collectionFirstsAsset.jpg",
+      "coverIcon": null,
+      "memoryCount": 18,
+      "childIds": []
+    },
+    {
+      "id": "al-videos",
+      "familyId": "f-lan",
+      "title": {
+        "vi": "Video",
+        "en": "Videos",
+        "zh": "视频",
+        "ja": "動画"
+      },
+      "isAuto": true,
+      "autoCode": "videos",
+      "coverAsset": "assets/images/design_homeFeed2Asset.jpg",
+      "coverIcon": "circle-play",
+      "memoryCount": 34,
+      "childIds": []
+    },
+    {
+      "id": "al-favorites",
+      "familyId": "f-lan",
+      "title": {
+        "vi": "Yêu thích",
+        "en": "Favorites",
+        "zh": "收藏",
+        "ja": "お気に入り"
+      },
+      "isAuto": true,
+      "autoCode": "favorites",
+      "coverAsset": "assets/images/design_collectionBestAsset.jpg",
+      "coverIcon": null,
+      "memoryCount": 56,
+      "childIds": []
+    },
+    {
+      "id": "al-quotes",
+      "familyId": "f-lan",
+      "title": {
+        "vi": "Câu nói của con",
+        "en": "Little words",
+        "zh": "孩子的话",
+        "ja": "子どもの言葉"
+      },
+      "isAuto": true,
+      "autoCode": "quotes",
+      "coverAsset": null,
+      "coverIcon": "quote",
+      "memoryCount": 12,
+      "childIds": []
+    },
+    {
+      "id": "al-voices",
+      "familyId": "f-lan",
+      "title": {
+        "vi": "Giọng nói",
+        "en": "Voices",
+        "zh": "声音",
+        "ja": "声"
+      },
+      "isAuto": true,
+      "autoCode": "voices",
+      "coverAsset": null,
+      "coverIcon": "audio-lines",
+      "memoryCount": 9,
+      "childIds": []
+    },
+    {
+      "id": "al-relatives",
+      "familyId": "f-lan",
+      "title": {
+        "vi": "Từ người thân",
+        "en": "From relatives",
+        "zh": "来自亲人",
+        "ja": "家族から"
+      },
+      "isAuto": true,
+      "autoCode": "relatives",
+      "coverAsset": "assets/images/demo_circle_1.jpg",
+      "coverIcon": null,
+      "memoryCount": 41,
+      "childIds": []
+    },
+    {
+      "id": "al-siblings",
+      "familyId": "f-lan",
+      "title": {
+        "vi": "Ảnh chung anh chị em",
+        "en": "Siblings together",
+        "zh": "兄弟姐妹合照",
+        "ja": "きょうだいの写真"
+      },
+      "isAuto": true,
+      "autoCode": "siblings",
+      "coverAsset": "assets/images/demo_memory.jpg",
+      "coverIcon": null,
+      "memoryCount": 27,
+      "childIds": []
+    },
+    {
+      "id": "al-que-ngoai",
+      "familyId": "f-lan",
+      "title": "Về quê ngoại · Tháng 9",
+      "isAuto": false,
+      "coverAsset": "assets/images/design_homeWeek3Asset.jpg",
+      "memoryCount": 32,
+      "childIds": [
+        "hana",
+        "haru"
+      ],
+      "createdByUserId": "u-lan",
+      "startDate": "2026-09-14T00:00:00.000",
+      "endDate": "2026-09-18T00:00:00.000",
+      "items": [
+        {
+          "asset": "assets/images/design_homeWeek3Asset.jpg",
+          "isVideo": false,
+          "durationSec": null
+        },
+        {
+          "asset": "assets/images/design_homeWeek4Asset.jpg",
+          "isVideo": false,
+          "durationSec": null
+        },
+        {
+          "asset": "assets/images/demo_circle_1.jpg",
+          "isVideo": false,
+          "durationSec": null
+        },
+        {
+          "asset": "assets/images/demo_circle_2.jpg",
+          "isVideo": false,
+          "durationSec": null
+        },
+        {
+          "asset": "assets/images/design_homeFeed2Asset.jpg",
+          "isVideo": true,
+          "durationSec": 24
+        },
+        {
+          "asset": "assets/images/demo_circle_3.jpg",
+          "isVideo": false,
+          "durationSec": null
+        },
+        {
+          "asset": "assets/images/design_homeWeek1Asset.jpg",
+          "isVideo": false,
+          "durationSec": null
+        },
+        {
+          "asset": "assets/images/design_homeWeek2Asset.jpg",
+          "isVideo": false,
+          "durationSec": null
+        },
+        {
+          "asset": "assets/images/design_memoryDetailAsset.jpg",
+          "isVideo": false,
+          "durationSec": null
+        },
+        {
+          "asset": "assets/images/demo_memory.jpg",
+          "isVideo": false,
+          "durationSec": null
+        },
+        {
+          "asset": "assets/images/design_homeChildToday3Asset.jpg",
+          "isVideo": false,
+          "durationSec": null
+        },
+        {
+          "asset": "assets/images/design_homeChildToday4Asset.jpg",
+          "isVideo": false,
+          "durationSec": null
+        }
+      ]
+    },
+    {
+      "id": "al-hana-2",
+      "familyId": "f-lan",
+      "title": "Sinh nhật 2 tuổi Hana",
+      "isAuto": false,
+      "coverAsset": "assets/images/design_homeWeek1Asset.jpg",
+      "memoryCount": 64,
+      "childIds": [
+        "hana"
+      ],
+      "createdByUserId": "u-lan",
+      "startDate": "2026-06-01T00:00:00.000",
+      "endDate": "2026-06-01T00:00:00.000"
+    },
+    {
+      "id": "al-trung-thu",
+      "familyId": "f-lan",
+      "title": "Trung thu của Hana & Haru",
+      "isAuto": false,
+      "coverAsset": "assets/images/design_homeChildToday2Asset.jpg",
+      "memoryCount": 21,
+      "childIds": [
+        "hana",
+        "haru"
+      ],
+      "createdByUserId": "u-minh",
+      "startDate": "2026-09-25T00:00:00.000",
+      "endDate": "2026-09-25T00:00:00.000"
+    },
+    {
+      "id": "al-tam-be",
+      "familyId": "f-lan",
+      "title": "Tắm bé",
+      "isAuto": false,
+      "coverAsset": "assets/images/design_homeFeed1Asset.jpg",
+      "memoryCount": 15,
+      "childIds": [
+        "haru"
+      ],
+      "createdByUserId": "u-lan",
+      "visibility": "parents"
+    }
+  ],
+  "searchRecents": [
+    "18 tháng",
+    "Trung thu",
+    "Bà ngoại"
+  ],
+  "searchMemories": [
+    {
+      "id": "s-nha-tre-1",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-minh",
+      "occurredAt": "2026-10-07T08:30:00.000",
+      "childIds": [
+        "hana"
+      ],
+      "title": "Hana đi nhà trẻ",
+      "mediaAssets": [
+        "assets/images/design_homeWeek2Asset.jpg"
+      ],
+      "voiceDurationSec": null
+    },
+    {
+      "id": "s-nha-tre-2",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-lan",
+      "occurredAt": "2026-10-07T09:30:00.000",
+      "childIds": [
+        "hana"
+      ],
+      "title": "Hana đi nhà trẻ",
+      "mediaAssets": [
+        "assets/images/design_homeWeek1Asset.jpg"
+      ],
+      "voiceDurationSec": null
+    },
+    {
+      "id": "s-nha-tre-3",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-lan",
+      "occurredAt": "2026-10-07T10:30:00.000",
+      "childIds": [
+        "hana"
+      ],
+      "title": "Hana đi nhà trẻ",
+      "mediaAssets": [
+        "assets/images/demo_circle_3.jpg"
+      ],
+      "voiceDurationSec": 18
+    },
+    {
+      "id": "s-nha-tre-4",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-minh",
+      "occurredAt": "2026-10-07T11:30:00.000",
+      "childIds": [
+        "hana"
+      ],
+      "title": "Hana đi nhà trẻ",
+      "mediaAssets": [
+        "assets/images/design_homeWeek4Asset.jpg"
+      ],
+      "voiceDurationSec": null
+    },
+    {
+      "id": "s-nha-tre-5",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-lan",
+      "occurredAt": "2026-10-07T12:30:00.000",
+      "childIds": [
+        "hana"
+      ],
+      "title": "Hana đi nhà trẻ",
+      "mediaAssets": [
+        "assets/images/demo_circle_2.jpg"
+      ],
+      "voiceDurationSec": null
+    },
+    {
+      "id": "s-nha-tre-6",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-lan",
+      "occurredAt": "2026-10-05T13:30:00.000",
+      "childIds": [
+        "hana"
+      ],
+      "title": "Hana đi nhà trẻ",
+      "mediaAssets": [
+        "assets/images/design_homeWeek3Asset.jpg"
+      ],
+      "voiceDurationSec": null
+    },
+    {
+      "id": "s-nha-tre-7",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-minh",
+      "occurredAt": "2026-10-05T14:30:00.000",
+      "childIds": [
+        "hana"
+      ],
+      "title": "Hana đi nhà trẻ",
+      "mediaAssets": [
+        "assets/images/demo_circle_1.jpg"
+      ],
+      "voiceDurationSec": null
+    },
+    {
+      "id": "s-nha-tre-8",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-lan",
+      "occurredAt": "2026-10-05T15:30:00.000",
+      "childIds": [
+        "hana"
+      ],
+      "title": "Hana đi nhà trẻ",
+      "mediaAssets": [
+        "assets/images/design_homeChildToday4Asset.jpg"
+      ],
+      "voiceDurationSec": null
+    },
+    {
+      "id": "s-nha-tre-9",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-lan",
+      "occurredAt": "2026-10-05T16:30:00.000",
+      "childIds": [
+        "hana"
+      ],
+      "title": "Hana đi nhà trẻ",
+      "mediaAssets": [
+        "assets/images/demo_memory.jpg"
+      ],
+      "voiceDurationSec": null
+    },
+    {
+      "id": "s-diary-1",
+      "familyId": "f-lan",
+      "kind": "diary",
+      "authorId": "u-lan",
+      "occurredAt": "2026-10-07T21:14:00.000",
+      "childIds": [
+        "hana"
+      ],
+      "title": "Ngày đầu Hana đi nhà trẻ",
+      "body": "Sáng nay Hana đeo chiếc balo hình thỏ, tự đi vào lớp rồi quay lại vẫy tay chào Mama. Mama đứng ngoài cổng thêm 10 phút mới dám về."
+    },
+    {
+      "id": "s-diary-2",
+      "familyId": "f-lan",
+      "kind": "diary",
+      "authorId": "u-lan",
+      "occurredAt": "2026-10-05T21:00:00.000",
+      "childIds": [
+        "hana"
+      ],
+      "title": "Chuẩn bị balo đi nhà trẻ",
+      "body": "Balo hình thỏ, bình nước, hai bộ quần áo…"
+    },
+    {
+      "id": "s-diary-3",
+      "familyId": "f-lan",
+      "kind": "diary",
+      "authorId": "u-minh",
+      "occurredAt": "2026-09-20T18:00:00.000",
+      "childIds": [
+        "hana"
+      ],
+      "title": "Đi xem nhà trẻ cùng Papa",
+      "body": "Hana chạy thẳng ra góc đồ chơi, không chịu về…"
+    }
+  ],
+  "pastMemories": [
+    {
+      "id": "p-2025-steps",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-minh",
+      "occurredAt": "2025-10-07T17:00:00.000",
+      "childIds": [
+        "hana"
+      ],
+      "body": "Hana tập những bước đầu tiên, nắm tay Papa đi quanh sân 🥹",
+      "milestoneCode": "first_step",
+      "milestoneTitle": {
+        "vi": "Bước đi đầu tiên",
+        "en": "First steps",
+        "zh": "第一步",
+        "ja": "はじめの一歩"
+      },
+      "mediaAssets": [
+        "assets/images/demo_circle_2.jpg"
+      ],
+      "reactions": {
+        "❤️": 8
+      },
+      "commentCount": 3
+    },
+    {
+      "id": "p-2025-quote",
+      "familyId": "f-lan",
+      "kind": "quote",
+      "authorId": "u-minh",
+      "occurredAt": "2025-10-07T19:00:00.000",
+      "childIds": [
+        "hana"
+      ],
+      "body": "Bố ơi, bóng!"
+    },
+    {
+      "id": "p-2024-roll",
+      "familyId": "f-lan",
+      "kind": "photo",
+      "authorId": "u-lan",
+      "occurredAt": "2024-10-07T10:00:00.000",
+      "childIds": [
+        "hana"
+      ],
+      "body": "Lần đầu Hana lẫy, Mama hét lên gọi cả nhà ra xem.",
+      "milestoneCode": "roll_over",
+      "milestoneTitle": {
+        "vi": "Lẫy",
+        "en": "Rolled over",
+        "zh": "翻身",
+        "ja": "寝返り"
+      },
+      "mediaAssets": [
+        "assets/images/design_homeChildFirst1Asset.jpg",
+        "assets/images/design_homeChildFirst2Asset.jpg",
+        "assets/images/design_homeChildToday1Asset.jpg",
+        "assets/images/design_homeChildToday2Asset.jpg"
+      ]
+    }
+  ],
+  "weeklyRecap": {
+    "start": "2026-10-05T00:00:00.000",
+    "end": "2026-10-11T00:00:00.000",
+    "headline": {
+      "vi": "Một tuần thật nhiều điều đáng nhớ 🌼",
+      "en": "A week full of moments to remember 🌼",
+      "zh": "值得纪念的一周 🌼",
+      "ja": "思い出いっぱいの一週間 🌼"
+    },
+    "moments": 24,
+    "firsts": 2,
+    "quotes": 1,
+    "pageCount": 6,
+    "heroAssets": [
+      "assets/images/design_homeWeek1Asset.jpg",
+      "assets/images/design_homeWeek2Asset.jpg",
+      "assets/images/design_homeWeek3Asset.jpg",
+      "assets/images/design_homeWeek4Asset.jpg"
+    ],
+    "highlights": [
+      {
+        "id": "r-first-school",
+        "familyId": "f-lan",
+        "kind": "milestone",
+        "authorId": "u-lan",
+        "occurredAt": "2026-10-07T08:00:00.000",
+        "childIds": [
+          "hana"
+        ],
+        "title": "Lần đầu đi nhà trẻ",
+        "mediaAssets": [
+          "assets/images/design_homeWeek2Asset.jpg"
+        ]
+      },
+      {
+        "id": "r-first-roll",
+        "familyId": "f-lan",
+        "kind": "milestone",
+        "authorId": "u-minh",
+        "occurredAt": "2026-10-06T16:00:00.000",
+        "childIds": [
+          "hana"
+        ],
+        "title": "Lần đầu tự đánh răng",
+        "mediaAssets": [
+          "assets/images/design_timelineFirstAsset.jpg"
+        ]
+      },
+      {
+        "id": "r-quote",
+        "familyId": "f-lan",
+        "kind": "quote",
+        "authorId": "u-lan",
+        "occurredAt": "2026-10-07T19:00:00.000",
+        "childIds": [
+          "hana"
+        ],
+        "body": "Mai con đi học nữa nha."
+      }
+    ],
+    "togetherTitle": {
+      "vi": "Cả nhà cùng nhau",
+      "en": "Together as a family",
+      "zh": "全家在一起",
+      "ja": "家族みんなで"
+    },
+    "togetherBody": "Tối thứ Ba cả nhà dạo công viên, Hana chơi xích đu cả tiếng."
+  }
+}

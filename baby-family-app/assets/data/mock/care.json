@@ -1,0 +1,1160 @@
+{
+  "templates": [
+    {
+      "id": "t-read-picture-book",
+      "title": {
+        "vi": "Đọc sách tranh 10 phút",
+        "en": "Read a picture book for 10 minutes",
+        "zh": "读绘本10分钟",
+        "ja": "絵本を10分読む"
+      },
+      "category": "bonding",
+      "hearts": 5,
+      "durationMin": 10,
+      "icon": "book-open",
+      "forPregnancy": false,
+      "perChild": true,
+      "hint": {
+        "vi": "Phát triển ngôn ngữ",
+        "en": "Language development",
+        "zh": "语言发展",
+        "ja": "ことばの発達"
+      }
+    },
+    {
+      "id": "t-bath-evening",
+      "title": {
+        "vi": "Tắm cho {child} buổi tối",
+        "en": "Give {child} an evening bath",
+        "zh": "晚上给{child}洗澡",
+        "ja": "夜に{child}をお風呂に入れる"
+      },
+      "category": "care",
+      "hearts": 5,
+      "durationMin": 15,
+      "icon": "bath",
+      "forPregnancy": false,
+      "perChild": true,
+      "hint": {
+        "vi": "~15 phút · tối",
+        "en": "~15 min · evening",
+        "zh": "约15分钟 · 晚上",
+        "ja": "約15分 · 夜"
+      },
+      "maxAgeDays": 1500
+    },
+    {
+      "id": "t-sing-song",
+      "title": {
+        "vi": "Hát cho {child} nghe một bài",
+        "en": "Sing a song to {child}",
+        "zh": "给{child}唱首歌",
+        "ja": "{child}に歌を歌う"
+      },
+      "category": "bonding",
+      "hearts": 5,
+      "durationMin": 5,
+      "icon": "music",
+      "forPregnancy": false,
+      "perChild": true
+    },
+    {
+      "id": "t-sing-short",
+      "title": {
+        "vi": "Hát cho {child} một bài",
+        "en": "Sing {child} a song",
+        "zh": "为{child}唱一首歌",
+        "ja": "{child}に一曲歌う"
+      },
+      "category": "bonding",
+      "hearts": 5,
+      "durationMin": 5,
+      "icon": "music",
+      "forPregnancy": false,
+      "perChild": true
+    },
+    {
+      "id": "t-walk-20",
+      "title": {
+        "vi": "Đi dạo cùng {child} 20 phút",
+        "en": "Walk with {child} for 20 minutes",
+        "zh": "陪{child}散步20分钟",
+        "ja": "{child}と20分散歩"
+      },
+      "category": "outing",
+      "hearts": 5,
+      "durationMin": 20,
+      "icon": "footprints",
+      "forPregnancy": false,
+      "perChild": true,
+      "minAgeDays": 60
+    },
+    {
+      "id": "t-video-laugh",
+      "title": {
+        "vi": "Quay video {child} đang cười",
+        "en": "Record {child} laughing",
+        "zh": "录下{child}的笑声",
+        "ja": "{child}の笑顔を動画に"
+      },
+      "category": "memory",
+      "hearts": 4,
+      "durationMin": 3,
+      "icon": "camera",
+      "forPregnancy": false,
+      "perChild": true
+    },
+    {
+      "id": "t-tummy-time",
+      "title": {
+        "vi": "Chơi xếp hình với {child} 10 phút",
+        "en": "Play blocks with {child} for 10 minutes",
+        "zh": "和{child}玩积木10分钟",
+        "ja": "{child}と10分ブロック遊び"
+      },
+      "category": "care",
+      "hearts": 5,
+      "durationMin": 10,
+      "icon": "puzzle",
+      "forPregnancy": false,
+      "perChild": true
+    },
+    {
+      "id": "t-video-grandparents",
+      "title": {
+        "vi": "Gọi video cho ông bà",
+        "en": "Video call the grandparents",
+        "zh": "和爷爷奶奶视频通话",
+        "ja": "祖父母とビデオ通話"
+      },
+      "category": "bonding",
+      "hearts": 5,
+      "durationMin": 15,
+      "icon": "video",
+      "forPregnancy": false,
+      "perChild": false
+    },
+    {
+      "id": "t-nap-30",
+      "title": {
+        "vi": "Nghỉ trưa 30 phút",
+        "en": "Take a 30-minute nap",
+        "zh": "午休30分钟",
+        "ja": "30分お昼寝する"
+      },
+      "category": "self",
+      "hearts": 5,
+      "durationMin": 30,
+      "icon": "bed",
+      "forPregnancy": false,
+      "perChild": false
+    },
+    {
+      "id": "t-family-walk",
+      "title": {
+        "vi": "Cả nhà đi dạo công viên",
+        "en": "Family walk in the park",
+        "zh": "全家一起去公园散步",
+        "ja": "家族で公園を散歩"
+      },
+      "category": "together",
+      "hearts": 8,
+      "durationMin": 30,
+      "icon": "trees",
+      "forPregnancy": false,
+      "perChild": false
+    },
+    {
+      "id": "t-lullaby",
+      "title": {
+        "vi": "Ru {child} ngủ",
+        "en": "Rock {child} to sleep",
+        "zh": "哄{child}睡觉",
+        "ja": "{child}を寝かしつける"
+      },
+      "category": "care",
+      "hearts": 5,
+      "durationMin": 20,
+      "icon": "moon",
+      "forPregnancy": false,
+      "perChild": true,
+      "hint": {
+        "vi": "20:30 · thay phiên",
+        "en": "20:30 · take turns",
+        "zh": "20:30 · 轮流",
+        "ja": "20:30 · 交代で"
+      }
+    }
+  ],
+  "missions": [
+    {
+      "id": "ms-read",
+      "familyId": "f-lan",
+      "date": "2026-10-07T00:00:00.000",
+      "ownerUserId": "u-lan",
+      "together": false,
+      "templateId": "t-read-picture-book",
+      "childIds": [
+        "hana"
+      ],
+      "status": "todo",
+      "hearts": 5,
+      "category": "bonding",
+      "source": "system",
+      "icon": "book-open",
+      "durationMin": 10
+    },
+    {
+      "id": "ms-bath",
+      "familyId": "f-lan",
+      "date": "2026-10-07T00:00:00.000",
+      "ownerUserId": "u-lan",
+      "together": false,
+      "templateId": "t-bath-evening",
+      "childIds": [
+        "haru"
+      ],
+      "status": "todo",
+      "hearts": 5,
+      "category": "care",
+      "source": "system",
+      "dueTime": "19:30",
+      "icon": "bath",
+      "durationMin": 15
+    },
+    {
+      "id": "ms-bottle",
+      "familyId": "f-lan",
+      "date": "2026-10-07T00:00:00.000",
+      "ownerUserId": "u-lan",
+      "together": false,
+      "templateId": null,
+      "childIds": [
+        "haru"
+      ],
+      "status": "todo",
+      "hearts": 2,
+      "category": "custom",
+      "source": "custom",
+      "title": "Rửa và tiệt trùng bình sữa",
+      "icon": "milk"
+    },
+    {
+      "id": "ms-song",
+      "familyId": "f-lan",
+      "date": "2026-10-07T00:00:00.000",
+      "ownerUserId": "u-lan",
+      "together": false,
+      "templateId": "t-sing-song",
+      "childIds": [
+        "haru"
+      ],
+      "status": "done",
+      "hearts": 5,
+      "category": "bonding",
+      "source": "system",
+      "completedAt": "2026-10-07T08:40:00.000",
+      "completedByUserId": "u-lan",
+      "icon": "music"
+    },
+    {
+      "id": "ms-tummy",
+      "familyId": "f-lan",
+      "date": "2026-10-07T00:00:00.000",
+      "ownerUserId": "u-minh",
+      "together": false,
+      "templateId": "t-tummy-time",
+      "childIds": [
+        "haru"
+      ],
+      "status": "done",
+      "hearts": 5,
+      "category": "care",
+      "source": "system",
+      "completedAt": "2026-10-07T07:15:00.000",
+      "completedByUserId": "u-minh",
+      "thankedByPartner": true,
+      "icon": "puzzle"
+    },
+    {
+      "id": "ms-video-call",
+      "familyId": "f-lan",
+      "date": "2026-10-07T00:00:00.000",
+      "ownerUserId": "u-minh",
+      "together": false,
+      "templateId": "t-video-grandparents",
+      "childIds": [],
+      "status": "done",
+      "hearts": 5,
+      "category": "bonding",
+      "source": "system",
+      "completedAt": "2026-10-07T11:30:00.000",
+      "completedByUserId": "u-minh",
+      "icon": "video"
+    },
+    {
+      "id": "ms-nap",
+      "familyId": "f-lan",
+      "date": "2026-10-07T00:00:00.000",
+      "ownerUserId": "u-minh",
+      "together": false,
+      "templateId": "t-nap-30",
+      "childIds": [],
+      "status": "done",
+      "hearts": 5,
+      "category": "self",
+      "source": "system",
+      "completedAt": "2026-10-07T13:00:00.000",
+      "completedByUserId": "u-minh",
+      "icon": "bed"
+    },
+    {
+      "id": "ms-walk",
+      "familyId": "f-lan",
+      "date": "2026-10-07T00:00:00.000",
+      "ownerUserId": null,
+      "together": true,
+      "templateId": "t-family-walk",
+      "childIds": [
+        "hana",
+        "haru"
+      ],
+      "status": "todo",
+      "hearts": 8,
+      "category": "together",
+      "source": "system",
+      "icon": "trees",
+      "durationMin": 30
+    },
+    {
+      "id": "ms-lullaby-yesterday",
+      "familyId": "f-lan",
+      "date": "2026-10-06T00:00:00.000",
+      "ownerUserId": "u-lan",
+      "together": false,
+      "templateId": "t-lullaby",
+      "childIds": [
+        "haru"
+      ],
+      "status": "done",
+      "hearts": 5,
+      "category": "care",
+      "source": "system",
+      "completedAt": "2026-10-06T20:40:00.000",
+      "completedByUserId": "u-lan",
+      "icon": "moon",
+      "durationMin": 20
+    },
+    {
+      "id": "ms-bath-tomorrow",
+      "familyId": "f-lan",
+      "date": "2026-10-08T00:00:00.000",
+      "ownerUserId": "u-lan",
+      "together": false,
+      "templateId": null,
+      "title": "Tắm cho Haru",
+      "childIds": [
+        "haru"
+      ],
+      "status": "todo",
+      "hearts": 2,
+      "category": "custom",
+      "source": "series",
+      "dueTime": "19:30",
+      "repeat": "customDays",
+      "icon": "bath"
+    }
+  ],
+  "heartsLedger": [
+    {
+      "id": "h-1",
+      "familyId": "f-lan",
+      "userId": "u-lan",
+      "hearts": 5,
+      "missionId": "ms-song",
+      "title": {
+        "vi": "Hát cho Haru nghe một bài",
+        "en": "Sing a song to Haru",
+        "zh": "给Haru唱首歌",
+        "ja": "Haruに歌を歌う"
+      },
+      "at": "2026-10-07T08:40:00.000"
+    },
+    {
+      "id": "h-2",
+      "familyId": "f-lan",
+      "userId": "u-lan",
+      "hearts": 5,
+      "requestId": "rq-old",
+      "title": {
+        "vi": "Lời nhờ: trông Haru 30 phút",
+        "en": "Request: watch Haru for 30 minutes",
+        "zh": "请求：照看 Haru 30分钟",
+        "ja": "お願い：Haru を30分見る"
+      },
+      "at": "2026-10-06T18:40:00.000"
+    },
+    {
+      "id": "h-3",
+      "familyId": "f-lan",
+      "userId": "u-lan",
+      "hearts": 8,
+      "together": true,
+      "title": {
+        "vi": "Cả nhà đi dạo công viên",
+        "en": "Family walk in the park",
+        "zh": "全家去公园散步",
+        "ja": "家族で公園を散歩"
+      },
+      "at": "2026-10-04T17:00:00.000"
+    },
+    {
+      "id": "h-4",
+      "familyId": "f-lan",
+      "userId": "u-minh",
+      "hearts": 5,
+      "missionId": "ms-tummy",
+      "title": {
+        "vi": "Chơi xếp hình với Haru 10 phút",
+        "en": "Play blocks with Haru",
+        "zh": "和Haru玩积木10分钟",
+        "ja": "Haruとブロック遊び"
+      },
+      "at": "2026-10-07T07:15:00.000"
+    },
+    {
+      "id": "h-5",
+      "familyId": "f-lan",
+      "userId": "u-minh",
+      "hearts": 5,
+      "missionId": "ms-video-call",
+      "title": {
+        "vi": "Gọi video cho ông bà",
+        "en": "Video call the grandparents",
+        "zh": "和爷爷奶奶视频通话",
+        "ja": "祖父母とビデオ通話"
+      },
+      "at": "2026-10-07T11:30:00.000"
+    },
+    {
+      "id": "h-6",
+      "familyId": "f-lan",
+      "userId": "u-minh",
+      "hearts": 5,
+      "missionId": "ms-nap",
+      "title": {
+        "vi": "Nghỉ trưa 30 phút",
+        "en": "Take a 30-minute nap",
+        "zh": "午休30分钟",
+        "ja": "30分お昼寝する"
+      },
+      "at": "2026-10-07T13:00:00.000"
+    },
+    {
+      "id": "h-7",
+      "familyId": "f-lan",
+      "userId": "u-minh",
+      "hearts": 8,
+      "together": true,
+      "title": {
+        "vi": "Cả nhà đi dạo công viên",
+        "en": "Family walk in the park",
+        "zh": "全家去公园散步",
+        "ja": "家族で公園を散歩"
+      },
+      "at": "2026-10-04T17:00:00.000"
+    }
+  ],
+  "heartsBaseline": {
+    "u-lan": {
+      "weekBefore": 76,
+      "totalBefore": 724
+    },
+    "u-minh": {
+      "weekBefore": 60,
+      "totalBefore": 711
+    }
+  },
+  "tree": {
+    "familyId": "f-lan",
+    "weekCareMoments": 12,
+    "weekTogether": 5,
+    "weekBloomDays": 4
+  },
+  "treeLevels": [
+    {
+      "level": 1,
+      "minHearts": 0,
+      "name": {
+        "vi": "Hạt mầm",
+        "en": "Seed",
+        "zh": "种子",
+        "ja": "たね"
+      }
+    },
+    {
+      "level": 2,
+      "minHearts": 100,
+      "name": {
+        "vi": "Mầm non",
+        "en": "Sprout",
+        "zh": "嫩芽",
+        "ja": "芽"
+      }
+    },
+    {
+      "level": 3,
+      "minHearts": 300,
+      "name": {
+        "vi": "Cây non",
+        "en": "Sapling",
+        "zh": "小树苗",
+        "ja": "若木"
+      }
+    },
+    {
+      "level": 4,
+      "minHearts": 700,
+      "name": {
+        "vi": "Cây xanh",
+        "en": "Green tree",
+        "zh": "绿树",
+        "ja": "緑の木"
+      },
+      "reward": {
+        "vi": "theme màu “Rừng xanh”",
+        "en": "“Green forest” theme",
+        "zh": "“绿色森林”主题",
+        "ja": "「緑の森」テーマ"
+      }
+    },
+    {
+      "level": 5,
+      "minHearts": 1500,
+      "name": {
+        "vi": "Cây trổ hoa",
+        "en": "Blooming tree",
+        "zh": "开花树",
+        "ja": "花咲く木"
+      },
+      "reward": {
+        "vi": "theme “Hoa anh đào” cho album",
+        "en": "“Cherry blossom” album theme",
+        "zh": "相册“樱花”主题",
+        "ja": "アルバムの「桜」テーマ"
+      }
+    },
+    {
+      "level": 6,
+      "minHearts": 3000,
+      "name": {
+        "vi": "Cây kết trái",
+        "en": "Fruiting tree",
+        "zh": "结果树",
+        "ja": "実のなる木"
+      },
+      "reward": {
+        "vi": "Thẻ Recap đặc biệt",
+        "en": "Special recap card",
+        "zh": "特别回顾卡",
+        "ja": "特別なふりかえりカード"
+      }
+    },
+    {
+      "level": 7,
+      "minHearts": 6000,
+      "name": {
+        "vi": "Cây cổ thụ",
+        "en": "Ancient tree",
+        "zh": "参天大树",
+        "ja": "大樹"
+      },
+      "reward": {
+        "vi": "Mỗi 3.000 Hearts thêm một quả mới",
+        "en": "A new fruit every 3,000 Hearts",
+        "zh": "每3000 Hearts 结一个新果实",
+        "ja": "3,000 Heartsごとに新しい実"
+      }
+    }
+  ],
+  "swapsUsed": {
+    "u-lan": 1
+  },
+  "createDraft": {
+    "title": {
+      "vi": "Tắm cho {child}",
+      "en": "Bath time for {child}",
+      "zh": "给{child}洗澡",
+      "ja": "{child}をお風呂に入れる"
+    },
+    "icon": "bath",
+    "childIds": [
+      "haru"
+    ],
+    "ownerKind": "me",
+    "dueTime": "19:30",
+    "repeat": "customDays",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "reminder": "before15",
+    "memoryPrompt": true
+  },
+  "calendarEvents": [
+    {
+      "id": "ev-ba-noi",
+      "familyId": "f-lan",
+      "title": "Bà nội lên chơi",
+      "kind": "family",
+      "date": "2026-10-07T00:00:00.000",
+      "allDay": true,
+      "icon": "house-heart"
+    },
+    {
+      "id": "ev-read",
+      "familyId": "f-lan",
+      "title": "Đọc sách tranh 10 phút",
+      "kind": "mission",
+      "date": "2026-10-07T00:00:00.000",
+      "time": "09:30",
+      "icon": "book-open",
+      "childIds": [
+        "hana"
+      ],
+      "ownerKind": "me",
+      "missionId": "ms-read"
+    },
+    {
+      "id": "ev-vaccine",
+      "familyId": "f-lan",
+      "title": "Haru đi tiêm nhắc",
+      "kind": "health",
+      "date": "2026-10-07T00:00:00.000",
+      "time": "15:00",
+      "icon": "notebook-pen",
+      "childIds": [
+        "haru"
+      ]
+    },
+    {
+      "id": "ev-bath",
+      "familyId": "f-lan",
+      "title": "Tắm cho Haru buổi tối",
+      "kind": "mission",
+      "date": "2026-10-07T00:00:00.000",
+      "time": "19:30",
+      "icon": "bath",
+      "childIds": [
+        "haru"
+      ],
+      "ownerKind": "me",
+      "missionId": "ms-bath"
+    },
+    {
+      "id": "ev-talk",
+      "familyId": "f-lan",
+      "title": "15 phút trò chuyện",
+      "kind": "couple",
+      "date": "2026-10-07T00:00:00.000",
+      "time": "21:00",
+      "icon": "lock",
+      "participantUserIds": [
+        "u-lan",
+        "u-minh"
+      ]
+    },
+    {
+      "id": "ev-hana-school",
+      "familyId": "f-lan",
+      "title": "Ngày đầu Hana đi nhà trẻ",
+      "kind": "child",
+      "date": "2026-10-06T00:00:00.000",
+      "allDay": true,
+      "icon": "backpack",
+      "childIds": [
+        "hana"
+      ]
+    },
+    {
+      "id": "ev-date-night",
+      "familyId": "f-lan",
+      "title": "Tối hẹn hò của hai ta",
+      "kind": "couple",
+      "date": "2026-10-09T00:00:00.000",
+      "time": "20:30",
+      "icon": "lock",
+      "participantUserIds": [
+        "u-lan",
+        "u-minh"
+      ]
+    },
+    {
+      "id": "ev-grandparents",
+      "familyId": "f-lan",
+      "title": "Cả nhà về thăm Ông bà ngoại",
+      "kind": "family",
+      "date": "2026-10-11T00:00:00.000",
+      "allDay": true,
+      "icon": "house-heart"
+    }
+  ],
+  "eventDraft": {
+    "id": "ev-draft",
+    "title": "Sinh nhật Bà nội",
+    "kind": "family",
+    "date": "2026-11-23T00:00:00.000",
+    "time": "18:30",
+    "icon": "cake",
+    "lunar": true,
+    "lunarDay": 15,
+    "lunarMonth": 10,
+    "repeatYearly": true,
+    "allDay": false,
+    "childIds": [
+      "hana",
+      "haru"
+    ],
+    "participantUserIds": [
+      "u-lan",
+      "u-minh"
+    ],
+    "inviteFamily": false,
+    "reminders": [
+      "dayBefore0900",
+      "morning"
+    ]
+  },
+  "missionHistory": [
+    {
+      "date": "2026-10-07T00:00:00.000",
+      "entries": [
+        {
+          "title": "Hát cho Haru nghe một bài",
+          "ownerKind": "me",
+          "done": true,
+          "completedTime": "08:40",
+          "categoryCode": "bonding",
+          "hearts": 5,
+          "childIds": [
+            "haru"
+          ],
+          "couple": false
+        },
+        {
+          "title": "Pha sữa đêm cho Haru",
+          "ownerKind": "partner",
+          "done": true,
+          "completedTime": null,
+          "categoryCode": null,
+          "hearts": null,
+          "childIds": [
+            "haru"
+          ],
+          "couple": false
+        },
+        {
+          "title": "Cả nhà đi dạo buổi sáng",
+          "ownerKind": "together",
+          "done": true,
+          "completedTime": "07:15",
+          "categoryCode": null,
+          "hearts": 8,
+          "childIds": [
+            "hana"
+          ],
+          "couple": false
+        }
+      ]
+    },
+    {
+      "date": "2026-10-06T00:00:00.000",
+      "entries": [
+        {
+          "title": "Đọc sách tranh 10 phút",
+          "ownerKind": "me",
+          "done": true,
+          "completedTime": "20:10",
+          "categoryCode": "bonding",
+          "hearts": 5,
+          "childIds": [
+            "hana"
+          ],
+          "couple": false
+        },
+        {
+          "title": "Chụp ảnh Hana chơi xếp hình",
+          "ownerKind": "me",
+          "done": false,
+          "completedTime": null,
+          "categoryCode": "memory",
+          "hearts": null,
+          "childIds": [
+            "hana"
+          ],
+          "couple": false
+        },
+        {
+          "title": "Tắm cho Haru buổi tối",
+          "ownerKind": "partner",
+          "done": true,
+          "completedTime": null,
+          "categoryCode": null,
+          "hearts": null,
+          "childIds": [
+            "haru"
+          ],
+          "couple": false
+        },
+        {
+          "title": "Giặt đồ của bé",
+          "ownerKind": "partner",
+          "done": true,
+          "completedTime": null,
+          "categoryCode": null,
+          "hearts": null,
+          "childIds": [
+            "haru"
+          ],
+          "couple": false
+        }
+      ]
+    },
+    {
+      "date": "2026-10-05T00:00:00.000",
+      "entries": [
+        {
+          "title": "Chơi xếp hình 10 phút",
+          "ownerKind": "me",
+          "done": true,
+          "completedTime": "10:30",
+          "categoryCode": "play",
+          "hearts": 5,
+          "childIds": [
+            "haru"
+          ],
+          "couple": false
+        },
+        {
+          "title": "Nghỉ trưa 30 phút",
+          "ownerKind": "me",
+          "done": true,
+          "completedTime": "13:00",
+          "categoryCode": "self",
+          "hearts": 3,
+          "childIds": [],
+          "couple": false
+        },
+        {
+          "title": "15 phút trò chuyện",
+          "ownerKind": "together",
+          "done": true,
+          "completedTime": "21:20",
+          "categoryCode": null,
+          "hearts": 5,
+          "childIds": [],
+          "couple": true
+        }
+      ]
+    }
+  ],
+  "badges": [
+    {
+      "id": "warm_bedtime",
+      "familyId": "f-lan",
+      "code": "warm_bedtime",
+      "title": {
+        "vi": "Giờ ngủ ấm áp",
+        "en": "Cosy bedtime",
+        "zh": "温暖睡前时光",
+        "ja": "ぬくもりの寝かしつけ"
+      },
+      "icon": "moon",
+      "achievedAt": "2026-09-02T00:00:00.000",
+      "childId": null,
+      "hint": null,
+      "progress": null,
+      "target": null
+    },
+    {
+      "id": "firsts",
+      "familyId": "f-lan",
+      "code": "firsts",
+      "title": {
+        "vi": "Những lần đầu",
+        "en": "First moments",
+        "zh": "第一次",
+        "ja": "初めての瞬間"
+      },
+      "icon": "star",
+      "achievedAt": "2026-08-15T00:00:00.000",
+      "childId": "hana",
+      "hint": null,
+      "progress": null,
+      "target": null
+    },
+    {
+      "id": "memory_keeper",
+      "familyId": "f-lan",
+      "code": "memory_keeper",
+      "title": {
+        "vi": "Người giữ ký ức",
+        "en": "Memory keeper",
+        "zh": "记忆守护者",
+        "ja": "思い出の守り人"
+      },
+      "icon": "camera",
+      "achievedAt": "2026-09-18T00:00:00.000",
+      "childId": null,
+      "hint": null,
+      "progress": null,
+      "target": null
+    },
+    {
+      "id": "teamwork_week",
+      "familyId": "f-lan",
+      "code": "teamwork_week",
+      "title": {
+        "vi": "Tuần đồng đội",
+        "en": "Teamwork week",
+        "zh": "团队周",
+        "ja": "チームワークの週"
+      },
+      "icon": "handshake",
+      "achievedAt": "2026-09-28T00:00:00.000",
+      "childId": null,
+      "hint": null,
+      "progress": null,
+      "target": null
+    },
+    {
+      "id": "bookworm",
+      "familyId": "f-lan",
+      "code": "bookworm",
+      "title": {
+        "vi": "Nhà mọt sách",
+        "en": "Bookworm family",
+        "zh": "书虫之家",
+        "ja": "本好きファミリー"
+      },
+      "icon": "book-open",
+      "achievedAt": null,
+      "childId": null,
+      "hint": {
+        "vi": "10 lần đọc sách · đã có 7",
+        "en": "10 reading sessions · 7 so far",
+        "zh": "读书10次 · 已有7次",
+        "ja": "読書10回 · いま7回"
+      },
+      "progress": 7,
+      "target": 10
+    },
+    {
+      "id": "outdoor_family",
+      "familyId": "f-lan",
+      "code": "outdoor_family",
+      "title": {
+        "vi": "Gia đình ngoài trời",
+        "en": "Outdoor family",
+        "zh": "户外之家",
+        "ja": "おでかけファミリー"
+      },
+      "icon": "trees",
+      "achievedAt": null,
+      "childId": null,
+      "hint": {
+        "vi": "5 lần ra ngoài cùng nhau · đã có 3",
+        "en": "5 outings together · 3 so far",
+        "zh": "一起外出5次 · 已有3次",
+        "ja": "一緒におでかけ5回 · いま3回"
+      },
+      "progress": 3,
+      "target": 5
+    },
+    {
+      "id": "thanks_week",
+      "familyId": "f-lan",
+      "code": "thanks_week",
+      "title": {
+        "vi": "Tuần cảm ơn",
+        "en": "Thank-you week",
+        "zh": "感恩周",
+        "ja": "ありがとうの週"
+      },
+      "icon": "flower-2",
+      "achievedAt": null,
+      "childId": null,
+      "hint": {
+        "vi": "7 lời cảm ơn trong một tuần · tuần này 4",
+        "en": "7 thank-yous in a week · 4 this week",
+        "zh": "一周7次感谢 · 本周4次",
+        "ja": "1週間にありがとう7回 · 今週4回"
+      },
+      "progress": 4,
+      "target": 7
+    },
+    {
+      "id": "always_together",
+      "familyId": "f-lan",
+      "code": "always_together",
+      "title": {
+        "vi": "Luôn bên nhau",
+        "en": "Always there",
+        "zh": "始终相伴",
+        "ja": "いつもそばに"
+      },
+      "icon": "hand-heart",
+      "achievedAt": null,
+      "childId": null,
+      "hint": {
+        "vi": "10 lời nhờ được hỗ trợ · đã có 6",
+        "en": "10 requests helped · 6 so far",
+        "zh": "10次请求得到帮助 · 已有6次",
+        "ja": "お願い10回に応える · いま6回"
+      },
+      "progress": 6,
+      "target": 10
+    },
+    {
+      "id": "time_letter",
+      "familyId": "f-lan",
+      "code": "time_letter",
+      "title": {
+        "vi": "Lá thư thời gian",
+        "en": "Time letter",
+        "zh": "时光信笺",
+        "ja": "タイムレター"
+      },
+      "icon": "mail",
+      "achievedAt": null,
+      "childId": null,
+      "hint": {
+        "vi": "Viết lá thư đầu tiên gửi con",
+        "en": "Write your first letter to your child",
+        "zh": "给孩子写第一封信",
+        "ja": "子どもへ最初の手紙を書く"
+      },
+      "progress": 0,
+      "target": 1
+    },
+    {
+      "id": "loving_grandparents",
+      "familyId": "f-lan",
+      "code": "loving_grandparents",
+      "title": {
+        "vi": "Ông bà yêu thương",
+        "en": "Loving grandparents",
+        "zh": "爷爷奶奶的爱",
+        "ja": "大好きなおじいちゃんおばあちゃん"
+      },
+      "icon": "heart-handshake",
+      "achievedAt": null,
+      "childId": null,
+      "hint": {
+        "vi": "Người thân tương tác với 20 ký ức",
+        "en": "Relatives interact with 20 memories",
+        "zh": "亲人互动20条回忆",
+        "ja": "家族が20件の思い出に反応"
+      },
+      "progress": null,
+      "target": null
+    }
+  ],
+  "missionSettings": {
+    "level": "medium",
+    "boardTime": "07:00",
+    "askAtNight": true,
+    "defaultReminder": "before15",
+    "categories": [
+      {
+        "code": "care",
+        "icon": "heart-pulse",
+        "enabled": true,
+        "title": {
+          "vi": "Chăm sóc",
+          "en": "Care",
+          "zh": "照顾",
+          "ja": "お世話"
+        }
+      },
+      {
+        "code": "bonding",
+        "icon": "book-open",
+        "enabled": true,
+        "title": {
+          "vi": "Gắn kết",
+          "en": "Bonding",
+          "zh": "亲子",
+          "ja": "ふれあい"
+        }
+      },
+      {
+        "code": "play",
+        "icon": "puzzle",
+        "enabled": true,
+        "title": {
+          "vi": "Vui chơi",
+          "en": "Play",
+          "zh": "玩耍",
+          "ja": "遊び"
+        }
+      },
+      {
+        "code": "outing",
+        "icon": "trees",
+        "enabled": true,
+        "title": {
+          "vi": "Ra ngoài",
+          "en": "Outings",
+          "zh": "外出",
+          "ja": "おでかけ"
+        }
+      },
+      {
+        "code": "memory",
+        "icon": "camera",
+        "enabled": true,
+        "title": {
+          "vi": "Lưu kỷ niệm",
+          "en": "Keep memories",
+          "zh": "留住回忆",
+          "ja": "思い出づくり"
+        }
+      },
+      {
+        "code": "support",
+        "icon": "hand-heart",
+        "enabled": true,
+        "title": {
+          "vi": "Hỗ trợ bạn đời",
+          "en": "Support your partner",
+          "zh": "支持伴侣",
+          "ja": "パートナーを支える"
+        }
+      },
+      {
+        "code": "self",
+        "icon": "coffee",
+        "enabled": true,
+        "title": {
+          "vi": "Chăm bản thân",
+          "en": "Self-care",
+          "zh": "照顾自己",
+          "ja": "セルフケア"
+        }
+      },
+      {
+        "code": "chores",
+        "icon": "shirt",
+        "enabled": false,
+        "title": {
+          "vi": "Việc nhà của bé",
+          "en": "Baby chores",
+          "zh": "宝宝家务",
+          "ja": "赤ちゃんの家事"
+        }
+      }
+    ]
+  }
+}

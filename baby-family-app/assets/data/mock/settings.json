@@ -1,0 +1,295 @@
+{
+  "profile": {
+    "name": "Lan",
+    "callName": "Mama",
+    "autoTimezone": true,
+    "timezoneLabel": "GMT+7 · Hà Nội",
+    "signInMethods": [
+      {
+        "method": "apple",
+        "linked": true,
+        "maskedAccount": "lan•••@icloud.com"
+      },
+      {
+        "method": "google",
+        "linked": false
+      },
+      {
+        "method": "phone",
+        "linked": true,
+        "maskedAccount": "+84 ••• ••• 456"
+      }
+    ]
+  },
+  "notifications": {
+    "quietHours": true,
+    "quietFrom": "22:00",
+    "quietTo": "6:30",
+    "urgentBypassQuiet": false,
+    "hideOnLockScreen": true,
+    "relativesDigestTime": "19:00",
+    "mutedPeople": 1,
+    "channels": [
+      {
+        "code": "memories",
+        "icon": "images",
+        "enabled": true,
+        "title": {
+          "vi": "Ký ức & bình luận",
+          "en": "Memories & comments",
+          "zh": "回忆与评论",
+          "ja": "思い出とコメント"
+        },
+        "hint": {
+          "vi": "Gộp lại trong 30 phút",
+          "en": "Bundled every 30 minutes",
+          "zh": "30分钟内合并",
+          "ja": "30分ごとにまとめて"
+        }
+      },
+      {
+        "code": "missions",
+        "icon": "list-checks",
+        "enabled": true,
+        "title": {
+          "vi": "Nhiệm vụ",
+          "en": "Missions",
+          "zh": "任务",
+          "ja": "ミッション"
+        },
+        "hint": {
+          "vi": "1 lần/ngày lúc 7:00",
+          "en": "Once a day at 7:00",
+          "zh": "每天7:00一次",
+          "ja": "1日1回 7:00"
+        }
+      },
+      {
+        "code": "requests",
+        "icon": "hand-heart",
+        "enabled": true,
+        "title": {
+          "vi": "Lời nhờ",
+          "en": "Requests",
+          "zh": "请求",
+          "ja": "お願い"
+        }
+      },
+      {
+        "code": "couple",
+        "icon": "heart",
+        "enabled": true,
+        "title": {
+          "vi": "Papa & Mama",
+          "en": "Papa & Mama",
+          "zh": "Papa & Mama",
+          "ja": "Papa & Mama"
+        },
+        "hint": {
+          "vi": "Nhạy cảm · luôn ẩn trên màn hình khoá",
+          "en": "Sensitive · always hidden on the lock screen",
+          "zh": "敏感 · 锁屏始终隐藏",
+          "ja": "機密 · ロック画面では常に非表示"
+        }
+      },
+      {
+        "code": "bridge",
+        "icon": "messages-square",
+        "enabled": true,
+        "title": {
+          "vi": "Cầu nối",
+          "en": "Bridge",
+          "zh": "心桥",
+          "ja": "かけはし"
+        }
+      },
+      {
+        "code": "thanks",
+        "icon": "sparkles",
+        "enabled": true,
+        "title": {
+          "vi": "Lời cảm ơn",
+          "en": "Thank-yous",
+          "zh": "感谢",
+          "ja": "ありがとう"
+        }
+      },
+      {
+        "code": "milestones",
+        "icon": "cake",
+        "enabled": true,
+        "title": {
+          "vi": "Cột mốc & ngày đặc biệt",
+          "en": "Milestones & special days",
+          "zh": "里程碑与特别日子",
+          "ja": "マイルストーンと記念日"
+        }
+      },
+      {
+        "code": "recap",
+        "icon": "calendar-heart",
+        "enabled": true,
+        "title": {
+          "vi": "Tổng kết",
+          "en": "Recaps",
+          "zh": "回顾",
+          "ja": "ふりかえり"
+        }
+      },
+      {
+        "code": "relatives",
+        "icon": "users",
+        "enabled": true,
+        "title": {
+          "vi": "Người thân",
+          "en": "Relatives",
+          "zh": "亲人",
+          "ja": "家族"
+        },
+        "hint": {
+          "vi": "Bản tin hằng ngày",
+          "en": "Daily digest",
+          "zh": "每日简报",
+          "ja": "毎日のダイジェスト"
+        }
+      },
+      {
+        "code": "billing",
+        "icon": "credit-card",
+        "enabled": true,
+        "title": {
+          "vi": "Gói dịch vụ",
+          "en": "Subscription",
+          "zh": "订阅套餐",
+          "ja": "プラン"
+        },
+        "hint": {
+          "vi": "Thanh toán quan trọng luôn hiện trong app",
+          "en": "Important billing notices always show in the app",
+          "zh": "重要付款通知始终在应用内显示",
+          "ja": "重要な支払い通知は常にアプリ内に表示"
+        }
+      },
+      {
+        "code": "promotions",
+        "icon": "tag",
+        "enabled": false,
+        "title": {
+          "vi": "Khuyến mãi",
+          "en": "Promotions",
+          "zh": "促销",
+          "ja": "キャンペーン"
+        }
+      }
+    ]
+  },
+  "privacy": {
+    "defaultVisibility": "family",
+    "audiences": [
+      {
+        "childId": "hana",
+        "relativeCount": 3
+      },
+      {
+        "childId": "haru",
+        "relativeCount": 2
+      },
+      {
+        "childId": "bo",
+        "relativeCount": 0
+      }
+    ],
+    "downloadAllowed": [
+      "Bà nội"
+    ],
+    "postAllowed": [
+      "Bà ngoại"
+    ],
+    "familyVisibleMemories": 128,
+    "deviceCount": 3,
+    "aiFeatures": 2,
+    "blockedCount": 0
+  },
+  "security": {
+    "faceIdLock": true,
+    "pinSet": true,
+    "devices": [
+      {
+        "id": "d-iphone",
+        "name": "iPhone 15",
+        "kind": "phone",
+        "location": "Hà Nội",
+        "current": true,
+        "lastActiveAt": "2026-10-07T20:25:00.000"
+      },
+      {
+        "id": "d-ipad",
+        "name": "iPad mini",
+        "kind": "tablet",
+        "location": "Hà Nội",
+        "lastActiveAt": "2026-10-05T21:00:00.000"
+      },
+      {
+        "id": "d-samsung",
+        "name": "Samsung Galaxy A54",
+        "kind": "phone",
+        "location": "Hải Phòng",
+        "lastActiveAt": "2026-09-15T10:00:00.000"
+      }
+    ]
+  },
+  "dataExport": {
+    "cacheMb": 486,
+    "jobs": [
+      {
+        "kind": "family",
+        "status": "preparing",
+        "progress": 45,
+        "startedAt": "2026-10-07T08:12:00.000"
+      },
+      {
+        "kind": "personal",
+        "status": "ready",
+        "progress": 100,
+        "sizeMb": 214,
+        "expiresAt": "2026-10-14T00:00:00.000"
+      }
+    ]
+  },
+  "deleteAccount": {
+    "postedMemories": 142,
+    "maskedAppleAccount": "lan•••@icloud.com",
+    "maskedPhone": "••• 456"
+  },
+  "help": {
+    "openReports": 1,
+    "email": "hotro@babyfamily.vn",
+    "hotline": "1900 6868",
+    "faqs": [
+      {
+        "vi": "Làm sao mời ông bà xem ảnh cháu?",
+        "en": "How do I invite the grandparents?",
+        "zh": "如何邀请爷爷奶奶看孙子的照片？",
+        "ja": "祖父母を招待するには？"
+      },
+      {
+        "vi": "Ai thấy được ký ức của con?",
+        "en": "Who can see my child’s memories?",
+        "zh": "谁能看到孩子的回忆？",
+        "ja": "子どもの思い出は誰が見られる？"
+      },
+      {
+        "vi": "Vì sao người thân không thấy một ảnh?",
+        "en": "Why can’t a relative see a photo?",
+        "zh": "为什么亲人看不到某张照片？",
+        "ja": "家族が写真を見られないのはなぜ？"
+      },
+      {
+        "vi": "Xuất toàn bộ ảnh của gia đình thế nào?",
+        "en": "How do I export all family photos?",
+        "zh": "如何导出全家的照片？",
+        "ja": "家族の写真をすべて書き出すには？"
+      }
+    ]
+  }
+}

@@ -1,0 +1,599 @@
+{
+  "prompts": [
+    {
+      "id": "pr-quote",
+      "kind": "quote",
+      "minAgeDays": 365,
+      "text": {
+        "vi": "Câu nào của {child} hôm nay làm bạn bật cười?",
+        "en": "What did {child} say today that made you smile?",
+        "zh": "{child}今天说了什么让你笑了？",
+        "ja": "今日{child}のどんな言葉に笑顔になりましたか？"
+      }
+    }
+  ],
+  "milestones": [
+    {
+      "code": "laugh_aloud",
+      "title": {
+        "vi": "Cười to",
+        "en": "Laughed aloud",
+        "zh": "大声笑",
+        "ja": "声を出して笑う"
+      },
+      "typicalAgeDays": 110
+    },
+    {
+      "code": "roll_over",
+      "title": {
+        "vi": "Lẫy",
+        "en": "Rolled over",
+        "zh": "翻身",
+        "ja": "寝返り"
+      },
+      "typicalAgeDays": 125
+    },
+    {
+      "code": "sit_steady",
+      "title": {
+        "vi": "Ngồi vững",
+        "en": "Sitting steadily",
+        "zh": "坐稳",
+        "ja": "おすわり"
+      },
+      "typicalAgeDays": 180
+    },
+    {
+      "code": "first_food",
+      "title": {
+        "vi": "Ăn dặm",
+        "en": "First solid food",
+        "zh": "辅食",
+        "ja": "離乳食"
+      },
+      "typicalAgeDays": 180
+    },
+    {
+      "code": "call_mama",
+      "title": {
+        "vi": "Gọi “Mẹ”",
+        "en": "Said “Mama”",
+        "zh": "叫“妈妈”",
+        "ja": "「ママ」と呼んだ"
+      },
+      "typicalAgeDays": 365
+    },
+    {
+      "code": "first_step",
+      "title": {
+        "vi": "Bước đi đầu tiên",
+        "en": "First steps",
+        "zh": "第一步",
+        "ja": "はじめの一歩"
+      },
+      "typicalAgeDays": 400
+    },
+    {
+      "code": "run",
+      "title": {
+        "vi": "Chạy",
+        "en": "Running",
+        "zh": "跑",
+        "ja": "走る"
+      },
+      "typicalAgeDays": 540
+    },
+    {
+      "code": "two_words",
+      "title": {
+        "vi": "Nói câu 2 từ",
+        "en": "Two-word sentences",
+        "zh": "说两个词的句子",
+        "ja": "二語文"
+      },
+      "typicalAgeDays": 600
+    },
+    {
+      "code": "positive_test",
+      "forPregnancy": true,
+      "title": {
+        "vi": "Que 2 vạch",
+        "en": "Positive test",
+        "zh": "验孕两道杠",
+        "ja": "陽性反応"
+      }
+    },
+    {
+      "code": "heartbeat",
+      "forPregnancy": true,
+      "title": {
+        "vi": "Nghe tim thai",
+        "en": "First heartbeat",
+        "zh": "第一次听到胎心",
+        "ja": "はじめての心音"
+      }
+    },
+    {
+      "code": "first_kick",
+      "forPregnancy": true,
+      "title": {
+        "vi": "Bé đạp",
+        "en": "First kick",
+        "zh": "第一次胎动",
+        "ja": "はじめての胎動"
+      }
+    },
+    {
+      "code": "gender_reveal",
+      "forPregnancy": true,
+      "title": {
+        "vi": "Biết giới tính",
+        "en": "Gender reveal",
+        "zh": "知道性别",
+        "ja": "性別がわかった"
+      }
+    },
+    {
+      "code": "name_chosen",
+      "forPregnancy": true,
+      "title": {
+        "vi": "Chọn được tên",
+        "en": "Name chosen",
+        "zh": "选好名字",
+        "ja": "名前が決まった"
+      }
+    }
+  ],
+  "stickers": [
+    {
+      "vi": "{month} tháng",
+      "en": "{month} months",
+      "zh": "{month}个月",
+      "ja": "{month}か月"
+    },
+    {
+      "vi": "{child} {month}M",
+      "en": "{child} {month}M",
+      "zh": "{child} {month}M",
+      "ja": "{child} {month}M"
+    },
+    {
+      "vi": "½ tuổi",
+      "en": "½ year",
+      "zh": "半岁",
+      "ja": "半年"
+    }
+  ],
+  "plans": [
+    {
+      "code": "house",
+      "storageGb": 50,
+      "relativeSlots": 0,
+      "priceText": {
+        "vi": "399.000đ / năm",
+        "en": "399,000₫ / year",
+        "zh": "399,000越南盾 / 年",
+        "ja": "399,000ドン / 年"
+      },
+      "monthlyText": {
+        "vi": "≈ 33.000đ / tháng",
+        "en": "≈ 33,000₫ / month",
+        "zh": "约 33,000越南盾 / 月",
+        "ja": "約 33,000ドン / 月"
+      }
+    },
+    {
+      "code": "family",
+      "storageGb": 200,
+      "relativeSlots": 12,
+      "priceText": {
+        "vi": "599.000đ / năm",
+        "en": "599,000₫ / year",
+        "zh": "599,000越南盾 / 年",
+        "ja": "599,000ドン / 年"
+      },
+      "monthlyText": {
+        "vi": "≈ 50.000đ / tháng",
+        "en": "≈ 50,000₫ / month",
+        "zh": "约 50,000越南盾 / 月",
+        "ja": "約 50,000ドン / 月"
+      }
+    }
+  ],
+  "memoryDrafts": {
+    "photo": {
+      "body": "Lần đầu Hana bế em Haru, cả hai cười tít mắt",
+      "childIds": [
+        "hana",
+        "haru"
+      ],
+      "mediaAssets": [
+        "assets/images/design_composerPhoto1Asset.jpg",
+        "assets/images/design_composerPhoto2Asset.jpg",
+        "assets/images/design_composerPhoto3Asset.jpg"
+      ],
+      "milestoneTitle": {
+        "vi": "Gặp em lần đầu",
+        "en": "Meeting the baby",
+        "zh": "第一次见弟弟",
+        "ja": "はじめての対面"
+      }
+    },
+    "quote": {
+      "body": "Mẹ ơi, trăng đi theo con kìa! Trăng thích con hả mẹ?",
+      "childIds": [
+        "hana"
+      ]
+    },
+    "diary": {
+      "title": "Ngày đầu Hana đi nhà trẻ",
+      "body": "Sáng nay Hana đeo chiếc balo hình thỏ, tự đi vào lớp rồi quay lại vẫy tay chào Mama. Mama đứng ngoài cổng thêm 10 phút mới dám về.\n\nNhững điều cô giáo kể:\n• Con ăn hết bát cháo và xin thêm\n• Ngủ trưa được một tiếng rưỡi\n• Hát theo bài “Cả nhà thương nhau”\n\nTối về con bảo: “Mai con đi học nữa nha.”",
+      "childIds": [
+        "hana"
+      ],
+      "visibility": "family",
+      "createdAt": "2026-10-07T21:14:00.000",
+      "mediaAssets": [
+        "assets/images/design_homeWeek2Asset.jpg"
+      ]
+    },
+    "letter": {
+      "body": "Gửi Haru của Mama,\n\nMai con tròn 18 tháng rồi. Con đã tự đi lon ton khắp nhà và gọi “Mẹ” rõ to mỗi sáng. Khi con đọc lá thư này, chắc con đã cao hơn Mama rồi. Mama chỉ muốn con biết: cả nhà mình đã thương con từ những ngày con còn bé xíu như thế này.\n\nYêu con,\nMama Lan",
+      "childIds": [
+        "haru"
+      ],
+      "visibility": "parents",
+      "sealedUntil": "2043-04-08T00:00:00.000"
+    }
+  },
+  "fetalSizes": [
+    {
+      "week": 8,
+      "emoji": "🫐",
+      "fruit": {
+        "vi": "quả mâm xôi",
+        "en": "a raspberry",
+        "zh": "树莓",
+        "ja": "ラズベリー"
+      },
+      "lengthCm": 2
+    },
+    {
+      "week": 12,
+      "emoji": "🍋",
+      "fruit": {
+        "vi": "quả chanh",
+        "en": "a lime",
+        "zh": "青柠",
+        "ja": "ライム"
+      },
+      "lengthCm": 6
+    },
+    {
+      "week": 16,
+      "emoji": "🥑",
+      "fruit": {
+        "vi": "quả bơ",
+        "en": "an avocado",
+        "zh": "牛油果",
+        "ja": "アボカド"
+      },
+      "lengthCm": 12
+    },
+    {
+      "week": 20,
+      "emoji": "🍌",
+      "fruit": {
+        "vi": "quả chuối",
+        "en": "a banana",
+        "zh": "香蕉",
+        "ja": "バナナ"
+      },
+      "lengthCm": 25
+    },
+    {
+      "week": 24,
+      "emoji": "🌽",
+      "fruit": {
+        "vi": "bắp ngô",
+        "en": "an ear of corn",
+        "zh": "玉米",
+        "ja": "とうもろこし"
+      },
+      "lengthCm": 30
+    },
+    {
+      "week": 28,
+      "emoji": "🍆",
+      "fruit": {
+        "vi": "quả cà tím",
+        "en": "an eggplant",
+        "zh": "茄子",
+        "ja": "なす"
+      },
+      "lengthCm": 37
+    },
+    {
+      "week": 32,
+      "emoji": "🥬",
+      "fruit": {
+        "vi": "cây cải thảo",
+        "en": "a napa cabbage",
+        "zh": "大白菜",
+        "ja": "白菜"
+      },
+      "lengthCm": 42
+    },
+    {
+      "week": 36,
+      "emoji": "🍈",
+      "fruit": {
+        "vi": "quả dưa lưới",
+        "en": "a cantaloupe",
+        "zh": "哈密瓜",
+        "ja": "メロン"
+      },
+      "lengthCm": 47
+    },
+    {
+      "week": 40,
+      "emoji": "🍉",
+      "fruit": {
+        "vi": "quả dưa hấu nhỏ",
+        "en": "a small watermelon",
+        "zh": "小西瓜",
+        "ja": "小玉スイカ"
+      },
+      "lengthCm": 51
+    }
+  ],
+  "diaryPrompts": [
+    {
+      "vi": "Câu nào của con làm bạn bật cười?",
+      "en": "What did your child say that made you laugh?",
+      "zh": "孩子哪句话让你笑了？",
+      "ja": "子どものどんな言葉に笑いましたか？"
+    },
+    {
+      "vi": "Món con thích nhất dạo này?",
+      "en": "Their favourite food lately?",
+      "zh": "孩子最近最爱吃什么？",
+      "ja": "最近いちばん好きな食べ物は？"
+    },
+    {
+      "vi": "Hôm nay con vui vì điều gì?",
+      "en": "What made them happy today?",
+      "zh": "今天孩子因为什么开心？",
+      "ja": "今日は何がうれしかった？"
+    }
+  ],
+  "milestonePicker": {
+    "groups": [
+      {
+        "code": "tradition",
+        "emoji": "🇻🇳",
+        "title": {
+          "vi": "Truyền thống Việt",
+          "en": "Vietnamese traditions",
+          "zh": "越南传统",
+          "ja": "ベトナムの伝統"
+        }
+      },
+      {
+        "code": "emotion",
+        "emoji": "😊",
+        "title": {
+          "vi": "Cảm xúc",
+          "en": "Emotions",
+          "zh": "情感",
+          "ja": "感情"
+        }
+      },
+      {
+        "code": "motor",
+        "emoji": "🤸",
+        "title": {
+          "vi": "Vận động",
+          "en": "Movement",
+          "zh": "运动",
+          "ja": "運動"
+        }
+      },
+      {
+        "code": "language",
+        "emoji": "🗣",
+        "title": {
+          "vi": "Ngôn ngữ",
+          "en": "Language",
+          "zh": "语言",
+          "ja": "ことば"
+        }
+      },
+      {
+        "code": "food",
+        "emoji": "🍚",
+        "title": {
+          "vi": "Ăn uống",
+          "en": "Eating",
+          "zh": "饮食",
+          "ja": "食事"
+        }
+      },
+      {
+        "code": "body",
+        "emoji": "🦷",
+        "title": {
+          "vi": "Cơ thể",
+          "en": "Body",
+          "zh": "身体",
+          "ja": "からだ"
+        }
+      },
+      {
+        "code": "experience",
+        "emoji": "🌏",
+        "title": {
+          "vi": "Trải nghiệm",
+          "en": "Experiences",
+          "zh": "体验",
+          "ja": "体験"
+        }
+      },
+      {
+        "code": "family",
+        "emoji": "👨‍👩‍👧",
+        "title": {
+          "vi": "Gia đình",
+          "en": "Family",
+          "zh": "家庭",
+          "ja": "家族"
+        }
+      }
+    ],
+    "items": [
+      {
+        "code": "birth",
+        "group": "tradition",
+        "icon": "baby",
+        "title": {
+          "vi": "Chào đời",
+          "en": "Birth",
+          "zh": "出生",
+          "ja": "誕生"
+        }
+      },
+      {
+        "code": "full_month",
+        "group": "tradition",
+        "icon": "party-popper",
+        "title": {
+          "vi": "Đầy tháng",
+          "en": "One month",
+          "zh": "满月",
+          "ja": "生後1か月"
+        }
+      },
+      {
+        "code": "hundred_days",
+        "group": "tradition",
+        "icon": "sparkles",
+        "title": {
+          "vi": "Đầy 100 ngày",
+          "en": "100 days",
+          "zh": "百日",
+          "ja": "お食い初め（100日）"
+        }
+      },
+      {
+        "code": "first_birthday",
+        "group": "tradition",
+        "icon": "cake",
+        "title": {
+          "vi": "Thôi nôi",
+          "en": "First birthday",
+          "zh": "周岁",
+          "ja": "1歳の誕生日"
+        }
+      },
+      {
+        "code": "first_tet",
+        "group": "tradition",
+        "icon": "flower-2",
+        "title": {
+          "vi": "Tết đầu tiên",
+          "en": "First Tết",
+          "zh": "第一个春节",
+          "ja": "はじめてのテト"
+        }
+      },
+      {
+        "code": "first_mid_autumn",
+        "group": "tradition",
+        "icon": "moon-star",
+        "title": {
+          "vi": "Trung thu đầu tiên",
+          "en": "First Mid-Autumn",
+          "zh": "第一个中秋",
+          "ja": "はじめての中秋節"
+        }
+      },
+      {
+        "code": "first_haircut",
+        "group": "tradition",
+        "icon": "scissors",
+        "title": {
+          "vi": "Cắt tóc máu",
+          "en": "First haircut",
+          "zh": "剃胎发",
+          "ja": "はじめての散髪"
+        }
+      },
+      {
+        "code": "visit_paternal",
+        "group": "tradition",
+        "icon": "house",
+        "title": {
+          "vi": "Lần đầu về quê nội",
+          "en": "First visit to dad’s hometown",
+          "zh": "第一次回爷爷奶奶家",
+          "ja": "はじめての父方の里帰り"
+        }
+      },
+      {
+        "code": "visit_maternal",
+        "group": "tradition",
+        "icon": "trees",
+        "title": {
+          "vi": "Lần đầu về quê ngoại",
+          "en": "First visit to mum’s hometown",
+          "zh": "第一次回外公外婆家",
+          "ja": "はじめての母方の里帰り"
+        }
+      },
+      {
+        "code": "laugh_aloud",
+        "group": "emotion",
+        "icon": "smile",
+        "title": {
+          "vi": "Cười to",
+          "en": "Laughed aloud",
+          "zh": "大声笑",
+          "ja": "声を出して笑う"
+        }
+      },
+      {
+        "code": "roll_over",
+        "group": "motor",
+        "icon": "rotate-ccw",
+        "title": {
+          "vi": "Lẫy",
+          "en": "Rolled over",
+          "zh": "翻身",
+          "ja": "寝返り"
+        }
+      },
+      {
+        "code": "sit_steady",
+        "group": "motor",
+        "icon": "armchair",
+        "title": {
+          "vi": "Ngồi vững",
+          "en": "Sitting steadily",
+          "zh": "坐稳",
+          "ja": "おすわり"
+        }
+      },
+      {
+        "code": "first_food",
+        "group": "food",
+        "icon": "utensils",
+        "title": {
+          "vi": "Ăn dặm",
+          "en": "First solid food",
+          "zh": "辅食",
+          "ja": "離乳食"
+        }
+      }
+    ]
+  }
+}

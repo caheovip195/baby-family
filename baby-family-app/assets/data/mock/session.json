@@ -1,0 +1,21 @@
+{
+  "otp": "123456",
+  "partnerInviteCode": "K7Q29MXA",
+  "relativeInviteCode": "B4N0I123",
+  "defaultPartnerName": "Minh",
+  "trialDays": 90,
+  "aiQuota": {
+    "remaining": 28,
+    "total": 30
+  },
+  "appLock": "Face ID",
+  "samples": {
+    "phone": "912345678",
+    "profileName": "Lan Nguyễn",
+    "pregnancyName": "Bơ",
+    "dueDate": "2027-01-24",
+    "childName": "Haru",
+    "birthDate": "2025-04-08",
+    "otpPrefill": "482"
+  }
+}
