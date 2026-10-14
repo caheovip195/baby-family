@@ -13,6 +13,12 @@ const environmentSchema = z.object({
       'Expected a PostgreSQL URL',
     ),
   DATABASE_POOL_SIZE: z.coerce.number().int().min(1).max(100).default(10),
+  AUTH_JWT_PUBLIC_KEY: z.preprocess(
+    (value) => (value === '' ? undefined : value),
+    z.string().min(1).optional(),
+  ),
+  AUTH_JWT_ISSUER: z.string().min(1).default('baby-family'),
+  AUTH_JWT_AUDIENCE: z.string().min(1).default('baby-family-app'),
   CORS_ORIGINS: z
     .string()
     .default('http://localhost:3000')

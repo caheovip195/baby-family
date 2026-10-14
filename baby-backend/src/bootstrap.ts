@@ -27,8 +27,9 @@ export function configureApp(app: INestApplication): void {
     const options = new DocumentBuilder()
       .setTitle('Baby Family API')
       .setDescription(
-        'Three-layer backend base. Notes endpoints are an unauthenticated example resource.',
+        'Three-layer backend. Domain endpoints require an ES256 access token and a live session. Notes remain an unauthenticated example resource.',
       )
+      .addBearerAuth()
       .setVersion('0.1.0')
       .build();
     SwaggerModule.setup('docs', app, () =>

@@ -37,7 +37,7 @@ curl 'http://localhost:3000/api/v1/notes?page=1&limit=20'
 
 `note` là resource CRUD mẫu, chưa có authentication/authorization. Domain thực tế tham khảo `docs/02_TAI_LIEU_KY_THUAT_BABY_FAMILY_v3.md` tại repository gốc.
 
-[Thiết kế database theo đặc tả và canvas](../docs/database/README.md) đã có [Prisma schema](prisma/schema.prisma) và [forward migration](prisma/migrations/20261013150000_family_domain/migration.sql) **tại backend**; server/data/backups vẫn thuộc `baby-database`. Migration domain chưa áp dụng vào DB ứng dụng đang chạy. API thực tế hiện mới có Note; các bảng domain chưa có service/quyền/worker tương ứng.
+[Thiết kế database theo đặc tả và canvas](../docs/database/README.md) đã có [Prisma schema](prisma/schema.prisma) và [forward migration](prisma/migrations/20261013150000_family_domain/migration.sql) **tại backend**; server/data/backups vẫn thuộc `baby-database`. Migration domain chưa áp dụng vào DB ứng dụng đang chạy. [Service/controller API](docs/api.md) có 122 domain service/interface, JWT/session boundary và 7 nhóm controller cho Me/settings, Family, Child, Pregnancy và đọc billing; các workflow tích hợp/worker còn triển khai theo tính năng.
 
 ## Cấu trúc và OOP
 
@@ -83,6 +83,8 @@ npm run prisma:generate
 ```
 
 Generator bảo vệ file bằng hash trong `tools/database/persistence.generated.json`, từ chối ghi đè file đã chỉnh tay. Khi cần tùy biến repository, cập nhật template/chính sách generator rồi review diff; `--force` là lựa chọn ghi đè chủ động, chỉ dùng sau khi đã giữ lại thay đổi cần thiết. Generator không sinh service/controller nghiệp vụ hoặc áp migration.
+
+Tầng service có [117 bộ nội bộ được sinh](src/common/application/service.manifest.ts) và 5 bộ nghiệp vụ viết riêng; controller inject IService qua Symbol. Xem [API/validation/auth và phạm vi triển khai](docs/api.md). `npm run generate:services -- --check` kiểm drift của phần nội bộ; giữ service nghiệp vụ ngoài generated template. Swagger có Bearer auth; cấu hình public key issuer trong env để dùng API domain.
 
 ## Tự sinh resource
 

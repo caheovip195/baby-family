@@ -67,6 +67,8 @@ jobs:
         run: npm run prisma:validate
       - name: Check model and repository generation
         run: npm run generate:persistence -- --check
+      - name: Check internal service generation
+        run: npm run generate:services -- --check
       - name: Check formatting
         run: |
           npm run format:check

@@ -4,7 +4,7 @@ Phân tích ngày **2026-10-13**; cập nhật cấu trúc backend, persistence 
 
 ## Trạng thái và cách đọc
 
-Thiết kế đã được đưa vào **Prisma schema và forward migration của backend**, đối chiếu đặc tả nghiệp vụ/kỹ thuật và canvas `desgin/appdesgin.pen`. Migration domain **chưa áp dụng lên database ứng dụng đang chạy**; API/service hiện mới có resource `Note` mẫu. Có bảng không có nghĩa authorization, billing, worker hoặc tính năng tương ứng đã được triển khai.
+Thiết kế đã được đưa vào **Prisma schema và forward migration của backend**, đối chiếu đặc tả nghiệp vụ/kỹ thuật và canvas `desgin/appdesgin.pen`. Migration domain **chưa áp dụng lên database ứng dụng đang chạy**. Đợt BF-20261014-003 bổ sung [service/controller và auth boundary](../../baby-backend/docs/api.md); có bảng/service nền không có nghĩa mọi authorization, billing integration, worker hoặc tính năng tương ứng đã được triển khai.
 
 Đã có model class, I-repository/token, concrete repository và DI tương ứng đủ 123 bảng (122 domain + Note). Xem [persistence manifest](../../baby-backend/src/database/persistence.manifest.ts), [DI providers](../../baby-backend/src/database/repository.providers.ts) và [hướng dẫn bảo trì](../../baby-backend/README.md#cấu-trúc-và-oop). Repository giữ persistence; nghiệp vụ/quyền nằm ở service. Các bảng lịch sử/tài chính không mở generic update/delete.
 

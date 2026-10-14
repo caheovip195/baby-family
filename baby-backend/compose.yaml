@@ -29,6 +29,9 @@ services:
       DATABASE_URL: *database-url
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
       LOG_LEVEL: ${LOG_LEVEL:-info}
+      AUTH_JWT_PUBLIC_KEY: ${AUTH_JWT_PUBLIC_KEY:-}
+      AUTH_JWT_ISSUER: ${AUTH_JWT_ISSUER:-baby-family}
+      AUTH_JWT_AUDIENCE: ${AUTH_JWT_AUDIENCE:-baby-family-app}
     ports:
       - '${PORT:-3000}:3000'
     depends_on:

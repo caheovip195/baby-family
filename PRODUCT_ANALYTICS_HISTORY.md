@@ -275,3 +275,19 @@ Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hi�
 - Kết quả / trạng thái: Hoàn thành 123 bộ model/I-repository/concrete repo, DI domain 122 providers, tenant/privileged scopes, 18 append-only. Coverage và chống Prisma-type leakage đạt; check đủ 24 unit, 10 generator, 6 policy và 10 e2e tests, integration 2/2 trên PostgreSQL cách ly, generator 369 files không drift. Không có số liệu cải thiện KPI sản phẩm được đo.
 - Theo dõi: Business service/API, authorization và workers vẫn là công việc tính năng riêng. Hash guard và CI ngăn source drift; quyết định retention/transition phải ở service, không generic mutation ledger.
 - Session: [BF-20261014-002](SESSIONS.md#bf-20261014-002).
+
+<a id="bf-20261014-003"></a>
+
+## BF-20261014-003 — API và business service trên persistence nền
+
+- Ngày làm: 2026-10-14 (Asia/Ho_Chi_Minh); bắt đầu 2026-10-14T19:11:55+07:00. Cập nhật kết quả lúc 2026-10-14T19:44:32+07:00.
+- Yêu cầu: Triển khai tiếp tầng service và controller.
+- Role: BACKEND, ARCHITECT, BA, SECURITY_PRIVACY, DBA/INTEGRATION, TESTER/QUALITY; ORCHESTRATOR/DATA_ANALYST tổng hợp.
+- Vấn đề / mục tiêu: Code persistence có đường sử dụng qua service/interface và HTTP boundary, bảo trì theo kiến trúc đã chọn.
+- Quan sát: Lúc tiếp nhận có 123 models/repos, domain chưa có service/controller và Note là mẫu HTTP. Persistence inputs chứa fields nội bộ; bản triển khai đã tách HTTP DTO/projection và chỉ đăng ký controller theo luồng.
+- Phân tích / quyết định: Typed DTO allowlist, xác thực principal và tenant/self scope tại server; controller→IService→IRepository→model. Nội bộ billing/history/jobs không public generic CRUD. Phân biệt tầng nền với từng workflow tích hợp/worker chưa triển khai.
+- Tác động: Bổ sung service/interface/DI cho domain và 7 nhóm API có xác thực/session/quyền, validation nghiệp vụ và projection. Không đổi UI, tracking, Store thanh toán hoặc DB ứng dụng; chưa có KPI sản phẩm được đo.
+- Giả thuyết / đo lường: Chưa có dataset/KPI sản phẩm. Xác minh bằng DI/typecheck, HTTP validation, auth/privacy và PostgreSQL integration; không suy diễn metric sản phẩm.
+- Kết quả / trạng thái: Hoàn thành tầng nền: 122 domain service/interface (117 internal scaffolding +5 manual business services), 7 controllers, JWT/session/Parent/license gate và catalog/quyền lợi theo family. Final check 115 unit, 34 HTTP, 10 generator tests và 6 migration policy groups đạt; 17 PostgreSQL integration tests thực đạt, gồm Pregnancy POST đồng thời không tái dùng seqNo và chống mass assignment. Review độc lập và production audit đạt; container kiểm thử đã dọn. Không suy diễn cải thiện retention/conversion hoặc claim full app.
+- Theo dõi: [API scope](baby-backend/docs/api.md) phân biệt implemented/planned và contract base page/limit với cursor/envelope/If-Match/idempotency trong spec. Cấu hình public key issuer trước khi dùng domain API; token issuance, Store, Circle/private ACL, jobs và workflow nhiều bảng triển khai theo tính năng. Migration/seed vẫn là bước backend riêng, không tự deploy; chưa có dữ liệu KPI để đánh giá tác động sản phẩm.
+- Session: [BF-20261014-003](SESSIONS.md#bf-20261014-003).

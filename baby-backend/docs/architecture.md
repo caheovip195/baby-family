@@ -10,13 +10,15 @@
 
 Persistence domain hiện có 122 bộ model/interface/repository, cùng Note mẫu thành 123 bộ tương ứng 123 Prisma models. `database/repository.providers.ts` đăng ký Symbol token → class; `database/persistence.manifest.ts` ghi scope, khóa chính và append-only policy. Tạo lại bằng `npm run generate:persistence`, kiểm tra drift bằng `npm run generate:persistence -- --check`; file đã chỉnh tay được hash guard bảo vệ. Model và contract dùng kiểu domain, giữ Prisma types trong repository/database.
 
-Repository domain nhận scope bắt buộc cho family/user/couple hoặc explicit privileged scope cho bảng toàn cục. Service phải kiểm tra caller có quyền dùng scope đó và thực thi chuyển trạng thái/retention; việc truyền scope không tự cấp quyền. 18 repository lịch sử/tài chính không mở generic update/delete. Business services, domain API và worker sẽ triển khai theo từng luồng đã xác định; lớp persistence không tự thay thế chúng.
+Repository domain nhận scope bắt buộc cho family/user/couple hoặc explicit privileged scope cho bảng toàn cục. Service phải kiểm tra caller có quyền dùng scope đó và thực thi chuyển trạng thái/retention; việc truyền scope không tự cấp quyền. 18 repository lịch sử/tài chính không mở generic update/delete.
+
+Tầng service hiện có đủ 122 interface/class domain (117 nội bộ và 5 nghiệp vụ viết riêng), cùng Note mẫu. `common/application/application.providers.ts` gom DI bindings và 7 nhóm controller được đăng ký trong AppModule. [API hiện có](api.md) xử lý Me/settings, metadata Family/Child/Pregnancy và đọc catalog/quyền lợi; workflow Store, private content/Circle, jobs, sync và lifecycle nhiều bảng còn triển khai theo từng tính năng. Service nội bộ giữ typed persistence orchestration, không mở HTTP CRUD trên từng bảng.
 
 Luồng mẫu: `NoteController → INoteService → NoteService → INoteRepository → NoteRepository → PrismaService`.
 
 ## Model và OOP
 
-`Note` là class với các property `readonly`: `id`, `title`, `content`, `createdAt`, `updatedAt`. Constructor nhận `NoteAttributes` và gán dữ liệu; `hasContent()` kiểm tra content có ký tự sau khi trim.
+`Note` là class với các property `readonly`: `id`, `title`, `content`, `createdAt`, `updatedAt`, `deletedAt`. Constructor nhận `NoteAttributes` và gán dữ liệu; `hasContent()` kiểm tra content có ký tự sau khi trim.
 
 Repository trả `new Note(row)` để caller nhận được model instance có method. Model giữ dữ liệu và hành vi của chính nó; service điều phối nghiệp vụ, repository thực hiện database I/O.
 

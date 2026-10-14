@@ -2,6 +2,8 @@
 
 Ngày: **2026-10-14**, Asia/Ho_Chi_Minh. Liên quan BF-20261013-004/005/006 và BF-20261014-001/002.
 
+Các kết quả dưới đây ghi đợt database/persistence trước khi triển khai tầng API. Đợt BF-20261014-003 bổ sung [service/controller](../../baby-backend/docs/api.md) và [kiểm chứng API](../../baby-backend/docs/api-verification.md); không thay đổi SQL schema/migrations.
+
 ## Môi trường và nguồn cấu trúc
 
 - [Prisma schema](../../baby-backend/prisma/schema.prisma): 123 models, gồm 122 bảng domain và Note mẫu trong `public`.
