@@ -6,6 +6,10 @@
 > **Tài liệu đi kèm:** `01_DAC_TA_NGHIEP_VU_BABY_FAMILY_v3.md` — mọi mã màn (`HOME-01`…), quy tắc (`BR-xxx`), tiêu chí (`AC-xxx`) tham chiếu tài liệu đó.  
 > **Phạm vi:** thiết kế luồng, dữ liệu, API, màn hình ↔ API, xử lý nền, bảo mật, hạ tầng & triển khai. **Không** gồm phần khởi tạo base project (team tự setup) — nhưng có quy ước cấu trúc để base project tuân theo.
 
+> **Database cập nhật 14/10/2026 — BF-20261013-006/BF-20261014-001:** xem [bộ thiết kế database](database/README.md), [Prisma schema backend](../baby-backend/prisma/schema.prisma) và [forward migration](../baby-backend/prisma/migrations/20261013150000_family_domain/migration.sql). Migration chỉ DDL, chưa áp dụng vào DB ứng dụng; [seed](../baby-backend/prisma/seed.ts) chạy riêng bằng `npm run db:seed`, không tự chạy khi migrate/start. API nghiệp vụ ngoài Note chưa triển khai. License/Pro thuộc **family gốc**, user là người thanh toán; không tự chuyển qua restore/renewal hoặc CSKH.
+
+> **Quyết định bổ sung BF-20261013-005:** trial mặc định **604800 giây = 7 × 24 giờ từ policy có version**, expiry UTC cố định, thay ví dụ 90 ngày/3 tháng/kết thúc cuối ngày và lịch nhắc cũ. Giữ House/Family là catalog ban đầu, cho thêm gói bằng dữ liệu; client/server dùng capabilities. License không chuyển kể cả CSKH; Store gia hạn đã thanh toán sau payer xóa account vẫn cấp family gốc. Xem [billing](database/billing.md), [gap chưa chốt](database/requirements.md) và [chuẩn mở rộng](../.agents/skills/baby-family-team/references/extensibility-standards.md); các ví dụ kỹ thuật cũ phải được đối chiếu trước triển khai.
+
 ---
 
 ## MỤC LỤC
@@ -61,7 +65,7 @@
 | 11 | Signed URL + “Private CDN” | Signed URL thay đổi mỗi lần ký → client tải lại ảnh liên tục; CDN cache sai cách có thể bỏ qua kiểm tra chữ ký | Client cache theo **khoá ổn định** `assetId_variant`; edge cache chỉ dùng CDN có kiểm tra token (mục 10.6). |
 | 12 | Không nói Sign in with Apple revoke | Apple yêu cầu **thu hồi token SIWA** khi xoá tài khoản | Lưu refresh token Apple (mã hoá) lúc đăng nhập; gọi `/auth/revoke` trong deletion job. |
 | 13 | Không nói acknowledge Google Play | Google **tự hoàn tiền** nếu không acknowledge trong 3 ngày | Server acknowledge ngay sau khi xác minh. |
-| 14 | Không có gói House/Family | | Trạng thái quyền sử dụng `INCOMPLETE → TRIAL(90 ngày) → HOUSE | FAMILY → EXPIRED` + quota cấu hình (mục 6.5, 18). Không có gói Free vĩnh viễn. |
+| 14 | Không có gói House/Family | | Quyền sử dụng `INCOMPLETE → TRIAL(policy mặc định 7 ngày) → PAID → EXPIRED`, có `BLOCKED` riêng; plan/quota/features lấy catalog có version (mục 6.5, 18). Không có gói Free vĩnh viễn. |
 | 21 | v2.0 cho dùng app khi mới có 1 Parent | Khách hàng xác nhận không cho phép | **Gate kích hoạt**: bắt buộc chọn vai trò; mọi API nghiệp vụ trả `403 FAMILY_NOT_ACTIVE` khi chưa đủ Bố + Mẹ; người thân chỉ dùng khi đã được mời (mục 6.5). |
 | 22 | Không có đặc tả đa ngôn ngữ | Khách hàng yêu cầu hệ thống đa ngôn ngữ | Server i18n (11.8), Flutter l10n (22.12): locale theo từng user, `Accept-Language`, template/catalog đa ngôn ngữ có fallback `user → en → vi`. MVP: `vi` (mặc định), `en`. |
 | 15 | Không có đăng nhập SĐT | Ông bà VN | OTP qua Zalo ZNS / SMS brandname (mục 5.3). |
@@ -357,7 +361,9 @@ interface AccessContext {
   pregnancyGrants: Map<string, 'VIEW' | 'COMMENT' | 'CONTRIBUTE'>;
   allowDownload: boolean;
   familyStatus: 'WAITING_PARTNER' | 'ACTIVE' | 'PARTNER_LEFT' | 'DELETION_SCHEDULED';
-  accessState: 'INCOMPLETE' | 'TRIAL' | 'HOUSE' | 'FAMILY' | 'EXPIRED';   // mục 6.5
+  accessPhase: 'INCOMPLETE' | 'TRIAL' | 'PAID' | 'EXPIRED' | 'BLOCKED'; // mục 6.5
+  planCode?: string;                 // catalog mở rộng, không dùng làm quyền
+  capabilities: Record<string, boolean>;
   trialEndsAt?: string;
   blockedUserIds: Set<string>;     // người mà user này chặn / bị chặn trong family
   version: number;                  // = families.access_version
@@ -366,7 +372,7 @@ interface AccessContext {
 
 **Cache:** Redis `ac:{userId}:{familyId}` TTL 300s, gắn `version`. Mọi thay đổi ảnh hưởng quyền (parent/circle/grant/gói/chặn) chạy `UPDATE families SET access_version = access_version + 1` trong cùng transaction → request sau so sánh version (đọc `acv:{familyId}` trong Redis, được set sau commit) → cache miss → resolve lại. Kết quả: **gỡ người thân có hiệu lực ở request kế tiếp** (BR-042).
 
-**Quy tắc khi `role=CIRCLE`:** nếu `accessState ≠ FAMILY` ⇒ `circleStatus=SUSPENDED_PLAN` ⇒ mọi endpoint nội dung trả `403 FAMILY_SHARING_PAUSED` (client hiển thị CIR-05).
+**Quy tắc khi `role=CIRCLE`:** nếu capability `circle.enabled` không được cấp, hoặc membership/grant/family gate không cho phép ⇒ `circleStatus=SUSPENDED_PLAN` ⇒ endpoint nội dung trả `403 FAMILY_SHARING_PAUSED` (client hiển thị CIR-05). Không kiểm `planCode == FAMILY`.
 
 ### 6.2 Ma trận policy (backend)
 
@@ -446,29 +452,30 @@ WHERE m.family_id = :familyId
 
 **Vai trò khi onboarding** — `users.onboarding_role ∈ {PARENT_FATHER, PARENT_MOTHER, CIRCLE, null}`; `null` ⇒ client bắt buộc vào ONB-03. Vào bằng lời mời ⇒ vai trò lấy theo lời mời.
 
-**Trạng thái quyền sử dụng** (`billing.family_entitlements.access_state`, tính bởi `recomputeEntitlement`):
+**Trạng thái quyền sử dụng** (`billing.family_entitlements.access_phase`, tính bởi `recomputeEntitlement`):
 
-| access_state | Điều kiện | API nghiệp vụ |
+| access_phase | Điều kiện | API nghiệp vụ |
 |---|---|---|
 | `INCOMPLETE` | `families.status = WAITING_PARTNER` (hoặc `PARTNER_LEFT` sau khi một Parent xoá tài khoản) | Chặn (allowlist bên dưới) |
 | `TRIAL` | đủ 2 Parent ACTIVE và `now() < trial_ends_at` | Cho phép, quota `TRIAL` (10 GB, **không** Circle) |
-| `HOUSE` / `FAMILY` | có subscription hiệu lực (gồm grace) | Cho phép, quota theo gói |
+| `PAID` | có grant trả phí hiệu lực (gồm grace đã được xác minh) | Cho phép theo plan version/capabilities; không suy quyền từ tên gói |
 | `EXPIRED` | hết trial và không có subscription hiệu lực | Chặn (allowlist) |
+| `BLOCKED` | license bị khóa theo quyết định có audit | Chặn nghiệp vụ, giữ các quyền dữ liệu/an toàn được đặc tả |
 
 **`ActivationGuard` (global, chạy sau AuthGuard + FamilyScopeGuard)**
 - `familyStatus = WAITING_PARTNER` → mọi route có `familyId` trả `403 FAMILY_NOT_ACTIVE`, **trừ** allowlist: `GET /families/{fid}/bootstrap`, `PATCH /families/{fid}` (tên, cover), `POST|GET|DELETE …/invites/partner`, `POST /invites/{id}/approve|reject`, `POST /families/{fid}/cancel`.
 - `familyStatus = PARTNER_LEFT` (chỉ xảy ra khi một Parent **xoá tài khoản** — MVP không có API rời gia đình/tách bạn đời) → chỉ cho các `GET` đọc nội dung + tải về + mời bạn đời mới; mọi ghi trả `403 FAMILY_NOT_ACTIVE`.
-- `accessState = EXPIRED` → mọi route nghiệp vụ trả `402 SUBSCRIPTION_REQUIRED`, **trừ** allowlist: `bootstrap`, `/billing/*`, `/exports*`, `/families/{fid}/media-grid` & `GET /memories/{id}` + `download-urls` (phục vụ tải dữ liệu về), `/me*`, `/auth/*`, `/support/*`, `/reports`, `/me/deletion*`. Circle: `402` được map thành `403 FAMILY_SHARING_PAUSED`.
+- `accessPhase = EXPIRED` → mọi route nghiệp vụ trả `402 SUBSCRIPTION_REQUIRED`, **trừ** allowlist: `bootstrap`, `/billing/*`, `/exports*`, `/families/{fid}/media-grid` & `GET /memories/{id}` + `download-urls` (phục vụ tải dữ liệu về), `/me*`, `/auth/*`, `/support/*`, `/reports`, `/me/deletion*`. Circle: `402` được map thành `403 FAMILY_SHARING_PAUSED`.
 - Route không có `familyId` của user `onboarding_role=CIRCLE` chưa có membership: chỉ `/me*`, `/invites/*`, `/auth/*`.
-- Các job nền (bày bảng nhiệm vụ, nhắc, hết hạn lời nhờ, recap, digest) **bỏ qua** family có `access_state ∈ {INCOMPLETE, EXPIRED}`.
+- Các job nền (bày bảng nhiệm vụ, nhắc, hết hạn lời nhờ, recap, digest) **bỏ qua** family có `access_phase ∈ {INCOMPLETE, EXPIRED, BLOCKED}`.
 
 **Kích hoạt (trong transaction `acceptPartnerInvite` / `approvePartner`)**
 ```
 INSERT family_parents(slot B) → families.status = ACTIVE → INSERT couple_spaces
 → eligible = NOT EXISTS (SELECT 1 FROM billing.trial_consumptions WHERE user_id IN (A,B) OR identity_hash IN (…))
-→ eligible ? (TỰ ĐỘNG cấp — không qua Store: trial_started_at = now(), trial_ends_at = endOfDay(now() + 90 days, family tz),
+→ eligible ? (TỰ ĐỘNG cấp — không qua Store: trial_policy = publishedPolicy(), trial_started_at = now(), trial_ends_at = now() + trial_policy.duration_seconds,
               INSERT trial_consumptions cho cả A và B)
-           : access_state = EXPIRED (ONB-ACT hiển thị "Chọn gói để bắt đầu")
+           : access_phase = EXPIRED (ONB-ACT hiển thị "Chọn gói để bắt đầu")
 → access_version++ → outbox PartnerLinked, TrialStarted
 ```
 Nếu Parent B đang có gia đình `WAITING_PARTNER` của riêng mình (rỗng) → cùng transaction đánh dấu gia đình đó `DELETED` (không có dữ liệu do BR-052).
@@ -505,18 +512,20 @@ Nếu Parent B đang có gia đình `WAITING_PARTNER` của riêng mình (rỗng
 
 ### 7.1 Quy ước
 
-- Schema: `app` (nghiệp vụ chung), `us` (Papa & Mama — tách để dễ phân quyền DB user & audit), `billing`, `ops` (outbox, config, catalog). Có thể dùng 1 schema nếu Prisma gây khó; khi đó tiền tố bảng `us_`.
-- PK: `uuid` (UUIDv7 sinh ở app). Bảng log tăng nhanh có thể dùng `bigint identity`.
-- Thời gian: `timestamptz` (UTC). Ngày nghiệp vụ theo giờ địa phương: `date` + cột `*_local_date` khi cần group.
-- Soft delete: `deleted_at`; dữ liệu cần purge vật lý có `purge_after`.
-- Cột chuẩn: `created_at default now()`, `updated_at` (trigger), `version int default 1` cho bảng sửa được.
+- Schema backend: `app` (nghiệp vụ chung), `us` (Papa & Mama — tách để phân quyền DB user & audit), `billing`, `ops` (outbox, config, catalog); `public` giữ Note mẫu. Prisma đăng ký multi-schema, không tự gộp vào một schema.
+- PK: `uuid`; domain migration dùng PostgreSQL18 `uuidv7()` mặc định, hỗ trợ UUID hợp lệ do app tạo cho offline/idempotency. Bảng log tăng nhanh có thể dùng `bigint identity`.
+- Thời gian: `timestamptz(3)` (UTC). Ngày nghiệp vụ theo giờ địa phương: `date` + cột `*_local_date` khi cần group.
+- **Bắt buộc mọi bảng do dự án quản lý có đủ ba cột**, kể cả bảng nối, job/history và outbox: `created_at timestamptz(3) NOT NULL DEFAULT now()`, `updated_at timestamptz(3) NOT NULL DEFAULT now()` (trigger khi UPDATE), `deleted_at timestamptz(3) NULL DEFAULT NULL`. Không tự sửa bảng hệ thống PostgreSQL/Prisma/package.
+- Soft delete là mặc định; repository lọc dòng active nhất quán. Dữ liệu cần purge vật lý có `purge_after`/retention riêng. `version int default 1` cho bảng sửa được. Xem [chuẩn database](../.agents/skills/baby-family-team/references/database-standards.md).
 - **Composite FK** `(x_id, family_id)` để DB tự đảm bảo “cùng gia đình” (mẫu: `UNIQUE (id, family_id)` ở bảng cha).
 - Extension: `pgcrypto`, `pg_trgm`, `unaccent`, `citext`.
 - Cột mã hoá cấp ứng dụng: kiểu `bytea`, hậu tố `_enc` (mục 16).
 
 ### 7.2 DDL
 
-> DDL dưới đây là **thiết kế chuẩn** (canonical). Khi dùng Prisma, mô hình hoá bảng/cột tương ứng; các phần `-- SQL migration` (partial index, trigger, check phức tạp) đưa vào migration SQL thủ công.
+> DDL dưới đây là bản tham khảo trước BF-20261013-004/005, giữ để truy vết; **không dùng để deploy**. [Migration backend hiện tại](../baby-backend/prisma/migrations/20261013150000_family_domain/migration.sql), [Prisma schema](../baby-backend/prisma/schema.prisma) và [thiết kế database](database/README.md) là nguồn cấu trúc: catalog plans/version/trial policy thay enum/quota cứng; đủ audit/FK/trigger và family-owned license. Check/trigger/partial index giữ trong migration DDL; dữ liệu catalog ở seed riêng. Migration domain chưa áp dụng vào DB ứng dụng.
+
+> Cập nhật theo quyết định người dùng ngày 2026-10-13: ví dụ DDL cũ bên dưới có thể chưa liệt kê đủ ba cột audit. Khi triển khai, bắt buộc bổ sung theo §7.1 cho mọi bảng dự án; không dùng thiếu sót trong ví dụ để miễn quy tắc. Đây là cập nhật đặc tả, chưa phải migration đã áp dụng. Cron/job thực hiện theo [chuẩn history/retry/recovery](../baby-backend/docs/jobs.md).
 
 #### 7.2.1 Extensions & enums
 
@@ -1829,7 +1838,7 @@ CREATE TABLE billing.plan_quotas (
   tier     billing.quota_tier PRIMARY KEY,
   quotas   jsonb NOT NULL
   -- TRIAL:  {"storageBytes":10737418240,"photosPerMemory":30,"videoMaxSec":180,"videoMaxHeight":1080,
-  --          "audioMaxSec":300,"circleMax":0,"aiPerMonth":30,"keepOriginal":false,"careStats":true,"trialDays":90}
+  --          "audioMaxSec":300,"circleMax":0,"aiPerMonth":30,"keepOriginal":false,"careStats":true,"trialDays":7}
   -- HOUSE:  {"storageBytes":53687091200,"memoryCount":null,"photosPerMemory":30,"videoMaxSec":180,"videoMaxHeight":1080,
   --          "audioMaxSec":300,"albums":null,"letters":null,"series":null,"circleMax":0,"aiPerMonth":100,"keepOriginal":false,"careStats":true}
   -- FAMILY: {"storageBytes":214748364800,..., "photosPerMemory":50,"videoMaxSec":600,"audioMaxSec":600,"circleMax":12,"aiPerMonth":300,"keepOriginal":true}
@@ -2055,8 +2064,11 @@ SELECT storage_bytes FROM billing.family_usage WHERE family_id = :f FOR UPDATE;
 
 ### 7.4 Migration & dữ liệu ban đầu (seed)
 
-- Seed: `billing.products`, `billing.plan_quotas`, `app.milestone_templates` (catalog VN), `app.mission_templates` (≥ 90 ngày nội dung/giai đoạn; mỗi template có `hearts` 1–10 + `role_fit`; đủ để bày 14 ngày không lặp cho cả hai Parent ở mức Nhiều), `app.mission_family_settings` (tạo khi family ACTIVE), `app.memory_prompt_templates` (17.6, đủ 30 ngày không lặp mỗi giai đoạn), cột mốc thai kỳ (17.2) trong `milestone_templates`, mẫu sticker tháng (`content_items` `MONTH_STICKER`), `app.badges`, `ops.content_items`, `ops.notification_templates` (vi, en), `ops.app_config`.
-- Chiến lược migration: **expand → migrate → contract**; không DROP cột trong cùng release với code mới; migration chạy như job riêng trước khi rollout (mục 26).
+- **Vị trí:** `baby-backend/prisma/schema.prisma`, `prisma/migrations/` và `prisma/seed.ts`. `baby-database/` chỉ có server/Compose, host data, backups và scripts vận hành; không giữ schema/migration hoặc init seed.
+- **Migration chỉ DDL:** tạo/thay cấu trúc, constraints/indexes/functions/triggers. Không chứa thao tác CRUD/DML, seed, import hoặc backfill dữ liệu. Áp dụng migration đã commit bằng `npm run db:migrate:deploy`; không gộp seed vào command, Compose migrate job hoặc startup API.
+- **Catalog seed chạy riêng:** `npm run db:seed` từ backend, dùng [prisma/seed.ts](../baby-backend/prisma/seed.ts) đọc [catalog.json](../baby-backend/prisma/seeds/catalog.json), kiểm tra đích `DATABASE_URL` trước khi chạy. Seed hiện có billing plans/plan_versions/trial_policies, quota/features và default-trial config; trial mặc định604800 giây. Version đã được cấp không sửa hồi tố. Không xác nhận catalog đã có trong DB ứng dụng khi mới tạo script.
+- **Nội dung cần bổ sung khi triển khai:** Store product mappings đã xác minh, milestone catalog VN, mission templates (≥ 90 ngày nội dung/giai đoạn; Hearts1–10 và role_fit), memory prompts, stickers, badges, vi/en notification templates và app config khác. Đây là backlog nội dung, không phải tất cả đã nằm trong seed hiện tại; dữ liệu riêng từng family tạo qua service khi kích hoạt.
+- Chiến lược schema: **expand → contract** qua release tương thích; không DROP cột cùng release với code mới. Nếu cần chuyển dữ liệu giữa hai bước, dùng command/backfill riêng có checkpoint, review và kiểm chứng; không viết DML vào migration.
 
 ---
 ## 8. MongoDB
@@ -2504,7 +2516,8 @@ ffmpeg -i in.m4a -map_metadata -1 -c:a aac -b:a 96k a.m4a                     # 
     { "type": "CHILD", "id": "…", "displayName": "Haru", "birthDate": "2026-05-01", "colorIndex": 2, "status": "ACTIVE" },
     { "type": "PREGNANCY", "id": "…", "displayName": "Thai #3 • Bơ", "dueDate": "2027-02-14", "status": "ACTIVE" }
   ],
-  "entitlement": { "accessState": "FAMILY", "plan": "FAMILY", "trialEndsAt": null, "validUntil": "2027-09-30T00:00:00Z", "inGrace": false,
+  "entitlement": { "accessPhase": "PAID", "planCode": "FAMILY", "trialEndsAt": null, "validUntil": "2027-09-30T00:00:00Z", "inGrace": false,
+                   "capabilities": { "circle.enabled": true },
                    "quota": { "storageBytes": 214748364800, "circleMax": 12, "videoMaxSec": 600 },
                    "usage": { "storageBytes": 5368709120, "circleCount": 4 } },
   "unread": { "notifications": 3, "pendingReviews": 1, "openRequests": 1, "us": true },
@@ -2802,11 +2815,11 @@ Scheduler process giữ **leader lock** (`lock:scheduler`, gia hạn 15s) và đ
 | `circle-digest` | `circle_digest_time` của từng người thân | Gom ký ức mới trong 24h |
 | `pregnancy-overdue-check` | 09:00 thứ Hai | Quá dự sinh 14 ngày → hỏi nhẹ |
 | `invite-expire` | mỗi giờ | `PENDING` quá hạn → `EXPIRED` |
-| `trial-reminders` | 09:00 giờ family | Ngày 60, 83, 88, 90 của dùng thử → push + banner cho cả Bố và Mẹ |
+| `trial-reminders` | 09:00 giờ family | Theo reminder offsets của trial policy/version đã cấp, tính từ trial_ends_at → push + banner cho cả hai Parent; không hardcode lịch 90 ngày cũ |
 | `trial-expiry` | mỗi 15 phút | `TRIAL` hết hạn → `EXPIRED` (recompute) |
 | `waiting-partner-nudge` | 10:00 | Gia đình chờ 2/5/10 ngày → nhắc Parent A gửi lại lời mời |
 | `waiting-family-cleanup` | hằng ngày | Gia đình `WAITING_PARTNER` > 90 ngày không hoạt động → `DELETED` |
-| `trial-ended-notify` | khi `TrialExpired` | Push + inbox cho Papa & Mama: “3 tháng dùng thử đã kết thúc, nâng cấp để tiếp tục” |
+| `trial-ended-notify` | khi `TrialExpired` | Push + inbox cho Papa & Mama: “Thời gian dùng thử đã kết thúc, nâng cấp để tiếp tục” (copy lấy thời hạn server, mặc định 7 ngày) |
 | `expired-retention` | hằng ngày | Gia đình EXPIRED: nhắc nâng cấp 1 lần/tháng; ngày thứ 335 & 358 → báo trước 30/7 ngày (push + email/SMS); ngày 365 → `delete-family` |
 | `care-snapshots` | 01:00 thứ Hai | Tính `care_weekly_snapshots` tuần trước (cấp gia đình, không theo người) |
 | `hearts-reconcile` | Chủ nhật 04:30 | Đối soát `family_trees.total_hearts = Σ heart_ledger.amount` và `heart_daily_counters` 7 ngày gần nhất; lệch → sửa + alert |
@@ -2879,7 +2892,7 @@ generateBoard(familyId, date):                       // job generate-daily-board
   BEGIN
   SELECT pg_advisory_xact_lock(hashtext('board:' || familyId || ':' || date))
   if EXISTS daily_mission_boards(familyId, date): COMMIT; return                 // idempotent (retry, chạy song song)
-  fam = families(familyId); if fam.status ≠ ACTIVE or access_state ∉ {TRIAL, HOUSE, FAMILY}: return
+  fam = families(familyId); if fam.status ≠ ACTIVE or access_phase ∉ {TRIAL, PAID}: return
   level = mission_family_settings.board_level                                    // LIGHT | MEDIUM | HEAVY
   n     = {LIGHT: 2, MEDIUM: 3, HEAVY: 4}[level]                                 // bằng nhau cho A và B (BR-019)
   nTog  = level = LIGHT ? (rng() < 0.5 ? 1 : 0) : 1
@@ -3161,8 +3174,8 @@ Output schema: `{ safety: boolean, variants: [{ style: "NEUTRAL"|"WARM"|"SHORT",
 
 | | App Store Connect | Google Play Console |
 |---|---|---|
-| Nhóm | Subscription Group `baby_family_premium`: Level 1 = `bf_family_yearly`, Level 2 = `bf_house_yearly` | Subscriptions `bf_house_yearly`, `bf_family_yearly`; base plan `yearly-autorenew`; offer `trial-14d` |
-| Dùng thử | **Không dùng Introductory Offer** — gói vẫn bán trên Store; dùng thử 90 ngày do server **tự động cấp** khi gia đình đủ Bố + Mẹ (6.5) | Không cấu hình free trial trên base plan (dự phòng: offer 3 tháng) |
+| Nhóm | Subscription Group `baby_family_premium`: Level 1 = `bf_family_yearly`, Level 2 = `bf_house_yearly` | Subscriptions `bf_house_yearly`, `bf_family_yearly`; base plan `yearly-autorenew`; product/base-plan mapping từ catalog, không trial offer |
+| Dùng thử | **Không dùng Introductory Offer** — gói vẫn bán trên Store; dùng thử từ policy/version (mặc định **7 ngày**) do server **tự động cấp** khi gia đình đủ Bố + Mẹ (6.5) | Không cấu hình free trial trên base plan; trial do server cấp theo policy/version |
 | Grace period | Bật Billing Grace Period (16 ngày) | Grace period + Account hold (cấu hình) |
 | Thông báo server | App Store Server Notifications **V2** → `https://api.babyfamily.vn/v1/webhooks/apple/asn` (prod & sandbox URL riêng) | RTDN: Cloud Pub/Sub topic → **push subscription** tới `/v1/webhooks/google/rtdn` (xác minh OIDC token của Pub/Sub) |
 | API server | App Store Server API (key .p8, issuer id, key id) | Google Play Developer API (service account có quyền tài chính) |
@@ -3173,9 +3186,9 @@ Output schema: `{ safety: boolean, variants: [{ style: "NEUTRAL"|"WARM"|"SHORT",
 ```
 1. SUB-01: GET /families/{fid}/billing/eligibility?productId=bf_family_yearly
       → {canPurchase, reason?: "FAMILY_ALREADY_HAS_PLAN"|"NOT_PAYER_UPGRADE", currentPlan, payer}
-2. Client lấy giá/offer từ Store SDK (in_app_purchase) — hiển thị giá Store trả về (đã địa phương hoá)
+2. Server tạo purchase_intent đã bind family/license và product; client lấy giá/offer từ Store SDK (in_app_purchase), hiển thị giá Store trả về (đã địa phương hoá)
 3. Mua:
-   iOS (StoreKit 2): purchase với appAccountToken = users.id (UUID)
+   iOS (StoreKit 2): purchase với appAccountToken = purchase_intent.app_account_token (UUID server cấp)
    Android (Play Billing): setObfuscatedAccountId = sha256(users.id)[0..64]; upgrade dùng oldPurchaseToken + ReplacementMode
 4. Client gửi bằng chứng:
    iOS → POST /billing/apple/transactions {signedTransactionInfo}
@@ -3186,7 +3199,7 @@ Output schema: `{ safety: boolean, variants: [{ style: "NEUTRAL"|"WARM"|"SHORT",
    Google: purchases.subscriptionsv2.get(packageName, token) → kiểm obfuscatedExternalAccountId,
           lineItems[].productId, expiryTime, subscriptionState; nếu acknowledgementState = PENDING → acknowledge NGAY
           (không acknowledge trong 3 ngày → Google tự hoàn tiền)
-6. Upsert billing.subscriptions (gắn family_id hiện tại của payer) → recomputeEntitlement(familyId)
+6. Resolve purchase_intent đã bind family/license → verify/dedup transaction → upsert subscription + license_grant vào family gốc → recomputeEntitlement(familyId)
 7. Client chỉ “finish/complete” transaction ở SDK sau khi server trả 200 (tránh mất giao dịch)
 8. Trả {entitlement} → client cập nhật UI; realtime entitlement.changed cho Parent kia
 ```
@@ -3200,31 +3213,30 @@ Output schema: `{ safety: boolean, variants: [{ style: "NEUTRAL"|"WARM"|"SHORT",
 ### 18.4 Tính entitlement
 
 ```ts
-recomputeEntitlement(familyId):            // chạy dưới lock:entitlement:{familyId}
-  subs = subscriptions where family_id = familyId
-           and status in (TRIAL, ACTIVE, GRACE, CANCELED_ACTIVE)
-           and (current_period_end > now() or grace_until > now())
-  plan = max(subs.plan) theo FAMILY > HOUSE  (không có → null)
-  state = family.status ≠ ACTIVE        ? INCOMPLETE
-        : plan != null                   ? plan            // HOUSE | FAMILY
-        : now() < trial_ends_at          ? TRIAL
-        :                                  EXPIRED
-  if subs có ≥ 2 subscription active khác payer → notify người mua sau: "Gia đình đã có gói…"
-  upsert family_entitlements(access_state=state, plan, valid_until, in_grace)
-  if state thay đổi:
-     circleAllowed = (state == FAMILY)
-     !circleAllowed: circle_members ACTIVE → SUSPENDED_PLAN
-      circleAllowed: SUSPENDED_PLAN → ACTIVE
-     access_version++ → outbox EntitlementChanged (client: SUB-07 khi EXPIRED)
+recomputeEntitlement(familyId):            // transaction/lock PostgreSQL theo family/license
+  license = family_licenses where family_id = familyId
+  grants = verified license_grants of license, not revoked, valid_from <= now < valid_until
+           (Store paid renewal vẫn giữ family này dù purchaser đã xóa)
+  selected = highest immutable plan_versions.entitlement_rank among valid grants
+  phase = license blocked ? BLOCKED
+        : family not ready ? INCOMPLETE
+        : selected is trial ? TRIAL
+        : selected exists   ? PAID
+        :                     EXPIRED
+  planCode/quotas/features = selected.plan_version (không enum tên gói)
+  capabilities = features intersect current membership/privacy and rollout policy
+  upsert family_entitlements + access_version + outbox in one transaction
+  Circle access depends on capabilities["circle.enabled"], not planCode == FAMILY
+
 ```
-- **Người trả tiền rời gia đình / xoá tài khoản:** `subscriptions.family_id` giữ đến `current_period_end`, đánh dấu `detach_at_period_end` → khi gia hạn (renew event) mà payer không còn thuộc family → gán `family_id` theo family hiện tại của payer (hoặc null).
+- **Người trả tiền xóa tài khoản:** license/subscription luôn thuộc family gốc, không chuyển kể cả CSKH. Purchaser có thể anonymize/null theo retention; renewal Store đã xác minh và thanh toán vẫn cấp grant cho family gốc. Xóa account không tự hủy auto-renew tại Store; không dùng family hiện tại của payer để bind quyền.
 - **Downgrade quota:** không xoá; `QuotaGuard` chặn hành động tạo mới vượt quota.
-- **Điều kiện mua (BR-055):** `GET /families/{fid}/billing/eligibility` trả `canPurchase=false, reason=FAMILY_NOT_ACTIVE` khi chưa đủ Bố + Mẹ; server cũng **từ chối gắn** subscription vào family chưa ACTIVE (lưu tạm với `family_id=null`, tự gắn khi family kích hoạt).
-- **Hết trial:** job `trial-expiry` (mỗi 15 phút) chọn family `access_state=TRIAL AND trial_ends_at <= now()` → recompute → EXPIRED.
+- **Điều kiện mua (BR-055):** `GET /families/{fid}/billing/eligibility` trả `canPurchase=false, reason=FAMILY_NOT_ACTIVE` khi chưa đủ hai Parent; server từ chối tạo purchase intent mới. Giao dịch đã xác minh giữ family binding gốc kể cả lifecycle/membership đổi trước khi webhook tới; không lưu subscription owner-null rồi tự gán theo payer hiện tại. Unknown binding cần reconciliation có audit, không đoán tenant.
+- **Hết trial:** job `trial-expiry` (mỗi15 phút) chọn family `access_phase=TRIAL AND trial_ends_at <= now()` → recompute từ các grant còn hiệu lực; chỉ chuyển EXPIRED nếu không còn grant khác. API kiểm expiry trực tiếp, không cho dùng thêm đến lần cron kế tiếp.
 
 ### 18.5 Restore
 
-`POST /billing/restore`: client gửi toàn bộ giao dịch hiện có (iOS: `Transaction.currentEntitlements` JWS; Android: `queryPurchasesAsync` tokens) → server xác minh từng cái → nếu subscription đang gắn **family khác** mà payer không còn là Parent ở đó → chuyển sang family hiện tại; nếu payer vẫn là Parent family khác (không thể ở MVP) → từ chối.
+`POST /billing/restore`: client gửi giao dịch hiện có (iOS JWS; Android tokens) → server xác minh/dedup → resolve binding family gốc. Caller có quyền family gốc thì khôi phục entitlement ở đó; family khác trả ownership conflict, không chuyển license, không tạo grant/trial trùng. Giao dịch mới bind qua purchase intent được server tạo trước purchase, không theo family đang chọn khi webhook tới.
 
 ### 18.6 Môi trường test
 
@@ -3547,7 +3559,7 @@ GoRouter(
 | Vai trò Parent, chưa có gia đình | | `/onboarding/family-name` (ONB-06) |
 | `familyStatus = WAITING_PARTNER` | mọi route ngoài `/onboarding/waiting`, `/settings/account` | `/onboarding/waiting` (ONB-WAIT) |
 | Vừa kích hoạt, chưa thiết lập bé/thai kỳ | | `/onboarding/activated` → `/onboarding/stage` |
-| `accessState = EXPIRED` (Parent) | mọi route ngoài `/billing/*`, `/settings/data|account|help` | `/billing/expired` (SUB-07) |
+| `accessPhase = EXPIRED` (Parent) | mọi route ngoài `/billing/*`, `/settings/data|account|help` | `/billing/expired` (SUB-07) |
 | Role = CIRCLE | route Parent (`/care`, `/us`, `/family/*`, `/billing`) | `/c/home` |
 | Circle bị tạm dừng (`FAMILY_SHARING_PAUSED`) | | `/c/paused` |
 | `/us/*` mà chưa linked | | `/us/locked` |
@@ -3875,6 +3887,12 @@ Mỗi env tách hoàn toàn: DB, bucket, Redis, Mongo, khoá JWT, KEK, Firebase 
 
 ### 25.2 Docker Compose (local/staging)
 
+**Triển khai local hiện tại (2026-10-13):** PostgreSQL 18.6 chạy độc lập tại
+`baby-database/compose.yaml`, bind mount data ra host; Compose backend chỉ chạy
+API/migrations và nối shared network. Xem [hướng dẫn database](../baby-database/README.md)
+và [backend](../baby-backend/README.md). Ví dụ full stack bên dưới là bản tham khảo
+đặc tả, không dùng để gộp DB server trở lại backend hoặc hạ phiên bản PostgreSQL.
+
 ```yaml
 # docker-compose.yml
 name: babyfamily
@@ -3943,7 +3961,7 @@ services:
 
   migrate:                         # chạy 1 lần trước api/worker
     build: { context: ., dockerfile: infra/docker/node.Dockerfile, target: runtime }
-    command: ["node", "dist/tools/migrate.js"]     # prisma migrate deploy + SQL bổ sung + seed idempotent
+    command: ["node", "dist/tools/migrate.js"]     # Ví dụ dự kiến: chỉ deploy migration DDL, không seed/backfill
     environment: { <<: *app-env, DATABASE_URL: "postgresql://bf_owner:${PG_OWNER_PASSWORD}@postgres:5432/babyfamily" }
     depends_on: { postgres: { condition: service_healthy } }
     restart: "no"
@@ -4255,7 +4273,7 @@ on tag:
 
 ### 28.2 Kịch bản E2E bắt buộc (release blocker)
 
-0. **Gate kích hoạt:** đăng nhập → bắt buộc chọn vai trò; Bố tạo gia đình → mọi API tạo bé/ký ức/nhiệm vụ/mua gói trả `403 FAMILY_NOT_ACTIVE`; Mẹ chấp nhận → `TRIAL` 90 ngày; mock clock ngày 91 → `402 SUBSCRIPTION_REQUIRED`, xuất dữ liệu vẫn chạy; Mẹ mua House → mở khoá cả hai. Người thân tự cài app → chỉ CIR-WAIT. Tạo tài khoản mới cùng SĐT → không được trial lần 2. Trong trial: mời người thân trả `402 PLAN_REQUIRED_FAMILY`, tải lên vượt 10 GB trả `402 QUOTA_STORAGE_EXCEEDED`. Không tồn tại API rời gia đình/tách bạn đời cho Parent.
+0. **Gate kích hoạt:** đăng nhập → bắt buộc chọn vai trò; Bố tạo gia đình → mọi API tạo bé/ký ức/nhiệm vụ/mua gói trả `403 FAMILY_NOT_ACTIVE`; Mẹ chấp nhận → `TRIAL` theo policy mặc định 7 ngày; mock clock sau trial_ends_at đã cấp → `402 SUBSCRIPTION_REQUIRED`, xuất dữ liệu vẫn chạy; Mẹ mua House → mở khoá cả hai. Người thân tự cài app → chỉ CIR-WAIT. Tạo tài khoản mới cùng SĐT → không được trial lần 2. Trong trial: mời người thân trả `402 PLAN_REQUIRED_FAMILY`, tải lên vượt 10 GB trả `402 QUOTA_STORAGE_EXCEEDED`. Không tồn tại API rời gia đình/tách bạn đời cho Parent.
 
 1. Mẹ tạo gia đình + thai kỳ → mời Bố qua link → Bố cài app từ link → chấp nhận → Mẹ duyệt → cả hai thấy thai kỳ; Papa & Mama mở khoá.
 2. Upload 10 ảnh (gồm HEIC) + 1 video 2 phút khi mạng chập chờn → ký ức publish đủ, ảnh không có GPS (kiểm EXIF bản tải về).

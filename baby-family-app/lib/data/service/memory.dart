@@ -181,10 +181,25 @@ abstract class IMemoryService extends IBaseService {
 
   Future<void> deleteForever(String memoryId);
 
+  /// MEM-07 “Xoá ký ức” → thùng rác (giữ [trashDays] ngày, MEM-17).
+  Future<void> moveToTrash(String memoryId);
+
+  /// Số ngày thùng rác giữ ký ức trước khi xoá hẳn.
+  int get trashDays;
+
   /// MEM-18: nháp của tôi (trên máy trước, đã lưu trên tài khoản sau).
   Future<List<MemoryDraftItem>> drafts();
 
   Future<void> deleteDraft(String draftId);
+
+  /// MEM-05 đóng giữa chừng → lưu nháp trên máy (MEM-18 “Trên máy này”).
+  Future<MemoryDraftItem> saveDraft({
+    required MemoryKind kind,
+    String title = '',
+    List<String> childIds = const [],
+    List<String> mediaAssets = const [],
+    int? voiceDurationSec,
+  });
 
   /// MEM-19: ảnh người thân đăng chờ duyệt, mới nhất trước.
   Future<List<Memory>> pendingPosts();

@@ -6484,4 +6484,2031 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsBlockedTitle => 'Blocked people';
+
+  @override
+  String get subPlanActive => 'Active';
+
+  @override
+  String get subPlanAutoRenew => 'Auto-renews';
+
+  @override
+  String get subPlanPayer => 'Paid by';
+
+  @override
+  String get subPlanChannel => 'Purchased via';
+
+  @override
+  String get subPlanAppliesTo => 'Applies to';
+
+  @override
+  String subPlanWholeFamily(String family) {
+    return 'All of $family';
+  }
+
+  @override
+  String subPlanGb(String value) {
+    return '$value GB';
+  }
+
+  @override
+  String subPlanUsedOf(String total) {
+    return 'used / $total GB';
+  }
+
+  @override
+  String subPlanStorageKind(String kind, String size) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'photo': 'Photos',
+      'video': 'Videos',
+      'audio': 'Audio',
+      'other': 'Other',
+    });
+    return '$_temp0 · $size GB';
+  }
+
+  @override
+  String get subPlanIncluded => 'In our family plan';
+
+  @override
+  String get subPlanRelatives => 'Relatives';
+
+  @override
+  String subPlanSlots(int used, int max) {
+    return '$used/$max';
+  }
+
+  @override
+  String get subPlanAi => 'AI uses this month';
+
+  @override
+  String subPlanAiRenews(String date) {
+    return 'Resets on $date';
+  }
+
+  @override
+  String subPlanAiLeft(int remaining, int total) {
+    return '$remaining/$total left';
+  }
+
+  @override
+  String get subPlanVideo => 'Max video length';
+
+  @override
+  String subPlanVideoHint(int count) {
+    return 'Original quality · $count photos per memory';
+  }
+
+  @override
+  String subPlanVideoHintCompressed(int count) {
+    return '$count photos per memory';
+  }
+
+  @override
+  String subPlanMinutes(int count) {
+    return '$count min';
+  }
+
+  @override
+  String subPlanManageStore(String channel) {
+    return 'Manage in $channel';
+  }
+
+  @override
+  String get subPlanChange => 'Change plan';
+
+  @override
+  String subPlanNote(String channel, String payer, String partner) {
+    return 'The plan lives in $payer’s $channel account, so only $payer can change or cancel it. $partner will see a note to ask $payer. Cancel anytime in $channel settings — our memories are never deleted.';
+  }
+
+  @override
+  String subManageStoreMock(String channel) {
+    return 'Sample data: the $channel subscription page is only simulated.';
+  }
+
+  @override
+  String get subUpgradeTitle => 'Upgrade to Family to invite the grandparents';
+
+  @override
+  String subUpgradeSubtitle(String payer, String channel) {
+    return 'We’re on the House plan · $payer pays via $channel. Family adds grandparents, relatives and more storage.';
+  }
+
+  @override
+  String get subCmpRelatives => 'Grandparents, relatives';
+
+  @override
+  String get subCmpPhotos => 'Photos per memory';
+
+  @override
+  String get subCmpVideo => 'Video';
+
+  @override
+  String get subCmpVoice => 'Voice recordings';
+
+  @override
+  String get subCmpOriginal => 'Original-quality photos';
+
+  @override
+  String get subCmpAi => 'AI uses per month';
+
+  @override
+  String get subCmpDigest => 'Digest, review relatives’ photos';
+
+  @override
+  String get subCmpNone => '—';
+
+  @override
+  String get subCmpYes => 'Yes';
+
+  @override
+  String subCmpUpTo(int count) {
+    return 'Up to $count';
+  }
+
+  @override
+  String subCmpMaxMinutes(int count) {
+    return '≤ $count min';
+  }
+
+  @override
+  String get subUpgradeCurrent => 'Current';
+
+  @override
+  String subUpgradeProrate(String channel) {
+    return 'The upgrade starts right away. $channel prorates the rest of your House plan — you don’t pay a full year again.';
+  }
+
+  @override
+  String subUpgradeCta(String price) {
+    return 'Upgrade to Family · $price';
+  }
+
+  @override
+  String get subUpgradeLegal =>
+      'Renews every year, cancel anytime in App Store settings. Terms · Privacy · Restore purchases';
+
+  @override
+  String subUpgradeNotPayerLabel(String partner) {
+    return '$partner will see (not the payer)';
+  }
+
+  @override
+  String subUpgradeNotPayerBody(String payer) {
+    return '$payer pays for the House plan. To avoid paying twice, ask $payer to upgrade.';
+  }
+
+  @override
+  String subUpgradeAskPayer(String payer) {
+    return 'Send $payer a note';
+  }
+
+  @override
+  String subUpgradeAskSent(String payer) {
+    return 'Note sent to $payer';
+  }
+
+  @override
+  String subConfirmTitle(String plan) {
+    return 'Confirm the $plan plan';
+  }
+
+  @override
+  String subConfirmAudienceFamily(String family, String papa, String mama) {
+    return 'For all of $family · $papa, $mama and relatives';
+  }
+
+  @override
+  String subConfirmAudienceHouse(String family, String papa, String mama) {
+    return 'For all of $family · $papa & $mama';
+  }
+
+  @override
+  String get subConfirmPrice => 'Price';
+
+  @override
+  String get subConfirmMonthly => 'Per month';
+
+  @override
+  String get subConfirmCycle => 'Billing cycle';
+
+  @override
+  String get subConfirmCycleValue => '1 year · auto-renews';
+
+  @override
+  String get subConfirmEffective => 'Starts';
+
+  @override
+  String get subConfirmEffectiveValue => 'As soon as the App Store confirms';
+
+  @override
+  String get subConfirmPayVia => 'Paid via';
+
+  @override
+  String get subConfirmPayViaValue => 'Your App Store account';
+
+  @override
+  String subConfirmRelatives(int count) {
+    return 'Invite up to $count grandparents and relatives right away';
+  }
+
+  @override
+  String subConfirmLimits(int storage, int video, String original) {
+    String _temp0 = intl.Intl.selectLogic(original, {
+      'yes': ' · original-quality photos',
+      'other': '',
+    });
+    return '$storage GB · videos ≤ $video min$_temp0';
+  }
+
+  @override
+  String get subConfirmTrialNote =>
+      'Remaining trial time isn’t added — the yearly cycle starts today';
+
+  @override
+  String get subConfirmCta => 'Continue with the App Store';
+
+  @override
+  String get subConfirmLegal =>
+      'Next is the App Store payment sheet. Renews every year, cancel anytime in App Store settings.';
+
+  @override
+  String get subLinkTerms => 'Terms';
+
+  @override
+  String subLimitVideoTitle(int minutes) {
+    return 'This video is $minutes minutes long';
+  }
+
+  @override
+  String subLimitVideoBody(String plan, int max) {
+    return '$plan keeps videos up to $max minutes each. You can trim it, or keep this moment as a written story.';
+  }
+
+  @override
+  String get subLimitSafe =>
+      'Your memories are safe — nothing was deleted and your draft is kept.';
+
+  @override
+  String subLimitTrim(int max) {
+    return 'Trim to $max minutes';
+  }
+
+  @override
+  String get subLimitPickAnother => 'Pick another video';
+
+  @override
+  String get subLimitSaveDiary => 'Save as a written diary';
+
+  @override
+  String get subLimitTopPlan =>
+      'We’re already on the top plan (Family), so there’s nothing to upgrade.';
+
+  @override
+  String get subLimitUpgrade => 'Upgrade to Family';
+
+  @override
+  String subLimitTrimmed(int max) {
+    return 'Video trimmed to $max minutes';
+  }
+
+  @override
+  String get subIssueTitle => 'Renewal payment didn’t go through';
+
+  @override
+  String subIssueBody(String plan) {
+    return 'Check your payment method to avoid interruptions. Our $plan keeps working in the meantime.';
+  }
+
+  @override
+  String get subIssueAction => 'Check in the App Store';
+
+  @override
+  String get invInvalidTipMessage =>
+      'Message the person who invited you (the child’s parent) so they can create a new invite.';
+
+  @override
+  String get invInvalidTipCode =>
+      'If you already have a new 8-character code, you can enter it now.';
+
+  @override
+  String get invEnterOtherCode => 'Enter another code';
+
+  @override
+  String invElsewhereTitle(String callName) {
+    return 'You’re already $callName in another family';
+  }
+
+  @override
+  String get invElsewhereBody =>
+      'Each account can be a parent in only one family, so you can’t accept this invite yet.';
+
+  @override
+  String invElsewhereInvite(String inviter, String family) {
+    return '$inviter invited you to join $family';
+  }
+
+  @override
+  String invElsewhereRole(String callName) {
+    return 'Suggested role: the kids’ $callName';
+  }
+
+  @override
+  String get invElsewhereJoinRelative => 'Join as a relative';
+
+  @override
+  String invElsewhereJoinRelativeHint(String inviter) {
+    return 'Not available — this invite is for a parent. Ask $inviter for a relative invite if you’d like to see the kids.';
+  }
+
+  @override
+  String get invElsewhereLeave => 'Learn how to leave your current family';
+
+  @override
+  String get invElsewhereLeaveHint => 'Options for parents and how to get help';
+
+  @override
+  String get invWaitingTitle => 'Request sent';
+
+  @override
+  String invWaitingBody(String inviter) {
+    return '$inviter will confirm to finish. You can close the app — we’ll let you know right away.';
+  }
+
+  @override
+  String invWaitingStepJoined(String family) {
+    return 'You accepted the invite to $family';
+  }
+
+  @override
+  String invWaitingStepRole(String callName) {
+    return 'Role: the kids’ $callName';
+  }
+
+  @override
+  String invWaitingStepConfirm(String inviter) {
+    return 'Waiting for $inviter to confirm';
+  }
+
+  @override
+  String invWaitingStepConfirmHint(String inviter) {
+    return '$inviter turned on “final confirmation” to make sure it’s you';
+  }
+
+  @override
+  String get invWaitingStepTrial => 'Our family starts a free 3-month trial';
+
+  @override
+  String get invWaitingNotice => 'You’ll get a “Welcome home!” notification';
+
+  @override
+  String famPartnerLeftBanner(String partner, String family) {
+    return '$partner left $family (account deleted). We’re in view & download mode until a new partner joins.';
+  }
+
+  @override
+  String get famPartnerInviteSubtitle =>
+      'Once your partner joins, the whole family can create memories, missions and the Papa & Mama space again.';
+
+  @override
+  String get famPartnerInviteRole => 'Invite as';
+
+  @override
+  String get famPartnerRecipientSees => 'What they’ll see before joining';
+
+  @override
+  String famPartnerRecipientHint(String name, String callName) {
+    return 'Invite from $name ($callName) · only the kids’ names and profile photos';
+  }
+
+  @override
+  String get famPartnerRevoke => 'Revoke invite';
+
+  @override
+  String get famPartnerRevoked => 'Invite revoked';
+
+  @override
+  String famInvitesCapacity(String family, int active, int pending) {
+    return '$family relatives: $active joined · $pending pending';
+  }
+
+  @override
+  String get famInvitesPending => 'Pending';
+
+  @override
+  String get famInvitesExpired => 'Expired';
+
+  @override
+  String get famInviteNotOpened => 'Link not opened';
+
+  @override
+  String get famInviteOpened => 'Link opened';
+
+  @override
+  String get famInviteExpiredTag => 'Expired';
+
+  @override
+  String get famInviteKindRelative => 'Relative invite';
+
+  @override
+  String get famInvitePermView => 'View';
+
+  @override
+  String get famInvitePermComment => 'View + Comment';
+
+  @override
+  String get famInvitePermPost => 'View + Comment + Post';
+
+  @override
+  String famInviteDates(String created, String expires, String daysLeft) {
+    return 'Created $created · expires $expires · $daysLeft';
+  }
+
+  @override
+  String famInviteDaysLeft(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days left',
+      one: '1 day left',
+      zero: 'expires today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String famInviteExpiredOn(String date) {
+    return 'Expired $date · the link no longer opens';
+  }
+
+  @override
+  String get famInviteResend => 'Resend link';
+
+  @override
+  String get famInviteRevoke => 'Revoke';
+
+  @override
+  String get famInviteRenew => 'Create a new invite';
+
+  @override
+  String famInviteResent(String callName) {
+    return 'Link resent to $callName';
+  }
+
+  @override
+  String famInviteRevokedName(String callName) {
+    return 'Invite for $callName revoked';
+  }
+
+  @override
+  String famInviteRenewed(String callName) {
+    return 'New invite created for $callName';
+  }
+
+  @override
+  String get famInvitesRules =>
+      'Relative invites expire after 14 days and work once. Revoke to stop an old link from opening. Up to 12 relatives, pending invites included.';
+
+  @override
+  String get famInviteMore => 'Invite more relatives';
+
+  @override
+  String get famInvitesEmpty => 'No pending invites';
+
+  @override
+  String get famSwitchTitle => 'Switch family';
+
+  @override
+  String famSwitchSubtitle(String callName, String family) {
+    return 'You’re $callName in $family and a relative in another family.';
+  }
+
+  @override
+  String famSwitchRoleParent(String callName) {
+    return '$callName (parent)';
+  }
+
+  @override
+  String famSwitchRoleRelative(String callName) {
+    return '$callName (relative)';
+  }
+
+  @override
+  String get famSwitchViewing => 'viewing';
+
+  @override
+  String famSwitchFollows(String names) {
+    return 'Follows $names';
+  }
+
+  @override
+  String famSwitchNote(String family) {
+    return 'Switching changes the whole app to the chosen family. In $family you only see the shared kids’ photos — no Care or Papa & Mama. Each account can be a parent in only one family.';
+  }
+
+  @override
+  String famSwitchMock(String family) {
+    return 'The sample only has data for $family.';
+  }
+
+  @override
+  String get setAiMaster => 'Use AI assist';
+
+  @override
+  String get setAiMasterHint =>
+      'AI only runs when you tap. Every result is a draft you can edit, discard or save.';
+
+  @override
+  String get setAiQuotaLabel => 'AI uses left this month';
+
+  @override
+  String setAiQuotaTotal(int total) {
+    return '/ $total uses';
+  }
+
+  @override
+  String setAiRenews(String date) {
+    return 'Resets $date';
+  }
+
+  @override
+  String setAiPlanQuota(String plan, int total) {
+    return '$plan · $total uses a month for the whole family';
+  }
+
+  @override
+  String get setAiFeatures => 'Each feature';
+
+  @override
+  String get setAiDataSection => 'Data sent';
+
+  @override
+  String get setAiData1 =>
+      'Only what each feature lists is sent, only for the tap you make.';
+
+  @override
+  String get setAiData2 =>
+      'AI never reads private journals, never diagnoses and never messages anyone on its own.';
+
+  @override
+  String get setAiData3 =>
+      'The first time you use each feature, the app asks for your consent.';
+
+  @override
+  String get setAiData4 => 'Every draft is labelled “✨ Suggested by AI”.';
+
+  @override
+  String get setAiDataLink => 'See what’s sent to the AI provider';
+
+  @override
+  String get setAiReport => 'Report AI content';
+
+  @override
+  String get setAiFoot => 'With AI off, every Baby Family feature still works.';
+
+  @override
+  String get setBlockedBody =>
+      'Blocked people can’t comment on or react to your posts, and you won’t get notifications about them.';
+
+  @override
+  String setBlockedSection(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people',
+      one: '1 person',
+    );
+    return 'Blocked · $_temp0';
+  }
+
+  @override
+  String setBlockedSince(String date) {
+    return 'Blocked since $date';
+  }
+
+  @override
+  String get setUnblock => 'Unblock';
+
+  @override
+  String setUnblocked(String name) {
+    return '$name unblocked';
+  }
+
+  @override
+  String get setUnblockInfo =>
+      'After unblocking, this person can comment on and react to your posts again. You can block them again anytime from their page.';
+
+  @override
+  String get setBlockedPartnerNote =>
+      'Papa and Mama can’t block each other in the app. If you need some quiet, you can turn off mood sharing in Papa & Mama.';
+
+  @override
+  String get setBlockedEmpty => 'You haven’t blocked anyone';
+
+  @override
+  String get commonDeleteForever => 'Delete forever';
+
+  @override
+  String memTrashInfo(int days) {
+    return 'Deleted memories are kept for $days days before they are gone for good. You see every memory deleted in the family.';
+  }
+
+  @override
+  String memTrashInfoOwn(int days) {
+    return 'Deleted memories are kept for $days days before they are gone for good. You see the memories you deleted.';
+  }
+
+  @override
+  String memTrashCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count memories',
+      one: '1 memory',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String memTrashDeletedBy(String callName, String date) {
+    return '$callName deleted $date ·';
+  }
+
+  @override
+  String get memTrashFootnote =>
+      'Restore puts the memory back in its place on the timeline, with its comments and hearts.';
+
+  @override
+  String get memTrashEmpty => 'Trash is empty';
+
+  @override
+  String memTrashEmptyHint(int days) {
+    return 'Memories you delete stay here for $days days in case you change your mind.';
+  }
+
+  @override
+  String memTrashRestored(String title) {
+    return 'Restored “$title”';
+  }
+
+  @override
+  String get memTrashDeleted => 'Deleted forever';
+
+  @override
+  String get memTrashConfirmTitle => 'Delete this memory forever?';
+
+  @override
+  String get memTrashConfirmBody =>
+      'Its photos, comments and hearts will be gone for good. This can’t be undone.';
+
+  @override
+  String get memTrashKeep => 'Keep in trash';
+
+  @override
+  String memCommentCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count comments',
+      one: '1 comment',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String memHeartCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hearts',
+      one: '1 heart',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get memMoveToTrash => 'Delete memory';
+
+  @override
+  String memMovedToTrash(int days) {
+    return 'Moved to trash · kept for $days days';
+  }
+
+  @override
+  String get memMoveToTrashTitle => 'Delete this memory?';
+
+  @override
+  String memMoveToTrashBody(int days) {
+    return 'The memory stays in Trash for $days days and can be restored during that time.';
+  }
+
+  @override
+  String get memDraftsSubtitle =>
+      'Unfinished memories are saved automatically when you leave mid-way. Only you can see drafts.';
+
+  @override
+  String get memDraftsDevice => 'On this device';
+
+  @override
+  String get memDraftsCloud => 'Saved to your account';
+
+  @override
+  String get memDraftsLocalNote =>
+      'Drafts on this device aren’t saved to your account — deleting the app removes them.';
+
+  @override
+  String get memDraftContinue => 'Keep writing';
+
+  @override
+  String memDraftEditedToday(String time) {
+    return 'Edited at $time today';
+  }
+
+  @override
+  String memDraftEditedYesterday(String time) {
+    return 'Edited at $time yesterday';
+  }
+
+  @override
+  String memDraftEditedOn(String date, String time) {
+    return 'Edited $date, $time';
+  }
+
+  @override
+  String memDraftSavedOn(String date, String time) {
+    return 'Saved $date, $time';
+  }
+
+  @override
+  String memDraftSavedOnDevice(String date, String time, String device) {
+    return 'Saved $date, $time on $device';
+  }
+
+  @override
+  String get memKindMoment => 'Moment';
+
+  @override
+  String memKindVoiceDuration(String duration) {
+    return 'Voice $duration';
+  }
+
+  @override
+  String get memDraftsEmpty => 'No drafts yet';
+
+  @override
+  String get memDraftsEmptyHint =>
+      'If you leave while writing, the memory is kept here.';
+
+  @override
+  String get memDraftDeleted => 'Draft deleted';
+
+  @override
+  String get memDraftSaved => 'Saved to Drafts';
+
+  @override
+  String get memDraftView => 'View drafts';
+
+  @override
+  String get memShortcutTrash => 'Trash';
+
+  @override
+  String get memShortcutDrafts => 'Drafts';
+
+  @override
+  String get memShortcutPending => 'Photos to review';
+
+  @override
+  String memPendingSubtitle(String partner) {
+    return 'Photos posted by relatives show to the family only after you or $partner approve them. Until then, only the poster and the parents can see them.';
+  }
+
+  @override
+  String get memPendingKids => 'Child in photo';
+
+  @override
+  String get memPendingAudience => 'Who can see';
+
+  @override
+  String get memPendingReject => 'Decline';
+
+  @override
+  String get memPendingApprove => 'Approve & show';
+
+  @override
+  String get memPendingRejectReason => 'Reason (optional)';
+
+  @override
+  String memPendingRejectHint(String name) {
+    return '$name will get this gentle note. The photo won’t be shown to anyone else.';
+  }
+
+  @override
+  String get memPendingRejectSend => 'Decline photo';
+
+  @override
+  String memPendingWaited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Waiting $count days',
+      one: 'Waiting 1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get memPendingEmpty => 'Nothing to review';
+
+  @override
+  String get memPendingEmptyHint =>
+      'Photos relatives post for the kids appear here for you to review.';
+
+  @override
+  String get memPendingApproved =>
+      'Approved — the photos are now visible to the family';
+
+  @override
+  String get memPendingRejected => 'Photo declined';
+
+  @override
+  String memPendingAddChild(String name) {
+    return 'Add $name';
+  }
+
+  @override
+  String get rptTitleMemory => 'Report this memory';
+
+  @override
+  String get rptTitleComment => 'Report this comment';
+
+  @override
+  String rptTitlePerson(String name) {
+    return 'Report $name';
+  }
+
+  @override
+  String get rptSubtitle =>
+      'Tell us what’s wrong. The Baby Family safety team will review it.';
+
+  @override
+  String get rptNoteHint => 'Add details (optional)…';
+
+  @override
+  String get rptHideMemory => 'Hide this memory from me now';
+
+  @override
+  String get rptHideComment => 'Hide this comment from me now';
+
+  @override
+  String get rptHidePerson => 'Hide this person from me now';
+
+  @override
+  String get rptRemoveContent => 'Remove from family';
+
+  @override
+  String get rptRemoveContentHint =>
+      'For parents · the memory will no longer be shown to anyone';
+
+  @override
+  String get rptRemovePerson => 'Remove relative';
+
+  @override
+  String rptRemovePersonHint(String name) {
+    return 'For parents · $name will no longer see the kids’ photos';
+  }
+
+  @override
+  String get rptSend => 'Send report';
+
+  @override
+  String get rptSentTitle => 'Report sent';
+
+  @override
+  String get rptSentBodyHidden =>
+      'Thank you for speaking up. The memory is hidden for now and will be reviewed within 24 hours. We’ll let you know when it’s done.';
+
+  @override
+  String get rptSentBody =>
+      'Thank you for speaking up. The report will be reviewed soon. We’ll let you know when it’s done.';
+
+  @override
+  String get rptCodeLabel => 'Report ID';
+
+  @override
+  String get rptStatusReviewing => 'Under review';
+
+  @override
+  String get rptStatusResolved => 'Resolved';
+
+  @override
+  String get rptTrack => 'Track it in Settings › My reports';
+
+  @override
+  String get rptDone => 'Done';
+
+  @override
+  String rptBlockTitle(String name) {
+    return 'Block $name?';
+  }
+
+  @override
+  String rptBlockEffectComment(String name) {
+    return '$name can no longer comment on or heart your memories.';
+  }
+
+  @override
+  String rptBlockEffectNotify(String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': 'She',
+      'grandpa': 'He',
+      'other': 'They',
+    });
+    return '$_temp0 won’t get notifications about you.';
+  }
+
+  @override
+  String rptBlockEffectStay(String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': 'She',
+      'grandpa': 'He',
+      'other': 'They',
+    });
+    return '$_temp0 stay in the family and still see the shared photos of the kids.';
+  }
+
+  @override
+  String rptBlockRemove(String name) {
+    return 'Also remove $name from the family';
+  }
+
+  @override
+  String rptBlockRemoveHint(String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': 'her',
+      'grandpa': 'him',
+      'other': 'them',
+    });
+    return 'Choose this if you don’t want $_temp0 to see the kids’ photos anymore.';
+  }
+
+  @override
+  String get rptBlockConfirm => 'Block';
+
+  @override
+  String rptBlockDone(String name) {
+    return 'Blocked $name';
+  }
+
+  @override
+  String rptBlockMenu(String name) {
+    return 'Block $name';
+  }
+
+  @override
+  String chdArchiveAddedBy(String birth, String callName, String date) {
+    return 'Born $birth · added by $callName on $date';
+  }
+
+  @override
+  String chdArchiveBorn(String birth) {
+    return 'Born $birth';
+  }
+
+  @override
+  String chdArchiveDuplicate(String name) {
+    return 'May duplicate $name';
+  }
+
+  @override
+  String chdArchiveSection(String name) {
+    return 'When you archive $name';
+  }
+
+  @override
+  String chdArchiveEffectHide(String name) {
+    return '$name is hidden from the child switcher, Home and Memories.';
+  }
+
+  @override
+  String chdArchiveEffectPrivate(int count, String name) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count memories',
+      one: '1 memory',
+    );
+    return '$_temp0 tagged only with $name will be hidden too.';
+  }
+
+  @override
+  String chdArchiveEffectShared(int count, String others) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count memories',
+      one: '1 memory',
+    );
+    return '$_temp0 shared with $others still show on $others’s page.';
+  }
+
+  @override
+  String get chdArchiveEffectRestore =>
+      'Restore any time in Children › Archived.';
+
+  @override
+  String chdArchiveAction(String name) {
+    return 'Archive $name';
+  }
+
+  @override
+  String get chdArchiveDeleteSection => 'Delete forever';
+
+  @override
+  String chdArchiveLockedTitle(int days) {
+    return 'Needs to be archived for at least $days days';
+  }
+
+  @override
+  String chdArchiveLockedBody(String date, String name) {
+    return 'To avoid mistakes, if you archive today you can delete from $date. Content that belongs only to $name goes to the trash for 30 days.';
+  }
+
+  @override
+  String chdArchiveLockedBodyArchived(String date, String name) {
+    return 'To avoid mistakes, you can delete from $date. Content that belongs only to $name goes to the trash for 30 days.';
+  }
+
+  @override
+  String chdArchived(String name) {
+    return 'Archived $name';
+  }
+
+  @override
+  String chdRestored(String name) {
+    return 'Restored $name';
+  }
+
+  @override
+  String chdDeleteTitle(String name) {
+    return 'Delete $name forever';
+  }
+
+  @override
+  String chdDeleteArchivedName(String name) {
+    return '$name · archived';
+  }
+
+  @override
+  String chdDeleteArchivedFor(int days, String date) {
+    return 'Archived $days days · since $date';
+  }
+
+  @override
+  String chdDeleteEnough(int days) {
+    return '$days days done';
+  }
+
+  @override
+  String chdDeleteEffectTrash(int count, String name) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count memories',
+      one: '1 memory',
+    );
+    return '$_temp0 that belong only to $name move to the trash for 30 days, then are deleted for good.';
+  }
+
+  @override
+  String chdDeleteEffectShared(String others) {
+    return 'Memories shared with $others stay on $others’s page.';
+  }
+
+  @override
+  String get chdDeleteStep1 => 'Confirm 1/2';
+
+  @override
+  String chdDeleteConfirm1(String name) {
+    return 'I understand $name will be deleted and this profile can’t be restored.';
+  }
+
+  @override
+  String get chdDeleteStep2 => 'Confirm 2/2 · Type the child’s name';
+
+  @override
+  String chdDeleteHint(String name) {
+    return 'Type “$name” exactly to unlock delete.';
+  }
+
+  @override
+  String chdDeleteAction(String name) {
+    return 'Delete $name forever';
+  }
+
+  @override
+  String chdDeleteRestoreInstead(String name) {
+    return 'Restore $name instead';
+  }
+
+  @override
+  String chdDeleted(String name) {
+    return 'Deleted $name';
+  }
+
+  @override
+  String cirChildTomorrow(int months) {
+    return '🎉 Turns $months months tomorrow';
+  }
+
+  @override
+  String get cirChildFirsts => 'Grandchild’s firsts';
+
+  @override
+  String get cirChildMemories => 'Grandchild’s memories';
+
+  @override
+  String cirChildMonth(int month) {
+    return 'Month $month';
+  }
+
+  @override
+  String cirChildMonthRange(String start, String end) {
+    return '· $start – $end';
+  }
+
+  @override
+  String get cirChildEmpty => 'No memories yet';
+
+  @override
+  String cirDetailDownloadOff(String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': 'you',
+      'grandpa': 'you',
+      'other': 'you',
+    });
+    return 'Download: the parents haven’t turned it on for $_temp0';
+  }
+
+  @override
+  String cirDetailAuthorAge(String name, String age) {
+    return '$name $age';
+  }
+
+  @override
+  String get cirDetailLiked => 'Hearted';
+
+  @override
+  String cirDetailYou(String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': 'You',
+      'grandpa': 'You',
+      'other': 'You',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String cirDetailReactedBy(String names) {
+    return '$names hearted this';
+  }
+
+  @override
+  String cirDetailWishes(int count) {
+    return 'Wishes ($count)';
+  }
+
+  @override
+  String get cirDetailWishHint => 'Write a wish…';
+
+  @override
+  String get cirDetailVoice => 'Record a voice wish';
+
+  @override
+  String get cirDetailSend => 'Send wish';
+
+  @override
+  String get cirDetailReported => 'Report sent';
+
+  @override
+  String get cirDetailMissing => 'This memory is no longer shared';
+
+  @override
+  String cirPostSelected(int count) {
+    return 'Selected photos ($count)';
+  }
+
+  @override
+  String get cirPostWhichKid => 'Which grandchild?';
+
+  @override
+  String get cirPostDate => 'Date taken';
+
+  @override
+  String get cirPostMessage => 'Message for the grandchild';
+
+  @override
+  String get cirPostMessageHint => 'Write a few words…';
+
+  @override
+  String get cirPostApprovalTitle => 'Parents approve before it shows';
+
+  @override
+  String get cirPostApprovalBody =>
+      'The photos are shown to the family once a parent agrees.';
+
+  @override
+  String get cirPostSend => 'Send photos';
+
+  @override
+  String get cirPostRemovePhoto => 'Remove photo';
+
+  @override
+  String get cirPostSentTitle => 'Sent!';
+
+  @override
+  String get cirPostSentBody =>
+      'A parent will approve before the family sees it.';
+
+  @override
+  String get cirPostPending => 'Waiting for a parent to approve';
+
+  @override
+  String get cirPostJustSent => 'just sent';
+
+  @override
+  String get cirPostBackHome => 'Back to Grandkids';
+
+  @override
+  String get cirPostMore => 'Post more photos';
+
+  @override
+  String get cirPostNoKid =>
+      'The parents haven’t allowed posting for any grandchild yet';
+
+  @override
+  String cirPausedMessage(String family) {
+    return '$family has paused sharing with relatives';
+  }
+
+  @override
+  String get cirPausedSafe => 'The grandkids’ photos are kept safe';
+
+  @override
+  String cirMeRelation(String relation, String family) {
+    return '$relation · $family';
+  }
+
+  @override
+  String cirMeTextPreview(String name, String who) {
+    return '$name has new photos, come and see 🌸';
+  }
+
+  @override
+  String get cirMeInstant => 'Notify me as soon as there are new photos';
+
+  @override
+  String get cirMeDigest => 'Daily digest';
+
+  @override
+  String cirMeDigestHint(String time) {
+    return 'Sent at $time · today’s new photos together';
+  }
+
+  @override
+  String get cirMeSwitchFamily => 'Switch family';
+
+  @override
+  String cirMeViewing(String family) {
+    return 'Viewing: $family';
+  }
+
+  @override
+  String cirLeaveTitle(String family) {
+    return 'Leave $family';
+  }
+
+  @override
+  String cirLeaveBody(String who, String inviter) {
+    return 'You will no longer see or comment on the grandkids’ photos. If you want to come back, ask $inviter to send a new invite.';
+  }
+
+  @override
+  String cirLeaveFollowing(String who, String names) {
+    return 'You follow $names';
+  }
+
+  @override
+  String cirLeavePosted(String who, int photos, int comments) {
+    return 'What you posted · $photos photos, $comments comments';
+  }
+
+  @override
+  String get cirLeaveKeep => 'Keep for the family';
+
+  @override
+  String cirLeaveKeepHint(String who) {
+    return 'The family can still see your photos and words. (Default)';
+  }
+
+  @override
+  String get cirLeaveRemove => 'Remove everything';
+
+  @override
+  String cirLeaveRemoveHint(String who, String family) {
+    return 'Your photos and comments will be removed from $family.';
+  }
+
+  @override
+  String cirLeaveNotice(String inviter, String name, String who) {
+    return '$inviter will get a short note: “$name left the family.” You lose access right after confirming.';
+  }
+
+  @override
+  String get cirLeaveStay => 'Stay';
+
+  @override
+  String commonListAnd(String list, String last) {
+    return '$list and $last';
+  }
+
+  @override
+  String get commonAiSuggested => 'Suggested by AI';
+
+  @override
+  String get commonAiReport => 'Report AI content';
+
+  @override
+  String get commonAiReported =>
+      'Thank you — this AI content will be reviewed.';
+
+  @override
+  String commonWeekRange(String range) {
+    return 'Week $range';
+  }
+
+  @override
+  String get usOnlyParents => 'Only for Papa & Mama';
+
+  @override
+  String get usPartnerLeftTitle => 'This space needs both of you';
+
+  @override
+  String usPartnerLeftBody(String callName, String familyName) {
+    return '$callName\'s account was deleted, so Papa & Mama is locked for now. $familyName\'s memories are all still here — you can view and download them any time.';
+  }
+
+  @override
+  String usPartnerLeftStateTitle(String familyName) {
+    return '$familyName is in view & download only mode';
+  }
+
+  @override
+  String get usPartnerLeftStateSub =>
+      'Invite a new partner to keep creating memories and use Papa & Mama.';
+
+  @override
+  String get usPartnerLeftSection => 'WHEN YOU ARE BOTH HERE';
+
+  @override
+  String get usPartnerLeftCheckinSub => 'How am I today';
+
+  @override
+  String get usPartnerLeftRequestSub => 'Ask each other, no pressure';
+
+  @override
+  String get usPartnerLeftThanksSub => 'Keep the little things';
+
+  @override
+  String get usPartnerLeftJournalSub => 'Only you can read it';
+
+  @override
+  String get usPartnerLeftPrivacy =>
+      'Grandparents and relatives never see anything in Papa & Mama.';
+
+  @override
+  String get usPartnerLeftInvite => 'Invite your partner';
+
+  @override
+  String usCheckinAnnoyedPartner(String callName) {
+    return 'Annoyed with $callName';
+  }
+
+  @override
+  String get usBridgeAskTitle => 'Would you like to use Bridge?';
+
+  @override
+  String usBridgeAskBody(String callName) {
+    return 'Nothing has been sent to $callName. Bridge helps you both name your feelings and choose one small step — starting with a private step.';
+  }
+
+  @override
+  String get usBridgeAskOpen => 'Open Bridge';
+
+  @override
+  String usBridgeStepKicker(int step, int total) {
+    return 'BRIDGE · STEP $step/$total';
+  }
+
+  @override
+  String usBridgeFeelSub(String callName) {
+    return 'Choose one or more feelings. Nothing has been sent to $callName.';
+  }
+
+  @override
+  String get usBridgeTopicTitle => 'This is about…';
+
+  @override
+  String usBridgeTopicSub(String callName) {
+    return 'Optional — you can skip it. Nothing has been sent to $callName.';
+  }
+
+  @override
+  String get usBridgeNeedTitle => 'Right now I need…';
+
+  @override
+  String usBridgeNeedSub(String callName) {
+    return 'Choose one or more. Nothing has been sent to $callName.';
+  }
+
+  @override
+  String get usBridgeFeltLabel => 'I feel';
+
+  @override
+  String get usBridgeAboutLabel => 'About';
+
+  @override
+  String get usBridgeDraftLabel => 'Private draft (optional)';
+
+  @override
+  String usBridgeDraftCount(int count, int max) {
+    return '$count/$max';
+  }
+
+  @override
+  String get usBridgeDraftHint =>
+      'Write what is on your mind — only you can read it.';
+
+  @override
+  String get usBridgeDraftNote =>
+      'This draft is never sent word for word or automatically.';
+
+  @override
+  String get usBridgeUnsafe => 'I don\'t feel safe';
+
+  @override
+  String get usBridgeChoiceTitle => 'What would you like to do with this?';
+
+  @override
+  String usBridgeChoiceSub(String callName) {
+    return 'You decide. Nothing has been sent to $callName.';
+  }
+
+  @override
+  String get usBridgeKeepPrivateDesc => 'Stop here, like a journal page.';
+
+  @override
+  String get usBridgeRewriteOption => 'Rewrite before sending';
+
+  @override
+  String get usBridgeRewriteOptionDesc =>
+      'Pick a sentence and say it more gently.';
+
+  @override
+  String get usBridgeShareOption => 'Choose what to share';
+
+  @override
+  String usBridgeShareOptionDesc(String callName) {
+    return 'Choose the feelings and needs $callName will see.';
+  }
+
+  @override
+  String get usBridgeKeptPrivate => 'Kept private — only you can see it.';
+
+  @override
+  String usBridgePreviewTitle(String callName) {
+    return 'Preview what $callName will receive';
+  }
+
+  @override
+  String get usBridgePreviewSub =>
+      'Only what you choose is sent. Your private draft stays private.';
+
+  @override
+  String get usBridgeFeelShort => 'Feels';
+
+  @override
+  String get usBridgeNeedShort => 'Needs';
+
+  @override
+  String get usBridgeMessageLabel => 'Message (optional)';
+
+  @override
+  String usBridgeMessageHint(String callName) {
+    return 'One sentence you want $callName to read';
+  }
+
+  @override
+  String get usBridgeSendInvite => 'Send invitation';
+
+  @override
+  String usBridgeInviteSent(String callName) {
+    return 'Invitation sent to $callName';
+  }
+
+  @override
+  String get usBridgeRewriteSub =>
+      'Pick a version and edit it your way. Nothing is sent automatically.';
+
+  @override
+  String get usBridgeRewriteOriginal => 'YOUR ORIGINAL SENTENCE';
+
+  @override
+  String usBridgeRewriteTone(String tone) {
+    String _temp0 = intl.Intl.selectLogic(tone, {
+      'neutral': 'NEUTRAL',
+      'warm': 'WARM',
+      'other': 'SHORT',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get usBridgeRewriteEdit => 'Edit before using';
+
+  @override
+  String get usBridgeRewriteKeep => 'Keep original';
+
+  @override
+  String get usBridgeRewriteUse => 'Use this';
+
+  @override
+  String get usBridgeRewriteDataNote =>
+      'Only the sentence you choose is sent to AI for rewriting. AI never reads your private draft or journal.';
+
+  @override
+  String usBridgeInviteTitle(String callName) {
+    return '$callName would like a calm talk when you are ready';
+  }
+
+  @override
+  String get usBridgeInviteSub =>
+      'A space to name your feelings and choose one small next step together. Nobody wins, nobody loses.';
+
+  @override
+  String usBridgeInviteShared(String callName) {
+    return '$callName chose to share';
+  }
+
+  @override
+  String usBridgeInviteSharedSub(String callName) {
+    return 'Only these — $callName keeps the rest private';
+  }
+
+  @override
+  String get usBridgeInviteNote =>
+      'Before the shared session, you also get a private step to name your feelings and needs.';
+
+  @override
+  String get usBridgeJoinNow => 'Join now';
+
+  @override
+  String get usBridgeLaterLabel => 'Later — remind me';
+
+  @override
+  String get usBridgeLaterCustom => 'Pick a time';
+
+  @override
+  String get usBridgeNotReady => 'I\'m not ready yet';
+
+  @override
+  String get usBridgeNotReadySub =>
+      'The invitation is paused — no negative notifications.';
+
+  @override
+  String get usBridgeRemindSet => 'Reminder set — the invitation is kept.';
+
+  @override
+  String get usBridgePaused => 'Paused. You can come back any time.';
+
+  @override
+  String get usBridgeLive => 'In progress';
+
+  @override
+  String usBridgeStartedAt(String time, String date) {
+    return 'Started $time · $date';
+  }
+
+  @override
+  String get usBridgeSessionIntro =>
+      'Read slowly what you have both chosen to share. Here nobody is right or wrong.';
+
+  @override
+  String usBridgeYouName(String callName) {
+    return 'You ($callName)';
+  }
+
+  @override
+  String usBridgeFeels(String callName) {
+    return '$callName feels';
+  }
+
+  @override
+  String usBridgeNeeds(String callName) {
+    return '$callName needs';
+  }
+
+  @override
+  String get usBridgeYouPending => 'You haven\'t chosen';
+
+  @override
+  String get usBridgeYouUnderstood => 'You: I understand';
+
+  @override
+  String usBridgePartnerPending(String callName) {
+    return '$callName hasn\'t chosen';
+  }
+
+  @override
+  String usBridgePartnerUnderstood(String callName) {
+    return '$callName: I understand';
+  }
+
+  @override
+  String get usBridgeYourTurn => 'YOUR TURN';
+
+  @override
+  String usBridgePartnerReadDone(String callName) {
+    return '$callName has finished reading';
+  }
+
+  @override
+  String usBridgeReadQuestion(String callName) {
+    return 'Have you read what $callName shared?';
+  }
+
+  @override
+  String get usBridgeClarify => 'I need to say more';
+
+  @override
+  String get usBridgeUnderstand => 'I understand';
+
+  @override
+  String get usBridgeClarifyNote =>
+      '“Say more” opens one more turn — you will see exactly what is sent first.';
+
+  @override
+  String get usBridgeLeaveNote =>
+      'Either of you can pause or leave at any time.';
+
+  @override
+  String usBridgeWaiting(String callName) {
+    return 'Waiting for $callName to finish reading';
+  }
+
+  @override
+  String usBridgeClarifyTitle(String callName) {
+    return 'Say more to $callName';
+  }
+
+  @override
+  String usBridgeClarifySent(String callName) {
+    return 'Sent to $callName';
+  }
+
+  @override
+  String get usBridgeNextKicker => 'BRIDGE · YOU BOTH UNDERSTAND';
+
+  @override
+  String get usBridgeNextSub =>
+      'Choose one thing you can both do. No need to solve everything today.';
+
+  @override
+  String get usBridgeWhen => 'When?';
+
+  @override
+  String get usBridgeWhichChild => 'Which child?';
+
+  @override
+  String get usBridgeReminder => 'Remind us both';
+
+  @override
+  String usBridgeReminderSub(String time) {
+    return 'Reminder at $time — only you two can see it';
+  }
+
+  @override
+  String get usBridgeNotConfirmed => 'Not confirmed';
+
+  @override
+  String get usBridgeAgreed => 'Agreed';
+
+  @override
+  String get usBridgeConfirmStep => 'Confirm this step';
+
+  @override
+  String get usBridgeConfirmNote =>
+      'The step applies once you both confirm. You can still change your choice.';
+
+  @override
+  String get usBridgeCloseTitle => 'Would you like to close this session?';
+
+  @override
+  String get usBridgeCloseSub => 'The session closes only when you both agree.';
+
+  @override
+  String usBridgeStepChosen(String when) {
+    return 'Chosen step · $when';
+  }
+
+  @override
+  String usBridgeRelativeWhen(String day, String time) {
+    String _temp0 = intl.Intl.selectLogic(day, {
+      'tonight': 'tonight $time',
+      'lastNight': 'last night $time',
+      'today': 'today $time',
+      'yesterday': 'yesterday $time',
+      'other': '$time',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String usBridgePartnerAgreedClose(String callName) {
+    return '$callName agreed to close';
+  }
+
+  @override
+  String usBridgeThanksLabel(String callName) {
+    return 'Send $callName a thank-you? (optional)';
+  }
+
+  @override
+  String usBridgeThanksListened(String role) {
+    String _temp0 = intl.Intl.selectLogic(role, {
+      'other': 'Thank you for listening 💛',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String usBridgeThanksShort(String role) {
+    String _temp0 = intl.Intl.selectLogic(role, {'other': 'Thank you'});
+    return '$_temp0';
+  }
+
+  @override
+  String usBridgeRetention(int days, String date) {
+    return 'Session content is deleted after $days days. Only the line “There was a Bridge session on $date” remains.';
+  }
+
+  @override
+  String get usBridgeCloseConfirm => 'Close session';
+
+  @override
+  String get usBridgeCloseLater => 'Not yet';
+
+  @override
+  String get usBridgeClosed => 'Bridge session closed';
+
+  @override
+  String get usSafetyQuickExit => 'Quick exit';
+
+  @override
+  String get usSafetyHeadline => 'Your safety matters most';
+
+  @override
+  String get usSafetyBody =>
+      'You do not need to talk face to face right now. If you or your children are in danger, call one of the numbers below right away.';
+
+  @override
+  String usSafetyCall(String number) {
+    return 'Call $number';
+  }
+
+  @override
+  String get usSafetyTrustedTitle => 'Reach out to someone you trust';
+
+  @override
+  String get usSafetyTrustedSub => 'Family, friends or neighbours you trust';
+
+  @override
+  String get usSafetyPrivateNote =>
+      'What you just wrote stays private and is not sent to anyone.';
+
+  @override
+  String usSafetyNoNotify(String callName) {
+    return '$callName gets no notification about this screen.';
+  }
+
+  @override
+  String get usSafetyNoHistory =>
+      'This screen is not recorded in the session history.';
+
+  @override
+  String get usSafetyKeepPrivate => 'Keep this private';
+
+  @override
+  String get usSafetyDisclaimer =>
+      'Baby Family is not an emergency or therapy service. This feature is always free.';
+
+  @override
+  String get usCoupleWeekCheckins => 'check-ins';
+
+  @override
+  String get usCoupleWeekCheckinsSub => 'You both shared how your day was';
+
+  @override
+  String get usCoupleWeekRequests => 'requests supported';
+
+  @override
+  String get usCoupleWeekRequestsSub => 'Taken on for each other';
+
+  @override
+  String get usCoupleWeekThanks => 'thank-yous';
+
+  @override
+  String get usCoupleWeekThanksSub => 'Sent to each other this week';
+
+  @override
+  String get usCoupleWeekTogether => 'missions together';
+
+  @override
+  String get usCoupleWeekTogetherSub => 'From couple missions';
+
+  @override
+  String get usCoupleWeekThanksKicker => 'A THANK-YOU FROM THIS WEEK';
+
+  @override
+  String usCoupleWeekThanksMeta(String callName, String date) {
+    return '$callName · $date';
+  }
+
+  @override
+  String get usCoupleWeekTogetherLabel => 'Together we';
+
+  @override
+  String get usCoupleWeekNote =>
+      'No scores, no comparisons — just what you did for each other.';
+
+  @override
+  String get usCoupleWeekSendThanks => 'Send a thank-you';
+
+  @override
+  String get recapDayDiscard => 'Discard';
+
+  @override
+  String recapDayKicker(String date) {
+    return 'DAY STORY · $date';
+  }
+
+  @override
+  String recapDayChild(String name, String age) {
+    return '$name · $age';
+  }
+
+  @override
+  String get recapDayRewrite => 'Rewrite';
+
+  @override
+  String get recapDayManual => 'Write myself';
+
+  @override
+  String get recapDayRewritten => 'Paragraph rewritten';
+
+  @override
+  String get recapDayMemories => 'Today\'s memories';
+
+  @override
+  String recapDaySelected(int selected, int total) {
+    return '$selected/$total selected';
+  }
+
+  @override
+  String recapDayItemMeta(String kind, String time) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'photo': 'Photo',
+      'mission': 'Mission done',
+      'voice': 'Voice',
+      'quote': 'Quote',
+      'video': 'Video',
+      'other': 'Memory',
+    });
+    return '$_temp0 · $time';
+  }
+
+  @override
+  String get recapDayHint => 'The story only uses the memories you ticked.';
+
+  @override
+  String get recapDayPhotos => 'Photos';
+
+  @override
+  String get recapDayWhoSees => 'Who will see';
+
+  @override
+  String get recapDaySave => 'Save story';
+
+  @override
+  String get recapDaySaved => 'Day story saved';
+
+  @override
+  String get recapDayTitleEdit => 'Story title';
+
+  @override
+  String recapDayOpen(String name) {
+    return '$name\'s day story';
+  }
+
+  @override
+  String recapMonthHeadline(String name, int month) {
+    return '$name turns $month months 🎉';
+  }
+
+  @override
+  String recapMonthRange(int month, String range) {
+    return 'Month $month · $range';
+  }
+
+  @override
+  String recapMonthLabel(int month) {
+    return 'Month $month';
+  }
+
+  @override
+  String recapMonthNow(int month) {
+    return 'Month $month · today';
+  }
+
+  @override
+  String get recapMonthVoices => 'quotes & voices';
+
+  @override
+  String get recapMonthVoicesKicker => 'QUOTES & VOICES';
+
+  @override
+  String recapMonthFirstMeta(String age, String date) {
+    return '$age · $date';
+  }
+
+  @override
+  String recapMonthVoiceMeta(String date, String callName) {
+    return '$date · recorded by $callName';
+  }
+
+  @override
+  String get careMenuStats => 'Care stats';
+
+  @override
+  String get careStatsDone => 'Missions the family completed';
+
+  @override
+  String get careStatsUnit => 'this week';
+
+  @override
+  String careStatsCategory(String category) {
+    String _temp0 = intl.Intl.selectLogic(category, {
+      'care': 'Care',
+      'bonding': 'Bonding',
+      'outing': 'Outings',
+      'support': 'Support',
+      'together': 'Together',
+      'other': 'Other',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get careStatsNote => 'Couple missions are not counted as childcare.';
+
+  @override
+  String careStatsBloomOf(int total) {
+    return '/ $total days';
+  }
+
+  @override
+  String get careStatsBloomLabel => 'our family tree bloomed';
+
+  @override
+  String get careStatsDisclaimer =>
+      'Based only on activity logged in the app. There is so much parents do for each other that the app cannot count.';
+
+  @override
+  String get careStatsPrivacy => 'Only Papa & Mama can see these stats';
+
+  @override
+  String get commonPrevWeek => 'Previous week';
+
+  @override
+  String get commonNextWeek => 'Next week';
+
+  @override
+  String memPendingNotify(String name, int count, String child) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count photos',
+      one: '1 photo',
+    );
+    return '$name posted $_temp0 of $child — waiting for your review';
+  }
 }

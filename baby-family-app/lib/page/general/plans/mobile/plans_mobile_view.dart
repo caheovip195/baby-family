@@ -5,6 +5,7 @@ import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
+import 'package:baby_family/utils/helper/plan_text.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/router/session_route.dart';
@@ -12,6 +13,7 @@ import 'package:baby_family/utils/widget/app_button.dart';
 import 'package:baby_family/utils/widget/app_radio_mark.dart';
 import 'package:baby_family/utils/widget/app_square_icon_button.dart';
 import 'package:baby_family/utils/widget/base_scaffold.dart';
+import 'package:baby_family/utils/widget/plan_confirm_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
@@ -20,8 +22,9 @@ part '../widgets/plan_feature.dart';
 part '../widgets/plan_offer_card.dart';
 part '../widgets/trial_badge.dart';
 
-/// SUB-01 — Chọn gói (Pencil `OUXZg`). Mua (mock) → snackbar + quay lại; mở
-/// từ SUB-07 (hết hạn) thì vào lại app theo phiên.
+/// SUB-01 — Chọn gói (Pencil `OUXZg`). Mua → SUB-02 (xác nhận) → mock thành
+/// công → snackbar + quay lại; mở từ SUB-07 (hết hạn) thì vào lại app theo
+/// phiên.
 class PlansMobileView extends HookConsumerWidget {
   const PlansMobileView({super.key});
 
@@ -32,13 +35,28 @@ class PlansMobileView extends HookConsumerWidget {
     final offer = controller.selectedOffer;
     final trialDays = controller.trialDaysLeft;
 
-    String planName(PlanState code) =>
-        code == PlanState.house ? l10n.billingHouse : l10n.billingFamily;
+    String planName(PlanState code) => planShortName(l10n, code);
 
     Future<void> purchase() async {
       final fromExpired = context.router.stack.any(
         (route) => route.name == ExpiredRoute.name,
       );
+      final offer = controller.selectedOffer;
+      if (offer == null) {
+        return;
+      }
+      // SUB-02: xác nhận trước khi mở bảng thanh toán của Store.
+      final confirmed = await showPlanConfirmSheet(
+        context,
+        offer: offer,
+        familyName: controller.family?.name ?? '',
+        papaCallName: controller.callNameOf(FamilyRole.father),
+        mamaCallName: controller.callNameOf(FamilyRole.mother),
+        showTrialNote: controller.trialDaysLeft != null,
+      );
+      if (!confirmed || !context.mounted) {
+        return;
+      }
       await controller.purchase();
       if (!context.mounted) {
         return;

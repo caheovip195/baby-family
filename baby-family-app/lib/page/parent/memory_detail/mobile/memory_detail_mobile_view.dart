@@ -10,10 +10,13 @@ import 'package:baby_family/utils/helper/memory_text.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_bottom_sheet.dart';
+import 'package:baby_family/utils/widget/app_button.dart';
+import 'package:baby_family/utils/widget/app_dialog.dart';
 import 'package:baby_family/utils/widget/base_scaffold.dart';
 import 'package:baby_family/utils/widget/child_avatar.dart';
 import 'package:baby_family/utils/widget/error_state.dart';
 import 'package:baby_family/utils/widget/loading_progress.dart';
+import 'package:baby_family/utils/widget/report_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -239,9 +242,82 @@ class MemoryDetailMobileView extends HookConsumerWidget {
                     : l10n.memEditPerspective,
                 () => router.push(MemoryPerspectiveRoute(memoryId: memory.id)),
               ),
+            item(
+              LucideIcons.flag,
+              l10n.famReport,
+              () => _report(context, controller),
+            ),
+            if (controller.canDelete)
+              item(
+                LucideIcons.trash2,
+                l10n.memMoveToTrash,
+                () => _moveToTrash(context, controller),
+              ),
           ],
         );
       },
     );
+  }
+
+  /// ⋯ “Báo cáo” → RPT-01 (bố mẹ có thêm “Gỡ khỏi gia đình”).
+  Future<void> _report(
+    BuildContext context,
+    MemoryDetailController controller,
+  ) async {
+    final reasons = await controller.reportReasons();
+    if (!context.mounted) {
+      return;
+    }
+    await showReportSheet(
+      context,
+      target: ReportTarget.memory,
+      reasons: reasons,
+      canRemove: controller.me?.role.isParent ?? false,
+      onSubmit: controller.report,
+      onTrack: () => context.router.push(const HelpRoute()),
+    );
+  }
+
+  /// ⋯ “Xoá ký ức” → xác nhận → Thùng rác (MEM-17, giữ 30 ngày).
+  Future<void> _moveToTrash(
+    BuildContext context,
+    MemoryDetailController controller,
+  ) async {
+    final l10n = context.l10n;
+    final days = controller.trashDays;
+    final confirmed = await AppDialog.show<bool>(
+      context: context,
+      title: l10n.memMoveToTrashTitle,
+      content: l10n.memMoveToTrashBody(days),
+      actions: [
+        AppButton.secondary(
+          label: l10n.commonCancel,
+          onPressed: () => Navigator.of(context).pop(false),
+        ),
+        AppButton(
+          label: l10n.commonDelete,
+          color: kColorErrorD14B4B,
+          onPressed: () => Navigator.of(context).pop(true),
+        ),
+      ],
+    );
+    if (!(confirmed ?? false) || !context.mounted) {
+      return;
+    }
+    final router = context.router;
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    await controller.moveToTrash();
+    messenger
+      ?..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(l10n.memMovedToTrash(days)),
+          action: SnackBarAction(
+            label: l10n.memTrashTitle,
+            onPressed: () => router.push(const TrashRoute()),
+          ),
+        ),
+      );
+    await router.maybePop();
   }
 }

@@ -24,7 +24,11 @@
 - [Đặc tả nghiệp vụ](docs/01_DAC_TA_NGHIEP_VU_BABY_FAMILY_v3.md), [tài liệu kỹ thuật](docs/02_TAI_LIEU_KY_THUAT_BABY_FAMILY_v3.md): đọc đúng phần liên quan; đối chiếu với quyết định mới nhất của người dùng và code thực tế. Không coi tính năng ghi trong đặc tả là đã được triển khai.
 - Backend: [baby-backend/AGENTS.md](baby-backend/AGENTS.md). TypeScript, NestJS, Prisma/PostgreSQL; `controller → service → repository → model`, interface service/repository và DI. Nghiệp vụ ở service, CRUD ở repository, model là thuộc tính và helper. Giữ cấu trúc thư mục theo role.
 - Mobile: [baby-family-app/AGENTS.md](baby-family-app/AGENTS.md). Flutter; đọc `.skills/index.md` và **toàn bộ skill được liệt kê**, cùng `SESSION.md` tại đó trước task mobile. Giữ luồng Page → Controller → Service → Repository → API/LocalStore, l10n và Design System.
-- `baby-admin/`, `baby-database/`, `baby-storage/`: kiểm tra hiện trạng trước khi chọn công nghệ hoặc tạo cấu trúc. Thiết kế hiện có ở `desgin/`; không tự đổi tên thư mục.
+- Database server/Compose và backup đặt riêng ở `baby-database/`; backend chỉ giữ Prisma schema/migrations và connector. Data PostgreSQL bind mount ra host, không ghép DB server trở lại Compose backend. Đọc README database trước thao tác vận hành; giữ dữ liệu và backup khi đổi container/Compose.
+- Schema, model/repository, migration và seed do backend quản lý. **Migration chỉ DDL, cấm CRUD dữ liệu**; seed/catalog/backfill là command riêng, không tự chạy khi migrate/start. Không đặt cấu trúc ứng dụng trong database infrastructure folder hoặc sửa migration đã áp dụng.
+- Mọi bảng do dự án quản lý bắt buộc có `created_at`, `updated_at`, `deleted_at`, kể cả bảng nối/job/history. Khi làm DB/repository/generator/jobs, áp dụng [chuẩn database](.agents/skills/baby-family-team/references/database-standards.md) và [chuẩn cron/job](baby-backend/docs/jobs.md); phân biệt quy tắc với implementation thực tế.
+- **Thiết kế phải mở rộng được, hạn chế fix cứng:** áp dụng [chuẩn extensibility](.agents/skills/baby-family-team/references/extensibility-standards.md) cho backend/frontend/mobile/database. Gói/quota/features/trial là catalog/config có version; hiện trial mặc định 7 ngày. Client đọc catalog/capabilities từ server, không ràng quyền theo tên House/Family/Pro; server giữ quyền thực thi. Không đánh đổi schema/validation rõ ràng bằng abstraction không cần thiết.
+- `baby-admin/`, `baby-storage/`: kiểm tra hiện trạng trước khi chọn công nghệ hoặc tạo cấu trúc. Thiết kế hiện có ở `desgin/`; không tự đổi tên thư mục.
 
 ## Kiểm tra trước khi bàn giao
 

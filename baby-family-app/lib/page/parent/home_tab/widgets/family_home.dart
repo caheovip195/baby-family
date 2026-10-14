@@ -1,6 +1,7 @@
 part of '../mobile/home_tab_mobile_view.dart';
 
-/// HOME-01 “Cả nhà” (Pencil ClpJ6 / cuộn đầy đủ uEPMP): lời chào, story các
+/// HOME-01 “Cả nhà” (Pencil ClpJ6 / cuộn đầy đủ uEPMP; banner gói SUB-06
+/// `Fxgro` khi gia hạn chưa thành công): lời chào, story các
 /// con, ngày ảnh tháng, Papa & Mama, nhiệm vụ hôm nay, gợi ý ghi lại, Mới
 /// trong nhà (nhóm ảnh, câu nói, ký ức), tuần này, cây gia đình.
 class _FamilyHome extends StatelessWidget {
@@ -44,6 +45,16 @@ class _FamilyHome extends StatelessWidget {
               style: AppTypography.adapt(context, AppTypography.h1),
             ),
           ],
+        ),
+      if (controller.showPaymentIssue)
+        PlanStatusBanner(
+          title: l10n.subIssueTitle,
+          message: l10n.subIssueBody(
+            planTitle(l10n, controller.planState ?? PlanState.family),
+          ),
+          actionLabel: l10n.subIssueAction,
+          onAction: () => context.router.push(const FamilyPlanRoute()),
+          onClose: controller.dismissPaymentIssue,
         ),
       _StoryRow(controller: controller),
       if (special != null)

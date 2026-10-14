@@ -26,5 +26,9 @@ abstract class ChildArchiveInfo with _$ChildArchiveInfo {
   factory ChildArchiveInfo.fromJson(Map<String, dynamic> json) =>
       _$ChildArchiveInfoFromJson(json);
 
-  bool get canDelete => deletableFrom != null;
+  /// CHD-05b: xoá vĩnh viễn được khi đã lưu trữ đủ 7 ngày.
+  bool canDeleteAt(DateTime now) {
+    final from = deletableFrom;
+    return from != null && !now.isBefore(from);
+  }
 }

@@ -23,6 +23,7 @@ class AppSettingsRow extends StatelessWidget {
     this.trailing,
     this.showChevron = true,
     this.iconTile = 32,
+    this.iconSize,
     this.iconColor = kColorTextSecondary6B625B,
     this.iconBackground = kColorSurfaceVariantF7F1EC,
     this.iconLabel,
@@ -43,6 +44,7 @@ class AppSettingsRow extends StatelessWidget {
     this.icon,
     this.subtitle,
     this.iconTile = 32,
+    this.iconSize,
     this.iconColor = kColorTextSecondary6B625B,
     this.iconBackground = kColorSurfaceVariantF7F1EC,
     this.titleColor = kColorTextPrimary2E2A27,
@@ -76,6 +78,9 @@ class AppSettingsRow extends StatelessWidget {
   /// Cạnh ô icon: 32 (mặc định, icon 18, bo 10), 30 (SET-03, icon 16) hoặc
   /// 40 (SET-08, icon 20, bo 12).
   final double iconTile;
+
+  /// Cỡ icon riêng (SUB-03/SET-05: ô 32, icon 16); mặc định theo [iconTile].
+  final double? iconSize;
   final Color iconColor;
   final Color iconBackground;
   final Color titleColor;
@@ -93,11 +98,13 @@ class AppSettingsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final isToggle = switchValue != null;
     final hasIcon = icon != null || iconLabel != null;
-    final iconSize = iconTile >= 40
-        ? 20.0
-        : iconTile >= 32
-        ? 18.0
-        : 16.0;
+    final iconSize =
+        this.iconSize ??
+        (iconTile >= 40
+            ? 20.0
+            : iconTile >= 32
+            ? 18.0
+            : 16.0);
     final iconRadius = iconTile >= 40 ? AppRadius.tile : AppRadius.sm;
     final row = ConstrainedBox(
       constraints: BoxConstraints(minHeight: minHeight),

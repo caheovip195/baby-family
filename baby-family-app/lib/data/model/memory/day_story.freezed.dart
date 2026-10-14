@@ -15,7 +15,9 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$DayStory {
 
-@JsonKey(name: 'date') DateTime get date;@JsonKey(name: 'childId') String get childId;@JsonKey(name: 'title') String get title;@JsonKey(name: 'body') String get body;@JsonKey(name: 'aiGenerated') bool get aiGenerated;@JsonKey(name: 'items') List<DayStoryItem> get items;@JsonKey(name: 'photoAssets') List<String> get photoAssets;@JsonKey(name: 'coverAsset') String? get coverAsset;@JsonKey(name: 'visibility') MemoryVisibility get visibility;
+@JsonKey(name: 'date') DateTime get date;@JsonKey(name: 'childId') String get childId;@JsonKey(name: 'title') String get title;@JsonKey(name: 'body') String get body;@JsonKey(name: 'aiGenerated') bool get aiGenerated;@JsonKey(name: 'items') List<DayStoryItem> get items;@JsonKey(name: 'photoAssets') List<String> get photoAssets;/// REC-01 “Ảnh kèm”: mọi ảnh trong ngày có thể kèm; [photoAssets] là các
+/// ảnh đang chọn.
+@JsonKey(name: 'photoOptions') List<String> get photoOptions;@JsonKey(name: 'coverAsset') String? get coverAsset;@JsonKey(name: 'visibility') MemoryVisibility get visibility;
 /// Create a copy of DayStory
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +30,16 @@ $DayStoryCopyWith<DayStory> get copyWith => _$DayStoryCopyWithImpl<DayStory>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DayStory&&(identical(other.date, date) || other.date == date)&&(identical(other.childId, childId) || other.childId == childId)&&(identical(other.title, title) || other.title == title)&&(identical(other.body, body) || other.body == body)&&(identical(other.aiGenerated, aiGenerated) || other.aiGenerated == aiGenerated)&&const DeepCollectionEquality().equals(other.items, items)&&const DeepCollectionEquality().equals(other.photoAssets, photoAssets)&&(identical(other.coverAsset, coverAsset) || other.coverAsset == coverAsset)&&(identical(other.visibility, visibility) || other.visibility == visibility));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DayStory&&(identical(other.date, date) || other.date == date)&&(identical(other.childId, childId) || other.childId == childId)&&(identical(other.title, title) || other.title == title)&&(identical(other.body, body) || other.body == body)&&(identical(other.aiGenerated, aiGenerated) || other.aiGenerated == aiGenerated)&&const DeepCollectionEquality().equals(other.items, items)&&const DeepCollectionEquality().equals(other.photoAssets, photoAssets)&&const DeepCollectionEquality().equals(other.photoOptions, photoOptions)&&(identical(other.coverAsset, coverAsset) || other.coverAsset == coverAsset)&&(identical(other.visibility, visibility) || other.visibility == visibility));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,date,childId,title,body,aiGenerated,const DeepCollectionEquality().hash(items),const DeepCollectionEquality().hash(photoAssets),coverAsset,visibility);
+int get hashCode => Object.hash(runtimeType,date,childId,title,body,aiGenerated,const DeepCollectionEquality().hash(items),const DeepCollectionEquality().hash(photoAssets),const DeepCollectionEquality().hash(photoOptions),coverAsset,visibility);
 
 @override
 String toString() {
-  return 'DayStory(date: $date, childId: $childId, title: $title, body: $body, aiGenerated: $aiGenerated, items: $items, photoAssets: $photoAssets, coverAsset: $coverAsset, visibility: $visibility)';
+  return 'DayStory(date: $date, childId: $childId, title: $title, body: $body, aiGenerated: $aiGenerated, items: $items, photoAssets: $photoAssets, photoOptions: $photoOptions, coverAsset: $coverAsset, visibility: $visibility)';
 }
 
 
@@ -48,7 +50,7 @@ abstract mixin class $DayStoryCopyWith<$Res>  {
   factory $DayStoryCopyWith(DayStory value, $Res Function(DayStory) _then) = _$DayStoryCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'date') DateTime date,@JsonKey(name: 'childId') String childId,@JsonKey(name: 'title') String title,@JsonKey(name: 'body') String body,@JsonKey(name: 'aiGenerated') bool aiGenerated,@JsonKey(name: 'items') List<DayStoryItem> items,@JsonKey(name: 'photoAssets') List<String> photoAssets,@JsonKey(name: 'coverAsset') String? coverAsset,@JsonKey(name: 'visibility') MemoryVisibility visibility
+@JsonKey(name: 'date') DateTime date,@JsonKey(name: 'childId') String childId,@JsonKey(name: 'title') String title,@JsonKey(name: 'body') String body,@JsonKey(name: 'aiGenerated') bool aiGenerated,@JsonKey(name: 'items') List<DayStoryItem> items,@JsonKey(name: 'photoAssets') List<String> photoAssets,@JsonKey(name: 'photoOptions') List<String> photoOptions,@JsonKey(name: 'coverAsset') String? coverAsset,@JsonKey(name: 'visibility') MemoryVisibility visibility
 });
 
 
@@ -65,7 +67,7 @@ class _$DayStoryCopyWithImpl<$Res>
 
 /// Create a copy of DayStory
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? date = null,Object? childId = null,Object? title = null,Object? body = null,Object? aiGenerated = null,Object? items = null,Object? photoAssets = null,Object? coverAsset = freezed,Object? visibility = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? date = null,Object? childId = null,Object? title = null,Object? body = null,Object? aiGenerated = null,Object? items = null,Object? photoAssets = null,Object? photoOptions = null,Object? coverAsset = freezed,Object? visibility = null,}) {
   return _then(_self.copyWith(
 date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
 as DateTime,childId: null == childId ? _self.childId : childId // ignore: cast_nullable_to_non_nullable
@@ -74,6 +76,7 @@ as String,body: null == body ? _self.body : body // ignore: cast_nullable_to_non
 as String,aiGenerated: null == aiGenerated ? _self.aiGenerated : aiGenerated // ignore: cast_nullable_to_non_nullable
 as bool,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
 as List<DayStoryItem>,photoAssets: null == photoAssets ? _self.photoAssets : photoAssets // ignore: cast_nullable_to_non_nullable
+as List<String>,photoOptions: null == photoOptions ? _self.photoOptions : photoOptions // ignore: cast_nullable_to_non_nullable
 as List<String>,coverAsset: freezed == coverAsset ? _self.coverAsset : coverAsset // ignore: cast_nullable_to_non_nullable
 as String?,visibility: null == visibility ? _self.visibility : visibility // ignore: cast_nullable_to_non_nullable
 as MemoryVisibility,
@@ -156,7 +159,7 @@ return $default(_that);case _:
 
 @JsonSerializable(explicitToJson: true)
 class _DayStory implements DayStory {
-  const _DayStory({@JsonKey(name: 'date') required this.date, @JsonKey(name: 'childId') required this.childId, @JsonKey(name: 'title') this.title = '', @JsonKey(name: 'body') this.body = '', @JsonKey(name: 'aiGenerated') this.aiGenerated = true, @JsonKey(name: 'items') final  List<DayStoryItem> items = const [], @JsonKey(name: 'photoAssets') final  List<String> photoAssets = const [], @JsonKey(name: 'coverAsset') this.coverAsset, @JsonKey(name: 'visibility') this.visibility = MemoryVisibility.parents}): _items = items,_photoAssets = photoAssets;
+  const _DayStory({@JsonKey(name: 'date') required this.date, @JsonKey(name: 'childId') required this.childId, @JsonKey(name: 'title') this.title = '', @JsonKey(name: 'body') this.body = '', @JsonKey(name: 'aiGenerated') this.aiGenerated = true, @JsonKey(name: 'items') final  List<DayStoryItem> items = const [], @JsonKey(name: 'photoAssets') final  List<String> photoAssets = const [], @JsonKey(name: 'photoOptions') final  List<String> photoOptions = const [], @JsonKey(name: 'coverAsset') this.coverAsset, @JsonKey(name: 'visibility') this.visibility = MemoryVisibility.parents}): _items = items,_photoAssets = photoAssets,_photoOptions = photoOptions;
   factory _DayStory.fromJson(Map<String, dynamic> json) => _$DayStoryFromJson(json);
 
 @override@JsonKey(name: 'date') final  DateTime date;
@@ -178,6 +181,17 @@ class _DayStory implements DayStory {
   return EqualUnmodifiableListView(_photoAssets);
 }
 
+/// REC-01 “Ảnh kèm”: mọi ảnh trong ngày có thể kèm; [photoAssets] là các
+/// ảnh đang chọn.
+ final  List<String> _photoOptions;
+/// REC-01 “Ảnh kèm”: mọi ảnh trong ngày có thể kèm; [photoAssets] là các
+/// ảnh đang chọn.
+@override@JsonKey(name: 'photoOptions') List<String> get photoOptions {
+  if (_photoOptions is EqualUnmodifiableListView) return _photoOptions;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_photoOptions);
+}
+
 @override@JsonKey(name: 'coverAsset') final  String? coverAsset;
 @override@JsonKey(name: 'visibility') final  MemoryVisibility visibility;
 
@@ -194,16 +208,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DayStory&&(identical(other.date, date) || other.date == date)&&(identical(other.childId, childId) || other.childId == childId)&&(identical(other.title, title) || other.title == title)&&(identical(other.body, body) || other.body == body)&&(identical(other.aiGenerated, aiGenerated) || other.aiGenerated == aiGenerated)&&const DeepCollectionEquality().equals(other._items, _items)&&const DeepCollectionEquality().equals(other._photoAssets, _photoAssets)&&(identical(other.coverAsset, coverAsset) || other.coverAsset == coverAsset)&&(identical(other.visibility, visibility) || other.visibility == visibility));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DayStory&&(identical(other.date, date) || other.date == date)&&(identical(other.childId, childId) || other.childId == childId)&&(identical(other.title, title) || other.title == title)&&(identical(other.body, body) || other.body == body)&&(identical(other.aiGenerated, aiGenerated) || other.aiGenerated == aiGenerated)&&const DeepCollectionEquality().equals(other._items, _items)&&const DeepCollectionEquality().equals(other._photoAssets, _photoAssets)&&const DeepCollectionEquality().equals(other._photoOptions, _photoOptions)&&(identical(other.coverAsset, coverAsset) || other.coverAsset == coverAsset)&&(identical(other.visibility, visibility) || other.visibility == visibility));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,date,childId,title,body,aiGenerated,const DeepCollectionEquality().hash(_items),const DeepCollectionEquality().hash(_photoAssets),coverAsset,visibility);
+int get hashCode => Object.hash(runtimeType,date,childId,title,body,aiGenerated,const DeepCollectionEquality().hash(_items),const DeepCollectionEquality().hash(_photoAssets),const DeepCollectionEquality().hash(_photoOptions),coverAsset,visibility);
 
 @override
 String toString() {
-  return 'DayStory(date: $date, childId: $childId, title: $title, body: $body, aiGenerated: $aiGenerated, items: $items, photoAssets: $photoAssets, coverAsset: $coverAsset, visibility: $visibility)';
+  return 'DayStory(date: $date, childId: $childId, title: $title, body: $body, aiGenerated: $aiGenerated, items: $items, photoAssets: $photoAssets, photoOptions: $photoOptions, coverAsset: $coverAsset, visibility: $visibility)';
 }
 
 
@@ -214,7 +228,7 @@ abstract mixin class _$DayStoryCopyWith<$Res> implements $DayStoryCopyWith<$Res>
   factory _$DayStoryCopyWith(_DayStory value, $Res Function(_DayStory) _then) = __$DayStoryCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'date') DateTime date,@JsonKey(name: 'childId') String childId,@JsonKey(name: 'title') String title,@JsonKey(name: 'body') String body,@JsonKey(name: 'aiGenerated') bool aiGenerated,@JsonKey(name: 'items') List<DayStoryItem> items,@JsonKey(name: 'photoAssets') List<String> photoAssets,@JsonKey(name: 'coverAsset') String? coverAsset,@JsonKey(name: 'visibility') MemoryVisibility visibility
+@JsonKey(name: 'date') DateTime date,@JsonKey(name: 'childId') String childId,@JsonKey(name: 'title') String title,@JsonKey(name: 'body') String body,@JsonKey(name: 'aiGenerated') bool aiGenerated,@JsonKey(name: 'items') List<DayStoryItem> items,@JsonKey(name: 'photoAssets') List<String> photoAssets,@JsonKey(name: 'photoOptions') List<String> photoOptions,@JsonKey(name: 'coverAsset') String? coverAsset,@JsonKey(name: 'visibility') MemoryVisibility visibility
 });
 
 
@@ -231,7 +245,7 @@ class __$DayStoryCopyWithImpl<$Res>
 
 /// Create a copy of DayStory
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? date = null,Object? childId = null,Object? title = null,Object? body = null,Object? aiGenerated = null,Object? items = null,Object? photoAssets = null,Object? coverAsset = freezed,Object? visibility = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? date = null,Object? childId = null,Object? title = null,Object? body = null,Object? aiGenerated = null,Object? items = null,Object? photoAssets = null,Object? photoOptions = null,Object? coverAsset = freezed,Object? visibility = null,}) {
   return _then(_DayStory(
 date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
 as DateTime,childId: null == childId ? _self.childId : childId // ignore: cast_nullable_to_non_nullable
@@ -240,6 +254,7 @@ as String,body: null == body ? _self.body : body // ignore: cast_nullable_to_non
 as String,aiGenerated: null == aiGenerated ? _self.aiGenerated : aiGenerated // ignore: cast_nullable_to_non_nullable
 as bool,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
 as List<DayStoryItem>,photoAssets: null == photoAssets ? _self._photoAssets : photoAssets // ignore: cast_nullable_to_non_nullable
+as List<String>,photoOptions: null == photoOptions ? _self._photoOptions : photoOptions // ignore: cast_nullable_to_non_nullable
 as List<String>,coverAsset: freezed == coverAsset ? _self.coverAsset : coverAsset // ignore: cast_nullable_to_non_nullable
 as String?,visibility: null == visibility ? _self.visibility : visibility // ignore: cast_nullable_to_non_nullable
 as MemoryVisibility,

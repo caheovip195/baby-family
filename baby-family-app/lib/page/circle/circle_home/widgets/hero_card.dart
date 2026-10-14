@@ -8,8 +8,11 @@ class _HeroCard extends StatelessWidget {
     required this.memory,
     required this.author,
     required this.today,
+    this.onTap,
   });
 
+  /// Mở CIR-03.
+  final VoidCallback? onTap;
   final Child child;
   final Memory memory;
   final String author;
@@ -27,65 +30,69 @@ class _HeroCard extends StatelessWidget {
         : null;
     final text = memory.body ?? memory.title;
     final photo = memory.mediaAssets.firstOrNull;
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        color: AppColors.resolve(context, kColorSurfaceFFFFFF),
-        borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(
-          color: AppColors.resolve(context, kColorBorderEADFD6),
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: AppColors.resolve(context, kColorSurfaceFFFFFF),
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+          border: Border.all(
+            color: AppColors.resolve(context, kColorBorderEADFD6),
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (photo != null)
-            Image.asset(
-              photo,
-              height: 240,
-              fit: BoxFit.cover,
-              semanticLabel: child.name,
-            ),
-          Padding(
-            padding: const EdgeInsets.all(AppSpacing.sectionGap),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  age == null
-                      ? child.name
-                      : l10n.commonChildNameAge(child.name, age),
-                  style: AppTypography.adapt(
-                    context,
-                    AppTypography.h2.copyWith(fontWeight: FontWeight.w800),
-                  ),
-                ),
-                if (text != null && text.isNotEmpty) ...[
-                  const SizedBox(height: AppSpacing.compact),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (photo != null)
+              Image.asset(
+                photo,
+                height: 240,
+                fit: BoxFit.cover,
+                semanticLabel: child.name,
+              ),
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.sectionGap),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    l10n.cirHeroCaption(
-                      text,
-                      author,
-                      relativeTimeText(
-                        l10n,
-                        memory.occurredAt,
-                        today,
-                        locale: context.localeName,
-                      ),
-                    ),
+                    age == null
+                        ? child.name
+                        : l10n.commonChildNameAge(child.name, age),
                     style: AppTypography.adapt(
                       context,
-                      AppTypography.bodyLarge.copyWith(
-                        height: 1.45,
-                        color: kColorTextSecondary6B625B,
-                      ),
+                      AppTypography.h2.copyWith(fontWeight: FontWeight.w800),
                     ),
                   ),
+                  if (text != null && text.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.compact),
+                    Text(
+                      l10n.cirHeroCaption(
+                        text,
+                        author,
+                        relativeTimeText(
+                          l10n,
+                          memory.occurredAt,
+                          today,
+                          locale: context.localeName,
+                        ),
+                      ),
+                      style: AppTypography.adapt(
+                        context,
+                        AppTypography.bodyLarge.copyWith(
+                          height: 1.45,
+                          color: kColorTextSecondary6B625B,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

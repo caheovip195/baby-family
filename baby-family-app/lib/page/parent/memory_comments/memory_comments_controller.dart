@@ -1,6 +1,9 @@
+import 'package:baby_family/data/dto/report_request.dart';
 import 'package:baby_family/data/model/family/member.dart';
 import 'package:baby_family/data/model/memory/memory.dart';
 import 'package:baby_family/data/model/memory/memory_comment.dart';
+import 'package:baby_family/data/model/memory/report_reason.dart';
+import 'package:baby_family/data/model/memory/report_receipt.dart';
 import 'package:baby_family/data/provider/app_setting.dart';
 import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/provider/memory.dart';
@@ -61,6 +64,17 @@ class MemoryCommentsController extends BaseNotifier {
 
   bool isMine(MemoryComment comment) =>
       comment.authorId != null && comment.authorId == me?.userId;
+
+  Future<List<ReportReason>> reportReasons() => memoryService.reportReasons();
+
+  /// Long-press “Báo cáo” → RPT-01 cho bình luận.
+  Future<ReportReceipt?> report(MemoryComment comment, ReportRequest request) =>
+      memoryService.submitReport(
+        targetId: comment.id,
+        reasonCode: request.reasonCode,
+        note: request.note,
+        hideForMe: request.hideForMe,
+      );
 
   bool canEdit(MemoryComment comment) =>
       isMine(comment) &&

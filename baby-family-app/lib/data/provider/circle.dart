@@ -3,6 +3,7 @@ import 'package:baby_family/data/provider/child.dart';
 import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/provider/memory.dart';
 import 'package:baby_family/data/provider/mock_store.dart';
+import 'package:baby_family/data/provider/notification.dart';
 import 'package:baby_family/data/provider/session.dart';
 import 'package:baby_family/data/service/circle.dart';
 import 'package:baby_family/data/service_imp/circle.dart';
@@ -15,6 +16,7 @@ final circleServiceProvider = Provider<ICircleService>(
     ref.watch(familyRepositoryProvider),
     ref.watch(childRepositoryProvider),
     ref.watch(memoryRepositoryProvider),
+    ref.watch(notificationRepositoryProvider),
   ),
 );
 
@@ -23,3 +25,17 @@ final circleViewProvider = FutureProvider<CircleView?>((ref) {
   ref.watch(mockRevisionProvider);
   return ref.watch(circleServiceProvider).view();
 });
+
+/// Cháu đang xem trong Circle — CIR-01 (chip cháu) và CIR-02 (Trang của
+/// cháu) dùng chung. `null` = mặc định (cháu nhỏ nhất đã chào đời).
+final circleSelectedChildProvider =
+    NotifierProvider<CircleSelectedChildNotifier, String?>(
+      CircleSelectedChildNotifier.new,
+    );
+
+class CircleSelectedChildNotifier extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void select(String? childId) => state = childId;
+}

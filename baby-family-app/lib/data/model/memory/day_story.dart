@@ -17,6 +17,10 @@ abstract class DayStory with _$DayStory {
     @JsonKey(name: 'aiGenerated') @Default(true) bool aiGenerated,
     @JsonKey(name: 'items') @Default([]) List<DayStoryItem> items,
     @JsonKey(name: 'photoAssets') @Default([]) List<String> photoAssets,
+
+    /// REC-01 “Ảnh kèm”: mọi ảnh trong ngày có thể kèm; [photoAssets] là các
+    /// ảnh đang chọn.
+    @JsonKey(name: 'photoOptions') @Default([]) List<String> photoOptions,
     @JsonKey(name: 'coverAsset') String? coverAsset,
     @JsonKey(name: 'visibility')
     @Default(MemoryVisibility.parents)

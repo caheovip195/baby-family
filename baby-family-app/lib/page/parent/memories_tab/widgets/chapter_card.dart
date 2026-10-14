@@ -3,7 +3,7 @@ part of '../mobile/memories_tab_mobile_view.dart';
 /// Chương tháng (`czRPJ`, `QVHFf`): nền `secondary-100` bo 16, đệm 14,
 /// cách 14; bìa 76×96 bo 14 (ảnh tháng, hoặc ô chụp ảnh tháng với camera +
 /// “Ngày mai”); khoảng ngày 11/700, tiêu đề 18/800, số liệu 12,
-/// “Xem lại tháng này” 12/700 `secondary-700`.
+/// “Xem lại tháng này” 12/700 `secondary-700` → REC-03 (thẻ → MEM-20).
 class _ChapterCard extends StatelessWidget {
   const _ChapterCard({required this.chapter, required this.controller});
 
@@ -77,21 +77,29 @@ class _ChapterCard extends StatelessWidget {
                       style: AppTypography.adapt(context, AppTypography.small),
                     ),
                     const SizedBox(height: AppSpacing.s1),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(LucideIcons.circlePlay, size: 14, color: strong),
-                        const SizedBox(width: AppSpacing.s1),
-                        Flexible(
-                          child: Text(
-                            l10n.memChapterReplay,
-                            style: AppTypography.small.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: strong,
+                    InkWell(
+                      onTap: child == null
+                          ? null
+                          : () => context.router.push(
+                              MonthRecapRoute(childId: child.id),
+                            ),
+                      borderRadius: BorderRadius.circular(AppRadius.xs),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(LucideIcons.circlePlay, size: 14, color: strong),
+                          const SizedBox(width: AppSpacing.s1),
+                          Flexible(
+                            child: Text(
+                              l10n.memChapterReplay,
+                              style: AppTypography.small.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: strong,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),

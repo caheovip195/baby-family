@@ -2057,11 +2057,11 @@
     "title": "Ngày cuối của tháng 17 🌼",
     "aiGenerated": true,
     "body": "Sáng nay Haru tự đi được 5 bước tới chỗ Bà ngoại rồi cười tít mắt khi được ôm. Chiều, con cùng Papa xếp hình thành một ngôi nhà nhỏ. Lúc Mama đi làm về, Haru lẫm chẫm ra cửa gọi “Mẹ” thật to. Một ngày cuối tháng 17 thật đáng nhớ!",
-    "coverAsset": "assets/images/demo_circle_hero.jpg",
+    "coverAsset": "assets/images/design_rec01CoverAsset.jpg",
     "visibility": "parents",
     "photoAssets": [
-      "assets/images/demo_circle_hero.jpg",
-      "assets/images/design_homeChildToday2Asset.jpg"
+      "assets/images/design_rec01Photo1Asset.jpg",
+      "assets/images/design_rec01Photo2Asset.jpg"
     ],
     "items": [
       {
@@ -2093,6 +2093,11 @@
         "icon": "utensils",
         "selected": false
       }
+    ],
+    "photoOptions": [
+      "assets/images/design_rec01Photo1Asset.jpg",
+      "assets/images/design_rec01Photo2Asset.jpg",
+      "assets/images/design_rec01Photo3Asset.jpg"
     ]
   },
   "monthRecap": {
@@ -2110,7 +2115,7 @@
     "moments": 46,
     "firsts": 2,
     "voices": 5,
-    "previousPhotoAsset": "assets/images/design_monthly_5.jpg",
+    "previousPhotoAsset": "assets/images/design_rec03PrevAsset.jpg",
     "firstMemories": [
       {
         "id": "mr-spoon",
@@ -2123,7 +2128,10 @@
           "haru"
         ],
         "visibility": "family",
-        "title": "Tự cầm thìa xúc ăn"
+        "title": "Tự cầm thìa xúc ăn",
+        "mediaAssets": [
+          "assets/images/design_rec03First1Asset.jpg"
+        ]
       },
       {
         "id": "mr-bye",
@@ -2136,7 +2144,10 @@
           "haru"
         ],
         "visibility": "family",
-        "title": "Vẫy tay chào “bai bai”"
+        "title": "Vẫy tay chào “bai bai”",
+        "mediaAssets": [
+          "assets/images/design_rec03First2Asset.jpg"
+        ]
       }
     ],
     "voiceMemories": [
@@ -2168,7 +2179,8 @@
         "title": "“Bà… bà” — gọi Bà nội qua video",
         "voiceDurationSec": 7
       }
-    ]
+    ],
+    "currentPhotoAsset": "assets/images/design_rec03NowAsset.jpg"
   },
   "circlePostDraft": {
     "mediaAssets": [

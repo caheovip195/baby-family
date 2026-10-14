@@ -1,0 +1,88 @@
+{
+  "plans": [
+    {
+      "code": "TRIAL",
+      "displayName": { "vi": "Dùng thử", "en": "Trial" },
+      "displayOrder": 0,
+      "purchaseEnabled": false,
+      "version": 1,
+      "entitlementRank": 0,
+      "quotas": {
+        "storageBytes": 10737418240,
+        "photosPerMemory": 30,
+        "videoMaxSec": 180,
+        "videoMaxHeight": 1080,
+        "audioMaxSec": 300,
+        "circleMax": 0,
+        "aiPerMonth": 30
+      },
+      "features": {
+        "circle.enabled": false,
+        "media.keepOriginal": false,
+        "care.statistics": true,
+        "couple.enabled": true,
+        "ai.enabled": true
+      }
+    },
+    {
+      "code": "HOUSE",
+      "displayName": { "vi": "House", "en": "House" },
+      "displayOrder": 100,
+      "purchaseEnabled": true,
+      "version": 1,
+      "entitlementRank": 100,
+      "quotas": {
+        "storageBytes": 53687091200,
+        "photosPerMemory": 30,
+        "videoMaxSec": 180,
+        "videoMaxHeight": 1080,
+        "audioMaxSec": 300,
+        "circleMax": 0,
+        "aiPerMonth": 100
+      },
+      "features": {
+        "circle.enabled": false,
+        "media.keepOriginal": false,
+        "care.statistics": true,
+        "couple.enabled": true,
+        "ai.enabled": true
+      }
+    },
+    {
+      "code": "FAMILY",
+      "displayName": { "vi": "Family", "en": "Family" },
+      "displayOrder": 200,
+      "purchaseEnabled": true,
+      "version": 1,
+      "entitlementRank": 200,
+      "quotas": {
+        "storageBytes": 214748364800,
+        "photosPerMemory": 50,
+        "videoMaxSec": 600,
+        "videoMaxHeight": 1080,
+        "audioMaxSec": 600,
+        "circleMax": 12,
+        "aiPerMonth": 300
+      },
+      "features": {
+        "circle.enabled": true,
+        "media.keepOriginal": true,
+        "care.statistics": true,
+        "couple.enabled": true,
+        "ai.enabled": true
+      }
+    }
+  ],
+  "trialPolicies": [
+    {
+      "code": "DEFAULT_TRIAL",
+      "version": 1,
+      "planCode": "TRIAL",
+      "planVersion": 1,
+      "durationSeconds": 604800,
+      "reminderOffsetsSeconds": [],
+      "active": true
+    }
+  ],
+  "settings": { "billing.defaultTrialPolicyCode": "DEFAULT_TRIAL" }
+}

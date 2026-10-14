@@ -56,13 +56,4 @@ class ChildProfileController extends BaseNotifier {
     loaded = true;
     notifyListeners();
   }
-
-  Future<bool> archive() async {
-    final id = childId;
-    if (id == null) {
-      return false;
-    }
-    final result = await callFuture(childService.archiveChild(id));
-    return result.isSuccess;
-  }
 }

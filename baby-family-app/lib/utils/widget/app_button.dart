@@ -27,6 +27,7 @@ class AppButton extends StatelessWidget {
     this.expand = true,
     this.height = AppSpacing.buttonHeight,
     this.fontSize = 15,
+    this.horizontalPadding = AppSpacing.s5,
     this.color = kColorPrimary600C2513F,
   }) : _style = AppButtonStyle.primary,
        borderColor = null,
@@ -42,6 +43,7 @@ class AppButton extends StatelessWidget {
     this.expand = true,
     this.height = AppSpacing.buttonHeight,
     this.fontSize = 15,
+    this.horizontalPadding = AppSpacing.s5,
     this.color = kColorPrimary600C2513F,
     this.borderColor,
   }) : _style = AppButtonStyle.secondary,
@@ -57,6 +59,7 @@ class AppButton extends StatelessWidget {
     this.expand = true,
     this.height = AppSpacing.buttonHeight,
     this.fontSize = 15,
+    this.horizontalPadding = AppSpacing.s5,
     this.iconColor,
     this.inverted = false,
   }) : _style = AppButtonStyle.social,
@@ -72,6 +75,7 @@ class AppButton extends StatelessWidget {
     this.expand = true,
     this.height = AppSpacing.buttonHeight,
     this.fontSize = 15,
+    this.horizontalPadding = AppSpacing.s5,
   }) : _style = AppButtonStyle.us,
        color = kColorUs7006A549F,
        borderColor = null,
@@ -87,6 +91,7 @@ class AppButton extends StatelessWidget {
     this.expand = true,
     this.height = AppSpacing.buttonHeight,
     this.fontSize = 15,
+    this.horizontalPadding = AppSpacing.s5,
     this.color = kColorPrimary600C2513F,
   }) : _style = AppButtonStyle.text,
        borderColor = null,
@@ -106,6 +111,10 @@ class AppButton extends StatelessWidget {
 
   /// Cỡ chữ nhãn (mặc định 15; CIR-WAIT 17).
   final double fontSize;
+
+  /// Đệm ngang (mặc định 20; nút nửa chiều rộng US-11 dùng 12 để vừa nhãn
+  /// “Mình cần nói rõ hơn”).
+  final double horizontalPadding;
 
   /// [AppButton.social]: màu icon riêng (CIR-WAIT “Nhờ con mời mình”).
   final Color? iconColor;
@@ -203,7 +212,7 @@ class AppButton extends StatelessWidget {
                 minWidth: expand ? double.infinity : 0,
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s5),
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                 child: Center(widthFactor: 1, child: content),
               ),
             ),

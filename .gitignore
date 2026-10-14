@@ -13,6 +13,10 @@
 # Node dependencies
 node_modules/
 
+# Host-mounted PostgreSQL cluster and local backups
+/baby-database/data/
+/baby-database/backups/
+
 # Build output and caches for each application
 /baby-backend/dist/
 /baby-backend/coverage/

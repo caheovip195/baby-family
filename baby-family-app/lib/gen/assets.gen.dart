@@ -30,6 +30,9 @@ class $AssetsImagesGen {
   /// File path: assets/images/.gitkeep
   String get aGitkeep => 'assets/images/.gitkeep';
 
+  /// File path: assets/images/GyDMl.png
+  AssetGenImage get gyDMl => const AssetGenImage('assets/images/GyDMl.png');
+
   /// File path: assets/images/H46gD6.png
   AssetGenImage get h46gD6 => const AssetGenImage('assets/images/H46gD6.png');
 
@@ -284,6 +287,38 @@ class $AssetsImagesGen {
   AssetGenImage get designPregnancyJourneyAsset =>
       const AssetGenImage('assets/images/design_pregnancyJourneyAsset.jpg');
 
+  /// File path: assets/images/design_rec01CoverAsset.jpg
+  AssetGenImage get designRec01CoverAsset =>
+      const AssetGenImage('assets/images/design_rec01CoverAsset.jpg');
+
+  /// File path: assets/images/design_rec01Photo1Asset.jpg
+  AssetGenImage get designRec01Photo1Asset =>
+      const AssetGenImage('assets/images/design_rec01Photo1Asset.jpg');
+
+  /// File path: assets/images/design_rec01Photo2Asset.jpg
+  AssetGenImage get designRec01Photo2Asset =>
+      const AssetGenImage('assets/images/design_rec01Photo2Asset.jpg');
+
+  /// File path: assets/images/design_rec01Photo3Asset.jpg
+  AssetGenImage get designRec01Photo3Asset =>
+      const AssetGenImage('assets/images/design_rec01Photo3Asset.jpg');
+
+  /// File path: assets/images/design_rec03First1Asset.jpg
+  AssetGenImage get designRec03First1Asset =>
+      const AssetGenImage('assets/images/design_rec03First1Asset.jpg');
+
+  /// File path: assets/images/design_rec03First2Asset.jpg
+  AssetGenImage get designRec03First2Asset =>
+      const AssetGenImage('assets/images/design_rec03First2Asset.jpg');
+
+  /// File path: assets/images/design_rec03NowAsset.jpg
+  AssetGenImage get designRec03NowAsset =>
+      const AssetGenImage('assets/images/design_rec03NowAsset.jpg');
+
+  /// File path: assets/images/design_rec03PrevAsset.jpg
+  AssetGenImage get designRec03PrevAsset =>
+      const AssetGenImage('assets/images/design_rec03PrevAsset.jpg');
+
   /// File path: assets/images/design_timelineFirstAsset.jpg
   AssetGenImage get designTimelineFirstAsset =>
       const AssetGenImage('assets/images/design_timelineFirstAsset.jpg');
@@ -308,6 +343,9 @@ class $AssetsImagesGen {
   AssetGenImage get generated1791380839354 =>
       const AssetGenImage('assets/images/generated-1791380839354.png');
 
+  /// File path: assets/images/nE2Yk.png
+  AssetGenImage get nE2Yk => const AssetGenImage('assets/images/nE2Yk.png');
+
   /// File path: assets/images/pv5ec.png
   AssetGenImage get pv5ec => const AssetGenImage('assets/images/pv5ec.png');
 
@@ -317,6 +355,7 @@ class $AssetsImagesGen {
   /// List of all assets
   List<dynamic> get values => [
     aGitkeep,
+    gyDMl,
     h46gD6,
     j0ynDJ,
     r8Z6hl,
@@ -382,12 +421,21 @@ class $AssetsImagesGen {
     designPerspectivePhoto1Asset,
     designPerspectivePhoto2Asset,
     designPregnancyJourneyAsset,
+    designRec01CoverAsset,
+    designRec01Photo1Asset,
+    designRec01Photo2Asset,
+    designRec01Photo3Asset,
+    designRec03First1Asset,
+    designRec03First2Asset,
+    designRec03NowAsset,
+    designRec03PrevAsset,
     designTimelineFirstAsset,
     designUltrasoundAsset,
     generated1791380679668,
     generated1791380690709,
     generated1791380691593,
     generated1791380839354,
+    nE2Yk,
     pv5ec,
     utV0f,
   ];

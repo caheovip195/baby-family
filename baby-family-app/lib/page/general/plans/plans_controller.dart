@@ -1,4 +1,5 @@
 import 'package:baby_family/data/model/family/family.dart';
+import 'package:baby_family/data/model/family/member.dart';
 import 'package:baby_family/data/model/family/plan_info.dart';
 import 'package:baby_family/data/model/family/plan_offer.dart';
 import 'package:baby_family/data/model/session/app_session.dart';
@@ -8,11 +9,12 @@ import 'package:baby_family/data/provider/session.dart';
 import 'package:baby_family/data/service/family.dart';
 import 'package:baby_family/page/application_base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
+import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
 import 'package:hooks_riverpod/legacy.dart';
 
-/// SUB-01 — Chọn gói (paywall). Mua mock thành công ngay (SUB-02 là sheet
-/// của Store); mặc định chọn Family như thiết kế.
+/// SUB-01 — Chọn gói (paywall). Mua sau khi xác nhận ở SUB-02 (sheet dùng
+/// chung), mock thành công ngay; mặc định chọn Family như thiết kế.
 final plansControllerProvider =
     ChangeNotifierProvider.autoDispose<PlansController>(PlansController.new);
 
@@ -25,6 +27,8 @@ class PlansController extends BaseNotifier {
 
   List<PlanOffer> offers = const [];
   PlanInfo? plan;
+  Family? family;
+  List<Member> members = const [];
   PlanState selected = PlanState.family;
 
   /// Phiên sau thao tác — view điều hướng bằng `routeForSession`.
@@ -45,16 +49,26 @@ class PlansController extends BaseNotifier {
 
   bool get isCurrentPlan => plan?.state == selected;
 
+  /// Tên gọi Papa/Mama cho SUB-02 (“Cho cả Nhà Lan · Papa, Mama…”).
+  String callNameOf(FamilyRole role) =>
+      members.where((m) => m.role == role).firstOrNull?.callName ??
+      (role == FamilyRole.father
+          ? kValueDefaultCallNameFather
+          : kValueDefaultCallNameMother);
+
   Future<void> load() async {
-    final results = await Future.wait([
+    final results = await Future.wait<Object?>([
       familyService.planOffers(),
       familyService.currentFamily(),
+      familyService.members(),
     ]);
     if (isDisposed) {
       return;
     }
     offers = results[0]! as List<PlanOffer>;
-    plan = (results[1] as Family?)?.plan;
+    family = results[1] as Family?;
+    plan = family?.plan;
+    members = results[2]! as List<Member>;
     notifyListeners();
   }
 

@@ -416,4 +416,100 @@ void main() {
       expect((await settings.help()).hotline, '1900 6868');
     });
   });
+
+  group('batch 3 data (Pencil frames)', () {
+    test('bridge, safety, couple week (US-08…14)', () async {
+      final us = _container().read(usServiceProvider);
+      final draft = await us.bridgeDraft();
+      expect(draft!.wizardStep, 3);
+      final steps = await us.bridgeOptions('nextSteps');
+      expect(steps.map((s) => s.title), contains('Papa trông con 30 phút'));
+      final session = await us.bridgeSession('br-1');
+      expect(session!.status, BridgeStatus.active);
+      expect(session.shares, hasLength(2));
+      expect((await us.rewriteSuggestion())!.options, hasLength(3));
+      expect((await us.safetyHotlines()).map((h) => h.number), [
+        '113',
+        '115',
+        '111',
+      ]);
+      final week = await us.coupleWeek();
+      expect(week!.checkins, 9);
+      await us.closeBridge('br-1');
+      expect((await us.bridgeSession('br-1'))!.status, BridgeStatus.closed);
+    });
+
+    test('trash, drafts, pending review, report, recaps', () async {
+      final memory = _container().read(memoryServiceProvider);
+      final trash = await memory.trash();
+      expect(trash, hasLength(3));
+      await memory.restoreMemory(trash.first.id);
+      expect(await memory.trash(), hasLength(2));
+      final drafts = await memory.drafts();
+      expect(drafts, hasLength(4));
+      expect(drafts.first.location, DraftLocation.device);
+      final pending = await memory.pendingPosts();
+      expect(pending, hasLength(3));
+      await memory.approvePost(pending.first.id);
+      expect(await memory.pendingPosts(), hasLength(2));
+      expect(await memory.reportReasons(), hasLength(7));
+      final receipt = await memory.submitReport(
+        targetId: 'x',
+        reasonCode: 'child_safety',
+      );
+      expect(receipt.code, 'BC-261007-0482');
+      expect(await memory.dayStory(childId: 'haru'), isNotNull);
+      expect(await memory.monthRecap(childId: 'haru'), isNotNull);
+    });
+
+    test('care stats, child archive (CARE-11, CHD-05)', () async {
+      final c = _container();
+      final stats = await c.read(careServiceProvider).careStats();
+      expect(stats!.total, 32);
+      expect(stats.bloomed.where((b) => b), hasLength(5));
+      final info = await c.read(childServiceProvider).archiveInfo('khang');
+      expect(info.deletableFrom, DateTime(2026, 10, 9));
+      expect(info.canDeleteAt(DateTime(2026, 10, 7)), isFalse);
+      expect(info.canDeleteAt(DateTime(2026, 10, 9)), isTrue);
+    });
+
+    test('plan details, memberships, invites, settings', () async {
+      final c = _container();
+      final family = c.read(familyServiceProvider);
+      final plan = await family.planDetails();
+      expect(plan!.aiRemaining, 286);
+      expect(plan.aiTotal, 300);
+      expect(await family.relativeInvites(), isNotEmpty);
+      final settings = c.read(settingsServiceProvider);
+      expect(await settings.blockedPeople(), hasLength(1));
+      final ai = await settings.aiSettings();
+      expect(ai.features, hasLength(6));
+      final lan = await family.memberships();
+      expect(lan.map((m) => m.familyName), contains('Nhà anh Tuấn'));
+    });
+
+    test('circle extras for Bà ngoại (CIR-02…06)', () async {
+      final c = _container(seed: DemoSeed.circle);
+      final circle = c.read(circleServiceProvider);
+      final memory = await circle.memory('c-haru-roll');
+      expect(memory, isNotNull);
+      expect(await circle.wishes('c-haru-roll'), hasLength(2));
+      final prefs = await circle.preferences();
+      expect(prefs.postedPhotos, 18);
+      await circle.submitPost(await circle.postDraft());
+    });
+
+    test('new seeds route to their states', () async {
+      for (final (seed, state) in [
+        (DemoSeed.partnerLeft, SessionState.active),
+        (DemoSeed.circlePaused, SessionState.circlePaused),
+        (DemoSeed.paymentIssue, SessionState.active),
+        (DemoSeed.house, SessionState.active),
+      ]) {
+        final c = _container(seed: seed);
+        final session = await c.read(sessionServiceProvider).restore();
+        expect(session.state, state, reason: seed.name);
+      }
+    });
+  });
 }

@@ -153,6 +153,22 @@ class MemorySearchMobileView extends HookConsumerWidget {
               label: l10n.memoriesAlbum,
               onTap: () => context.router.push(const AlbumsRoute()),
             ),
+            if (controller.pendingCount > 0)
+              _SearchShortcutRow(
+                icon: LucideIcons.imagePlus,
+                label: l10n.memShortcutPending,
+                onTap: () => context.router.push(const PendingReviewRoute()),
+              ),
+            _SearchShortcutRow(
+              icon: LucideIcons.filePen,
+              label: l10n.memShortcutDrafts,
+              onTap: () => context.router.push(const DraftsRoute()),
+            ),
+            _SearchShortcutRow(
+              icon: LucideIcons.trash2,
+              label: l10n.memShortcutTrash,
+              onTap: () => context.router.push(const TrashRoute()),
+            ),
           ],
         ),
       ];

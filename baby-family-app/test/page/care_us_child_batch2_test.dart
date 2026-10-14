@@ -118,7 +118,7 @@ void main() {
     testWidgets('design qa chd_03', (tester) async {
       await pumpRoute(tester, const ChildrenRoute());
       expect(find.text('Tuần 24 + 3 ngày · dự sinh 24/01'), findsOneWidget);
-      expect(find.text('Lưu trữ 02/10/2026 · 0 ký ức riêng'), findsOneWidget);
+      expect(find.text('Lưu trữ 02/10/2026 · 2 ký ức riêng'), findsOneWidget);
       await saveDesignShot(tester, 'chd_03');
     });
 

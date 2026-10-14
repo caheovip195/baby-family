@@ -9641,6 +9641,2922 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Người bị chặn'**
   String get settingsBlockedTitle;
+
+  /// SUB-03 status pill
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang hoạt động'**
+  String get subPlanActive;
+
+  /// SUB-03 info label
+  ///
+  /// In vi, this message translates to:
+  /// **'Gia hạn tự động'**
+  String get subPlanAutoRenew;
+
+  /// SUB-03 info label
+  ///
+  /// In vi, this message translates to:
+  /// **'Người thanh toán'**
+  String get subPlanPayer;
+
+  /// SUB-03 info label
+  ///
+  /// In vi, this message translates to:
+  /// **'Kênh mua'**
+  String get subPlanChannel;
+
+  /// SUB-03 info label
+  ///
+  /// In vi, this message translates to:
+  /// **'Áp dụng cho'**
+  String get subPlanAppliesTo;
+
+  /// SUB-03 applies-to value
+  ///
+  /// In vi, this message translates to:
+  /// **'Cả {family}'**
+  String subPlanWholeFamily(String family);
+
+  /// Storage amount in GB
+  ///
+  /// In vi, this message translates to:
+  /// **'{value} GB'**
+  String subPlanGb(String value);
+
+  /// SUB-03 storage caption
+  ///
+  /// In vi, this message translates to:
+  /// **'đã dùng / {total} GB'**
+  String subPlanUsedOf(String total);
+
+  /// SUB-03 storage legend
+  ///
+  /// In vi, this message translates to:
+  /// **'{kind, select, photo{Ảnh} video{Video} audio{Âm thanh} other{Khác}} · {size} GB'**
+  String subPlanStorageKind(String kind, String size);
+
+  /// SUB-03 section
+  ///
+  /// In vi, this message translates to:
+  /// **'Trong gói của nhà mình'**
+  String get subPlanIncluded;
+
+  /// SUB-03 usage row
+  ///
+  /// In vi, this message translates to:
+  /// **'Người thân'**
+  String get subPlanRelatives;
+
+  /// Used/max counter
+  ///
+  /// In vi, this message translates to:
+  /// **'{used}/{max}'**
+  String subPlanSlots(int used, int max);
+
+  /// SUB-03 usage row
+  ///
+  /// In vi, this message translates to:
+  /// **'Lượt AI tháng này'**
+  String get subPlanAi;
+
+  /// SUB-03 AI reset date
+  ///
+  /// In vi, this message translates to:
+  /// **'Làm mới vào {date}'**
+  String subPlanAiRenews(String date);
+
+  /// SUB-03 AI remaining
+  ///
+  /// In vi, this message translates to:
+  /// **'Còn {remaining}/{total}'**
+  String subPlanAiLeft(int remaining, int total);
+
+  /// SUB-03 usage row
+  ///
+  /// In vi, this message translates to:
+  /// **'Video tối đa'**
+  String get subPlanVideo;
+
+  /// SUB-03 usage hint
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh gốc · {count} ảnh mỗi ký ức'**
+  String subPlanVideoHint(int count);
+
+  /// SUB-03 usage hint (no original quality)
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} ảnh mỗi ký ức'**
+  String subPlanVideoHintCompressed(int count);
+
+  /// Minutes value
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} phút'**
+  String subPlanMinutes(int count);
+
+  /// SUB-03 primary button
+  ///
+  /// In vi, this message translates to:
+  /// **'Quản lý trong {channel}'**
+  String subPlanManageStore(String channel);
+
+  /// SUB-03 secondary button
+  ///
+  /// In vi, this message translates to:
+  /// **'Đổi gói'**
+  String get subPlanChange;
+
+  /// SUB-03 note
+  ///
+  /// In vi, this message translates to:
+  /// **'Gói nằm trong tài khoản {channel} của {payer} nên chỉ {payer} đổi hoặc huỷ được. {partner} sẽ thấy hướng dẫn nhờ {payer}. Huỷ bất kỳ lúc nào trong cài đặt {channel} — ký ức của nhà mình không bị xoá.'**
+  String subPlanNote(String channel, String payer, String partner);
+
+  /// SUB-03/06 mock store snackbar
+  ///
+  /// In vi, this message translates to:
+  /// **'Bản mẫu: trang quản lý gói của {channel} chỉ được mô phỏng.'**
+  String subManageStoreMock(String channel);
+
+  /// SUB-04 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Nâng cấp lên Family để mời ông bà'**
+  String get subUpgradeTitle;
+
+  /// SUB-04 subtitle
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhà mình đang dùng gói House · {payer} thanh toán qua {channel}. Family mở thêm ông bà, người thân và dung lượng lớn hơn.'**
+  String subUpgradeSubtitle(String payer, String channel);
+
+  /// SUB-04 compare row
+  ///
+  /// In vi, this message translates to:
+  /// **'Ông bà, người thân'**
+  String get subCmpRelatives;
+
+  /// SUB-04 compare row
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh mỗi ký ức'**
+  String get subCmpPhotos;
+
+  /// SUB-04 compare row
+  ///
+  /// In vi, this message translates to:
+  /// **'Video'**
+  String get subCmpVideo;
+
+  /// SUB-04 compare row
+  ///
+  /// In vi, this message translates to:
+  /// **'Ghi âm'**
+  String get subCmpVoice;
+
+  /// SUB-04 compare row
+  ///
+  /// In vi, this message translates to:
+  /// **'Lưu ảnh chất lượng gốc'**
+  String get subCmpOriginal;
+
+  /// SUB-04 compare row
+  ///
+  /// In vi, this message translates to:
+  /// **'Lượt AI mỗi tháng'**
+  String get subCmpAi;
+
+  /// SUB-04 compare row
+  ///
+  /// In vi, this message translates to:
+  /// **'Bản tin, duyệt ảnh người thân'**
+  String get subCmpDigest;
+
+  /// SUB-04 not included
+  ///
+  /// In vi, this message translates to:
+  /// **'—'**
+  String get subCmpNone;
+
+  /// SUB-04 included
+  ///
+  /// In vi, this message translates to:
+  /// **'Có'**
+  String get subCmpYes;
+
+  /// SUB-04 relatives value
+  ///
+  /// In vi, this message translates to:
+  /// **'Tối đa {count}'**
+  String subCmpUpTo(int count);
+
+  /// SUB-04 max minutes
+  ///
+  /// In vi, this message translates to:
+  /// **'≤ {count} phút'**
+  String subCmpMaxMinutes(int count);
+
+  /// SUB-04 price label
+  ///
+  /// In vi, this message translates to:
+  /// **'Hiện tại'**
+  String get subUpgradeCurrent;
+
+  /// SUB-04 prorate note
+  ///
+  /// In vi, this message translates to:
+  /// **'Nâng cấp có hiệu lực ngay. {channel} tự tính phần chênh lệch cho thời gian còn lại của gói House — bạn không phải trả lại cả năm.'**
+  String subUpgradeProrate(String channel);
+
+  /// SUB-04 button
+  ///
+  /// In vi, this message translates to:
+  /// **'Nâng cấp lên Family · {price}'**
+  String subUpgradeCta(String price);
+
+  /// SUB-04 legal
+  ///
+  /// In vi, this message translates to:
+  /// **'Tự động gia hạn hằng năm, huỷ bất kỳ lúc nào trong cài đặt App Store. Điều khoản · Quyền riêng tư · Khôi phục giao dịch'**
+  String get subUpgradeLegal;
+
+  /// SUB-04 non-payer preview label
+  ///
+  /// In vi, this message translates to:
+  /// **'{partner} sẽ thấy (không phải người thanh toán)'**
+  String subUpgradeNotPayerLabel(String partner);
+
+  /// SUB-04 non-payer preview body
+  ///
+  /// In vi, this message translates to:
+  /// **'Gói House đang do {payer} thanh toán. Để tránh trả 2 lần, hãy nhờ {payer} nâng cấp.'**
+  String subUpgradeNotPayerBody(String payer);
+
+  /// SUB-04 non-payer button
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi lời nhắn cho {payer}'**
+  String subUpgradeAskPayer(String payer);
+
+  /// SUB-04 snackbar
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi lời nhắn cho {payer}'**
+  String subUpgradeAskSent(String payer);
+
+  /// SUB-02 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác nhận gói {plan}'**
+  String subConfirmTitle(String plan);
+
+  /// SUB-02 subtitle (Family)
+  ///
+  /// In vi, this message translates to:
+  /// **'Cho cả {family} · {papa}, {mama} và người thân'**
+  String subConfirmAudienceFamily(String family, String papa, String mama);
+
+  /// SUB-02 subtitle (House)
+  ///
+  /// In vi, this message translates to:
+  /// **'Cho cả {family} · {papa} & {mama}'**
+  String subConfirmAudienceHouse(String family, String papa, String mama);
+
+  /// SUB-02 row
+  ///
+  /// In vi, this message translates to:
+  /// **'Giá'**
+  String get subConfirmPrice;
+
+  /// SUB-02 row
+  ///
+  /// In vi, this message translates to:
+  /// **'Quy đổi'**
+  String get subConfirmMonthly;
+
+  /// SUB-02 row
+  ///
+  /// In vi, this message translates to:
+  /// **'Chu kỳ'**
+  String get subConfirmCycle;
+
+  /// SUB-02 value
+  ///
+  /// In vi, this message translates to:
+  /// **'1 năm · tự động gia hạn'**
+  String get subConfirmCycleValue;
+
+  /// SUB-02 row
+  ///
+  /// In vi, this message translates to:
+  /// **'Hiệu lực'**
+  String get subConfirmEffective;
+
+  /// SUB-02 value
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngay khi App Store xác nhận'**
+  String get subConfirmEffectiveValue;
+
+  /// SUB-02 row
+  ///
+  /// In vi, this message translates to:
+  /// **'Thanh toán qua'**
+  String get subConfirmPayVia;
+
+  /// SUB-02 value
+  ///
+  /// In vi, this message translates to:
+  /// **'Tài khoản App Store của bạn'**
+  String get subConfirmPayViaValue;
+
+  /// SUB-02 point
+  ///
+  /// In vi, this message translates to:
+  /// **'Mời ngay tối đa {count} ông bà, người thân'**
+  String subConfirmRelatives(int count);
+
+  /// SUB-02 point
+  ///
+  /// In vi, this message translates to:
+  /// **'{storage} GB · video ≤ {video} phút{original, select, yes{ · lưu ảnh gốc} other{}}'**
+  String subConfirmLimits(int storage, int video, String original);
+
+  /// SUB-02 point
+  ///
+  /// In vi, this message translates to:
+  /// **'Thời gian dùng thử còn lại không cộng dồn — chu kỳ năm tính từ hôm nay'**
+  String get subConfirmTrialNote;
+
+  /// SUB-02 button
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiếp tục với App Store'**
+  String get subConfirmCta;
+
+  /// SUB-02 legal
+  ///
+  /// In vi, this message translates to:
+  /// **'Bước tiếp theo là bảng thanh toán của App Store. Tự động gia hạn hằng năm, huỷ bất kỳ lúc nào trong cài đặt App Store.'**
+  String get subConfirmLegal;
+
+  /// SUB-02 link
+  ///
+  /// In vi, this message translates to:
+  /// **'Điều khoản'**
+  String get subLinkTerms;
+
+  /// SUB-05 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Video này dài {minutes} phút'**
+  String subLimitVideoTitle(int minutes);
+
+  /// SUB-05 body
+  ///
+  /// In vi, this message translates to:
+  /// **'{plan} lưu được video tối đa {max} phút mỗi video. Bạn có thể cắt ngắn lại, hoặc giữ khoảnh khắc này bằng lời kể.'**
+  String subLimitVideoBody(String plan, int max);
+
+  /// SUB-05 safe note
+  ///
+  /// In vi, this message translates to:
+  /// **'Ký ức của bạn vẫn an toàn — chưa có gì bị xoá, nội dung đang soạn vẫn được giữ nguyên.'**
+  String get subLimitSafe;
+
+  /// SUB-05 primary
+  ///
+  /// In vi, this message translates to:
+  /// **'Cắt video còn {max} phút'**
+  String subLimitTrim(int max);
+
+  /// SUB-05 secondary
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn video khác'**
+  String get subLimitPickAnother;
+
+  /// SUB-05 text button
+  ///
+  /// In vi, this message translates to:
+  /// **'Lưu dạng nhật ký chữ'**
+  String get subLimitSaveDiary;
+
+  /// SUB-05 plan note
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhà mình đang dùng gói cao nhất (Family) nên không cần nâng cấp thêm.'**
+  String get subLimitTopPlan;
+
+  /// SUB-05 upgrade link (House/trial)
+  ///
+  /// In vi, this message translates to:
+  /// **'Nâng cấp lên Family'**
+  String get subLimitUpgrade;
+
+  /// SUB-05 snackbar
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã cắt video còn {max} phút'**
+  String subLimitTrimmed(int max);
+
+  /// SUB-06 banner title
+  ///
+  /// In vi, this message translates to:
+  /// **'Thanh toán gia hạn chưa thành công'**
+  String get subIssueTitle;
+
+  /// SUB-06 banner body
+  ///
+  /// In vi, this message translates to:
+  /// **'Kiểm tra phương thức thanh toán để không gián đoạn. {plan} của nhà mình vẫn hoạt động trong lúc này.'**
+  String subIssueBody(String plan);
+
+  /// SUB-06 banner action
+  ///
+  /// In vi, this message translates to:
+  /// **'Kiểm tra trong App Store'**
+  String get subIssueAction;
+
+  /// INV-02 tip
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhắn cho người đã mời bạn (Bố/Mẹ của bé) để họ tạo lời mời mới.'**
+  String get invInvalidTipMessage;
+
+  /// INV-02 tip
+  ///
+  /// In vi, this message translates to:
+  /// **'Nếu đã có mã 8 ký tự mới, bạn có thể nhập mã ngay.'**
+  String get invInvalidTipCode;
+
+  /// INV-02 primary
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập mã mời khác'**
+  String get invEnterOtherCode;
+
+  /// INV-03 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đang là {callName} ở một gia đình khác'**
+  String invElsewhereTitle(String callName);
+
+  /// INV-03 body
+  ///
+  /// In vi, this message translates to:
+  /// **'Mỗi tài khoản chỉ là Bố/Mẹ của một gia đình, nên bạn chưa thể nhận lời mời này.'**
+  String get invElsewhereBody;
+
+  /// INV-03 invite card
+  ///
+  /// In vi, this message translates to:
+  /// **'{inviter} mời bạn tham gia {family}'**
+  String invElsewhereInvite(String inviter, String family);
+
+  /// INV-03 invite card
+  ///
+  /// In vi, this message translates to:
+  /// **'Vai trò đề xuất: {callName} của các bé'**
+  String invElsewhereRole(String callName);
+
+  /// INV-03 disabled option
+  ///
+  /// In vi, this message translates to:
+  /// **'Tham gia như người thân'**
+  String get invElsewhereJoinRelative;
+
+  /// INV-03 disabled option hint
+  ///
+  /// In vi, this message translates to:
+  /// **'Không khả dụng — lời mời này dành cho Bố/Mẹ. Nhờ {inviter} gửi lời mời người thân nếu bạn muốn xem các bé.'**
+  String invElsewhereJoinRelativeHint(String inviter);
+
+  /// INV-03 option
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm hiểu cách rời gia đình hiện tại'**
+  String get invElsewhereLeave;
+
+  /// INV-03 option hint
+  ///
+  /// In vi, this message translates to:
+  /// **'Các lựa chọn cho Bố/Mẹ và cách nhờ hỗ trợ'**
+  String get invElsewhereLeaveHint;
+
+  /// INV-04 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi yêu cầu'**
+  String get invWaitingTitle;
+
+  /// INV-04 body
+  ///
+  /// In vi, this message translates to:
+  /// **'{inviter} sẽ xác nhận để hoàn tất. Bạn có thể đóng app — mình sẽ báo ngay khi xong.'**
+  String invWaitingBody(String inviter);
+
+  /// INV-04 step
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã nhận lời mời vào {family}'**
+  String invWaitingStepJoined(String family);
+
+  /// INV-04 step hint
+  ///
+  /// In vi, this message translates to:
+  /// **'Vai trò: {callName} của các bé'**
+  String invWaitingStepRole(String callName);
+
+  /// INV-04 step
+  ///
+  /// In vi, this message translates to:
+  /// **'Chờ {inviter} xác nhận'**
+  String invWaitingStepConfirm(String inviter);
+
+  /// INV-04 step hint
+  ///
+  /// In vi, this message translates to:
+  /// **'{inviter} bật “xác nhận lần cuối” để chắc đúng người'**
+  String invWaitingStepConfirmHint(String inviter);
+
+  /// INV-04 step
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhà mình bắt đầu 3 tháng dùng thử miễn phí'**
+  String get invWaitingStepTrial;
+
+  /// INV-04 notice
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn sẽ nhận thông báo “Chào mừng về nhà!”'**
+  String get invWaitingNotice;
+
+  /// FAM-02 banner
+  ///
+  /// In vi, this message translates to:
+  /// **'{partner} đã rời {family} (xoá tài khoản). Nhà mình đang ở chế độ chỉ xem & tải về cho tới khi có bạn đời mới.'**
+  String famPartnerLeftBanner(String partner, String family);
+
+  /// FAM-02 subtitle
+  ///
+  /// In vi, this message translates to:
+  /// **'Khi bạn đời tham gia, cả nhà lại cùng tạo ký ức, nhiệm vụ và góc Papa & Mama như trước.'**
+  String get famPartnerInviteSubtitle;
+
+  /// FAM-02 role label
+  ///
+  /// In vi, this message translates to:
+  /// **'Mời với vai trò'**
+  String get famPartnerInviteRole;
+
+  /// FAM-02 preview title
+  ///
+  /// In vi, this message translates to:
+  /// **'Người nhận sẽ thấy trước khi tham gia'**
+  String get famPartnerRecipientSees;
+
+  /// FAM-02 preview hint
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời mời từ {name} ({callName}) · chỉ tên và ảnh đại diện các bé'**
+  String famPartnerRecipientHint(String name, String callName);
+
+  /// FAM-02 revoke
+  ///
+  /// In vi, this message translates to:
+  /// **'Thu hồi lời mời'**
+  String get famPartnerRevoke;
+
+  /// FAM-02 snackbar
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã thu hồi lời mời'**
+  String get famPartnerRevoked;
+
+  /// FAM-05 capacity
+  ///
+  /// In vi, this message translates to:
+  /// **'Người thân {family}: {active} đang tham gia · {pending} đang chờ'**
+  String famInvitesCapacity(String family, int active, int pending);
+
+  /// FAM-05 section
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang chờ'**
+  String get famInvitesPending;
+
+  /// FAM-05 section
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã hết hạn'**
+  String get famInvitesExpired;
+
+  /// FAM-05 status
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa mở link'**
+  String get famInviteNotOpened;
+
+  /// FAM-05 status
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã mở link'**
+  String get famInviteOpened;
+
+  /// FAM-05 status
+  ///
+  /// In vi, this message translates to:
+  /// **'Hết hạn'**
+  String get famInviteExpiredTag;
+
+  /// FAM-05 description
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời mời người thân'**
+  String get famInviteKindRelative;
+
+  /// FAM-05/08 permission
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem'**
+  String get famInvitePermView;
+
+  /// FAM-05/08 permission
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem + Bình luận'**
+  String get famInvitePermComment;
+
+  /// FAM-05 permission
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem + Bình luận + Đăng ảnh'**
+  String get famInvitePermPost;
+
+  /// FAM-05 dates
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo {created} · hết hạn {expires} · {daysLeft}'**
+  String famInviteDates(String created, String expires, String daysLeft);
+
+  /// FAM-05 days left
+  ///
+  /// In vi, this message translates to:
+  /// **'{count, plural, =0{hết hạn hôm nay} other{còn {count} ngày}}'**
+  String famInviteDaysLeft(int count);
+
+  /// FAM-05 expired date
+  ///
+  /// In vi, this message translates to:
+  /// **'Hết hạn {date} · link không còn mở được'**
+  String famInviteExpiredOn(String date);
+
+  /// FAM-05 action
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi lại link'**
+  String get famInviteResend;
+
+  /// FAM-05 action
+  ///
+  /// In vi, this message translates to:
+  /// **'Thu hồi'**
+  String get famInviteRevoke;
+
+  /// FAM-05 action
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo lời mời mới'**
+  String get famInviteRenew;
+
+  /// FAM-05 snackbar
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi lại link cho {callName}'**
+  String famInviteResent(String callName);
+
+  /// FAM-05 snackbar
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã thu hồi lời mời của {callName}'**
+  String famInviteRevokedName(String callName);
+
+  /// FAM-05 snackbar
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã tạo lời mời mới cho {callName}'**
+  String famInviteRenewed(String callName);
+
+  /// FAM-05 rules
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời mời người thân hết hạn sau 14 ngày và chỉ dùng 1 lần. Thu hồi để link cũ không mở được nữa. Tối đa 12 người thân, tính cả lời mời đang chờ.'**
+  String get famInvitesRules;
+
+  /// FAM-05 button
+  ///
+  /// In vi, this message translates to:
+  /// **'Mời thêm người thân'**
+  String get famInviteMore;
+
+  /// FAM-05 empty
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có lời mời nào đang chờ'**
+  String get famInvitesEmpty;
+
+  /// FAM-08 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuyển gia đình'**
+  String get famSwitchTitle;
+
+  /// FAM-08 subtitle
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn là {callName} ở {family} và là người thân ở một gia đình khác.'**
+  String famSwitchSubtitle(String callName, String family);
+
+  /// FAM-08 role pill
+  ///
+  /// In vi, this message translates to:
+  /// **'{callName} (Bố/Mẹ)'**
+  String famSwitchRoleParent(String callName);
+
+  /// FAM-08 role pill
+  ///
+  /// In vi, this message translates to:
+  /// **'{callName} (người thân)'**
+  String famSwitchRoleRelative(String callName);
+
+  /// FAM-08 current marker
+  ///
+  /// In vi, this message translates to:
+  /// **'đang xem'**
+  String get famSwitchViewing;
+
+  /// FAM-08 relative line
+  ///
+  /// In vi, this message translates to:
+  /// **'Theo dõi bé {names}'**
+  String famSwitchFollows(String names);
+
+  /// FAM-08 note
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuyển gia đình sẽ đổi toàn bộ app theo gia đình được chọn. Ở {family}, bạn chỉ thấy ảnh của bé được chia sẻ — không có Chăm con hay Papa & Mama. Mỗi tài khoản chỉ là Bố/Mẹ của một gia đình.'**
+  String famSwitchNote(String family);
+
+  /// FAM-08 mock snackbar
+  ///
+  /// In vi, this message translates to:
+  /// **'Bản mẫu chỉ có dữ liệu của {family}.'**
+  String famSwitchMock(String family);
+
+  /// SET-05 master
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng AI hỗ trợ'**
+  String get setAiMaster;
+
+  /// SET-05 master hint
+  ///
+  /// In vi, this message translates to:
+  /// **'AI chỉ chạy khi bạn bấm. Mọi kết quả là bản nháp để bạn sửa, bỏ hoặc lưu.'**
+  String get setAiMasterHint;
+
+  /// SET-05 quota
+  ///
+  /// In vi, this message translates to:
+  /// **'Lượt AI còn lại tháng này'**
+  String get setAiQuotaLabel;
+
+  /// SET-05 quota total
+  ///
+  /// In vi, this message translates to:
+  /// **'/ {total} lượt'**
+  String setAiQuotaTotal(int total);
+
+  /// SET-05 reset
+  ///
+  /// In vi, this message translates to:
+  /// **'Làm mới {date}'**
+  String setAiRenews(String date);
+
+  /// SET-05 quota footer
+  ///
+  /// In vi, this message translates to:
+  /// **'{plan} · {total} lượt mỗi tháng cho cả nhà'**
+  String setAiPlanQuota(String plan, int total);
+
+  /// SET-05 section
+  ///
+  /// In vi, this message translates to:
+  /// **'Từng tính năng'**
+  String get setAiFeatures;
+
+  /// SET-05 section
+  ///
+  /// In vi, this message translates to:
+  /// **'Dữ liệu gửi đi'**
+  String get setAiDataSection;
+
+  /// SET-05 data point
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ gửi những gì ghi ở từng tính năng, cho đúng lần bạn bấm.'**
+  String get setAiData1;
+
+  /// SET-05 data point
+  ///
+  /// In vi, this message translates to:
+  /// **'AI không đọc nhật ký riêng, không chẩn đoán, không tự gửi tin cho ai.'**
+  String get setAiData2;
+
+  /// SET-05 data point
+  ///
+  /// In vi, this message translates to:
+  /// **'Lần đầu dùng mỗi tính năng, app hỏi bạn đồng ý trước.'**
+  String get setAiData3;
+
+  /// SET-05 data point
+  ///
+  /// In vi, this message translates to:
+  /// **'Mọi bản nháp đều có nhãn “✨ Gợi ý bởi AI”.'**
+  String get setAiData4;
+
+  /// SET-05 link
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem chi tiết dữ liệu gửi cho nhà cung cấp AI'**
+  String get setAiDataLink;
+
+  /// SET-05 row
+  ///
+  /// In vi, this message translates to:
+  /// **'Báo cáo nội dung AI'**
+  String get setAiReport;
+
+  /// SET-05 footer
+  ///
+  /// In vi, this message translates to:
+  /// **'Tắt AI, Baby Family vẫn dùng đầy đủ mọi tính năng.'**
+  String get setAiFoot;
+
+  /// SET-13 body
+  ///
+  /// In vi, this message translates to:
+  /// **'Người bị chặn không bình luận hay thả cảm xúc vào nội dung của bạn, và bạn không nhận thông báo liên quan đến họ.'**
+  String get setBlockedBody;
+
+  /// SET-13 section
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang chặn · {count} người'**
+  String setBlockedSection(int count);
+
+  /// SET-13 row
+  ///
+  /// In vi, this message translates to:
+  /// **'Chặn từ {date}'**
+  String setBlockedSince(String date);
+
+  /// SET-13 button
+  ///
+  /// In vi, this message translates to:
+  /// **'Bỏ chặn'**
+  String get setUnblock;
+
+  /// SET-13 snackbar
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã bỏ chặn {name}'**
+  String setUnblocked(String name);
+
+  /// SET-13 info
+  ///
+  /// In vi, this message translates to:
+  /// **'Sau khi bỏ chặn, người này có thể bình luận và thả cảm xúc vào nội dung của bạn như trước. Bạn có thể chặn lại bất cứ lúc nào từ trang của họ.'**
+  String get setUnblockInfo;
+
+  /// SET-13 partner note
+  ///
+  /// In vi, this message translates to:
+  /// **'Papa và Mama không chặn nhau trong app. Nếu cần khoảng lặng, bạn có thể tắt chia sẻ cảm xúc trong Papa & Mama.'**
+  String get setBlockedPartnerNote;
+
+  /// SET-13 empty
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn chưa chặn ai'**
+  String get setBlockedEmpty;
+
+  /// Delete permanently (MEM-17, CHD-05)
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá vĩnh viễn'**
+  String get commonDeleteForever;
+
+  /// MEM-17 info
+  ///
+  /// In vi, this message translates to:
+  /// **'Ký ức đã xoá được giữ {days} ngày rồi mới xoá hẳn. Bạn thấy mọi ký ức bị xoá trong gia đình.'**
+  String memTrashInfo(int days);
+
+  /// MEM-17 info for relatives
+  ///
+  /// In vi, this message translates to:
+  /// **'Ký ức đã xoá được giữ {days} ngày rồi mới xoá hẳn. Bạn thấy những ký ức bạn đã xoá.'**
+  String memTrashInfoOwn(int days);
+
+  /// MEM-17 section
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} ký ức'**
+  String memTrashCount(int count);
+
+  /// MEM-17 who deleted
+  ///
+  /// In vi, this message translates to:
+  /// **'{callName} xoá {date} ·'**
+  String memTrashDeletedBy(String callName, String date);
+
+  /// MEM-17 footnote
+  ///
+  /// In vi, this message translates to:
+  /// **'Khôi phục để ký ức trở lại đúng chỗ cũ trên dòng thời gian, kèm bình luận và lượt thả tim.'**
+  String get memTrashFootnote;
+
+  /// MEM-17 empty title
+  ///
+  /// In vi, this message translates to:
+  /// **'Thùng rác trống'**
+  String get memTrashEmpty;
+
+  /// MEM-17 empty hint
+  ///
+  /// In vi, this message translates to:
+  /// **'Ký ức bạn xoá sẽ nằm ở đây {days} ngày để bạn kịp đổi ý.'**
+  String memTrashEmptyHint(int days);
+
+  /// MEM-17 snackbar
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã khôi phục “{title}”'**
+  String memTrashRestored(String title);
+
+  /// MEM-17 snackbar
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã xoá vĩnh viễn'**
+  String get memTrashDeleted;
+
+  /// MEM-17b title
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá vĩnh viễn ký ức này?'**
+  String get memTrashConfirmTitle;
+
+  /// MEM-17b body
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh, bình luận và lượt thả tim của ký ức sẽ mất hẳn. Không thể khôi phục sau bước này.'**
+  String get memTrashConfirmBody;
+
+  /// MEM-17b secondary button
+  ///
+  /// In vi, this message translates to:
+  /// **'Giữ lại trong thùng rác'**
+  String get memTrashKeep;
+
+  /// Comment count
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} bình luận'**
+  String memCommentCount(int count);
+
+  /// Heart count
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} lượt thả tim'**
+  String memHeartCount(int count);
+
+  /// MEM-07 menu
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá ký ức'**
+  String get memMoveToTrash;
+
+  /// MEM-07 snackbar
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã chuyển vào thùng rác · giữ {days} ngày'**
+  String memMovedToTrash(int days);
+
+  /// MEM-07 delete dialog
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá ký ức này?'**
+  String get memMoveToTrashTitle;
+
+  /// MEM-07 delete dialog
+  ///
+  /// In vi, this message translates to:
+  /// **'Ký ức sẽ nằm trong Thùng rác {days} ngày, bạn có thể khôi phục trong thời gian đó.'**
+  String memMoveToTrashBody(int days);
+
+  /// MEM-18 subtitle
+  ///
+  /// In vi, this message translates to:
+  /// **'Ký ức đang soạn dở được tự lưu khi bạn thoát giữa chừng. Chỉ mình bạn thấy nháp.'**
+  String get memDraftsSubtitle;
+
+  /// MEM-18 section
+  ///
+  /// In vi, this message translates to:
+  /// **'Trên máy này'**
+  String get memDraftsDevice;
+
+  /// MEM-18 section
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lưu trên tài khoản'**
+  String get memDraftsCloud;
+
+  /// MEM-18 note
+  ///
+  /// In vi, this message translates to:
+  /// **'Nháp trên máy chưa được lưu lên tài khoản — xoá app sẽ mất.'**
+  String get memDraftsLocalNote;
+
+  /// MEM-18 action
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiếp tục soạn'**
+  String get memDraftContinue;
+
+  /// MEM-18 meta
+  ///
+  /// In vi, this message translates to:
+  /// **'Sửa lúc {time} hôm nay'**
+  String memDraftEditedToday(String time);
+
+  /// MEM-18 meta
+  ///
+  /// In vi, this message translates to:
+  /// **'Sửa lúc {time} hôm qua'**
+  String memDraftEditedYesterday(String time);
+
+  /// MEM-18 meta
+  ///
+  /// In vi, this message translates to:
+  /// **'Sửa {date}, {time}'**
+  String memDraftEditedOn(String date, String time);
+
+  /// MEM-18 meta
+  ///
+  /// In vi, this message translates to:
+  /// **'Lưu {date}, {time}'**
+  String memDraftSavedOn(String date, String time);
+
+  /// MEM-18 meta
+  ///
+  /// In vi, this message translates to:
+  /// **'Lưu {date}, {time} trên {device}'**
+  String memDraftSavedOnDevice(String date, String time, String device);
+
+  /// Memory kind label (photo)
+  ///
+  /// In vi, this message translates to:
+  /// **'Khoảnh khắc'**
+  String get memKindMoment;
+
+  /// MEM-18 voice draft
+  ///
+  /// In vi, this message translates to:
+  /// **'Giọng nói {duration}'**
+  String memKindVoiceDuration(String duration);
+
+  /// MEM-18 empty
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có nháp nào'**
+  String get memDraftsEmpty;
+
+  /// MEM-18 empty hint
+  ///
+  /// In vi, this message translates to:
+  /// **'Khi bạn thoát giữa chừng lúc đang soạn, ký ức sẽ được giữ ở đây.'**
+  String get memDraftsEmptyHint;
+
+  /// MEM-18 snackbar
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã xoá nháp'**
+  String get memDraftDeleted;
+
+  /// Composer close snackbar
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lưu vào Nháp'**
+  String get memDraftSaved;
+
+  /// Composer close snackbar action
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem nháp'**
+  String get memDraftView;
+
+  /// MEM-15 shortcut
+  ///
+  /// In vi, this message translates to:
+  /// **'Thùng rác'**
+  String get memShortcutTrash;
+
+  /// MEM-15 shortcut
+  ///
+  /// In vi, this message translates to:
+  /// **'Nháp'**
+  String get memShortcutDrafts;
+
+  /// MEM-15 shortcut
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh chờ duyệt'**
+  String get memShortcutPending;
+
+  /// MEM-19 subtitle
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh người thân đăng chỉ hiện với cả nhà sau khi bạn hoặc {partner} duyệt. Trong lúc chờ, chỉ người đăng và bố mẹ thấy.'**
+  String memPendingSubtitle(String partner);
+
+  /// MEM-19 edit row
+  ///
+  /// In vi, this message translates to:
+  /// **'Bé trong ảnh'**
+  String get memPendingKids;
+
+  /// MEM-19 edit row
+  ///
+  /// In vi, this message translates to:
+  /// **'Ai nhìn thấy'**
+  String get memPendingAudience;
+
+  /// MEM-19 button
+  ///
+  /// In vi, this message translates to:
+  /// **'Từ chối'**
+  String get memPendingReject;
+
+  /// MEM-19 button
+  ///
+  /// In vi, this message translates to:
+  /// **'Duyệt & hiện'**
+  String get memPendingApprove;
+
+  /// MEM-19 reject panel
+  ///
+  /// In vi, this message translates to:
+  /// **'Lý do từ chối (không bắt buộc)'**
+  String get memPendingRejectReason;
+
+  /// MEM-19 reject hint
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} sẽ nhận được lời nhắn nhẹ nhàng này. Ảnh không hiện với ai khác.'**
+  String memPendingRejectHint(String name);
+
+  /// MEM-19 reject confirm
+  ///
+  /// In vi, this message translates to:
+  /// **'Từ chối ảnh'**
+  String get memPendingRejectSend;
+
+  /// MEM-19 waiting badge
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã chờ {count} ngày'**
+  String memPendingWaited(int count);
+
+  /// MEM-19 empty
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có ảnh nào chờ duyệt'**
+  String get memPendingEmpty;
+
+  /// MEM-19 empty hint
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh người thân đăng cho các con sẽ hiện ở đây để bạn duyệt.'**
+  String get memPendingEmptyHint;
+
+  /// MEM-19 snackbar
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã duyệt — ảnh đã hiện với cả nhà'**
+  String get memPendingApproved;
+
+  /// MEM-19 snackbar
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã từ chối ảnh'**
+  String get memPendingRejected;
+
+  /// MEM-19 add child chip (semantics)
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm {name}'**
+  String memPendingAddChild(String name);
+
+  /// RPT-01 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Báo cáo ký ức này'**
+  String get rptTitleMemory;
+
+  /// RPT-01 title (comment)
+  ///
+  /// In vi, this message translates to:
+  /// **'Báo cáo bình luận này'**
+  String get rptTitleComment;
+
+  /// RPT-01 title (member)
+  ///
+  /// In vi, this message translates to:
+  /// **'Báo cáo {name}'**
+  String rptTitlePerson(String name);
+
+  /// RPT-01 subtitle
+  ///
+  /// In vi, this message translates to:
+  /// **'Cho chúng tôi biết điều gì chưa ổn. Đội ngũ an toàn của Baby Family sẽ xem xét.'**
+  String get rptSubtitle;
+
+  /// RPT-01 note
+  ///
+  /// In vi, this message translates to:
+  /// **'Mô tả thêm (không bắt buộc)…'**
+  String get rptNoteHint;
+
+  /// RPT-01 toggle
+  ///
+  /// In vi, this message translates to:
+  /// **'Ẩn ký ức này với tôi ngay'**
+  String get rptHideMemory;
+
+  /// RPT-01 toggle (comment)
+  ///
+  /// In vi, this message translates to:
+  /// **'Ẩn bình luận này với tôi ngay'**
+  String get rptHideComment;
+
+  /// RPT-01 toggle (member)
+  ///
+  /// In vi, this message translates to:
+  /// **'Ẩn người này với tôi ngay'**
+  String get rptHidePerson;
+
+  /// RPT-01 parent toggle
+  ///
+  /// In vi, this message translates to:
+  /// **'Gỡ khỏi gia đình'**
+  String get rptRemoveContent;
+
+  /// RPT-01 parent toggle hint
+  ///
+  /// In vi, this message translates to:
+  /// **'Dành cho bố mẹ · ký ức sẽ không còn hiện với ai'**
+  String get rptRemoveContentHint;
+
+  /// RPT-01 parent toggle (member)
+  ///
+  /// In vi, this message translates to:
+  /// **'Gỡ người thân'**
+  String get rptRemovePerson;
+
+  /// RPT-01 parent toggle hint (member)
+  ///
+  /// In vi, this message translates to:
+  /// **'Dành cho bố mẹ · {name} sẽ không còn xem ảnh các con'**
+  String rptRemovePersonHint(String name);
+
+  /// RPT-01 button
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi báo cáo'**
+  String get rptSend;
+
+  /// RPT-01b title
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi báo cáo'**
+  String get rptSentTitle;
+
+  /// RPT-01b body (content hidden)
+  ///
+  /// In vi, this message translates to:
+  /// **'Cảm ơn bạn đã lên tiếng. Ký ức đã được ẩn tạm thời và sẽ được xem xét trong 24 giờ. Chúng tôi sẽ báo cho bạn khi xử lý xong.'**
+  String get rptSentBodyHidden;
+
+  /// RPT-01b body
+  ///
+  /// In vi, this message translates to:
+  /// **'Cảm ơn bạn đã lên tiếng. Báo cáo sẽ được xem xét sớm. Chúng tôi sẽ báo cho bạn khi xử lý xong.'**
+  String get rptSentBody;
+
+  /// RPT-01b label
+  ///
+  /// In vi, this message translates to:
+  /// **'Mã báo cáo'**
+  String get rptCodeLabel;
+
+  /// RPT-01b status
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang xem xét'**
+  String get rptStatusReviewing;
+
+  /// RPT-01b status
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã xử lý'**
+  String get rptStatusResolved;
+
+  /// RPT-01b link
+  ///
+  /// In vi, this message translates to:
+  /// **'Theo dõi trong Cài đặt › Báo cáo của tôi'**
+  String get rptTrack;
+
+  /// RPT-01b button
+  ///
+  /// In vi, this message translates to:
+  /// **'Xong'**
+  String get rptDone;
+
+  /// RPT-02 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Chặn {name}?'**
+  String rptBlockTitle(String name);
+
+  /// RPT-02 effect
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} không bình luận hay thả tim được vào ký ức của bạn nữa.'**
+  String rptBlockEffectComment(String name);
+
+  /// RPT-02 effect
+  ///
+  /// In vi, this message translates to:
+  /// **'{who, select, grandma{Bà} grandpa{Ông} other{Người này}} không nhận thông báo liên quan đến bạn.'**
+  String rptBlockEffectNotify(String who);
+
+  /// RPT-02 effect
+  ///
+  /// In vi, this message translates to:
+  /// **'{who, select, grandma{Bà} grandpa{Ông} other{Người này}} vẫn ở trong gia đình và vẫn xem ảnh các cháu được chia sẻ.'**
+  String rptBlockEffectStay(String who);
+
+  /// RPT-02 option
+  ///
+  /// In vi, this message translates to:
+  /// **'Gỡ {name} khỏi gia đình luôn'**
+  String rptBlockRemove(String name);
+
+  /// RPT-02 option hint
+  ///
+  /// In vi, this message translates to:
+  /// **'Nên chọn nếu bạn không muốn {who, select, grandma{bà} grandpa{ông} other{người này}} xem ảnh các cháu nữa.'**
+  String rptBlockRemoveHint(String who);
+
+  /// RPT-02 button
+  ///
+  /// In vi, this message translates to:
+  /// **'Chặn'**
+  String get rptBlockConfirm;
+
+  /// RPT-02 snackbar
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã chặn {name}'**
+  String rptBlockDone(String name);
+
+  /// FAM-04 row
+  ///
+  /// In vi, this message translates to:
+  /// **'Chặn {name}'**
+  String rptBlockMenu(String name);
+
+  /// CHD-05 child meta
+  ///
+  /// In vi, this message translates to:
+  /// **'Sinh {birth} · {callName} thêm ngày {date}'**
+  String chdArchiveAddedBy(String birth, String callName, String date);
+
+  /// CHD-05 child meta (no adder)
+  ///
+  /// In vi, this message translates to:
+  /// **'Sinh {birth}'**
+  String chdArchiveBorn(String birth);
+
+  /// CHD-05 badge
+  ///
+  /// In vi, this message translates to:
+  /// **'Có thể trùng với {name}'**
+  String chdArchiveDuplicate(String name);
+
+  /// CHD-05 section
+  ///
+  /// In vi, this message translates to:
+  /// **'Khi lưu trữ {name}'**
+  String chdArchiveSection(String name);
+
+  /// CHD-05 effect
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} ẩn khỏi bộ chuyển bé, Trang chủ và Ký ức.'**
+  String chdArchiveEffectHide(String name);
+
+  /// CHD-05 effect
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} ký ức chỉ gắn riêng {name} sẽ ẩn theo.'**
+  String chdArchiveEffectPrivate(int count, String name);
+
+  /// CHD-05 effect
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} ký ức chung với {others} vẫn hiện ở trang của {others}.'**
+  String chdArchiveEffectShared(int count, String others);
+
+  /// CHD-05 effect
+  ///
+  /// In vi, this message translates to:
+  /// **'Khôi phục bất cứ lúc nào trong Các con › Đã lưu trữ.'**
+  String get chdArchiveEffectRestore;
+
+  /// CHD-05 button
+  ///
+  /// In vi, this message translates to:
+  /// **'Lưu trữ {name}'**
+  String chdArchiveAction(String name);
+
+  /// CHD-05 section
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá vĩnh viễn'**
+  String get chdArchiveDeleteSection;
+
+  /// CHD-05 locked title
+  ///
+  /// In vi, this message translates to:
+  /// **'Cần lưu trữ ít nhất {days} ngày'**
+  String chdArchiveLockedTitle(int days);
+
+  /// CHD-05 locked body
+  ///
+  /// In vi, this message translates to:
+  /// **'Để tránh xoá nhầm, nếu lưu trữ hôm nay bạn xoá được từ {date}. Nội dung chỉ thuộc riêng {name} sẽ vào thùng rác 30 ngày.'**
+  String chdArchiveLockedBody(String date, String name);
+
+  /// CHD-05 locked body (already archived)
+  ///
+  /// In vi, this message translates to:
+  /// **'Để tránh xoá nhầm, bạn xoá được từ {date}. Nội dung chỉ thuộc riêng {name} sẽ vào thùng rác 30 ngày.'**
+  String chdArchiveLockedBodyArchived(String date, String name);
+
+  /// CHD-05 snackbar
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lưu trữ {name}'**
+  String chdArchived(String name);
+
+  /// CHD-05b snackbar
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã khôi phục {name}'**
+  String chdRestored(String name);
+
+  /// CHD-05b title
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá vĩnh viễn {name}'**
+  String chdDeleteTitle(String name);
+
+  /// CHD-05b card
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} · đã lưu trữ'**
+  String chdDeleteArchivedName(String name);
+
+  /// CHD-05b card
+  ///
+  /// In vi, this message translates to:
+  /// **'Lưu trữ {days} ngày · từ {date}'**
+  String chdDeleteArchivedFor(int days, String date);
+
+  /// CHD-05b badge
+  ///
+  /// In vi, this message translates to:
+  /// **'Đủ {days} ngày'**
+  String chdDeleteEnough(int days);
+
+  /// CHD-05b effect
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} ký ức chỉ thuộc riêng {name} chuyển vào thùng rác 30 ngày, sau đó xoá hẳn.'**
+  String chdDeleteEffectTrash(int count, String name);
+
+  /// CHD-05b effect
+  ///
+  /// In vi, this message translates to:
+  /// **'Ký ức chung với {others} vẫn giữ nguyên ở trang của {others}.'**
+  String chdDeleteEffectShared(String others);
+
+  /// CHD-05b step
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác nhận 1/2'**
+  String get chdDeleteStep1;
+
+  /// CHD-05b checkbox
+  ///
+  /// In vi, this message translates to:
+  /// **'Tôi hiểu {name} sẽ bị xoá và không thể khôi phục hồ sơ này.'**
+  String chdDeleteConfirm1(String name);
+
+  /// CHD-05b step
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác nhận 2/2 · Nhập tên bé'**
+  String get chdDeleteStep2;
+
+  /// CHD-05b hint
+  ///
+  /// In vi, this message translates to:
+  /// **'Gõ đúng “{name}” để mở nút xoá.'**
+  String chdDeleteHint(String name);
+
+  /// CHD-05b button
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá vĩnh viễn {name}'**
+  String chdDeleteAction(String name);
+
+  /// CHD-05b secondary
+  ///
+  /// In vi, this message translates to:
+  /// **'Khôi phục {name} thay vì xoá'**
+  String chdDeleteRestoreInstead(String name);
+
+  /// CHD-05b snackbar
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã xoá {name}'**
+  String chdDeleted(String name);
+
+  /// CIR-02 badge
+  ///
+  /// In vi, this message translates to:
+  /// **'🎉 Ngày mai tròn {months} tháng'**
+  String cirChildTomorrow(int months);
+
+  /// CIR-02 section
+  ///
+  /// In vi, this message translates to:
+  /// **'Những lần đầu của cháu'**
+  String get cirChildFirsts;
+
+  /// CIR-02 section
+  ///
+  /// In vi, this message translates to:
+  /// **'Ký ức của cháu'**
+  String get cirChildMemories;
+
+  /// CIR-02 month header
+  ///
+  /// In vi, this message translates to:
+  /// **'Tháng thứ {month}'**
+  String cirChildMonth(int month);
+
+  /// CIR-02 month range
+  ///
+  /// In vi, this message translates to:
+  /// **'· {start} – {end}'**
+  String cirChildMonthRange(String start, String end);
+
+  /// CIR-02 empty
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có ký ức nào của cháu'**
+  String get cirChildEmpty;
+
+  /// CIR-03 menu note
+  ///
+  /// In vi, this message translates to:
+  /// **'Tải ảnh về: bố mẹ chưa bật cho {who, select, grandma{bà} grandpa{ông} other{bạn}}'**
+  String cirDetailDownloadOff(String who);
+
+  /// CIR-03 author meta (child age)
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} {age}'**
+  String cirDetailAuthorAge(String name, String age);
+
+  /// CIR-03 button
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã thả tim'**
+  String get cirDetailLiked;
+
+  /// CIR-03 own name
+  ///
+  /// In vi, this message translates to:
+  /// **'{who, select, grandma{Bà} grandpa{Ông} other{Bạn}} (bạn)'**
+  String cirDetailYou(String who);
+
+  /// CIR-03 reacted line
+  ///
+  /// In vi, this message translates to:
+  /// **'{names} đã thả tim'**
+  String cirDetailReactedBy(String names);
+
+  /// CIR-03 comments title
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời chúc ({count})'**
+  String cirDetailWishes(int count);
+
+  /// CIR-03 input hint
+  ///
+  /// In vi, this message translates to:
+  /// **'Viết lời chúc cho cháu…'**
+  String get cirDetailWishHint;
+
+  /// CIR-03 mic
+  ///
+  /// In vi, this message translates to:
+  /// **'Ghi âm lời chúc'**
+  String get cirDetailVoice;
+
+  /// CIR-03 send
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi lời chúc'**
+  String get cirDetailSend;
+
+  /// CIR-03 snackbar
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi báo cáo'**
+  String get cirDetailReported;
+
+  /// CIR-03 missing
+  ///
+  /// In vi, this message translates to:
+  /// **'Ký ức này không còn được chia sẻ'**
+  String get cirDetailMissing;
+
+  /// CIR-04 section
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh đã chọn ({count})'**
+  String cirPostSelected(int count);
+
+  /// CIR-04 section
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh của cháu nào?'**
+  String get cirPostWhichKid;
+
+  /// CIR-04 section
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngày chụp'**
+  String get cirPostDate;
+
+  /// CIR-04 section
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời nhắn cho cháu'**
+  String get cirPostMessage;
+
+  /// CIR-04 field hint
+  ///
+  /// In vi, this message translates to:
+  /// **'Viết vài lời cho cháu…'**
+  String get cirPostMessageHint;
+
+  /// CIR-04 note title
+  ///
+  /// In vi, this message translates to:
+  /// **'Bố mẹ sẽ duyệt trước khi hiện'**
+  String get cirPostApprovalTitle;
+
+  /// CIR-04 note body
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh hiện với cả nhà sau khi bố hoặc mẹ của cháu đồng ý.'**
+  String get cirPostApprovalBody;
+
+  /// CIR-04 button
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi ảnh'**
+  String get cirPostSend;
+
+  /// CIR-04 remove (semantics)
+  ///
+  /// In vi, this message translates to:
+  /// **'Bỏ ảnh'**
+  String get cirPostRemovePhoto;
+
+  /// CIR-04b title
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi!'**
+  String get cirPostSentTitle;
+
+  /// CIR-04b body
+  ///
+  /// In vi, this message translates to:
+  /// **'Bố/Mẹ sẽ duyệt trước khi hiển thị cho cả nhà.'**
+  String get cirPostSentBody;
+
+  /// CIR-04b banner
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang chờ Bố/Mẹ duyệt'**
+  String get cirPostPending;
+
+  /// CIR-04b meta
+  ///
+  /// In vi, this message translates to:
+  /// **'vừa gửi'**
+  String get cirPostJustSent;
+
+  /// CIR-04b button
+  ///
+  /// In vi, this message translates to:
+  /// **'Về trang Cháu yêu'**
+  String get cirPostBackHome;
+
+  /// CIR-04b button
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng thêm ảnh'**
+  String get cirPostMore;
+
+  /// CIR-04 no contribute permission
+  ///
+  /// In vi, this message translates to:
+  /// **'Bố mẹ chưa bật quyền đăng ảnh cho cháu nào'**
+  String get cirPostNoKid;
+
+  /// CIR-05 title
+  ///
+  /// In vi, this message translates to:
+  /// **'{family} đang tạm dừng chia sẻ với người thân'**
+  String cirPausedMessage(String family);
+
+  /// CIR-05 pill
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh của cháu vẫn được giữ an toàn'**
+  String get cirPausedSafe;
+
+  /// CIR-06 profile meta
+  ///
+  /// In vi, this message translates to:
+  /// **'{relation} · {family}'**
+  String cirMeRelation(String relation, String family);
+
+  /// CIR-06 text size preview
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} vừa có ảnh mới, {who, select, grandma{bà} grandpa{ông} other{bạn}} vào xem nhé 🌸'**
+  String cirMeTextPreview(String name, String who);
+
+  /// CIR-06 notification option
+  ///
+  /// In vi, this message translates to:
+  /// **'Báo ngay khi có ảnh mới'**
+  String get cirMeInstant;
+
+  /// CIR-06 notification option
+  ///
+  /// In vi, this message translates to:
+  /// **'Bản tin mỗi ngày'**
+  String get cirMeDigest;
+
+  /// CIR-06 digest hint
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi lúc {time} · gom ảnh mới trong ngày'**
+  String cirMeDigestHint(String time);
+
+  /// CIR-06 row
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuyển gia đình'**
+  String get cirMeSwitchFamily;
+
+  /// CIR-06 row hint
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang xem: {family}'**
+  String cirMeViewing(String family);
+
+  /// SET-10 title
+  ///
+  /// In vi, this message translates to:
+  /// **'Rời {family}'**
+  String cirLeaveTitle(String family);
+
+  /// SET-10 body
+  ///
+  /// In vi, this message translates to:
+  /// **'{who, select, grandma{Bà} grandpa{Ông} other{Bạn}} sẽ không còn xem ảnh và bình luận cùng các cháu nữa. Khi nào muốn quay lại, {who, select, grandma{bà} grandpa{ông} other{bạn}} nhờ {inviter} gửi lời mời mới nhé.'**
+  String cirLeaveBody(String who, String inviter);
+
+  /// SET-10 following
+  ///
+  /// In vi, this message translates to:
+  /// **'{who, select, grandma{Bà} grandpa{Ông} other{Bạn}} đang theo dõi {names}'**
+  String cirLeaveFollowing(String who, String names);
+
+  /// SET-10 section
+  ///
+  /// In vi, this message translates to:
+  /// **'Những gì {who, select, grandma{bà} grandpa{ông} other{bạn}} đã đăng · {photos} ảnh, {comments} bình luận'**
+  String cirLeavePosted(String who, int photos, int comments);
+
+  /// SET-10 option
+  ///
+  /// In vi, this message translates to:
+  /// **'Giữ lại cho gia đình'**
+  String get cirLeaveKeep;
+
+  /// SET-10 option hint
+  ///
+  /// In vi, this message translates to:
+  /// **'Cả nhà vẫn xem được ảnh và lời {who, select, grandma{bà} grandpa{ông} other{bạn}} đã viết. (Mặc định)'**
+  String cirLeaveKeepHint(String who);
+
+  /// SET-10 option
+  ///
+  /// In vi, this message translates to:
+  /// **'Gỡ toàn bộ'**
+  String get cirLeaveRemove;
+
+  /// SET-10 option hint
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh và bình luận của {who, select, grandma{bà} grandpa{ông} other{bạn}} sẽ được gỡ khỏi {family}.'**
+  String cirLeaveRemoveHint(String who, String family);
+
+  /// SET-10 notice
+  ///
+  /// In vi, this message translates to:
+  /// **'{inviter} sẽ nhận một thông báo ngắn: “{name} đã rời gia đình.” {who, select, grandma{Bà} grandpa{Ông} other{Bạn}} mất quyền xem ngay sau khi xác nhận.'**
+  String cirLeaveNotice(String inviter, String name, String who);
+
+  /// SET-10 button
+  ///
+  /// In vi, this message translates to:
+  /// **'Ở lại'**
+  String get cirLeaveStay;
+
+  /// Join a list with its last item (“Bà, Ông và Papa”)
+  ///
+  /// In vi, this message translates to:
+  /// **'{list} và {last}'**
+  String commonListAnd(String list, String last);
+
+  /// Nhãn bản nháp AI (US-09, REC-01)
+  ///
+  /// In vi, this message translates to:
+  /// **'Gợi ý bởi AI'**
+  String get commonAiSuggested;
+
+  /// Nút báo cáo nội dung AI (US-09, REC-01)
+  ///
+  /// In vi, this message translates to:
+  /// **'Báo cáo nội dung AI'**
+  String get commonAiReport;
+
+  /// Snack sau khi báo cáo nội dung AI
+  ///
+  /// In vi, this message translates to:
+  /// **'Cảm ơn bạn — nội dung AI này sẽ được xem lại.'**
+  String get commonAiReported;
+
+  /// Bộ chọn tuần (US-14, CARE-11)
+  ///
+  /// In vi, this message translates to:
+  /// **'Tuần {range}'**
+  String commonWeekRange(String range);
+
+  /// US-00 — dải khoá dưới tiêu đề
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ dành cho Papa & Mama'**
+  String get usOnlyParents;
+
+  /// US-00 tiêu đề
+  ///
+  /// In vi, this message translates to:
+  /// **'Không gian này cần đủ hai người'**
+  String get usPartnerLeftTitle;
+
+  /// US-00 nội dung
+  ///
+  /// In vi, this message translates to:
+  /// **'Tài khoản của {callName} đã được xoá, nên Papa & Mama đang tạm khoá. Ký ức của {familyName} vẫn còn nguyên — bạn có thể xem và tải về bất cứ lúc nào.'**
+  String usPartnerLeftBody(String callName, String familyName);
+
+  /// US-00 thẻ trạng thái gia đình
+  ///
+  /// In vi, this message translates to:
+  /// **'{familyName} đang ở chế độ chỉ xem & tải về'**
+  String usPartnerLeftStateTitle(String familyName);
+
+  /// US-00 thẻ trạng thái — dòng phụ
+  ///
+  /// In vi, this message translates to:
+  /// **'Mời bạn đời mới để tiếp tục tạo ký ức và dùng Papa & Mama.'**
+  String get usPartnerLeftStateSub;
+
+  /// US-00 nhãn nhóm tính năng
+  ///
+  /// In vi, this message translates to:
+  /// **'KHI CÓ ĐỦ HAI NGƯỜI'**
+  String get usPartnerLeftSection;
+
+  /// US-00 ô Check-in
+  ///
+  /// In vi, this message translates to:
+  /// **'Hôm nay mình thế nào'**
+  String get usPartnerLeftCheckinSub;
+
+  /// US-00 ô Lời nhờ
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhờ nhau, không áp lực'**
+  String get usPartnerLeftRequestSub;
+
+  /// US-00 ô Lời cảm ơn
+  ///
+  /// In vi, this message translates to:
+  /// **'Giữ lại điều nhỏ'**
+  String get usPartnerLeftThanksSub;
+
+  /// US-00 ô Nhật ký riêng
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ mình bạn đọc'**
+  String get usPartnerLeftJournalSub;
+
+  /// US-00 ghi chú riêng tư
+  ///
+  /// In vi, this message translates to:
+  /// **'Ông bà và người thân không bao giờ thấy nội dung trong Papa & Mama.'**
+  String get usPartnerLeftPrivacy;
+
+  /// US-00 nút chính
+  ///
+  /// In vi, this message translates to:
+  /// **'Mời bạn đời tham gia'**
+  String get usPartnerLeftInvite;
+
+  /// US-02 biến thể “Khó chịu với bạn đời” (mục 7.16.1)
+  ///
+  /// In vi, this message translates to:
+  /// **'Khó chịu với {callName}'**
+  String usCheckinAnnoyedPartner(String callName);
+
+  /// US-02 → hỏi Cầu nối
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn muốn dùng Cầu nối không?'**
+  String get usBridgeAskTitle;
+
+  /// US-02 → hỏi Cầu nối — nội dung
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có gì được gửi cho {callName}. Cầu nối giúp hai bạn nói rõ cảm xúc và cùng chọn một bước nhỏ — bắt đầu bằng một bước riêng tư.'**
+  String usBridgeAskBody(String callName);
+
+  /// US-02 → mở US-08
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở Cầu nối'**
+  String get usBridgeAskOpen;
+
+  /// US-08 kicker
+  ///
+  /// In vi, this message translates to:
+  /// **'CẦU NỐI · BƯỚC {step}/{total}'**
+  String usBridgeStepKicker(int step, int total);
+
+  /// US-08 bước 1
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn một hoặc vài cảm xúc. Chưa có gì được gửi cho {callName}.'**
+  String usBridgeFeelSub(String callName);
+
+  /// US-08 bước 2
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuyện này về…'**
+  String get usBridgeTopicTitle;
+
+  /// US-08 bước 2
+  ///
+  /// In vi, this message translates to:
+  /// **'Không bắt buộc — bạn có thể bỏ qua. Chưa có gì được gửi cho {callName}.'**
+  String usBridgeTopicSub(String callName);
+
+  /// US-08 bước 3
+  ///
+  /// In vi, this message translates to:
+  /// **'Lúc này mình cần…'**
+  String get usBridgeNeedTitle;
+
+  /// US-08 bước 3
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn một hoặc vài điều. Chưa có gì được gửi cho {callName}.'**
+  String usBridgeNeedSub(String callName);
+
+  /// US-08 thẻ tóm tắt
+  ///
+  /// In vi, this message translates to:
+  /// **'Mình cảm thấy'**
+  String get usBridgeFeltLabel;
+
+  /// US-08 thẻ tóm tắt
+  ///
+  /// In vi, this message translates to:
+  /// **'Về chuyện'**
+  String get usBridgeAboutLabel;
+
+  /// US-08 nháp riêng
+  ///
+  /// In vi, this message translates to:
+  /// **'Viết nháp riêng (tuỳ chọn)'**
+  String get usBridgeDraftLabel;
+
+  /// US-08 đếm ký tự
+  ///
+  /// In vi, this message translates to:
+  /// **'{count}/{max}'**
+  String usBridgeDraftCount(int count, int max);
+
+  /// US-08 gợi ý ô nháp
+  ///
+  /// In vi, this message translates to:
+  /// **'Viết ra điều bạn đang nghĩ — chỉ mình bạn đọc.'**
+  String get usBridgeDraftHint;
+
+  /// US-08 ghi chú nháp (BR-030)
+  ///
+  /// In vi, this message translates to:
+  /// **'Nháp này không bao giờ được gửi nguyên văn hay tự động.'**
+  String get usBridgeDraftNote;
+
+  /// US-08 → US-13
+  ///
+  /// In vi, this message translates to:
+  /// **'Mình cảm thấy không an toàn'**
+  String get usBridgeUnsafe;
+
+  /// US-08 bước 4
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn muốn làm gì với nội dung này?'**
+  String get usBridgeChoiceTitle;
+
+  /// US-08 bước 4
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn quyết định. Chưa có gì được gửi cho {callName}.'**
+  String usBridgeChoiceSub(String callName);
+
+  /// US-08 bước 4 — Giữ riêng
+  ///
+  /// In vi, this message translates to:
+  /// **'Kết thúc ở đây, như một trang nhật ký.'**
+  String get usBridgeKeepPrivateDesc;
+
+  /// US-08 bước 4 → US-09
+  ///
+  /// In vi, this message translates to:
+  /// **'Viết lại trước khi gửi'**
+  String get usBridgeRewriteOption;
+
+  /// US-08 bước 4
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn một câu và viết lại nhẹ nhàng hơn.'**
+  String get usBridgeRewriteOptionDesc;
+
+  /// US-08 bước 4
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn ý để chia sẻ'**
+  String get usBridgeShareOption;
+
+  /// US-08 bước 4
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn cảm xúc và nhu cầu {callName} sẽ thấy.'**
+  String usBridgeShareOptionDesc(String callName);
+
+  /// Snack sau Giữ riêng
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã giữ riêng — chỉ mình bạn thấy.'**
+  String get usBridgeKeptPrivate;
+
+  /// US-08 bước 5
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem trước điều {callName} sẽ nhận'**
+  String usBridgePreviewTitle(String callName);
+
+  /// US-08 bước 5
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ những ý bạn chọn được gửi. Nháp riêng của bạn vẫn giữ riêng.'**
+  String get usBridgePreviewSub;
+
+  /// Nhãn hàng cảm xúc (US-08, US-10)
+  ///
+  /// In vi, this message translates to:
+  /// **'Cảm thấy'**
+  String get usBridgeFeelShort;
+
+  /// Nhãn hàng nhu cầu (US-08, US-10)
+  ///
+  /// In vi, this message translates to:
+  /// **'Cần'**
+  String get usBridgeNeedShort;
+
+  /// US-08 bước 5
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời nhắn (tuỳ chọn)'**
+  String get usBridgeMessageLabel;
+
+  /// US-08 bước 5
+  ///
+  /// In vi, this message translates to:
+  /// **'Một câu bạn muốn {callName} đọc'**
+  String usBridgeMessageHint(String callName);
+
+  /// US-08 bước 5
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi lời mời'**
+  String get usBridgeSendInvite;
+
+  /// Snack sau khi gửi lời mời
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi lời mời cho {callName}'**
+  String usBridgeInviteSent(String callName);
+
+  /// US-09
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn một phiên bản rồi sửa theo ý bạn. Không có gì được gửi tự động.'**
+  String get usBridgeRewriteSub;
+
+  /// US-09
+  ///
+  /// In vi, this message translates to:
+  /// **'CÂU GỐC CỦA BẠN'**
+  String get usBridgeRewriteOriginal;
+
+  /// US-09 nhãn giọng
+  ///
+  /// In vi, this message translates to:
+  /// **'{tone, select, neutral{TRUNG TÍNH} warm{ẤM ÁP} other{NGẮN GỌN}}'**
+  String usBridgeRewriteTone(String tone);
+
+  /// US-09
+  ///
+  /// In vi, this message translates to:
+  /// **'Sửa trước khi dùng'**
+  String get usBridgeRewriteEdit;
+
+  /// US-09
+  ///
+  /// In vi, this message translates to:
+  /// **'Giữ câu gốc'**
+  String get usBridgeRewriteKeep;
+
+  /// US-09
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng câu này'**
+  String get usBridgeRewriteUse;
+
+  /// US-09 ghi chú dữ liệu AI
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ câu bạn chọn được gửi cho AI để viết lại. AI không đọc nháp riêng hay nhật ký của bạn.'**
+  String get usBridgeRewriteDataNote;
+
+  /// US-10 tiêu đề
+  ///
+  /// In vi, this message translates to:
+  /// **'{callName} muốn trò chuyện bình tĩnh khi bạn sẵn sàng'**
+  String usBridgeInviteTitle(String callName);
+
+  /// US-10
+  ///
+  /// In vi, this message translates to:
+  /// **'Một không gian để nói rõ cảm xúc và cùng chọn một bước nhỏ tiếp theo. Không ai thắng, không ai thua.'**
+  String get usBridgeInviteSub;
+
+  /// US-10 thẻ chia sẻ
+  ///
+  /// In vi, this message translates to:
+  /// **'{callName} đã chọn chia sẻ'**
+  String usBridgeInviteShared(String callName);
+
+  /// US-10 thẻ chia sẻ
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ những ý này — phần còn lại {callName} giữ riêng'**
+  String usBridgeInviteSharedSub(String callName);
+
+  /// US-10
+  ///
+  /// In vi, this message translates to:
+  /// **'Trước khi vào phiên chung, bạn cũng có một bước riêng tư để nói cảm xúc và điều mình cần.'**
+  String get usBridgeInviteNote;
+
+  /// US-10
+  ///
+  /// In vi, this message translates to:
+  /// **'Tham gia ngay'**
+  String get usBridgeJoinNow;
+
+  /// US-10
+  ///
+  /// In vi, this message translates to:
+  /// **'Để sau — nhắc mình lúc'**
+  String get usBridgeLaterLabel;
+
+  /// US-10
+  ///
+  /// In vi, this message translates to:
+  /// **'Tự chọn'**
+  String get usBridgeLaterCustom;
+
+  /// US-10
+  ///
+  /// In vi, this message translates to:
+  /// **'Mình chưa sẵn sàng'**
+  String get usBridgeNotReady;
+
+  /// US-10
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời mời được tạm dừng — không có thông báo tiêu cực nào.'**
+  String get usBridgeNotReadySub;
+
+  /// US-10 snack
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã hẹn nhắc — lời mời vẫn được giữ.'**
+  String get usBridgeRemindSet;
+
+  /// Snack tạm dừng (US-10/11/12)
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã tạm dừng. Bạn có thể quay lại bất cứ lúc nào.'**
+  String get usBridgePaused;
+
+  /// US-11 trạng thái
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang diễn ra'**
+  String get usBridgeLive;
+
+  /// US-11
+  ///
+  /// In vi, this message translates to:
+  /// **'Bắt đầu {time} · {date}'**
+  String usBridgeStartedAt(String time, String date);
+
+  /// US-11
+  ///
+  /// In vi, this message translates to:
+  /// **'Đọc chậm những gì hai bạn đã chọn chia sẻ. Ở đây không có ai đúng, ai sai.'**
+  String get usBridgeSessionIntro;
+
+  /// US-11 cột của tôi
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn ({callName})'**
+  String usBridgeYouName(String callName);
+
+  /// US-11
+  ///
+  /// In vi, this message translates to:
+  /// **'{callName} cảm thấy'**
+  String usBridgeFeels(String callName);
+
+  /// US-11
+  ///
+  /// In vi, this message translates to:
+  /// **'{callName} cần'**
+  String usBridgeNeeds(String callName);
+
+  /// US-11 trạng thái của tôi
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn chưa chọn'**
+  String get usBridgeYouPending;
+
+  /// US-11 trạng thái của tôi
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn: Mình hiểu'**
+  String get usBridgeYouUnderstood;
+
+  /// US-11
+  ///
+  /// In vi, this message translates to:
+  /// **'{callName} chưa chọn'**
+  String usBridgePartnerPending(String callName);
+
+  /// US-11
+  ///
+  /// In vi, this message translates to:
+  /// **'{callName}: Mình hiểu'**
+  String usBridgePartnerUnderstood(String callName);
+
+  /// US-11
+  ///
+  /// In vi, this message translates to:
+  /// **'LƯỢT CỦA BẠN'**
+  String get usBridgeYourTurn;
+
+  /// US-11
+  ///
+  /// In vi, this message translates to:
+  /// **'{callName} đã đọc xong'**
+  String usBridgePartnerReadDone(String callName);
+
+  /// US-11
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã đọc những gì {callName} chia sẻ?'**
+  String usBridgeReadQuestion(String callName);
+
+  /// US-11
+  ///
+  /// In vi, this message translates to:
+  /// **'Mình cần nói rõ hơn'**
+  String get usBridgeClarify;
+
+  /// US-11
+  ///
+  /// In vi, this message translates to:
+  /// **'Mình hiểu'**
+  String get usBridgeUnderstand;
+
+  /// US-11
+  ///
+  /// In vi, this message translates to:
+  /// **'“Nói rõ hơn” mở thêm 1 lượt gửi ý — bạn sẽ xem trước chính xác trước khi gửi.'**
+  String get usBridgeClarifyNote;
+
+  /// US-11
+  ///
+  /// In vi, this message translates to:
+  /// **'Mỗi người có thể tạm dừng hoặc rời phiên bất cứ lúc nào.'**
+  String get usBridgeLeaveNote;
+
+  /// US-11
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang chờ {callName} đọc xong'**
+  String usBridgeWaiting(String callName);
+
+  /// US-11 sheet
+  ///
+  /// In vi, this message translates to:
+  /// **'Nói rõ hơn với {callName}'**
+  String usBridgeClarifyTitle(String callName);
+
+  /// US-11 snack
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi thêm ý cho {callName}'**
+  String usBridgeClarifySent(String callName);
+
+  /// US-12 kicker
+  ///
+  /// In vi, this message translates to:
+  /// **'CẦU NỐI · HAI BẠN ĐỀU ĐÃ HIỂU'**
+  String get usBridgeNextKicker;
+
+  /// US-12
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn một điều cả hai có thể làm. Không cần giải quyết hết mọi chuyện hôm nay.'**
+  String get usBridgeNextSub;
+
+  /// US-12
+  ///
+  /// In vi, this message translates to:
+  /// **'Khi nào?'**
+  String get usBridgeWhen;
+
+  /// US-12
+  ///
+  /// In vi, this message translates to:
+  /// **'Trông bé nào?'**
+  String get usBridgeWhichChild;
+
+  /// US-12
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo nhắc cho cả hai'**
+  String get usBridgeReminder;
+
+  /// US-12
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhắc lúc {time} — chỉ hai bạn thấy'**
+  String usBridgeReminderSub(String time);
+
+  /// US-12
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa xác nhận'**
+  String get usBridgeNotConfirmed;
+
+  /// US-12
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã đồng ý'**
+  String get usBridgeAgreed;
+
+  /// US-12
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác nhận bước này'**
+  String get usBridgeConfirmStep;
+
+  /// US-12
+  ///
+  /// In vi, this message translates to:
+  /// **'Bước được áp dụng khi cả hai cùng xác nhận. Bạn vẫn có thể đổi lựa chọn.'**
+  String get usBridgeConfirmNote;
+
+  /// US-12b
+  ///
+  /// In vi, this message translates to:
+  /// **'Hai bạn muốn đóng phiên này chứ?'**
+  String get usBridgeCloseTitle;
+
+  /// US-12b
+  ///
+  /// In vi, this message translates to:
+  /// **'Phiên chỉ đóng khi cả hai cùng đồng ý.'**
+  String get usBridgeCloseSub;
+
+  /// US-12b
+  ///
+  /// In vi, this message translates to:
+  /// **'Bước đã chọn · {when}'**
+  String usBridgeStepChosen(String when);
+
+  /// US-12b thời điểm tương đối
+  ///
+  /// In vi, this message translates to:
+  /// **'{day, select, tonight{tối nay {time}} lastNight{tối qua {time}} today{hôm nay {time}} yesterday{hôm qua {time}} other{{time}}}'**
+  String usBridgeRelativeWhen(String day, String time);
+
+  /// US-12b
+  ///
+  /// In vi, this message translates to:
+  /// **'{callName} đã đồng ý đóng phiên'**
+  String usBridgePartnerAgreedClose(String callName);
+
+  /// US-12b
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi lời cảm ơn cho {callName}? (tuỳ chọn)'**
+  String usBridgeThanksLabel(String callName);
+
+  /// US-12b câu cảm ơn (xưng hô theo vai bạn đời)
+  ///
+  /// In vi, this message translates to:
+  /// **'{role, select, father{Cảm ơn anh đã lắng nghe 💛} other{Cảm ơn em đã lắng nghe 💛}}'**
+  String usBridgeThanksListened(String role);
+
+  /// US-12b câu cảm ơn ngắn
+  ///
+  /// In vi, this message translates to:
+  /// **'{role, select, father{Cảm ơn anh} other{Cảm ơn em}}'**
+  String usBridgeThanksShort(String role);
+
+  /// US-12b lưu trữ ngắn (D-14)
+  ///
+  /// In vi, this message translates to:
+  /// **'Nội dung phiên tự xoá sau {days} ngày. Chỉ còn dòng “Đã có một phiên Cầu nối ngày {date}”.'**
+  String usBridgeRetention(int days, String date);
+
+  /// US-12b
+  ///
+  /// In vi, this message translates to:
+  /// **'Đóng phiên'**
+  String get usBridgeCloseConfirm;
+
+  /// US-12b
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa, để sau'**
+  String get usBridgeCloseLater;
+
+  /// US-12b snack
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã đóng phiên Cầu nối'**
+  String get usBridgeClosed;
+
+  /// US-13
+  ///
+  /// In vi, this message translates to:
+  /// **'Thoát nhanh'**
+  String get usSafetyQuickExit;
+
+  /// US-13
+  ///
+  /// In vi, this message translates to:
+  /// **'Sự an toàn của bạn là quan trọng nhất'**
+  String get usSafetyHeadline;
+
+  /// US-13
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn không cần nói chuyện trực tiếp lúc này. Nếu bạn hoặc các con đang gặp nguy hiểm, hãy gọi ngay cho một trong các số dưới đây.'**
+  String get usSafetyBody;
+
+  /// US-13 nút gọi (trợ năng)
+  ///
+  /// In vi, this message translates to:
+  /// **'Gọi {number}'**
+  String usSafetyCall(String number);
+
+  /// US-13
+  ///
+  /// In vi, this message translates to:
+  /// **'Liên hệ một người bạn tin cậy'**
+  String get usSafetyTrustedTitle;
+
+  /// US-13
+  ///
+  /// In vi, this message translates to:
+  /// **'Người thân, bạn bè hoặc hàng xóm bạn tin'**
+  String get usSafetyTrustedSub;
+
+  /// US-13
+  ///
+  /// In vi, this message translates to:
+  /// **'Nội dung bạn vừa viết được giữ riêng, không gửi cho ai.'**
+  String get usSafetyPrivateNote;
+
+  /// US-13
+  ///
+  /// In vi, this message translates to:
+  /// **'{callName} không nhận thông báo nào về màn hình này.'**
+  String usSafetyNoNotify(String callName);
+
+  /// US-13
+  ///
+  /// In vi, this message translates to:
+  /// **'Màn hình này không được ghi vào lịch sử phiên.'**
+  String get usSafetyNoHistory;
+
+  /// US-13
+  ///
+  /// In vi, this message translates to:
+  /// **'Giữ riêng nội dung này'**
+  String get usSafetyKeepPrivate;
+
+  /// US-13
+  ///
+  /// In vi, this message translates to:
+  /// **'Baby Family không phải dịch vụ khẩn cấp hay trị liệu. Tính năng này luôn miễn phí.'**
+  String get usSafetyDisclaimer;
+
+  /// US-14
+  ///
+  /// In vi, this message translates to:
+  /// **'lần check-in'**
+  String get usCoupleWeekCheckins;
+
+  /// US-14
+  ///
+  /// In vi, this message translates to:
+  /// **'Hai bạn đã chia sẻ hôm nay mình thế nào'**
+  String get usCoupleWeekCheckinsSub;
+
+  /// US-14
+  ///
+  /// In vi, this message translates to:
+  /// **'lời nhờ được hỗ trợ'**
+  String get usCoupleWeekRequests;
+
+  /// US-14
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhận và làm giúp nhau'**
+  String get usCoupleWeekRequestsSub;
+
+  /// US-14
+  ///
+  /// In vi, this message translates to:
+  /// **'lời cảm ơn'**
+  String get usCoupleWeekThanks;
+
+  /// US-14
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi cho nhau trong tuần'**
+  String get usCoupleWeekThanksSub;
+
+  /// US-14
+  ///
+  /// In vi, this message translates to:
+  /// **'nhiệm vụ cùng nhau'**
+  String get usCoupleWeekTogether;
+
+  /// US-14
+  ///
+  /// In vi, this message translates to:
+  /// **'Từ Nhiệm vụ hai ta'**
+  String get usCoupleWeekTogetherSub;
+
+  /// US-14
+  ///
+  /// In vi, this message translates to:
+  /// **'MỘT LỜI CẢM ƠN TRONG TUẦN'**
+  String get usCoupleWeekThanksKicker;
+
+  /// US-14
+  ///
+  /// In vi, this message translates to:
+  /// **'{callName} · {date}'**
+  String usCoupleWeekThanksMeta(String callName, String date);
+
+  /// US-14
+  ///
+  /// In vi, this message translates to:
+  /// **'Hai ta đã cùng nhau'**
+  String get usCoupleWeekTogetherLabel;
+
+  /// US-14
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có điểm số, không so sánh — chỉ là những điều hai bạn đã làm cho nhau.'**
+  String get usCoupleWeekNote;
+
+  /// US-14
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi một lời cảm ơn'**
+  String get usCoupleWeekSendThanks;
+
+  /// REC-01
+  ///
+  /// In vi, this message translates to:
+  /// **'Bỏ'**
+  String get recapDayDiscard;
+
+  /// REC-01 kicker
+  ///
+  /// In vi, this message translates to:
+  /// **'CÂU CHUYỆN NGÀY · {date}'**
+  String recapDayKicker(String date);
+
+  /// REC-01 bé
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} · {age}'**
+  String recapDayChild(String name, String age);
+
+  /// REC-01
+  ///
+  /// In vi, this message translates to:
+  /// **'Viết lại'**
+  String get recapDayRewrite;
+
+  /// REC-01
+  ///
+  /// In vi, this message translates to:
+  /// **'Tự viết'**
+  String get recapDayManual;
+
+  /// REC-01 snack
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã viết lại đoạn văn'**
+  String get recapDayRewritten;
+
+  /// REC-01
+  ///
+  /// In vi, this message translates to:
+  /// **'Ký ức hôm nay'**
+  String get recapDayMemories;
+
+  /// REC-01
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã chọn {selected}/{total}'**
+  String recapDaySelected(int selected, int total);
+
+  /// REC-01 dòng ký ức
+  ///
+  /// In vi, this message translates to:
+  /// **'{kind, select, photo{Ảnh} mission{Nhiệm vụ đã xong} voice{Giọng nói} quote{Câu nói} video{Video} other{Ký ức}} · {time}'**
+  String recapDayItemMeta(String kind, String time);
+
+  /// REC-01
+  ///
+  /// In vi, this message translates to:
+  /// **'Câu chuyện chỉ dùng những ký ức bạn đã tick.'**
+  String get recapDayHint;
+
+  /// REC-01
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh kèm'**
+  String get recapDayPhotos;
+
+  /// REC-01
+  ///
+  /// In vi, this message translates to:
+  /// **'Ai sẽ thấy'**
+  String get recapDayWhoSees;
+
+  /// REC-01
+  ///
+  /// In vi, this message translates to:
+  /// **'Lưu câu chuyện'**
+  String get recapDaySave;
+
+  /// REC-01 snack
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lưu câu chuyện ngày'**
+  String get recapDaySaved;
+
+  /// REC-01 sheet sửa tiêu đề
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiêu đề câu chuyện'**
+  String get recapDayTitleEdit;
+
+  /// HOME-02 → REC-01 (nhãn trợ năng)
+  ///
+  /// In vi, this message translates to:
+  /// **'Câu chuyện ngày của {name}'**
+  String recapDayOpen(String name);
+
+  /// REC-03 tiêu đề
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} tròn {month} tháng 🎉'**
+  String recapMonthHeadline(String name, int month);
+
+  /// REC-03 phụ đề
+  ///
+  /// In vi, this message translates to:
+  /// **'Tháng thứ {month} · {range}'**
+  String recapMonthRange(int month, String range);
+
+  /// REC-03 ảnh tháng trước
+  ///
+  /// In vi, this message translates to:
+  /// **'Tháng {month}'**
+  String recapMonthLabel(int month);
+
+  /// REC-03 ảnh tháng này
+  ///
+  /// In vi, this message translates to:
+  /// **'Tháng {month} · hôm nay'**
+  String recapMonthNow(int month);
+
+  /// REC-03
+  ///
+  /// In vi, this message translates to:
+  /// **'câu nói & giọng nói'**
+  String get recapMonthVoices;
+
+  /// REC-03
+  ///
+  /// In vi, this message translates to:
+  /// **'CÂU NÓI & GIỌNG NÓI'**
+  String get recapMonthVoicesKicker;
+
+  /// REC-03 lần đầu
+  ///
+  /// In vi, this message translates to:
+  /// **'{age} · {date}'**
+  String recapMonthFirstMeta(String age, String date);
+
+  /// REC-03 giọng nói
+  ///
+  /// In vi, this message translates to:
+  /// **'{date} · {callName} ghi'**
+  String recapMonthVoiceMeta(String date, String callName);
+
+  /// CARE ⋯ → CARE-11
+  ///
+  /// In vi, this message translates to:
+  /// **'Thống kê chăm con'**
+  String get careMenuStats;
+
+  /// CARE-11
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhiệm vụ cả nhà đã hoàn thành'**
+  String get careStatsDone;
+
+  /// CARE-11
+  ///
+  /// In vi, this message translates to:
+  /// **'việc trong tuần'**
+  String get careStatsUnit;
+
+  /// CARE-11 nhãn cột
+  ///
+  /// In vi, this message translates to:
+  /// **'{category, select, care{Chăm sóc} bonding{Gắn kết} outing{Ra ngoài} support{Hỗ trợ nhau} together{Cùng nhau} other{Khác}}'**
+  String careStatsCategory(String category);
+
+  /// CARE-11 (mục 7.15)
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhiệm vụ “Hai ta” không tính vào chăm con.'**
+  String get careStatsNote;
+
+  /// CARE-11
+  ///
+  /// In vi, this message translates to:
+  /// **'/ {total} ngày'**
+  String careStatsBloomOf(int total);
+
+  /// CARE-11
+  ///
+  /// In vi, this message translates to:
+  /// **'cây của nhà mình nở hoa'**
+  String get careStatsBloomLabel;
+
+  /// CARE-11 disclaimer cố định (mục 7.15)
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ dựa trên hoạt động ghi trong app. Còn rất nhiều điều bố mẹ làm cho nhau mà app không đếm được.'**
+  String get careStatsDisclaimer;
+
+  /// CARE-11
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ Papa & Mama xem được thống kê này'**
+  String get careStatsPrivacy;
+
+  /// Bộ chọn tuần — nhãn trợ năng (US-14, CARE-11)
+  ///
+  /// In vi, this message translates to:
+  /// **'Tuần trước'**
+  String get commonPrevWeek;
+
+  /// Bộ chọn tuần — nhãn trợ năng (US-14, CARE-11)
+  ///
+  /// In vi, this message translates to:
+  /// **'Tuần sau'**
+  String get commonNextWeek;
+
+  /// Parent notification after a relative posts (CIR-04 → MEM-19)
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} vừa đăng {count} ảnh của {child} — chờ bạn duyệt'**
+  String memPendingNotify(String name, int count, String child);
 }
 
 class _AppLocalizationsDelegate

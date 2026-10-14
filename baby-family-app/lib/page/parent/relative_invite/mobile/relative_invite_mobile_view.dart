@@ -7,6 +7,7 @@ import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/theme.dart';
+import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
 import 'package:baby_family/utils/widget/app_card.dart';
 import 'package:baby_family/utils/widget/app_chip.dart';
@@ -50,7 +51,7 @@ int _rowStart(int row) =>
 /// Chip mặc định = “Ông nội” (Pencil `T3DyY`, người thân thứ 4 của story v2).
 const _defaultRelationIndex = 0;
 
-/// FAM-03 — Mời người thân (Pencil `G6wmB`).
+/// FAM-03 — Mời người thân (Pencil `G6wmB`). “Tạo lời mời” → FAM-05.
 class RelativeInviteMobileView extends HookConsumerWidget {
   const RelativeInviteMobileView({super.key});
 
@@ -88,7 +89,15 @@ class RelativeInviteMobileView extends HookConsumerWidget {
         context,
         l10n.famInviteShared(name, invite.link ?? invite.code),
       );
-      await context.router.maybePop();
+      // FAM-05: lời mời mới hiện trong “Lời mời đang chờ”.
+      final fromPending = context.router.stack.any(
+        (route) => route.name == PendingInvitesRoute.name,
+      );
+      if (fromPending) {
+        await context.router.maybePop();
+      } else {
+        await context.router.replace(const PendingInvitesRoute());
+      }
     }
 
     const sectionGap = SizedBox(height: AppSpacing.s5);

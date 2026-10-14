@@ -64,9 +64,16 @@ abstract class IMemoryRepository extends IBaseRepository {
 
   void removeFromTrash(String id);
 
+  /// MEM-07 “Xoá ký ức”: chuyển ký ức sang thùng rác ([patch] = deletedAt,
+  /// deletedByUserId).
+  void moveToTrash(String id, JsonMap patch);
+
   List<JsonMap> drafts(String userId);
 
   void removeDraft(String id);
+
+  /// MEM-05 đóng khi đang soạn → nháp trên máy (MEM-18).
+  JsonMap addDraft(JsonMap draft);
 
   List<JsonMap> pendingPosts(String familyId);
 

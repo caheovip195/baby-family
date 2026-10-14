@@ -1,8 +1,13 @@
+import 'package:baby_family/data/dto/report_request.dart';
 import 'package:baby_family/data/model/child/child.dart';
 import 'package:baby_family/data/model/family/member.dart';
+import 'package:baby_family/data/model/memory/report_reason.dart';
+import 'package:baby_family/data/model/memory/report_receipt.dart';
 import 'package:baby_family/data/provider/child.dart';
 import 'package:baby_family/data/provider/family.dart';
+import 'package:baby_family/data/provider/memory.dart';
 import 'package:baby_family/data/provider/mock_store.dart';
+import 'package:baby_family/data/provider/settings.dart';
 import 'package:baby_family/data/service/family.dart';
 import 'package:baby_family/page/application_base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
@@ -80,6 +85,30 @@ class RelativeDetailController extends BaseNotifier {
     );
     await load();
   }
+
+  Future<List<ReportReason>> reportReasons() =>
+      ref.read(memoryServiceProvider).reportReasons();
+
+  /// “Báo cáo” → RPT-01 (thành viên); bố mẹ chọn “Gỡ người thân” → gỡ luôn.
+  Future<ReportReceipt?> report(ReportRequest request) async {
+    final receipt = await ref
+        .read(memoryServiceProvider)
+        .submitReport(
+          targetId: memberId,
+          reasonCode: request.reasonCode,
+          note: request.note,
+          hideForMe: request.hideForMe,
+        );
+    if (request.removeFromFamily) {
+      await familyService.removeRelative(memberId);
+    }
+    return receipt;
+  }
+
+  /// RPT-02 “Chặn” (+ tuỳ chọn gỡ khỏi gia đình, mục 7.24).
+  Future<void> block({required bool removeFromFamily}) => ref
+      .read(settingsServiceProvider)
+      .blockMember(memberId, removeFromFamily: removeFromFamily);
 
   /// FAM-06: gỡ người thân (mock giữ ký ức họ đã đăng trong cả hai lựa chọn).
   Future<void> remove() async {

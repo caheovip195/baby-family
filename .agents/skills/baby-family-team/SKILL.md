@@ -26,6 +26,8 @@ description: "Điều phối role và ghi lịch sử bắt buộc cho mọi tas
 
 - Bảo toàn backend OOP/DI theo `baby-backend/AGENTS.md`; không chuyển sang functional/feature architecture khi chưa được yêu cầu. Giữ toàn bộ quy tắc Flutter trong chỉ dẫn/skills mobile.
 - Không giả định frontend/storage/database tools đã được cài vì có thư mục. Kiểm tra code và cấu hình trước khi chọn framework, SDK hoặc migration.
+- Khi tác động database, migration, repository, generator hoặc cron/job, đọc và áp dụng [database-standards.md](references/database-standards.md): mọi bảng dự án bắt buộc có `created_at`, `updated_at`, `deleted_at`; kiểm tra cả soft delete, timestamp của mọi writer và lịch sử/recovery của job.
+- Khi thiết kế hoặc thay đổi backend/frontend/mobile/database và contract, đọc [extensibility-standards.md](references/extensibility-standards.md). Bắt buộc phân biệt catalog/config với logic, giữ version/compatibility và kiểm tra mở rộng; không fix cứng gói/quota/trial trong nhiều nơi.
 - Mỗi role trả về: phát hiện có căn cứ, đề xuất/việc đã làm, file/tài liệu liên quan, kiểm tra thực sự chạy + kết quả, vấn đề còn lại và người nhận bàn giao. Hợp nhất quyết định giữa các role trước khi kết luận.
 - `TESTER` kiểm tra luồng chính, lỗi và edge case liên quan. `QUALITY` đối chiếu diff với yêu cầu và kiến trúc, tránh thay đổi thừa, xác nhận kết quả có bằng chứng. Nếu yêu cầu chỉ giải thích/tài liệu, kiểm tra nguồn, link, ví dụ và tính nhất quán thay cho runtime test.
 

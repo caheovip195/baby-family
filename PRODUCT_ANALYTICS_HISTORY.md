@@ -5,6 +5,7 @@ Mỗi câu hỏi/yêu cầu có một entry cùng mã với [SESSIONS.md](SESSIO
 Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hiện có; ngày/giờ làm gốc chưa xác định. Role là phân loại hồi cứu, không khẳng định review độc lập đã xảy ra. Chưa có dataset analytics được cung cấp trong các yêu cầu này.
 
 <a id="bf-20261011-001"></a>
+
 ## BF-20261011-001 — Nền tảng backend cho Baby Family
 
 - Ngày ghi bù: 2026-10-11; ngày/giờ làm gốc chưa xác định.
@@ -20,6 +21,7 @@ Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hi�
 - Session: [BF-20261011-001](SESSIONS.md#bf-20261011-001).
 
 <a id="bf-20261011-002"></a>
+
 ## BF-20261011-002 — TypeScript làm chuẩn backend
 
 - Ngày ghi bù: 2026-10-11; ngày/giờ làm gốc chưa xác định.
@@ -35,6 +37,7 @@ Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hi�
 - Session: [BF-20261011-002](SESSIONS.md#bf-20261011-002).
 
 <a id="bf-20261011-003"></a>
+
 ## BF-20261011-003 — Phản hồi cấu trúc khó nhìn và câu hỏi MVC
 
 - Ngày ghi bù: 2026-10-11; ngày/giờ làm gốc chưa xác định.
@@ -50,6 +53,7 @@ Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hi�
 - Session: [BF-20261011-003](SESSIONS.md#bf-20261011-003).
 
 <a id="bf-20261011-004"></a>
+
 ## BF-20261011-004 — Chốt kiến trúc dễ bảo trì theo role
 
 - Ngày ghi bù: 2026-10-11; ngày/giờ làm gốc chưa xác định.
@@ -65,6 +69,7 @@ Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hi�
 - Session: [BF-20261011-004](SESSIONS.md#bf-20261011-004).
 
 <a id="bf-20261011-005"></a>
+
 ## BF-20261011-005 — Làm rõ cấu hình và ranh giới integration
 
 - Ngày ghi bù: 2026-10-11; ngày/giờ làm gốc chưa xác định.
@@ -80,6 +85,7 @@ Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hi�
 - Session: [BF-20261011-005](SESSIONS.md#bf-20261011-005).
 
 <a id="bf-20261011-006"></a>
+
 ## BF-20261011-006 — Điều phối chuyên môn và lưu quyết định dự án
 
 - Ngày làm: 2026-10-11 (Asia/Ho_Chi_Minh).
@@ -95,6 +101,7 @@ Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hi�
 - Session: [BF-20261011-006](SESSIONS.md#bf-20261011-006).
 
 <a id="bf-20261011-007"></a>
+
 ## BF-20261011-007 — Giữ repository sạch và tránh commit dữ liệu local
 
 - Ngày làm: 2026-10-11 (Asia/Ho_Chi_Minh).
@@ -110,6 +117,7 @@ Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hi�
 - Session: [BF-20261011-007](SESSIONS.md#bf-20261011-007).
 
 <a id="bf-20261012-001"></a>
+
 ## BF-20261012-001 — Hoàn thiện bộ màn còn thiếu (đợt 3)
 
 - Ngày làm: 2026-10-12 (Asia/Ho_Chi_Minh); entry tạo lúc 2026-10-12T19:20:00+07:00.
@@ -125,6 +133,7 @@ Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hi�
 - Session: [BF-20261012-001](SESSIONS.md#bf-20261012-001).
 
 <a id="bf-20261012-002"></a>
+
 ## BF-20261012-002 — Đồng bộ thiết kế và dữ liệu mẫu, xử lý việc tồn
 
 - Ngày làm: 2026-10-12 (Asia/Ho_Chi_Minh); entry tạo lúc 2026-10-12T19:20:00+07:00.
@@ -138,3 +147,131 @@ Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hi�
 - Kết quả / trạng thái: Đang thực hiện.
 - Theo dõi: Cập nhật khi xong.
 - Session: [BF-20261012-002](SESSIONS.md#bf-20261012-002).
+
+<a id="bf-20261013-001"></a>
+
+## BF-20261013-001 — Vòng đời database độc lập và dữ liệu có thể backup
+
+- Ngày làm: 2026-10-13 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Tách DB khỏi backend Compose, mount data host để giữ dữ liệu khi Docker/Compose bị xóa và dễ backup.
+- Role: DEVOPS, DBA, ARCHITECT, BACKEND, TESTER, QUALITY; ORCHESTRATOR/DATA_ANALYST tổng hợp.
+- Vấn đề / mục tiêu: Backend có thể rebuild/down độc lập; data nằm trong thư mục host dễ nhận diện và sao lưu.
+- Quan sát: DB hiện thuộc baby-backend, sử dụng named volume; có hai application/test databases. Các folder dự án đã được người dùng phân chia riêng.
+- Phân tích / quyết định: Standalone database Compose + bind mount PostgreSQL 18 đúng target; mạng chia sẻ, backend chỉ API/migrations. Backup logical trước cutover; copy cluster sau shutdown sạch, giữ nguồn cũ; kiểm thử recreate và restore có trọng tâm.
+- Tác động: Vận hành và persistence; không đổi hành vi nghiệp vụ, schema hoặc tracking. Dữ liệu host vẫn cần backup riêng để chống xóa thư mục/hỏng ổ.
+- Giả thuyết / đo lường: Chưa có dữ liệu analytics sản phẩm. Xác minh kỹ thuật bằng dữ liệu/số lượng/migration trước-sau, mount type, recreate container, backup/restore và kết nối API.
+- Kết quả / trạng thái: Hoàn thành. DB standalone healthy trên bind host; cutover giữ 3 DB/roles/4 table digests, nguồn cũ giữ nguyên. Container thực sự bị xóa/tạo lại bằng down --volumes/up và dữ liệu vẫn khớp; backup/restore DB mới, missing-path fail, integration 1/1, API CRUD và backend down không dừng DB đều đạt. Hai reviewer độc lập không có must-fix. Không có số liệu KPI sản phẩm được đo hoặc suy diễn từ các checks này.
+- Theo dõi: Backup thường là application DB + globals, restore vào DB mới bỏ owner/ACL gốc theo runbook; production PITR/full-cluster recovery cần scope riêng. Khi chọn ổ rời, chuyển offline đúng quy trình; data/backups cùng host không bảo vệ khỏi xóa chính thư mục hoặc hỏng ổ. Bản cluster cũ chỉ phản ánh trước cutover.
+- Session: [BF-20261013-001](SESSIONS.md#bf-20261013-001).
+
+<a id="bf-20261013-002"></a>
+
+## BF-20261013-002 — Giữ database trong folder đã phân chia
+
+- Ngày làm: 2026-10-13 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Đặt Compose database trong thư mục database hiện có.
+- Role: DEVOPS, DBA, ORCHESTRATOR, QUALITY.
+- Vấn đề / mục tiêu: Cấu trúc dự án đúng trách nhiệm và dễ tìm/cấu hình khi bảo trì.
+- Quan sát: baby-database tồn tại; chưa có ổ ngoài vật lý được mount hoặc đường dẫn ổ riêng được chỉ định.
+- Phân tích / quyết định: Đặt Compose tại baby-database/compose.yaml; mặc định ./data và ./backups tương đối với folder này, có env đổi vị trí. Không tự tạo folder mới theo lỗi gõ.
+- Tác động: Tổ chức hạ tầng và thao tác vận hành; không đổi UX/API/schema.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo sản phẩm; kiểm chứng đường dẫn, Compose config và Docker inspect.
+- Kết quả / trạng thái: Hoàn thành cùng 001: Compose đúng baby-database, Docker inspect xác nhận host path, backup từ repository root ghi đúng DB folder; data/backups/env ignored và source/env mẫu vẫn versionable. Không đổi UX/API/schema hoặc thêm tracking.
+- Theo dõi: Giữ database server độc lập với backend; cấu hình env rõ ràng khi thay vị trí data/backup. Chưa có ổ rời vật lý được chỉ định, hiện dùng thư mục host như đã thông báo.
+- Session: [BF-20261013-002](SESSIONS.md#bf-20261013-002).
+
+<a id="bf-20261013-003"></a>
+
+## BF-20261013-003 — Chuẩn lịch sử dữ liệu và khả năng truy vết background job
+
+- Ngày làm: 2026-10-13 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Bắt buộc created_at/updated_at/deleted_at trong quy tắc role và làm rõ lưu DB/xử lý cron job thất bại.
+- Role: DBA, ARCHITECT, BACKEND, DEVOPS, TESTER, QUALITY, TECH_WRITER; ORCHESTRATOR/DATA_ANALYST tổng hợp.
+- Vấn đề / mục tiêu: Schema nhất quán, truy vết tạo/sửa/xóa và biết background task chạy thành công hay lỗi để xử lý đúng.
+- Quan sát: Note/schema/generator thiếu deleted_at, repository hard delete; base chưa cài scheduler/queue và chưa có bảng job history. Đặc tả đề cập timestamp trigger, outbox và BullMQ nhưng đó không phải bằng chứng đã triển khai.
+- Phân tích / quyết định: Quy định toàn bộ bảng dự án gồm join/job/history có 3 cột; soft delete mặc định và timestamp được bảo đảm ở DB khi có nhiều writer. Cron cần durable job/run record, retry có giới hạn, idempotency, distributed lease và recovery cho worker crash/DB outage. Viết chính sách/tài liệu trong scope này, không tự triển khai Redis/BullMQ hoặc thay dữ liệu đang chạy.
+- Tác động: Chuẩn phát triển và thiết kế vận hành; chưa đổi schema/hành vi API đang chạy, không thêm tracking.
+- Giả thuyết / đo lường: Chưa có dữ liệu analytics sản phẩm. Khi triển khai jobs có thể đo success/failure/stale/queue lag theo định nghĩa có nguồn; task này chỉ kiểm chứng chính sách và hiện trạng.
+- Kết quả / trạng thái: Hoàn thành. Đã cập nhật catalog role, skill/AGENTS, chuẩn database/jobs, README và đặc tả; static format/link/skill validation đạt, hai reviewer QUALITY/TESTER và BACKEND/DEVOPS độc lập không có must-fix. Không thay schema, API/runtime, queue hoặc dữ liệu; chưa có metric sản phẩm được đo. Quy tắc phân biệt lỗi tạm thời/vĩnh viễn, retry, worker crash và DB outage; không khẳng định tự persist/retry hay exactly-once.
+- Theo dõi: Note/generator hiện thiếu deleted_at, repository hard delete và chưa có DB trigger; khi triển khai cần source/generator đồng bộ, forward migration và kiểm thử persistence. Khi triển khai jobs cần run/attempt history, idempotency, external monitoring và recovery; đặc tả BullMQ/outbox chưa phải implementation. Cần metric định nghĩa theo run/attempt riêng để không đếm retry thành nhiều job thành công.
+- Session: [BF-20261013-003](SESSIONS.md#bf-20261013-003).
+
+<a id="bf-20261013-004"></a>
+
+## BF-20261013-004 — Nền tảng dữ liệu theo family và quyền lợi gói
+
+- Ngày làm: 2026-10-13 (Asia/Ho_Chi_Minh). Hoàn thành/cập nhật kết quả lúc 2026-10-14T07:28:29+07:00.
+- Yêu cầu: Thiết kế database bám docs/desgin, hiệu quả và dễ mở rộng; license/Pro đi theo family, không theo user.
+- Role: BA, PRODUCT, DESIGN, DBA, ARCHITECT, BACKEND, INTEGRATION, SECURITY_PRIVACY, TESTER/QUALITY; ORCHESTRATOR/DATA_ANALYST tổng hợp.
+- Vấn đề / mục tiêu: Dữ liệu phục vụ đủ luồng sản phẩm, bảo toàn quyền riêng tư và quota của gia đình, tránh gắn nhầm quyền lợi vào người thanh toán.
+- Quan sát: Có đặc tả nghiệp vụ/kỹ thuật và canvas Pencil; backend runtime hiện mới có resource Note mẫu. Quy tắc audit ba cột đã ban hành, chưa rollout vào runtime.
+- Phân tích / quyết định: Family là tenant/quyền lợi; purchaser và store ownership là thông tin giao dịch riêng. Đối chiếu màn→luồng→bảng/constraint/query, phân biệt phase, yêu cầu đã chốt và giả định cần hỏi.
+- Tác động: Thiết kế cấu trúc dữ liệu, billing/entitlement, khả năng vận hành và mở rộng; chưa đổi dữ liệu người dùng hoặc bật tracking.
+- Giả thuyết / đo lường: Chưa có dataset/KPI sản phẩm. Đánh giá kỹ thuật qua coverage màn/BR, tính toàn vẹn quan hệ, tenant isolation, idempotency, quota và kiểm chứng DDL/schema cách ly; không suy diễn cải thiện metric.
+- Kết quả / trạng thái: Hoàn thành thiết kế và persistence nền: 123 bảng/model/contracts/repos, DI; coverage docs/canvas và 47 kịch bản toàn vẹn đạt trên PostgreSQL cách ly. Data dictionary chỉ đọc metadata. Không áp migration/seed ứng dụng, không có KPI được đo.
+- Theo dõi: Đã chốt license/trial qua BF-20261013-005; các gap family deletion/retention và phase được ghi requirements. Authorization, Store verifier, workers và load/performance cần kiểm chứng khi triển khai tính năng thực.
+- Session: [BF-20261013-004](SESSIONS.md#bf-20261013-004).
+
+<a id="bf-20261013-005"></a>
+
+## BF-20261013-005 — Cấu hình trial và gói theo family, thiết kế có khả năng mở rộng
+
+- Ngày làm: 2026-10-13 (Asia/Ho_Chi_Minh). Hoàn thành/cập nhật kết quả lúc 2026-10-14T07:28:29+07:00.
+- Yêu cầu: Trial7ngày; giữ House/Family và cho thêm gói; nguyên tắc mở rộng bắt buộc backend/frontend; license không chuyển family, renew hợp lệ vẫn thuộc family gốc sau payer xóa account.
+- Role: PRODUCT, BA, ARCHITECT, DBA, BACKEND, FRONTEND/MOBILE, TESTER/QUALITY; ORCHESTRATOR/DATA_ANALYST tổng hợp.
+- Vấn đề / mục tiêu: Chủ động thay đổi catalog/thương mại mà không sửa enum/câu lệnh theo tên gói; quyền lợi gia đình ổn định và truy vết được khi đổi người thanh toán.
+- Quan sát: Người dùng trực tiếp xác nhận ba câu billing; 90ngày trong docs/canvas là nguồn cũ bị thay thế. Không có dữ liệu conversion hoặc chi phí để suy ra hiệu quả trial7ngày.
+- Phân tích / quyết định: Catalog plans/versions/products; versioned trial policy mặc định 7 ngày; grant lưu thời hạn đã cấp, không hồi tố khi config đổi. Immutable familybinding; purchasernullable, paidrenew vẫn familygốc. Client hiển thị catalog/capability từ server, contract typed/versioned và fallback an toàn.
+- Tác động: Thiết kế/catalog/rules đã cập nhật trong backend và docs; quyền lợi, thanh toán và UI runtime chưa rollout. Không thêm analytics SDK.
+- Giả thuyết / đo lường: Khi rollout có thể đo activation→purchase/trialexpiry theo policyversion; hiện chưa có dataset/KPI và không thêm analyticsSDK.
+- Kết quả / trạng thái: Hoàn thành: catalog mở rộng, trial mặc định 7 ngày versioned, binding family bất biến và paid renewal sau payer detach đã được kiểm bằng SQL cách ly. Seed bootstrap chạy riêng/idempotent; standards mở rộng áp dụng bắt buộc backend/frontend/mobile. Không có số liệu conversion để kết luận hiệu quả trial.
+- Theo dõi: Triển khai server capabilities/Store verification và cập nhật copy canvas/UI khi làm feature; đo activation→purchase/trialexpiry theo policy version sau rollout có dữ liệu.
+- Session: [BF-20261013-005](SESSIONS.md#bf-20261013-005).
+
+<a id="bf-20261013-006"></a>
+
+## BF-20261013-006 — Backend sở hữu schema và migration
+
+- Ngày làm: 2026-10-13 (Asia/Ho_Chi_Minh). Hoàn thành/cập nhật kết quả lúc 2026-10-14T07:28:29+07:00.
+- Yêu cầu: Đặt lại schema/migrations vào backend để đúng workflow Prisma, database folder chỉ vận hành server/data/backup.
+- Role: BACKEND, DBA, TESTER/QUALITY; ORCHESTRATOR/DATA_ANALYST tổng hợp.
+- Vấn đề / mục tiêu: Một nguồn cấu trúc DB có version, deploy/review/rollback rõ, không phải chạy SQL tay ở folder hạ tầng.
+- Quan sát: Candidate SQL nằm baby-database/design nhưng chưa áp live; backend vẫn chỉ có Prisma Note mẫu và migration init.
+- Phân tích / quyết định: Chuyển cấu trúc vào baby-backend/prisma/schema.prisma và forward migration; giữ init đã có, validation bằng Prisma CLI trên DB ephemeral. Test/design docs dẫn cùng nguồn; không sửa dữ liệu người dùng.
+- Tác động: Workflow phát triển/triển khai và khả năng bảo trì; chưa có thay đổi thương mại/tracking runtime.
+- Giả thuyết / đo lường: Không có KPI sản phẩm; đo đúng bằng migration replay, schema/client consistency và checks thực tế.
+- Kết quả / trạng thái: Hoàn thành: backend Prisma sở hữu 123 models và migration forward DDL; server/data/backup riêng baby-database. Replay hai migrations, validate/generate và DB→Prisma diff đều đạt; DB ứng dụng không bị áp migration/seed.
+- Theo dõi: Docs/scripts thống nhất nguồn backend; giữ init đã có. Schema deploy và seed là các bước riêng theo môi trường; không có KPI sản phẩm mới.
+- Session: [BF-20261013-006](SESSIONS.md#bf-20261013-006).
+
+<a id="bf-20261014-001"></a>
+
+## BF-20261014-001 — Migration cấu trúc tách khỏi seed dữ liệu
+
+- Ngày làm: 2026-10-14 (Asia/Ho_Chi_Minh). Hoàn thành/cập nhật kết quả lúc 2026-10-14T07:28:29+07:00.
+- Yêu cầu: Cấm CRUD/INSERT dữ liệu trong migration, seed riêng backend.
+- Role: BACKEND, DBA, TESTER/QUALITY; ORCHESTRATOR/DATA_ANALYST tổng hợp.
+- Vấn đề / mục tiêu: Migration có nhiệm vụ cấu trúc rõ ràng, không tự thay chính sách/catalog khi deploy; seed được chạy và kiểm chứng riêng.
+- Quan sát: Migration forward chưa áp ứng dụng đang chứa catalog INSERT; user yêu cầu loại bỏ.
+- Phân tích / quyết định: DDL-only migration, versioned/idempotent seed lệnh riêng; giữ initial migration và DB ứng dụng nguyên trạng.
+- Tác động: Quy trình phát triển và vận hành, chưa đổi quyền lợi thực hoặc analytics.
+- Giả thuyết / đo lường: Không có KPI sản phẩm; kiểm chứng DML audit, replay migration, catalog trống trước seed và ổn định sau chạy seed lặp.
+- Kết quả / trạng thái: Hoàn thành: migration không CRUD/seed; bootstrap catalog TypeScript/JSON chạy riêng, idempotent và không ghi đè config đang có. Replay để catalog trống, seed hai lần digest giữ nguyên, 6 nhóm policy regression và 47 kịch bản domain đạt. Review độc lập đạt; guard tĩnh cần đi kèm SQL review.
+- Theo dõi: Không tự seed khi migrate/start/Compose. Catalog update/backfill dùng service/command riêng có version và kiểm chứng; không thay đổi quyền lợi thực trong task.
+- Session: [BF-20261014-001](SESSIONS.md#bf-20261014-001).
+
+<a id="bf-20261014-002"></a>
+
+## BF-20261014-002 — Persistence classes nhất quán với schema
+
+- Ngày làm: 2026-10-14 (Asia/Ho_Chi_Minh). Hoàn thành/cập nhật kết quả lúc 2026-10-14T07:28:29+07:00.
+- Yêu cầu: Có model/repository tương ứng các bảng, interfaces và DI theo kiến trúc đã chọn.
+- Role: BACKEND, DBA, TESTER/QUALITY; ORCHESTRATOR/DATA_ANALYST tổng hợp.
+- Vấn đề / mục tiêu: Cấu trúc dữ liệu đi kèm code có thể dùng/bảo trì, không dừng ở SQL/thiết kế.
+- Quan sát: Backend đang chỉ có Note; model/repo domain còn thiếu.
+- Phân tích / quyết định: Sinh class/contract/provider theo metadata Prisma, audit/soft delete/composite keys đúng; append-only ledger không mở mutation tùy ý. Domain API/business services vẫn cần triển khai theo luồng/quyền, không coi persistence scaffolding là toàn bộ tính năng.
+- Tác động: Nền tảng backend và khả năng bảo trì, không thay UI/tracking/thanh toán thật.
+- Giả thuyết / đo lường: Không có dataset sản phẩm; xác minh coverage model/table/providers, typecheck và các đường persistence đại diện.
+- Kết quả / trạng thái: Hoàn thành 123 bộ model/I-repository/concrete repo, DI domain 122 providers, tenant/privileged scopes, 18 append-only. Coverage và chống Prisma-type leakage đạt; check đủ 24 unit, 10 generator, 6 policy và 10 e2e tests, integration 2/2 trên PostgreSQL cách ly, generator 369 files không drift. Không có số liệu cải thiện KPI sản phẩm được đo.
+- Theo dõi: Business service/API, authorization và workers vẫn là công việc tính năng riêng. Hash guard và CI ngăn source drift; quyết định retention/transition phải ở service, không generic mutation ledger.
+- Session: [BF-20261014-002](SESSIONS.md#bf-20261014-002).

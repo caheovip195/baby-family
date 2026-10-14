@@ -3,10 +3,34 @@ part of '../mobile/home_tab_mobile_view.dart';
 /// App bar HOME-01/03 (Pencil `B9BCrF`): đệm 4/20/8/20; avatar gia đình 40
 /// (nền chuyển `primary-100` → `accent-100`, icon `house-heart` 20), bộ chọn
 /// bé ở giữa, chuông 24 + chấm `primary-500` 9 khi có thông báo chưa đọc.
+/// Giữ avatar gia đình → FAM-08 “Chuyển gia đình”.
 class _HomeAppBar extends StatelessWidget {
   const _HomeAppBar({required this.controller});
 
   final HomeTabController controller;
+
+  Future<void> _switchFamily(BuildContext context) async {
+    final memberships = await controller.memberships();
+    if (!context.mounted || memberships.length < 2) {
+      return;
+    }
+    final familyId = await showSwitchFamilySheet(
+      context,
+      memberships: memberships,
+    );
+    final picked = memberships.where((m) => m.familyId == familyId).firstOrNull;
+    if (picked == null || picked.current || !context.mounted) {
+      return;
+    }
+    await controller.switchFamily(picked.familyId);
+    if (context.mounted) {
+      final current = memberships.where((m) => m.current).firstOrNull;
+      showAppSnackBar(
+        context,
+        context.l10n.famSwitchMock(current?.familyName ?? ''),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +49,9 @@ class _HomeAppBar extends StatelessWidget {
             label: l10n.homeOpenFamily,
             child: GestureDetector(
               onTap: () => context.router.push(const FamilyRoute()),
+              // FAM-08: giữ avatar gia đình để chuyển gia đình (khi tài khoản
+              // thuộc nhiều gia đình).
+              onLongPress: () => _switchFamily(context),
               child: Container(
                 width: AppSpacing.s10,
                 height: AppSpacing.s10,

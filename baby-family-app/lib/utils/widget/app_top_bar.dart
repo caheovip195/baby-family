@@ -14,6 +14,9 @@ import 'package:lucide_flutter/lucide_flutter.dart';
 /// [currentStepOnly]: chỉ bước hiện tại dài 24 (bước đã qua 8 `primary-500`,
 /// bước sau 8 `border`) — luồng xoá tài khoản SET-09 (`fU1MN`…`sOUEE`);
 /// onboarding giữ mặc định (mọi bước đã qua đều dài).
+/// [dotColor]/[dotTrackColor]: màu chấm của vùng Papa & Mama (US-08 `us-500`
+/// / `us-100`). [trailing] rộng tối thiểu 44 và giãn theo nội dung (nút chữ
+/// “Dừng lại”, “Tạm dừng”, “Bỏ” ở US-08/09/12, REC-01).
 class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   const AppTopBar({
     this.step,
@@ -24,6 +27,8 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
     this.title,
     this.backgroundColor,
     this.currentStepOnly = false,
+    this.dotColor = kColorPrimary500EE7B67,
+    this.dotTrackColor = kColorBorderEADFD6,
     super.key,
   });
 
@@ -37,6 +42,8 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
   final Color? backgroundColor;
   final bool currentStepOnly;
+  final Color dotColor;
+  final Color dotTrackColor;
 
   @override
   Size get preferredSize => const Size.fromHeight(AppSpacing.topBarHeight);
@@ -57,6 +64,8 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
                   step: step ?? 1,
                   count: stepCount!,
                   currentOnly: currentStepOnly,
+                  color: dotColor,
+                  trackColor: dotTrackColor,
                 ));
     return Material(
       color: AppColors.resolve(context, backgroundColor ?? kColorBgFFFBF7),
@@ -87,9 +96,14 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
                       : null,
                 ),
                 Expanded(child: Center(child: center)),
-                SizedBox.square(
-                  dimension: AppSpacing.iconButton,
-                  child: trailing == null ? null : Center(child: trailing),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minWidth: AppSpacing.iconButton,
+                    minHeight: AppSpacing.iconButton,
+                  ),
+                  child: trailing == null
+                      ? null
+                      : Center(widthFactor: 1, child: trailing),
                 ),
               ],
             ),
@@ -105,11 +119,15 @@ class _StepDots extends StatelessWidget {
     required this.step,
     required this.count,
     required this.currentOnly,
+    required this.color,
+    required this.trackColor,
   });
 
   final int step;
   final int count;
   final bool currentOnly;
+  final Color color;
+  final Color trackColor;
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +145,7 @@ class _StepDots extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.resolve(
                 context,
-                index <= step ? kColorPrimary500EE7B67 : kColorBorderEADFD6,
+                index <= step ? color : trackColor,
               ),
               borderRadius: BorderRadius.circular(3),
             ),

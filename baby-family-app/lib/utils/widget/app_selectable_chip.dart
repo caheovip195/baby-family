@@ -9,6 +9,7 @@ class AppSelectableChip extends StatelessWidget {
     required this.onPressed,
     this.selected = false,
     this.prefix,
+    this.suffix,
     this.height = 36,
     this.radius = AppRadius.full,
     this.filledSelection = true,
@@ -24,6 +25,9 @@ class AppSelectableChip extends StatelessWidget {
   final VoidCallback onPressed;
   final bool selected;
   final Widget? prefix;
+
+  /// Nhãn phụ sau chữ (US-12 “Lời nhờ”), cách [prefixGap].
+  final Widget? suffix;
   final double height;
   final double radius;
   final bool filledSelection;
@@ -88,6 +92,7 @@ class AppSelectableChip extends StatelessWidget {
                       ),
                     ),
                   ),
+                  if (suffix != null) ...[SizedBox(width: prefixGap), suffix!],
                 ],
               ),
             ),

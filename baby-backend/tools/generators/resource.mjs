@@ -261,10 +261,16 @@ async function generateResourceLocked(name, root) {
       `Resource ${resource.pascal} is already registered; no files were changed.`,
     );
   }
+  const models = [
+    ...originalSchema.matchAll(/\bmodel\s+\w+\s*\{([\s\S]*?)^\}/gm),
+  ];
   if (
-    new RegExp(`@@map\\(\\s*["']${resource.snake}["']\\s*\\)`).test(
-      originalSchema,
-    )
+    models.some(([, body]) => {
+      const mapping = body.match(/@@map\(\s*["']([^"']+)["']\s*\)/)?.[1];
+      const schema =
+        body.match(/@@schema\(\s*["']([^"']+)["']\s*\)/)?.[1] ?? 'public';
+      return mapping === resource.snake && schema === 'public';
+    })
   ) {
     throw new Error(
       `Prisma table ${resource.snake} is already mapped; no files were changed.`,
@@ -382,9 +388,11 @@ function renderPrismaModel({ pascal, snake }) {
   title     String   @db.VarChar(200)
   content   String?
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(3)
 
   @@map("${snake}")
+  @@schema("public")
 }
 `;
 }
@@ -403,6 +411,7 @@ function renderResourceFiles({
   content: string | null;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt: Date | null;
 }
 
 export class ${P} implements ${P}Attributes {
@@ -411,6 +420,7 @@ export class ${P} implements ${P}Attributes {
   readonly content: string | null;
   readonly createdAt: Date;
   readonly updatedAt: Date;
+  readonly deletedAt: Date | null;
 
   constructor(attributes: ${P}Attributes) {
     this.id = attributes.id;
@@ -418,6 +428,7 @@ export class ${P} implements ${P}Attributes {
     this.content = attributes.content;
     this.createdAt = attributes.createdAt;
     this.updatedAt = attributes.updatedAt;
+    this.deletedAt = attributes.deletedAt;
   }
 
   hasContent(): boolean {
@@ -529,11 +540,12 @@ export class ${P}Repository implements I${P}Repository {
     const [rows, total] = await this.prisma.$transaction(
       [
         this.prisma.${c}.findMany({
+          where: { deletedAt: null },
           skip: (input.page - 1) * input.limit,
           take: input.limit,
           orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         }),
-        this.prisma.${c}.count(),
+        this.prisma.${c}.count({ where: { deletedAt: null } }),
       ],
       { isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead },
     );
@@ -541,7 +553,7 @@ export class ${P}Repository implements I${P}Repository {
   }
 
   async findById(id: string): Promise<${P} | null> {
-    const row = await this.prisma.${c}.findUnique({ where: { id } });
+    const row = await this.prisma.${c}.findUnique({ where: { id, deletedAt: null } });
     return row ? new ${P}(row) : null;
   }
 
@@ -552,7 +564,7 @@ export class ${P}Repository implements I${P}Repository {
 
   async update(id: string, input: Update${P}Dto): Promise<${P} | null> {
     try {
-      const row = await this.prisma.${c}.update({ where: { id }, data: input });
+      const row = await this.prisma.${c}.update({ where: { id, deletedAt: null }, data: input });
       return new ${P}(row);
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') return null;
@@ -562,7 +574,7 @@ export class ${P}Repository implements I${P}Repository {
 
   async remove(id: string): Promise<boolean> {
     try {
-      await this.prisma.${c}.delete({ where: { id } });
+      await this.prisma.${c}.update({ where: { id, deletedAt: null }, data: { deletedAt: new Date() } });
       return true;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') return false;
@@ -614,6 +626,9 @@ export class ${P}ResponseDto implements ${P}Attributes {
 
   @ApiProperty({ type: String, format: 'date-time' })
   updatedAt!: Date;
+
+  @ApiProperty({ type: String, format: 'date-time', nullable: true })
+  deletedAt!: Date | null;
 }
 
 export class ${P}PaginationMetaDto {

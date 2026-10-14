@@ -1,6 +1,5 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/page/general/onboarding_invite_partner/onboarding_invite_partner_controller.dart';
-import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/invite_code.dart';
@@ -9,14 +8,12 @@ import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
 import 'package:baby_family/utils/widget/app_step_heading.dart';
 import 'package:baby_family/utils/widget/app_step_scaffold.dart';
-import 'package:baby_family/utils/widget/app_switch.dart';
 import 'package:baby_family/utils/widget/app_top_bar.dart';
+import 'package:baby_family/utils/widget/invite_approval_row.dart';
+import 'package:baby_family/utils/widget/invite_code_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:lucide_flutter/lucide_flutter.dart';
-
-part '../widgets/invite_code_card.dart';
 
 /// ONB-07 (Pencil tIOQ7): thẻ mã mời (QR 148, “Mã mời”, mã 24/800 + sao chép,
 /// hạn dùng), dòng xác nhận lần cuối có công tắc, nút “Gửi lời mời qua Zalo,
@@ -68,7 +65,7 @@ class OnboardingInvitePartnerMobileView extends HookConsumerWidget {
           title: l10n.onboardingInviteTitle(partner),
           subtitle: l10n.onbInviteSubtitle(partner),
         ),
-        _InviteCodeCard(
+        InviteCodeCard(
           code: formatInviteCode(code),
           onCopy: () async {
             await Clipboard.setData(ClipboardData(text: code));
@@ -77,36 +74,10 @@ class OnboardingInvitePartnerMobileView extends HookConsumerWidget {
             }
           },
         ),
-        Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.cardInset,
-            vertical: AppSpacing.s3,
-          ),
-          decoration: BoxDecoration(
-            color: AppColors.resolve(context, kColorSecondary100E4F2EA),
-            borderRadius: BorderRadius.circular(AppRadius.md),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                LucideIcons.shieldCheck,
-                size: 20,
-                color: AppColors.resolve(context, kColorSecondary7003F7A5C),
-              ),
-              const SizedBox(width: AppSpacing.s3),
-              Expanded(
-                child: Text(
-                  l10n.onbInviteApproval(partner),
-                  style: AppTypography.adapt(context, AppTypography.text14),
-                ),
-              ),
-              const SizedBox(width: AppSpacing.s3),
-              AppSwitch(
-                value: controller.requireApproval,
-                onChanged: controller.toggleApproval,
-              ),
-            ],
-          ),
+        InviteApprovalRow(
+          label: l10n.onbInviteApproval(partner),
+          value: controller.requireApproval,
+          onChanged: controller.toggleApproval,
         ),
       ],
     );

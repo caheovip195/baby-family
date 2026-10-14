@@ -262,9 +262,14 @@ class SessionServiceImp extends MockServiceImp implements ISessionService {
   @override
   Future<InviteInfo?> partnerInvite() async {
     await ready();
+    // Bỏ qua lời mời mẫu INV-02/03/04 (`mock: true`) cùng gia đình — FAM-02
+    // (seed partnerLeft) phải lấy lời mời bạn đời mới R4TB2HWN.
     final invite = _familyRepository
         .invites(familyId)
-        .where((row) => row['kind'] == InviteKind.partner.name)
+        .where(
+          (row) =>
+              row['kind'] == InviteKind.partner.name && row['mock'] != true,
+        )
         .firstOrNull;
     return invite == null ? null : _inviteInfo(invite);
   }

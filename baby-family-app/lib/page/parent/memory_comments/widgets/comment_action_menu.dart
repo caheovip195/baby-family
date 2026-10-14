@@ -2,12 +2,13 @@ part of '../mobile/memory_comments_mobile_view.dart';
 
 /// Menu giữ lâu (`GD8GV`) nổi phía trên bong bóng: nền `text-primary` bo 14,
 /// đệm 4, cách 2; mục cao 32 đệm 8/12, icon 15 + chữ 13/600 trắng (Xoá
-/// `#FF9A8A`); bóng `#2E2A2740` (y 6, blur 20).
+/// `#FF9A8A`; bình luận của người khác có “Báo cáo” → RPT-01); bóng `#2E2A2740` (y 6, blur 20).
 Future<CommentAction?> _showCommentActionMenu(
   BuildContext context, {
   required Rect anchor,
   required bool canEdit,
   required bool canDelete,
+  bool canReport = false,
 }) => showGeneralDialog<CommentAction>(
   context: context,
   barrierDismissible: true,
@@ -87,6 +88,13 @@ Future<CommentAction?> _showCommentActionMenu(
                       LucideIcons.copy,
                       l10n.memCommentCopy,
                     ),
+                    if (canReport)
+                      action(
+                        CommentAction.report,
+                        LucideIcons.flag,
+                        l10n.famReport,
+                        color: kColorDangerOnDarkFF9A8A,
+                      ),
                     if (canDelete)
                       action(
                         CommentAction.delete,

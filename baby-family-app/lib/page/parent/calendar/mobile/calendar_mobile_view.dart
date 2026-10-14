@@ -12,8 +12,8 @@ import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_extended_fab.dart';
 import 'package:baby_family/utils/widget/app_switch.dart';
+import 'package:baby_family/utils/widget/app_switcher_title_bar.dart';
 import 'package:baby_family/utils/widget/base_scaffold.dart';
-import 'package:baby_family/utils/widget/child_switcher.dart';
 import 'package:baby_family/utils/widget/empty_state.dart';
 import 'package:baby_family/utils/widget/error_state.dart';
 import 'package:baby_family/utils/widget/loading_progress.dart';
@@ -29,7 +29,6 @@ part '../widgets/calendar_legend.dart';
 part '../widgets/calendar_mode_toggle.dart';
 part '../widgets/calendar_month_grid.dart';
 part '../widgets/calendar_month_header.dart';
-part '../widgets/calendar_top_bar.dart';
 
 /// Màu chấm theo loại (Pencil “Dots”).
 Color _dotColor(CalendarDot dot) => switch (dot) {
@@ -140,7 +139,14 @@ class CalendarMobileView extends HookConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _CalendarTopBar(controller: controller),
+                AppSwitcherTitleBar(
+                  title: context.l10n.calendarTitle,
+                  children: controller.children,
+                  selectedId: controller.subjectId,
+                  today: controller.today,
+                  onChanged: controller.selectSubject,
+                  onManage: () => context.router.push(const ChildrenRoute()),
+                ),
                 _CalendarMonthHeader(controller: controller),
                 if (controller.monthMode)
                   _CalendarMonthGrid(controller: controller)

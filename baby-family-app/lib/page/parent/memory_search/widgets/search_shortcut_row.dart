@@ -1,7 +1,8 @@
 part of '../mobile/memory_search_mobile_view.dart';
 
 /// Lối tắt khi chưa tìm: icon 18 trong ô 36 `primary-50` + nhãn 15/600 +
-/// `chevron-right` 18 — mở MEM-16 Ngày này năm xưa / MEM-03 Album.
+/// `chevron-right` 18 — mở MEM-16 Ngày này năm xưa / MEM-03 Album / MEM-19 Ảnh chờ duyệt /
+/// MEM-18 Nháp / MEM-17 Thùng rác.
 class _SearchShortcutRow extends StatelessWidget {
   const _SearchShortcutRow({
     required this.icon,

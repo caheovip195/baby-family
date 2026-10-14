@@ -238,6 +238,7 @@ abstract final class AppColors {
     kColorSuccess3E9B6E => kColorDarkSuccess6FCB9C,
     kColorWarningD98E1F => kColorDarkWarningF2B85B,
     kColorErrorD14B4B => kColorDarkErrorF08080,
+    kColorError50FBE4E4 => kColorDarkPrimary1003D231D,
     kColorInfo3F82BF => kColorDarkInfo7DB3E0,
     _ => color,
   };

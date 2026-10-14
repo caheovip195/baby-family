@@ -1,37 +1,16 @@
 name: baby-backend
 
-x-database-url: &database-url postgresql://${POSTGRES_USER:-baby}:${POSTGRES_PASSWORD:-baby_local_only}@postgres:5432/${POSTGRES_DB:-baby_family}?schema=public
+x-database-url: &database-url ${DATABASE_DOCKER_URL:?Set DATABASE_DOCKER_URL in baby-backend/.env; start baby-database first}
 
 services:
-  postgres:
-    image: postgres:18.6-bookworm
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-baby_family}
-      POSTGRES_USER: ${POSTGRES_USER:-baby}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-baby_local_only}
-    ports:
-      - '127.0.0.1:${DB_PORT:-5433}:5432'
-    volumes:
-      # PostgreSQL 18 stores data under /var/lib/postgresql/18/docker.
-      - postgres-data:/var/lib/postgresql
-    shm_size: 128mb
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
-      interval: 5s
-      timeout: 5s
-      retries: 10
-      start_period: 10s
-
   migrate:
     build:
       context: .
       target: migrate
     environment:
       DATABASE_URL: *database-url
-    depends_on:
-      postgres:
-        condition: service_healthy
+    networks:
+      - database
     restart: 'no'
     init: true
     security_opt:
@@ -53,10 +32,10 @@ services:
     ports:
       - '${PORT:-3000}:3000'
     depends_on:
-      postgres:
-        condition: service_healthy
       migrate:
         condition: service_completed_successfully
+    networks:
+      - database
     restart: unless-stopped
     init: true
     read_only: true
@@ -68,5 +47,7 @@ services:
       - ALL
     stop_grace_period: 20s
 
-volumes:
-  postgres-data:
+networks:
+  database:
+    name: ${DATABASE_NETWORK:-baby-family-data}
+    external: true

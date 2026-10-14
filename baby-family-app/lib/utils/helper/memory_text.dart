@@ -1,4 +1,5 @@
 import 'package:baby_family/data/model/family/member.dart';
+import 'package:baby_family/data/model/memory/memory.dart';
 import 'package:baby_family/generated/l10n/app_localizations.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/extension/date_time.dart';
@@ -76,3 +77,21 @@ String memoryAudience(
 /// “0:12” — thời lượng ghi âm.
 String memoryDuration(int seconds) =>
     '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}';
+
+/// Nhãn loại ký ức (MEM-17 “Nhật ký · Haru…”, MEM-18 “Khoảnh khắc · Haru…”).
+String memoryKindLabel(AppLocalizations l10n, MemoryKind kind) =>
+    switch (kind) {
+      MemoryKind.photo || MemoryKind.fromMission => l10n.memKindMoment,
+      MemoryKind.diary => l10n.commonDiary,
+      MemoryKind.voice => l10n.memoriesVoices,
+      MemoryKind.quote => l10n.memoriesQuotes,
+      MemoryKind.monthlyPhoto => l10n.memKindMoment,
+      MemoryKind.keepsake => l10n.memoriesKeepsakes,
+      MemoryKind.letter => l10n.commonLetter,
+      MemoryKind.ultrasound => l10n.pregnancyUltrasound,
+      MemoryKind.bump => l10n.pregnancyBumpPhoto,
+      MemoryKind.milestone => l10n.commonMilestone,
+    };
+
+/// Tiêu đề hiển thị của ký ức: tiêu đề, không có thì nội dung.
+String memoryTitle(Memory memory) => memory.title ?? memory.body ?? '';

@@ -13,15 +13,16 @@ import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/empty_state.dart';
 import 'package:baby_family/utils/widget/error_state.dart';
 import 'package:baby_family/utils/widget/loading_progress.dart';
+import 'package:baby_family/utils/widget/recap_actions.dart';
+import 'package:baby_family/utils/widget/recap_next_hint.dart';
+import 'package:baby_family/utils/widget/recap_stat_card.dart';
+import 'package:baby_family/utils/widget/recap_story_header.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
 
-part '../widgets/recap_actions.dart';
 part '../widgets/recap_collage.dart';
-part '../widgets/recap_header.dart';
 part '../widgets/recap_highlight_row.dart';
-part '../widgets/recap_stat_card.dart';
 
 /// REC-02 Tuần của nhà mình (Pencil `z2YZ8A`): trang 1/6 của bản tổng kết
 /// dạng story, nền chuyển `primary-100` → `bg`.
@@ -62,7 +63,8 @@ class WeeklyRecapMobileView extends HookConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _RecapHeader(
+              RecapStoryHeader(
+                title: l10n.recapWeekTitle,
                 pages: recap?.pageCount ?? 1,
                 subtitle: recap == null
                     ? null
@@ -103,7 +105,7 @@ class WeeklyRecapMobileView extends HookConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: _RecapStatCard(
+              child: RecapStatCard(
                 icon: LucideIcons.camera,
                 background: kColorPrimary50FFF4F1,
                 foreground: kColorPrimary600C2513F,
@@ -113,7 +115,7 @@ class WeeklyRecapMobileView extends HookConsumerWidget {
             ),
             const SizedBox(width: AppSpacing.s2),
             Expanded(
-              child: _RecapStatCard(
+              child: RecapStatCard(
                 icon: LucideIcons.star,
                 background: kColorAccent100FDF1D6,
                 foreground: kColorAccent600B7862B,
@@ -123,7 +125,7 @@ class WeeklyRecapMobileView extends HookConsumerWidget {
             ),
             const SizedBox(width: AppSpacing.s2),
             Expanded(
-              child: _RecapStatCard(
+              child: RecapStatCard(
                 icon: LucideIcons.quote,
                 background: kColorSecondary100E4F2EA,
                 foreground: kColorSecondary7003F7A5C,
@@ -160,7 +162,7 @@ class WeeklyRecapMobileView extends HookConsumerWidget {
           ),
         ),
       if (recap.togetherTitle != null) _together(context, recap),
-      _RecapActions(
+      RecapActions(
         onShare: () => showAppSnackBar(context, l10n.recapShared),
         onSave: () => showAppSnackBar(context, l10n.recapSaved),
         onDownload: () => showAppSnackBar(context, l10n.memViewerDownloaded),
@@ -260,56 +262,17 @@ class WeeklyRecapMobileView extends HookConsumerWidget {
     );
   }
 
-  /// Gợi ý trang sau (`HkNUa`): “1 / 6” 12/700 + “Ảnh nổi bật ›” 13/600.
+  /// Gợi ý trang sau (`HkNUa`): “1 / 6” + “Ảnh nổi bật ›”.
   Widget _nextHint(BuildContext context, WeeklyRecap recap) {
-    final l10n = context.l10n;
-    final secondary = AppColors.resolve(context, kColorTextSecondary6B625B);
     final first = recap.highlights
         .where((memory) => memory.mediaAssets.isNotEmpty)
         .firstOrNull;
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.screen,
-        AppSpacing.s2,
-        AppSpacing.screen,
-        AppSpacing.s6 + MediaQuery.paddingOf(context).bottom,
-      ),
-      child: Row(
-        children: [
-          Text(
-            '1 / ${recap.pageCount}',
-            style: AppTypography.adapt(
-              context,
-              AppTypography.small.copyWith(
-                fontWeight: FontWeight.w700,
-                color: kColorTextTertiary9C928A,
-              ),
-            ),
-          ),
-          const Spacer(),
-          GestureDetector(
-            onTap: first == null
-                ? null
-                : () =>
-                      context.router.push(PhotoViewerRoute(memoryId: first.id)),
-            behavior: HitTestBehavior.opaque,
-            child: Row(
-              children: [
-                Text(
-                  l10n.recapNextHighlights,
-                  style: AppTypography.caption.copyWith(
-                    fontWeight: FontWeight.w600,
-                    height: 16 / 13,
-                    color: secondary,
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.s1),
-                Icon(LucideIcons.chevronRight, size: 16, color: secondary),
-              ],
-            ),
-          ),
-        ],
-      ),
+    return RecapNextHint(
+      pageCount: recap.pageCount,
+      label: context.l10n.recapNextHighlights,
+      onTap: first == null
+          ? null
+          : () => context.router.push(PhotoViewerRoute(memoryId: first.id)),
     );
   }
 }

@@ -3,7 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
 
 /// Icon Lucide theo tên kebab-case lưu trong dữ liệu (sự kiện lịch CARE-07,
-/// huy hiệu CARE-10, loại nhiệm vụ CARE-12, lời cảm ơn US-06). Tên chưa biết
+/// huy hiệu CARE-10, loại nhiệm vụ CARE-12, lời cảm ơn US-06, Cầu nối
+/// US-08/12, ký ức trong ngày REC-01, tính năng AI SET-05). Tên chưa biết
 /// rơi về [missionIcon] (bộ icon nhiệm vụ) rồi `heart-handshake`.
 IconData lucideIconByName(String? name) => switch (name) {
   'house-heart' => LucideIcons.houseHeart,
@@ -24,5 +25,19 @@ IconData lucideIconByName(String? name) => switch (name) {
   'sun' => LucideIcons.sun,
   'heart' => LucideIcons.heart,
   'award' => LucideIcons.award,
+  'message-square-text' => LucideIcons.messageSquareText,
+  'list-checks' => LucideIcons.listChecks,
+  'pen-line' => LucideIcons.penLine,
+  'calendar-heart' => LucideIcons.calendarHeart,
+  'door-open' => LucideIcons.doorOpen,
+  'ear' => LucideIcons.ear,
+  'message-circle-heart' => LucideIcons.messageCircleHeart,
+  'hand-helping' => LucideIcons.handHelping,
+  'messages-square' => LucideIcons.messagesSquare,
+  'alarm-clock' => LucideIcons.alarmClock,
+  'pencil' => LucideIcons.pencil,
+  'blocks' => LucideIcons.blocks,
+  'mic' => LucideIcons.mic,
+  'utensils' => LucideIcons.utensils,
   _ => missionIcon(name),
 };

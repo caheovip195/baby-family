@@ -5,7 +5,6 @@ import 'package:baby_family/page/general/settings/settings_controller.dart';
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
-import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/router/session_route.dart';
@@ -22,8 +21,8 @@ part '../widgets/profile_card.dart';
 
 /// SET-01 — Cài đặt (Pencil `B5bkt`). Hồ sơ → SET-02, Thông báo → SET-03,
 /// Quyền riêng tư → SET-04, Hiển thị & Ngôn ngữ → SET-06, Bảo mật → SET-07,
-/// Dữ liệu → SET-08, Gói → SUB-01, Trợ giúp → SET-11, Giới thiệu → SET-12,
-/// Xoá tài khoản → SET-09. “AI hỗ trợ” chưa có màn: “Sắp ra mắt”.
+/// Dữ liệu → SET-08, Gói → SUB-03 (trả phí) / SUB-01, AI hỗ trợ → SET-05,
+/// Trợ giúp → SET-11, Giới thiệu → SET-12, Xoá tài khoản → SET-09.
 class SettingsMobileView extends HookConsumerWidget {
   const SettingsMobileView({super.key});
 
@@ -32,7 +31,6 @@ class SettingsMobileView extends HookConsumerWidget {
     final controller = ref.watch(settingsControllerProvider);
     final l10n = context.l10n;
     final summary = controller.summary;
-    void comingSoon() => showComingSoonSnackBar(context);
     void open(PageRouteInfo route) => context.router.push(route);
 
     Future<void> signOut() async {
@@ -83,7 +81,7 @@ class SettingsMobileView extends HookConsumerWidget {
                   value: summary.aiRemaining == null || summary.aiTotal == null
                       ? null
                       : l10n.setAiQuota(summary.aiRemaining!, summary.aiTotal!),
-                  onTap: comingSoon,
+                  onTap: () => open(const AiSettingsRoute()),
                 ),
                 AppSettingsRow(
                   icon: LucideIcons.languages,
@@ -111,7 +109,11 @@ class SettingsMobileView extends HookConsumerWidget {
                   icon: LucideIcons.crown,
                   title: l10n.settingsBilling,
                   value: _planLabel(context, controller.family),
-                  onTap: () => open(const PlansRoute()),
+                  onTap: () => open(
+                    _isPaid(controller.family)
+                        ? const FamilyPlanRoute()
+                        : const PlansRoute(),
+                  ),
                 ),
               ],
             ),
@@ -161,6 +163,11 @@ class SettingsMobileView extends HookConsumerWidget {
       ),
     );
   }
+
+  /// Gói trả phí → SUB-03 “Gói của gia đình”; dùng thử/hết hạn → SUB-01.
+  static bool _isPaid(Family? family) =>
+      family?.plan.state == PlanState.family ||
+      family?.plan.state == PlanState.house;
 
   static String? _planLabel(BuildContext context, Family? family) {
     if (family == null) {

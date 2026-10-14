@@ -18,6 +18,7 @@ describe('HTTP application (repository replaced through DI)', () => {
     content: null,
     createdAt: new Date(),
     updatedAt: new Date(),
+    deletedAt: null,
   });
   const repository: jest.Mocked<INoteRepository> = {
     list: jest.fn().mockResolvedValue({

@@ -5,20 +5,22 @@ import 'package:baby_family/utils/widget/app_setting_row.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
 
-/// Sheet “⋯” của khu Chăm con: Lịch sử nhiệm vụ (CARE-08), Huy hiệu (CARE-10),
-/// Cài đặt nhiệm vụ (CARE-12). Dùng ở CARE-01 (nút ⋯ cạnh nút lịch) và CARE-09
+/// Sheet “⋯” của khu Chăm con: Lịch sử nhiệm vụ (CARE-08), Thống kê chăm con
+/// (CARE-11, khi có [onStats]), Huy hiệu (CARE-10), Cài đặt nhiệm vụ (CARE-12). Dùng ở CARE-01 (nút ⋯ cạnh nút lịch) và CARE-09
 /// (thanh tiêu đề). Sheet tự đóng rồi gọi callback — màn gọi tự điều hướng.
 class CareMoreSheet extends StatelessWidget {
   const CareMoreSheet({
     required this.onHistory,
     required this.onBadges,
     required this.onSettings,
+    this.onStats,
     super.key,
   });
 
   final VoidCallback onHistory;
   final VoidCallback onBadges;
   final VoidCallback onSettings;
+  final VoidCallback? onStats;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +41,14 @@ class CareMoreSheet extends StatelessWidget {
           divider: true,
           onTap: () => select(onHistory),
         ),
+        if (onStats != null)
+          AppSettingRow(
+            icon: LucideIcons.chartNoAxesColumn,
+            title: l10n.careMenuStats,
+            padding: padding,
+            divider: true,
+            onTap: () => select(onStats!),
+          ),
         AppSettingRow(
           icon: LucideIcons.award,
           title: l10n.careBadgesTitle,
@@ -63,11 +73,13 @@ Future<void> showCareMoreSheet(
   required VoidCallback onHistory,
   required VoidCallback onBadges,
   required VoidCallback onSettings,
+  VoidCallback? onStats,
 }) => showAppBottomSheet<void>(
   context,
   builder: (_) => CareMoreSheet(
     onHistory: onHistory,
     onBadges: onBadges,
     onSettings: onSettings,
+    onStats: onStats,
   ),
 );

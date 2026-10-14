@@ -8,6 +8,10 @@
 
 `models/` chứa class; `interfaces/services/` và `interfaces/repositories/` chứa contracts/tokens; `dto/<resource>/` chứa create/update/response DTO. `database/`, `common/`, `config/` là phần dùng chung. Một AppModule là composition root, đăng ký controller/provider; DatabaseModule cung cấp kết nối Prisma.
 
+Persistence domain hiện có 122 bộ model/interface/repository, cùng Note mẫu thành 123 bộ tương ứng 123 Prisma models. `database/repository.providers.ts` đăng ký Symbol token → class; `database/persistence.manifest.ts` ghi scope, khóa chính và append-only policy. Tạo lại bằng `npm run generate:persistence`, kiểm tra drift bằng `npm run generate:persistence -- --check`; file đã chỉnh tay được hash guard bảo vệ. Model và contract dùng kiểu domain, giữ Prisma types trong repository/database.
+
+Repository domain nhận scope bắt buộc cho family/user/couple hoặc explicit privileged scope cho bảng toàn cục. Service phải kiểm tra caller có quyền dùng scope đó và thực thi chuyển trạng thái/retention; việc truyền scope không tự cấp quyền. 18 repository lịch sử/tài chính không mở generic update/delete. Business services, domain API và worker sẽ triển khai theo từng luồng đã xác định; lớp persistence không tự thay thế chúng.
+
 Luồng mẫu: `NoteController → INoteService → NoteService → INoteRepository → NoteRepository → PrismaService`.
 
 ## Model và OOP
@@ -51,6 +55,6 @@ Scoped overrides: `prisma → mysql2@3.24.5`, `@prisma/config → deepmerge-ts@8
 
 API `/api/v1`, health `/health/*`, Swagger `/docs`. DTO chặn field lạ/null không hợp lệ/patch rỗng. Pino ghi request ID, tránh body/query/authorization/cookies. Rate limit in-memory cần shared storage và proxy trust khi chạy nhiều replica. Resource mẫu chưa có auth.
 
-Compose chờ PostgreSQL healthy rồi chạy migration trước API. Runtime image bỏ CLI/dev dependencies, dùng user `node` và filesystem read-only. PrismaService dùng pool có giới hạn/timeout, connect khi startup và disconnect khi shutdown.
+PostgreSQL server chạy riêng tại `../baby-database/compose.yaml`, bind mount data ra host và quản lý backup/restore ở đó. Backend Compose chỉ giữ migration/API, kết nối alias `baby-postgres` qua external network; khởi động DB healthy trước khi chạy backend. `DATABASE_URL` dùng cho host, `DATABASE_DOCKER_URL` dùng trong container. Migration hoàn tất trước API. Runtime image bỏ CLI/dev dependencies, dùng user `node` và filesystem read-only. PrismaService dùng pool có giới hạn/timeout, connect khi startup và disconnect khi shutdown. Prisma schema/migrations tiếp tục nằm trong backend.
 
 Nguồn: [Nest DI](https://docs.nestjs.com/fundamentals/custom-providers), [Nest + Prisma](https://docs.nestjs.com/recipes/prisma), [Jest ESM](https://jestjs.io/docs/ecmascript-modules), [Brocoders architecture](https://github.com/brocoders/nestjs-boilerplate/blob/main/docs/architecture.md), [Braces advisory](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm).

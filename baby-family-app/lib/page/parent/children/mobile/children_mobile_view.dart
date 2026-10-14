@@ -174,6 +174,12 @@ class ChildrenMobileView extends HookConsumerWidget {
                   child: child,
                   privateCount: controller.privateMemories[child.id] ?? 0,
                   onRestore: () => controller.restore(child.id),
+                  onTap: () async {
+                    await context.router.push(
+                      ChildArchiveRoute(childId: child.id),
+                    );
+                    await controller.load();
+                  },
                 ),
               ],
               const SizedBox(height: AppSpacing.cardInset),

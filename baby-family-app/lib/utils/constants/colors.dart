@@ -231,3 +231,7 @@ const kColorEnvelopeFlapEFD8BC = Color(0xFFEFD8BC);
 const kColorEnvelopeBorderE5CFB3 = Color(0xFFE5CFB3);
 const kColorEnvelopeInk7A4E2E = Color(0xFF7A4E2E);
 const kColorEnvelopeMeta8C6A4E = Color(0xFF8C6A4E);
+
+/// Nền nhạt của trạng thái nguy hiểm (Pencil MEM-17 “Còn 3 ngày”, MEM-17b /
+/// RPT-02 vòng icon `#FBE4E4`).
+const kColorError50FBE4E4 = Color(0xFFFBE4E4);

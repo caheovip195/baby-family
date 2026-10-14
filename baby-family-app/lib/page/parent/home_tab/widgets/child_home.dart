@@ -49,10 +49,20 @@ class _ChildHome extends StatelessWidget {
         ),
       ]),
       if (stories.isNotEmpty) ...[
-        SectionHeader.medium(
-          title: l10n.homeChildToday(child.name),
-          actionLabel: l10n.homeStoryView,
-          onAction: openStory,
+        // Tiêu đề “Hôm nay của {bé}” → REC-01 Câu chuyện ngày; link phải →
+        // MEM-25.
+        Semantics(
+          button: true,
+          label: l10n.recapDayOpen(child.name),
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => router.push(DayStoryRoute(childId: child.id)),
+            child: SectionHeader.medium(
+              title: l10n.homeChildToday(child.name),
+              actionLabel: l10n.homeStoryView,
+              onAction: openStory,
+            ),
+          ),
         ),
         Row(
           children: [

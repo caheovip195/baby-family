@@ -11,6 +11,7 @@ import 'package:baby_family/utils/helper/child_age.dart';
 import 'package:baby_family/utils/helper/relative_text.dart';
 import 'package:baby_family/utils/helper/relative_time.dart';
 import 'package:baby_family/utils/helper/theme.dart';
+import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_bottom_sheet.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
 import 'package:baby_family/utils/widget/app_caps_label.dart';
@@ -24,8 +25,10 @@ import 'package:baby_family/utils/widget/app_settings_row.dart';
 import 'package:baby_family/utils/widget/app_tag_pill.dart';
 import 'package:baby_family/utils/widget/app_top_bar.dart';
 import 'package:baby_family/utils/widget/base_scaffold.dart';
+import 'package:baby_family/utils/widget/block_dialog.dart';
 import 'package:baby_family/utils/widget/child_avatar.dart';
 import 'package:baby_family/utils/widget/error_state.dart';
+import 'package:baby_family/utils/widget/report_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -64,6 +67,44 @@ class RelativeDetailMobileView extends HookConsumerWidget {
       }
       showAppSnackBar(context, l10n.famRemoved(member.callName));
       await context.router.maybePop();
+    }
+
+    Future<void> report(Member member) async {
+      final reasons = await controller.reportReasons();
+      if (!context.mounted) {
+        return;
+      }
+      final receipt = await showReportSheet(
+        context,
+        target: ReportTarget.member,
+        targetName: member.callName,
+        reasons: reasons,
+        canRemove: true,
+        onSubmit: controller.report,
+        onTrack: () => context.router.push(const HelpRoute()),
+      );
+      if (receipt != null && context.mounted) {
+        await controller.load();
+      }
+    }
+
+    Future<void> block(Member member) async {
+      final removeFromFamily = await showBlockDialog(
+        context,
+        name: member.callName,
+        relation: member.relation,
+      );
+      if (removeFromFamily == null || !context.mounted) {
+        return;
+      }
+      await controller.block(removeFromFamily: removeFromFamily);
+      if (!context.mounted) {
+        return;
+      }
+      showAppSnackBar(context, l10n.rptBlockDone(member.callName));
+      if (removeFromFamily) {
+        await context.router.maybePop();
+      }
     }
 
     Widget body;
@@ -160,7 +201,12 @@ class RelativeDetailMobileView extends HookConsumerWidget {
               AppSettingsRow(
                 icon: LucideIcons.flag,
                 title: l10n.famReport,
-                onTap: () => showComingSoonSnackBar(context),
+                onTap: () => report(member),
+              ),
+              AppSettingsRow(
+                icon: LucideIcons.ban,
+                title: l10n.rptBlockMenu(member.callName),
+                onTap: () => block(member),
               ),
               AppSettingsRow(
                 icon: LucideIcons.userMinus,

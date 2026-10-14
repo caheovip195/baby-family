@@ -517,6 +517,12 @@ class UsServiceImp extends MockServiceImp implements IUsService {
   }
 
   @override
+  Future<void> clarifyBridgeShare(String sessionId, String message) async {
+    await ready();
+    await _patchMyShare(sessionId, {'message': message});
+  }
+
+  @override
   Future<void> chooseNextStep(String sessionId, BridgeNextStep step) async {
     await ready();
     _bridge(sessionId, {

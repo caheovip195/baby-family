@@ -36,7 +36,7 @@ describe('Notes API + real PostgreSQL + real DI', () => {
       await app.close();
     }
   });
-  it('persists a full CRUD flow and maps missing-row errors', async () => {
+  it('persists CRUD, atomically soft deletes, and hides deleted rows from reads and counts', async () => {
     await request(app.getHttpServer()).get('/health/ready').expect(200);
     const created = await request(app.getHttpServer())
       .post('/api/v1/notes')
@@ -50,6 +50,7 @@ describe('Notes API + real PostgreSQL + real DI', () => {
     const model = await app.get<INoteService>(NOTE_SERVICE).getById(body.id);
     expect(model).toBeInstanceOf(Note);
     expect(model.hasContent()).toBe(true);
+    expect(model.deletedAt).toBeNull();
 
     const read = await request(app.getHttpServer())
       .get(`/api/v1/notes/${body.id}`)
@@ -62,6 +63,10 @@ describe('Notes API + real PostgreSQL + real DI', () => {
     const listed = await request(app.getHttpServer())
       .get('/api/v1/notes?limit=100')
       .expect(200);
+    const listedBody = listed.body as {
+      data: { id: string }[];
+      meta: { total: number };
+    };
     expect(listed.body).toMatchObject({
       meta: { page: 1, limit: 100, total: expect.any(Number) },
     });
@@ -73,9 +78,29 @@ describe('Notes API + real PostgreSQL + real DI', () => {
       .get(PrismaService)
       .note.findUniqueOrThrow({ where: { id: body.id } });
     expect(stored.title).toBe('Updated through service and repository');
-    await request(app.getHttpServer())
-      .delete(`/api/v1/notes/${body.id}`)
-      .expect(204);
+    const deletes = await Promise.all([
+      request(app.getHttpServer()).delete(`/api/v1/notes/${body.id}`),
+      request(app.getHttpServer()).delete(`/api/v1/notes/${body.id}`),
+    ]);
+    expect(deletes.map((response) => response.status).sort()).toEqual([
+      204, 404,
+    ]);
+    const deleted = await app
+      .get(PrismaService)
+      .note.findUniqueOrThrow({ where: { id: body.id } });
+    expect(deleted.deletedAt).toBeInstanceOf(Date);
+    expect(deleted.createdAt).toEqual(stored.createdAt);
+    expect(deleted.updatedAt.getTime()).toBeGreaterThanOrEqual(
+      stored.updatedAt.getTime(),
+    );
+    const afterDelete = await request(app.getHttpServer())
+      .get('/api/v1/notes?limit=100')
+      .expect(200);
+    const afterDeleteBody = afterDelete.body as typeof listedBody;
+    expect(afterDeleteBody.data).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: body.id })]),
+    );
+    expect(afterDeleteBody.meta.total).toBe(listedBody.meta.total - 1);
     await request(app.getHttpServer())
       .get(`/api/v1/notes/${body.id}`)
       .expect(404);
@@ -83,6 +108,10 @@ describe('Notes API + real PostgreSQL + real DI', () => {
       .patch(`/api/v1/notes/${body.id}`)
       .send({ title: 'Missing' })
       .expect(404);
+    const unchanged = await app
+      .get(PrismaService)
+      .note.findUniqueOrThrow({ where: { id: body.id } });
+    expect(unchanged.title).toBe(stored.title);
     await request(app.getHttpServer())
       .delete(`/api/v1/notes/${body.id}`)
       .expect(404);

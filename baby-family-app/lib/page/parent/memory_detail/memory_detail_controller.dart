@@ -1,8 +1,11 @@
+import 'package:baby_family/data/dto/report_request.dart';
 import 'package:baby_family/data/model/child/child.dart';
 import 'package:baby_family/data/model/family/member.dart';
 import 'package:baby_family/data/model/memory/memory.dart';
 import 'package:baby_family/data/model/memory/memory_comment.dart';
 import 'package:baby_family/data/model/memory/memory_perspective.dart';
+import 'package:baby_family/data/model/memory/report_reason.dart';
+import 'package:baby_family/data/model/memory/report_receipt.dart';
 import 'package:baby_family/data/provider/app_setting.dart';
 import 'package:baby_family/data/provider/child.dart';
 import 'package:baby_family/data/provider/family.dart';
@@ -75,6 +78,25 @@ class MemoryDetailController extends BaseNotifier {
       !isAuthor &&
       (me?.role.isParent ?? false) &&
       myPerspective == null;
+
+  /// Bố mẹ xoá được mọi ký ức (vào Thùng rác MEM-17); người thân chỉ của mình.
+  bool get canDelete =>
+      memory != null && ((me?.role.isParent ?? false) || isAuthor);
+
+  int get trashDays => memoryService.trashDays;
+
+  Future<void> moveToTrash() => memoryService.moveToTrash(memoryId);
+
+  Future<List<ReportReason>> reportReasons() => memoryService.reportReasons();
+
+  Future<ReportReceipt?> report(ReportRequest request) =>
+      memoryService.submitReport(
+        targetId: memoryId,
+        reasonCode: request.reasonCode,
+        note: request.note,
+        hideForMe: request.hideForMe,
+        removeFromFamily: request.removeFromFamily,
+      );
 
   Future<void> load() async {
     hasError = false;

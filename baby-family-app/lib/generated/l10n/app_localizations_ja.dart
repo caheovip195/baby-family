@@ -6114,4 +6114,1927 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settingsBlockedTitle => 'ブロック中の人';
+
+  @override
+  String get subPlanActive => '有効';
+
+  @override
+  String get subPlanAutoRenew => '自動更新';
+
+  @override
+  String get subPlanPayer => '支払い者';
+
+  @override
+  String get subPlanChannel => '購入先';
+
+  @override
+  String get subPlanAppliesTo => '対象';
+
+  @override
+  String subPlanWholeFamily(String family) {
+    return '$family全員';
+  }
+
+  @override
+  String subPlanGb(String value) {
+    return '$value GB';
+  }
+
+  @override
+  String subPlanUsedOf(String total) {
+    return '使用中 / $total GB';
+  }
+
+  @override
+  String subPlanStorageKind(String kind, String size) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'photo': '写真',
+      'video': '動画',
+      'audio': '音声',
+      'other': 'その他',
+    });
+    return '$_temp0 · $size GB';
+  }
+
+  @override
+  String get subPlanIncluded => 'わが家のプランに含まれるもの';
+
+  @override
+  String get subPlanRelatives => '親族';
+
+  @override
+  String subPlanSlots(int used, int max) {
+    return '$used/$max';
+  }
+
+  @override
+  String get subPlanAi => '今月の AI 回数';
+
+  @override
+  String subPlanAiRenews(String date) {
+    return '$date にリセット';
+  }
+
+  @override
+  String subPlanAiLeft(int remaining, int total) {
+    return '残り $remaining/$total';
+  }
+
+  @override
+  String get subPlanVideo => '動画の最大長';
+
+  @override
+  String subPlanVideoHint(int count) {
+    return '元の画質 · 思い出ごとに $count 枚';
+  }
+
+  @override
+  String subPlanVideoHintCompressed(int count) {
+    return '思い出ごとに $count 枚';
+  }
+
+  @override
+  String subPlanMinutes(int count) {
+    return '$count 分';
+  }
+
+  @override
+  String subPlanManageStore(String channel) {
+    return '$channel で管理';
+  }
+
+  @override
+  String get subPlanChange => 'プランを変更';
+
+  @override
+  String subPlanNote(String channel, String payer, String partner) {
+    return 'プランは $payer の $channel アカウントにあるため、変更・解約できるのは $payer だけです。$partner には $payer に頼む案内が表示されます。$channel の設定でいつでも解約でき、わが家の思い出は消えません。';
+  }
+
+  @override
+  String subManageStoreMock(String channel) {
+    return 'サンプルデータ：$channel のサブスクリプション管理は模擬です。';
+  }
+
+  @override
+  String get subUpgradeTitle => 'Family にアップグレードして祖父母を招待';
+
+  @override
+  String subUpgradeSubtitle(String payer, String channel) {
+    return 'わが家は House プランを利用中 · $payer が $channel で支払い。Family なら祖父母や親族を招待でき、容量も増えます。';
+  }
+
+  @override
+  String get subCmpRelatives => '祖父母・親族';
+
+  @override
+  String get subCmpPhotos => '思い出ごとの写真';
+
+  @override
+  String get subCmpVideo => '動画';
+
+  @override
+  String get subCmpVoice => '録音';
+
+  @override
+  String get subCmpOriginal => '元の画質で保存';
+
+  @override
+  String get subCmpAi => '月間 AI 回数';
+
+  @override
+  String get subCmpDigest => 'ダイジェスト・親族の写真承認';
+
+  @override
+  String get subCmpNone => '—';
+
+  @override
+  String get subCmpYes => 'あり';
+
+  @override
+  String subCmpUpTo(int count) {
+    return '最大 $count';
+  }
+
+  @override
+  String subCmpMaxMinutes(int count) {
+    return '≤ $count 分';
+  }
+
+  @override
+  String get subUpgradeCurrent => '現在';
+
+  @override
+  String subUpgradeProrate(String channel) {
+    return 'アップグレードはすぐに有効です。$channel が House プランの残り期間分を自動で差し引くので、1 年分を払い直す必要はありません。';
+  }
+
+  @override
+  String subUpgradeCta(String price) {
+    return 'Family にアップグレード · $price';
+  }
+
+  @override
+  String get subUpgradeLegal =>
+      '毎年自動更新、App Store の設定でいつでも解約できます。利用規約 · プライバシー · 購入を復元';
+
+  @override
+  String subUpgradeNotPayerLabel(String partner) {
+    return '$partner に表示される内容（支払い者以外）';
+  }
+
+  @override
+  String subUpgradeNotPayerBody(String payer) {
+    return 'House プランは $payer が支払っています。二重払いを避けるため、$payer にアップグレードを頼みましょう。';
+  }
+
+  @override
+  String subUpgradeAskPayer(String payer) {
+    return '$payer にメッセージを送る';
+  }
+
+  @override
+  String subUpgradeAskSent(String payer) {
+    return '$payer にメッセージを送りました';
+  }
+
+  @override
+  String subConfirmTitle(String plan) {
+    return '$plan プランを確認';
+  }
+
+  @override
+  String subConfirmAudienceFamily(String family, String papa, String mama) {
+    return '$family全員向け · $papa・$mamaと親族';
+  }
+
+  @override
+  String subConfirmAudienceHouse(String family, String papa, String mama) {
+    return '$family全員向け · $papa & $mama';
+  }
+
+  @override
+  String get subConfirmPrice => '価格';
+
+  @override
+  String get subConfirmMonthly => '月あたり';
+
+  @override
+  String get subConfirmCycle => '期間';
+
+  @override
+  String get subConfirmCycleValue => '1 年 · 自動更新';
+
+  @override
+  String get subConfirmEffective => '開始';
+
+  @override
+  String get subConfirmEffectiveValue => 'App Store の確認後すぐ';
+
+  @override
+  String get subConfirmPayVia => '支払い方法';
+
+  @override
+  String get subConfirmPayViaValue => 'あなたの App Store アカウント';
+
+  @override
+  String subConfirmRelatives(int count) {
+    return '祖父母・親族を最大 $count 人まですぐ招待';
+  }
+
+  @override
+  String subConfirmLimits(int storage, int video, String original) {
+    String _temp0 = intl.Intl.selectLogic(original, {
+      'yes': ' · 元の画質で保存',
+      'other': '',
+    });
+    return '$storage GB · 動画 ≤ $video 分$_temp0';
+  }
+
+  @override
+  String get subConfirmTrialNote => '残りの無料体験期間は加算されません — 年間の期間は今日から';
+
+  @override
+  String get subConfirmCta => 'App Store で続ける';
+
+  @override
+  String get subConfirmLegal =>
+      '次は App Store の支払い画面です。毎年自動更新、App Store の設定でいつでも解約できます。';
+
+  @override
+  String get subLinkTerms => '利用規約';
+
+  @override
+  String subLimitVideoTitle(int minutes) {
+    return 'この動画は $minutes 分あります';
+  }
+
+  @override
+  String subLimitVideoBody(String plan, int max) {
+    return '$planは 1 本 $max 分までの動画を保存できます。短くするか、文章でこの瞬間を残せます。';
+  }
+
+  @override
+  String get subLimitSafe => '思い出は安全です — 何も削除されず、作成中の内容もそのままです。';
+
+  @override
+  String subLimitTrim(int max) {
+    return '$max 分にカット';
+  }
+
+  @override
+  String get subLimitPickAnother => '別の動画を選ぶ';
+
+  @override
+  String get subLimitSaveDiary => '文章の日記として保存';
+
+  @override
+  String get subLimitTopPlan => 'わが家はすでに最上位プラン（Family）なので、アップグレードは不要です。';
+
+  @override
+  String get subLimitUpgrade => 'Family にアップグレード';
+
+  @override
+  String subLimitTrimmed(int max) {
+    return '動画を $max 分にカットしました';
+  }
+
+  @override
+  String get subIssueTitle => '更新の支払いが完了していません';
+
+  @override
+  String subIssueBody(String plan) {
+    return '中断しないよう支払い方法をご確認ください。その間もわが家の$planは使えます。';
+  }
+
+  @override
+  String get subIssueAction => 'App Store で確認';
+
+  @override
+  String get invInvalidTipMessage => '招待してくれた人（子どもの親）に連絡して、新しい招待を作ってもらいましょう。';
+
+  @override
+  String get invInvalidTipCode => '新しい 8 文字のコードがあれば、すぐに入力できます。';
+
+  @override
+  String get invEnterOtherCode => '別のコードを入力';
+
+  @override
+  String invElsewhereTitle(String callName) {
+    return 'あなたはすでに別の家族の$callNameです';
+  }
+
+  @override
+  String get invElsewhereBody => '1 つのアカウントが親になれるのは 1 家族だけなので、この招待はまだ受けられません。';
+
+  @override
+  String invElsewhereInvite(String inviter, String family) {
+    return '$inviter があなたを$familyに招待しました';
+  }
+
+  @override
+  String invElsewhereRole(String callName) {
+    return '提案された役割：子どもたちの$callName';
+  }
+
+  @override
+  String get invElsewhereJoinRelative => '親族として参加';
+
+  @override
+  String invElsewhereJoinRelativeHint(String inviter) {
+    return '利用できません — この招待は親向けです。子どもたちを見たい場合は $inviter に親族の招待を頼みましょう。';
+  }
+
+  @override
+  String get invElsewhereLeave => '今の家族を離れる方法';
+
+  @override
+  String get invElsewhereLeaveHint => '親向けの選択肢とサポートの頼み方';
+
+  @override
+  String get invWaitingTitle => 'リクエストを送りました';
+
+  @override
+  String invWaitingBody(String inviter) {
+    return '$inviter が確認すると完了します。アプリを閉じても大丈夫 — 完了したらすぐお知らせします。';
+  }
+
+  @override
+  String invWaitingStepJoined(String family) {
+    return '$familyへの招待を受けました';
+  }
+
+  @override
+  String invWaitingStepRole(String callName) {
+    return '役割：子どもたちの$callName';
+  }
+
+  @override
+  String invWaitingStepConfirm(String inviter) {
+    return '$inviter の確認待ち';
+  }
+
+  @override
+  String invWaitingStepConfirmHint(String inviter) {
+    return '$inviter が本人確認のため「最終確認」をオンにしています';
+  }
+
+  @override
+  String get invWaitingStepTrial => 'わが家の 3 か月無料体験が始まります';
+
+  @override
+  String get invWaitingNotice => '「おかえりなさい！」の通知が届きます';
+
+  @override
+  String famPartnerLeftBanner(String partner, String family) {
+    return '$partner が$familyを離れました（アカウント削除）。新しいパートナーが参加するまで閲覧・ダウンロードのみのモードです。';
+  }
+
+  @override
+  String get famPartnerInviteSubtitle =>
+      'パートナーが参加すると、また家族で思い出やミッション、Papa & Mama を使えます。';
+
+  @override
+  String get famPartnerInviteRole => '招待する役割';
+
+  @override
+  String get famPartnerRecipientSees => '参加前に相手に表示される内容';
+
+  @override
+  String famPartnerRecipientHint(String name, String callName) {
+    return '$name（$callName）からの招待 · 子どもたちの名前とアイコンのみ';
+  }
+
+  @override
+  String get famPartnerRevoke => '招待を取り消す';
+
+  @override
+  String get famPartnerRevoked => '招待を取り消しました';
+
+  @override
+  String famInvitesCapacity(String family, int active, int pending) {
+    return '$familyの親族：参加中 $active 人 · 保留中 $pending 人';
+  }
+
+  @override
+  String get famInvitesPending => '保留中';
+
+  @override
+  String get famInvitesExpired => '期限切れ';
+
+  @override
+  String get famInviteNotOpened => 'リンク未開封';
+
+  @override
+  String get famInviteOpened => 'リンクを開きました';
+
+  @override
+  String get famInviteExpiredTag => '期限切れ';
+
+  @override
+  String get famInviteKindRelative => '親族への招待';
+
+  @override
+  String get famInvitePermView => '閲覧';
+
+  @override
+  String get famInvitePermComment => '閲覧 + コメント';
+
+  @override
+  String get famInvitePermPost => '閲覧 + コメント + 投稿';
+
+  @override
+  String famInviteDates(String created, String expires, String daysLeft) {
+    return '$created 作成 · $expires 期限 · $daysLeft';
+  }
+
+  @override
+  String famInviteDaysLeft(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '残り $count 日',
+      zero: '今日まで',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String famInviteExpiredOn(String date) {
+    return '$date に期限切れ · リンクは開けません';
+  }
+
+  @override
+  String get famInviteResend => 'リンクを再送';
+
+  @override
+  String get famInviteRevoke => '取り消す';
+
+  @override
+  String get famInviteRenew => '新しい招待を作る';
+
+  @override
+  String famInviteResent(String callName) {
+    return '$callName にリンクを再送しました';
+  }
+
+  @override
+  String famInviteRevokedName(String callName) {
+    return '$callName への招待を取り消しました';
+  }
+
+  @override
+  String famInviteRenewed(String callName) {
+    return '$callName への新しい招待を作りました';
+  }
+
+  @override
+  String get famInvitesRules =>
+      '親族への招待は 14 日で期限切れになり、1 回のみ使えます。取り消すと古いリンクは開けなくなります。親族は保留中の招待を含め最大 12 人です。';
+
+  @override
+  String get famInviteMore => '親族をさらに招待';
+
+  @override
+  String get famInvitesEmpty => '保留中の招待はありません';
+
+  @override
+  String get famSwitchTitle => '家族を切り替える';
+
+  @override
+  String famSwitchSubtitle(String callName, String family) {
+    return 'あなたは$familyの$callNameで、別の家族の親族でもあります。';
+  }
+
+  @override
+  String famSwitchRoleParent(String callName) {
+    return '$callName（親）';
+  }
+
+  @override
+  String famSwitchRoleRelative(String callName) {
+    return '$callName（親族）';
+  }
+
+  @override
+  String get famSwitchViewing => '表示中';
+
+  @override
+  String famSwitchFollows(String names) {
+    return '$names を見守り中';
+  }
+
+  @override
+  String famSwitchNote(String family) {
+    return '切り替えるとアプリ全体が選んだ家族に変わります。$familyでは共有された子どもの写真だけが見られ、子育てや Papa & Mama はありません。1 つのアカウントが親になれるのは 1 家族だけです。';
+  }
+
+  @override
+  String famSwitchMock(String family) {
+    return 'サンプルには$familyのデータしかありません。';
+  }
+
+  @override
+  String get setAiMaster => 'AI アシストを使う';
+
+  @override
+  String get setAiMasterHint => 'AI はタップしたときだけ動きます。結果はすべて下書きで、編集・破棄・保存できます。';
+
+  @override
+  String get setAiQuotaLabel => '今月の残り AI 回数';
+
+  @override
+  String setAiQuotaTotal(int total) {
+    return '/ $total 回';
+  }
+
+  @override
+  String setAiRenews(String date) {
+    return '$date にリセット';
+  }
+
+  @override
+  String setAiPlanQuota(String plan, int total) {
+    return '$plan · 家族全員で月 $total 回';
+  }
+
+  @override
+  String get setAiFeatures => '機能ごと';
+
+  @override
+  String get setAiDataSection => '送信されるデータ';
+
+  @override
+  String get setAiData1 => '各機能に書かれた内容だけを、タップしたときだけ送ります。';
+
+  @override
+  String get setAiData2 => 'AI は個人の日記を読まず、診断もせず、勝手に誰かへ送信しません。';
+
+  @override
+  String get setAiData3 => '各機能を初めて使うときは、先に同意を確認します。';
+
+  @override
+  String get setAiData4 => '下書きにはすべて「✨ AI の提案」ラベルが付きます。';
+
+  @override
+  String get setAiDataLink => 'AI プロバイダーに送るデータの詳細';
+
+  @override
+  String get setAiReport => 'AI コンテンツを報告';
+
+  @override
+  String get setAiFoot => 'AI をオフにしても、Baby Family のすべての機能を使えます。';
+
+  @override
+  String get setBlockedBody =>
+      'ブロックした人はあなたの投稿にコメントやリアクションができず、その人に関する通知も届きません。';
+
+  @override
+  String setBlockedSection(int count) {
+    return 'ブロック中 · $count 人';
+  }
+
+  @override
+  String setBlockedSince(String date) {
+    return '$date からブロック中';
+  }
+
+  @override
+  String get setUnblock => 'ブロック解除';
+
+  @override
+  String setUnblocked(String name) {
+    return '$name のブロックを解除しました';
+  }
+
+  @override
+  String get setUnblockInfo =>
+      'ブロックを解除すると、この人は以前のようにコメントやリアクションができます。相手のページからいつでも再度ブロックできます。';
+
+  @override
+  String get setBlockedPartnerNote =>
+      'Papa と Mama はアプリ内でお互いをブロックできません。少し距離が必要なときは Papa & Mama で気持ちの共有をオフにできます。';
+
+  @override
+  String get setBlockedEmpty => 'まだ誰もブロックしていません';
+
+  @override
+  String get commonDeleteForever => '完全に削除';
+
+  @override
+  String memTrashInfo(int days) {
+    return '削除した思い出は$days日間保管された後、完全に削除されます。家族内で削除されたすべての思い出が表示されます。';
+  }
+
+  @override
+  String memTrashInfoOwn(int days) {
+    return '削除した思い出は$days日間保管された後、完全に削除されます。自分が削除した思い出が表示されます。';
+  }
+
+  @override
+  String memTrashCount(int count) {
+    return '$count件の思い出';
+  }
+
+  @override
+  String memTrashDeletedBy(String callName, String date) {
+    return '$callNameが$dateに削除 ·';
+  }
+
+  @override
+  String get memTrashFootnote => '復元すると、コメントやハートと一緒にタイムラインの元の場所に戻ります。';
+
+  @override
+  String get memTrashEmpty => 'ゴミ箱は空です';
+
+  @override
+  String memTrashEmptyHint(int days) {
+    return '削除した思い出は、気が変わったときのために$days日間ここに残ります。';
+  }
+
+  @override
+  String memTrashRestored(String title) {
+    return '「$title」を復元しました';
+  }
+
+  @override
+  String get memTrashDeleted => '完全に削除しました';
+
+  @override
+  String get memTrashConfirmTitle => 'この思い出を完全に削除しますか？';
+
+  @override
+  String get memTrashConfirmBody => '写真、コメント、ハートは完全に失われ、元に戻せません。';
+
+  @override
+  String get memTrashKeep => 'ゴミ箱に残す';
+
+  @override
+  String memCommentCount(int count) {
+    return 'コメント$count件';
+  }
+
+  @override
+  String memHeartCount(int count) {
+    return 'ハート$count件';
+  }
+
+  @override
+  String get memMoveToTrash => '思い出を削除';
+
+  @override
+  String memMovedToTrash(int days) {
+    return 'ゴミ箱に移動しました · $days日間保管';
+  }
+
+  @override
+  String get memMoveToTrashTitle => 'この思い出を削除しますか？';
+
+  @override
+  String memMoveToTrashBody(int days) {
+    return '思い出はゴミ箱に$days日間残り、その間は復元できます。';
+  }
+
+  @override
+  String get memDraftsSubtitle => '書きかけの思い出は途中で閉じると自動保存されます。下書きはあなたにしか見えません。';
+
+  @override
+  String get memDraftsDevice => 'この端末';
+
+  @override
+  String get memDraftsCloud => 'アカウントに保存済み';
+
+  @override
+  String get memDraftsLocalNote => '端末の下書きはアカウントに保存されていません。アプリを削除すると消えます。';
+
+  @override
+  String get memDraftContinue => '続きを書く';
+
+  @override
+  String memDraftEditedToday(String time) {
+    return '今日 $time に編集';
+  }
+
+  @override
+  String memDraftEditedYesterday(String time) {
+    return '昨日 $time に編集';
+  }
+
+  @override
+  String memDraftEditedOn(String date, String time) {
+    return '$date $time に編集';
+  }
+
+  @override
+  String memDraftSavedOn(String date, String time) {
+    return '$date $time に保存';
+  }
+
+  @override
+  String memDraftSavedOnDevice(String date, String time, String device) {
+    return '$date $time に$deviceで保存';
+  }
+
+  @override
+  String get memKindMoment => 'ひととき';
+
+  @override
+  String memKindVoiceDuration(String duration) {
+    return '声 $duration';
+  }
+
+  @override
+  String get memDraftsEmpty => '下書きはまだありません';
+
+  @override
+  String get memDraftsEmptyHint => '書いている途中で閉じると、ここに残ります。';
+
+  @override
+  String get memDraftDeleted => '下書きを削除しました';
+
+  @override
+  String get memDraftSaved => '下書きに保存しました';
+
+  @override
+  String get memDraftView => '下書きを見る';
+
+  @override
+  String get memShortcutTrash => 'ゴミ箱';
+
+  @override
+  String get memShortcutDrafts => '下書き';
+
+  @override
+  String get memShortcutPending => '承認待ちの写真';
+
+  @override
+  String memPendingSubtitle(String partner) {
+    return '親族が投稿した写真は、あなたか$partnerが承認してから家族に表示されます。それまでは投稿者と両親だけが見られます。';
+  }
+
+  @override
+  String get memPendingKids => '写っている子';
+
+  @override
+  String get memPendingAudience => '見られる人';
+
+  @override
+  String get memPendingReject => '見送る';
+
+  @override
+  String get memPendingApprove => '承認して表示';
+
+  @override
+  String get memPendingRejectReason => '理由（任意）';
+
+  @override
+  String memPendingRejectHint(String name) {
+    return '$nameにはこのやさしいメッセージが届きます。写真はほかの誰にも表示されません。';
+  }
+
+  @override
+  String get memPendingRejectSend => '写真を見送る';
+
+  @override
+  String memPendingWaited(int count) {
+    return '$count日待ち';
+  }
+
+  @override
+  String get memPendingEmpty => '承認待ちの写真はありません';
+
+  @override
+  String get memPendingEmptyHint => '親族が子どものために投稿した写真がここに表示されます。';
+
+  @override
+  String get memPendingApproved => '承認しました。家族に表示されています';
+
+  @override
+  String get memPendingRejected => '写真を見送りました';
+
+  @override
+  String memPendingAddChild(String name) {
+    return '$nameを追加';
+  }
+
+  @override
+  String get rptTitleMemory => 'この思い出を報告';
+
+  @override
+  String get rptTitleComment => 'このコメントを報告';
+
+  @override
+  String rptTitlePerson(String name) {
+    return '$nameを報告';
+  }
+
+  @override
+  String get rptSubtitle => '何が問題かお知らせください。Baby Familyの安全チームが確認します。';
+
+  @override
+  String get rptNoteHint => '詳しく（任意）…';
+
+  @override
+  String get rptHideMemory => 'この思い出をすぐ非表示にする';
+
+  @override
+  String get rptHideComment => 'このコメントをすぐ非表示にする';
+
+  @override
+  String get rptHidePerson => 'この人をすぐ非表示にする';
+
+  @override
+  String get rptRemoveContent => '家族から外す';
+
+  @override
+  String get rptRemoveContentHint => '親のみ · 思い出は誰にも表示されなくなります';
+
+  @override
+  String get rptRemovePerson => '親族を外す';
+
+  @override
+  String rptRemovePersonHint(String name) {
+    return '親のみ · $nameは子どもの写真を見られなくなります';
+  }
+
+  @override
+  String get rptSend => '報告を送信';
+
+  @override
+  String get rptSentTitle => '報告を送信しました';
+
+  @override
+  String get rptSentBodyHidden =>
+      'お知らせいただきありがとうございます。思い出は一時的に非表示になり、24時間以内に確認されます。対応が終わったらお知らせします。';
+
+  @override
+  String get rptSentBody => 'お知らせいただきありがとうございます。まもなく確認します。対応が終わったらお知らせします。';
+
+  @override
+  String get rptCodeLabel => '報告ID';
+
+  @override
+  String get rptStatusReviewing => '確認中';
+
+  @override
+  String get rptStatusResolved => '対応済み';
+
+  @override
+  String get rptTrack => '設定 › 自分の報告 で確認';
+
+  @override
+  String get rptDone => '完了';
+
+  @override
+  String rptBlockTitle(String name) {
+    return '$nameをブロックしますか？';
+  }
+
+  @override
+  String rptBlockEffectComment(String name) {
+    return '$nameはあなたの思い出にコメントやハートができなくなります。';
+  }
+
+  @override
+  String rptBlockEffectNotify(String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': 'この方',
+      'grandpa': 'この方',
+      'other': 'この人',
+    });
+    return '$_temp0にはあなたに関する通知が届きません。';
+  }
+
+  @override
+  String rptBlockEffectStay(String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': 'この方',
+      'grandpa': 'この方',
+      'other': 'この人',
+    });
+    return '$_temp0は家族に残り、共有された子どもの写真は引き続き見られます。';
+  }
+
+  @override
+  String rptBlockRemove(String name) {
+    return '$nameを家族からも外す';
+  }
+
+  @override
+  String rptBlockRemoveHint(String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': 'この方',
+      'grandpa': 'この方',
+      'other': 'この人',
+    });
+    return '$_temp0に子どもの写真を見せたくない場合に選んでください。';
+  }
+
+  @override
+  String get rptBlockConfirm => 'ブロック';
+
+  @override
+  String rptBlockDone(String name) {
+    return '$nameをブロックしました';
+  }
+
+  @override
+  String rptBlockMenu(String name) {
+    return '$nameをブロック';
+  }
+
+  @override
+  String chdArchiveAddedBy(String birth, String callName, String date) {
+    return '$birth生まれ · $callNameが$dateに追加';
+  }
+
+  @override
+  String chdArchiveBorn(String birth) {
+    return '$birth生まれ';
+  }
+
+  @override
+  String chdArchiveDuplicate(String name) {
+    return '$nameと重複の可能性';
+  }
+
+  @override
+  String chdArchiveSection(String name) {
+    return '$nameをアーカイブすると';
+  }
+
+  @override
+  String chdArchiveEffectHide(String name) {
+    return '$nameは子ども切り替え・ホーム・思い出から非表示になります。';
+  }
+
+  @override
+  String chdArchiveEffectPrivate(int count, String name) {
+    return '$nameだけにタグ付けされた思い出$count件も非表示になります。';
+  }
+
+  @override
+  String chdArchiveEffectShared(int count, String others) {
+    return '$othersとの共有の思い出$count件は$othersのページに残ります。';
+  }
+
+  @override
+  String get chdArchiveEffectRestore => '子ども › アーカイブ済み からいつでも復元できます。';
+
+  @override
+  String chdArchiveAction(String name) {
+    return '$nameをアーカイブ';
+  }
+
+  @override
+  String get chdArchiveDeleteSection => '完全に削除';
+
+  @override
+  String chdArchiveLockedTitle(int days) {
+    return '$days日以上のアーカイブが必要です';
+  }
+
+  @override
+  String chdArchiveLockedBody(String date, String name) {
+    return '誤削除を防ぐため、今日アーカイブすると$dateから削除できます。$nameだけの内容は30日間ゴミ箱に入ります。';
+  }
+
+  @override
+  String chdArchiveLockedBodyArchived(String date, String name) {
+    return '誤削除を防ぐため、$dateから削除できます。$nameだけの内容は30日間ゴミ箱に入ります。';
+  }
+
+  @override
+  String chdArchived(String name) {
+    return '$nameをアーカイブしました';
+  }
+
+  @override
+  String chdRestored(String name) {
+    return '$nameを復元しました';
+  }
+
+  @override
+  String chdDeleteTitle(String name) {
+    return '$nameを完全に削除';
+  }
+
+  @override
+  String chdDeleteArchivedName(String name) {
+    return '$name · アーカイブ済み';
+  }
+
+  @override
+  String chdDeleteArchivedFor(int days, String date) {
+    return 'アーカイブ$days日 · $dateから';
+  }
+
+  @override
+  String chdDeleteEnough(int days) {
+    return '$days日経過';
+  }
+
+  @override
+  String chdDeleteEffectTrash(int count, String name) {
+    return '$nameだけの思い出$count件はゴミ箱に30日間入り、その後完全に削除されます。';
+  }
+
+  @override
+  String chdDeleteEffectShared(String others) {
+    return '$othersとの共有の思い出は$othersのページにそのまま残ります。';
+  }
+
+  @override
+  String get chdDeleteStep1 => '確認 1/2';
+
+  @override
+  String chdDeleteConfirm1(String name) {
+    return '$nameが削除され、このプロフィールは復元できないことを理解しました。';
+  }
+
+  @override
+  String get chdDeleteStep2 => '確認 2/2 · 子どもの名前を入力';
+
+  @override
+  String chdDeleteHint(String name) {
+    return '「$name」と正確に入力すると削除できます。';
+  }
+
+  @override
+  String chdDeleteAction(String name) {
+    return '$nameを完全に削除';
+  }
+
+  @override
+  String chdDeleteRestoreInstead(String name) {
+    return '削除せずに$nameを復元';
+  }
+
+  @override
+  String chdDeleted(String name) {
+    return '$nameを削除しました';
+  }
+
+  @override
+  String cirChildTomorrow(int months) {
+    return '🎉 明日で$monthsか月';
+  }
+
+  @override
+  String get cirChildFirsts => '孫のはじめて';
+
+  @override
+  String get cirChildMemories => '孫の思い出';
+
+  @override
+  String cirChildMonth(int month) {
+    return '$monthか月目';
+  }
+
+  @override
+  String cirChildMonthRange(String start, String end) {
+    return '· $start – $end';
+  }
+
+  @override
+  String get cirChildEmpty => 'まだ思い出がありません';
+
+  @override
+  String cirDetailDownloadOff(String who) {
+    return '写真の保存：両親がまだ許可していません';
+  }
+
+  @override
+  String cirDetailAuthorAge(String name, String age) {
+    return '$name $age';
+  }
+
+  @override
+  String get cirDetailLiked => 'ハート済み';
+
+  @override
+  String cirDetailYou(String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': 'あなた',
+      'grandpa': 'あなた',
+      'other': 'あなた',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String cirDetailReactedBy(String names) {
+    return '$namesがハートを送りました';
+  }
+
+  @override
+  String cirDetailWishes(int count) {
+    return 'メッセージ（$count）';
+  }
+
+  @override
+  String get cirDetailWishHint => 'メッセージを書く…';
+
+  @override
+  String get cirDetailVoice => '声のメッセージを録音';
+
+  @override
+  String get cirDetailSend => 'メッセージを送る';
+
+  @override
+  String get cirDetailReported => '報告を送信しました';
+
+  @override
+  String get cirDetailMissing => 'この思い出は共有されていません';
+
+  @override
+  String cirPostSelected(int count) {
+    return '選んだ写真（$count）';
+  }
+
+  @override
+  String get cirPostWhichKid => 'どの孫の写真？';
+
+  @override
+  String get cirPostDate => '撮影日';
+
+  @override
+  String get cirPostMessage => '孫へのメッセージ';
+
+  @override
+  String get cirPostMessageHint => 'ひとこと書きましょう…';
+
+  @override
+  String get cirPostApprovalTitle => '両親が承認してから表示されます';
+
+  @override
+  String get cirPostApprovalBody => '子どもの親が承認すると家族に表示されます。';
+
+  @override
+  String get cirPostSend => '写真を送る';
+
+  @override
+  String get cirPostRemovePhoto => '写真を外す';
+
+  @override
+  String get cirPostSentTitle => '送信しました！';
+
+  @override
+  String get cirPostSentBody => '両親が承認してから家族に表示されます。';
+
+  @override
+  String get cirPostPending => '両親の承認待ち';
+
+  @override
+  String get cirPostJustSent => '送信したばかり';
+
+  @override
+  String get cirPostBackHome => '孫のページへ戻る';
+
+  @override
+  String get cirPostMore => '写真をもっと投稿';
+
+  @override
+  String get cirPostNoKid => '両親はまだ写真の投稿を許可していません';
+
+  @override
+  String cirPausedMessage(String family) {
+    return '$familyは親族との共有を一時停止しています';
+  }
+
+  @override
+  String get cirPausedSafe => '孫の写真は安全に保管されています';
+
+  @override
+  String cirMeRelation(String relation, String family) {
+    return '$relation · $family';
+  }
+
+  @override
+  String cirMeTextPreview(String name, String who) {
+    return '$nameの新しい写真があります。見に来てね 🌸';
+  }
+
+  @override
+  String get cirMeInstant => '新しい写真があればすぐ通知';
+
+  @override
+  String get cirMeDigest => '毎日のまとめ';
+
+  @override
+  String cirMeDigestHint(String time) {
+    return '$timeに送信 · その日の新しい写真をまとめて';
+  }
+
+  @override
+  String get cirMeSwitchFamily => '家族を切り替え';
+
+  @override
+  String cirMeViewing(String family) {
+    return '表示中：$family';
+  }
+
+  @override
+  String cirLeaveTitle(String family) {
+    return '$familyを離れる';
+  }
+
+  @override
+  String cirLeaveBody(String who, String inviter) {
+    return '孫の写真を見たりコメントしたりできなくなります。戻りたいときは$inviterに新しい招待を送ってもらいましょう。';
+  }
+
+  @override
+  String cirLeaveFollowing(String who, String names) {
+    return '$namesをフォロー中';
+  }
+
+  @override
+  String cirLeavePosted(String who, int photos, int comments) {
+    return '投稿したもの · 写真$photos枚、コメント$comments件';
+  }
+
+  @override
+  String get cirLeaveKeep => '家族のために残す';
+
+  @override
+  String cirLeaveKeepHint(String who) {
+    return '家族は写真や言葉を引き続き見られます。（既定）';
+  }
+
+  @override
+  String get cirLeaveRemove => 'すべて削除';
+
+  @override
+  String cirLeaveRemoveHint(String who, String family) {
+    return '写真とコメントは$familyから削除されます。';
+  }
+
+  @override
+  String cirLeaveNotice(String inviter, String name, String who) {
+    return '$inviterに「$nameが家族を離れました」と短い通知が届きます。確認するとすぐに閲覧できなくなります。';
+  }
+
+  @override
+  String get cirLeaveStay => '残る';
+
+  @override
+  String commonListAnd(String list, String last) {
+    return '$listと$last';
+  }
+
+  @override
+  String get commonAiSuggested => 'AIの提案';
+
+  @override
+  String get commonAiReport => 'AIの内容を報告';
+
+  @override
+  String get commonAiReported => 'ありがとうございます。このAIの内容を確認します。';
+
+  @override
+  String commonWeekRange(String range) {
+    return '$range の週';
+  }
+
+  @override
+  String get usOnlyParents => 'Papa & Mama だけ';
+
+  @override
+  String get usPartnerLeftTitle => 'この場所はふたりそろって使えます';
+
+  @override
+  String usPartnerLeftBody(String callName, String familyName) {
+    return '$callName のアカウントが削除されたため、Papa & Mama は一時的にロックされています。$familyName の思い出はそのまま残っており、いつでも見たりダウンロードしたりできます。';
+  }
+
+  @override
+  String usPartnerLeftStateTitle(String familyName) {
+    return '$familyName は閲覧とダウンロードのみ可能です';
+  }
+
+  @override
+  String get usPartnerLeftStateSub =>
+      '新しいパートナーを招待すると、思い出づくりと Papa & Mama を続けられます。';
+
+  @override
+  String get usPartnerLeftSection => 'ふたりそろったら';
+
+  @override
+  String get usPartnerLeftCheckinSub => '今日の気分';
+
+  @override
+  String get usPartnerLeftRequestSub => '気軽にお願い';
+
+  @override
+  String get usPartnerLeftThanksSub => '小さなことを残す';
+
+  @override
+  String get usPartnerLeftJournalSub => '自分だけが読める';
+
+  @override
+  String get usPartnerLeftPrivacy => '祖父母や親族が Papa & Mama の内容を見ることはありません。';
+
+  @override
+  String get usPartnerLeftInvite => 'パートナーを招待';
+
+  @override
+  String usCheckinAnnoyedPartner(String callName) {
+    return '$callName にモヤモヤ';
+  }
+
+  @override
+  String get usBridgeAskTitle => '「かけはし」を使いますか？';
+
+  @override
+  String usBridgeAskBody(String callName) {
+    return '$callName にはまだ何も送られていません。「かけはし」は気持ちを言葉にし、小さな一歩を一緒に選ぶ手助けをします。まずは自分だけのステップから。';
+  }
+
+  @override
+  String get usBridgeAskOpen => 'かけはしを開く';
+
+  @override
+  String usBridgeStepKicker(int step, int total) {
+    return 'かけはし · ステップ $step/$total';
+  }
+
+  @override
+  String usBridgeFeelSub(String callName) {
+    return '気持ちをひとつ以上選んでください。$callName にはまだ何も送られていません。';
+  }
+
+  @override
+  String get usBridgeTopicTitle => 'これは…について';
+
+  @override
+  String usBridgeTopicSub(String callName) {
+    return '任意です。スキップできます。$callName にはまだ何も送られていません。';
+  }
+
+  @override
+  String get usBridgeNeedTitle => 'いま私に必要なのは…';
+
+  @override
+  String usBridgeNeedSub(String callName) {
+    return 'ひとつ以上選んでください。$callName にはまだ何も送られていません。';
+  }
+
+  @override
+  String get usBridgeFeltLabel => '私の気持ち';
+
+  @override
+  String get usBridgeAboutLabel => 'テーマ';
+
+  @override
+  String get usBridgeDraftLabel => '自分だけの下書き（任意）';
+
+  @override
+  String usBridgeDraftCount(int count, int max) {
+    return '$count/$max';
+  }
+
+  @override
+  String get usBridgeDraftHint => '思っていることを書いてみましょう。読めるのはあなただけです。';
+
+  @override
+  String get usBridgeDraftNote => 'この下書きがそのまま、または自動で送られることはありません。';
+
+  @override
+  String get usBridgeUnsafe => '安全だと感じられない';
+
+  @override
+  String get usBridgeChoiceTitle => 'この内容をどうしますか？';
+
+  @override
+  String usBridgeChoiceSub(String callName) {
+    return '決めるのはあなたです。$callName にはまだ何も送られていません。';
+  }
+
+  @override
+  String get usBridgeKeepPrivateDesc => 'ここで終わりにします。日記の1ページのように。';
+
+  @override
+  String get usBridgeRewriteOption => '送る前に書き直す';
+
+  @override
+  String get usBridgeRewriteOptionDesc => 'ひとことを選んで、やさしく書き直します。';
+
+  @override
+  String get usBridgeShareOption => '共有する内容を選ぶ';
+
+  @override
+  String usBridgeShareOptionDesc(String callName) {
+    return '$callName に見せる気持ちと必要なことを選びます。';
+  }
+
+  @override
+  String get usBridgeKeptPrivate => '非公開にしました。見られるのはあなただけです。';
+
+  @override
+  String usBridgePreviewTitle(String callName) {
+    return '$callName に届く内容を確認';
+  }
+
+  @override
+  String get usBridgePreviewSub => '送られるのは選んだ内容だけです。下書きは非公開のままです。';
+
+  @override
+  String get usBridgeFeelShort => '気持ち';
+
+  @override
+  String get usBridgeNeedShort => '必要なこと';
+
+  @override
+  String get usBridgeMessageLabel => 'メッセージ（任意）';
+
+  @override
+  String usBridgeMessageHint(String callName) {
+    return '$callName に読んでほしいひとこと';
+  }
+
+  @override
+  String get usBridgeSendInvite => '招待を送る';
+
+  @override
+  String usBridgeInviteSent(String callName) {
+    return '$callName に招待を送りました';
+  }
+
+  @override
+  String get usBridgeRewriteSub => 'バージョンを選んで自由に直してください。自動で送られることはありません。';
+
+  @override
+  String get usBridgeRewriteOriginal => 'もとの文';
+
+  @override
+  String usBridgeRewriteTone(String tone) {
+    String _temp0 = intl.Intl.selectLogic(tone, {
+      'neutral': 'ニュートラル',
+      'warm': 'あたたかく',
+      'other': 'みじかく',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get usBridgeRewriteEdit => '使う前に直す';
+
+  @override
+  String get usBridgeRewriteKeep => 'もとの文のまま';
+
+  @override
+  String get usBridgeRewriteUse => 'これを使う';
+
+  @override
+  String get usBridgeRewriteDataNote =>
+      '書き直しのためにAIへ送られるのは選んだ文だけです。AIが下書きや日記を読むことはありません。';
+
+  @override
+  String usBridgeInviteTitle(String callName) {
+    return '$callName は、あなたの準備ができたら落ち着いて話したいと思っています';
+  }
+
+  @override
+  String get usBridgeInviteSub => '気持ちを言葉にして、次の小さな一歩を一緒に選ぶ場所です。勝ち負けはありません。';
+
+  @override
+  String usBridgeInviteShared(String callName) {
+    return '$callName が共有した内容';
+  }
+
+  @override
+  String usBridgeInviteSharedSub(String callName) {
+    return 'これだけです。ほかは $callName の非公開のままです';
+  }
+
+  @override
+  String get usBridgeInviteNote => '一緒に話す前に、あなたにも気持ちと必要なことを伝える自分だけのステップがあります。';
+
+  @override
+  String get usBridgeJoinNow => '今すぐ参加';
+
+  @override
+  String get usBridgeLaterLabel => 'あとで — リマインド';
+
+  @override
+  String get usBridgeLaterCustom => '時間を選ぶ';
+
+  @override
+  String get usBridgeNotReady => 'まだ準備ができていない';
+
+  @override
+  String get usBridgeNotReadySub => '招待は一時停止されます。ネガティブな通知は届きません。';
+
+  @override
+  String get usBridgeRemindSet => 'リマインドを設定しました。招待はそのまま残ります。';
+
+  @override
+  String get usBridgePaused => '一時停止しました。いつでも戻れます。';
+
+  @override
+  String get usBridgeLive => '進行中';
+
+  @override
+  String usBridgeStartedAt(String time, String date) {
+    return '$date $time 開始';
+  }
+
+  @override
+  String get usBridgeSessionIntro => 'ふたりが共有した内容をゆっくり読みましょう。ここに正しい・間違いはありません。';
+
+  @override
+  String usBridgeYouName(String callName) {
+    return 'あなた（$callName）';
+  }
+
+  @override
+  String usBridgeFeels(String callName) {
+    return '$callName の気持ち';
+  }
+
+  @override
+  String usBridgeNeeds(String callName) {
+    return '$callName に必要なこと';
+  }
+
+  @override
+  String get usBridgeYouPending => 'まだ選んでいません';
+
+  @override
+  String get usBridgeYouUnderstood => 'あなた：わかった';
+
+  @override
+  String usBridgePartnerPending(String callName) {
+    return '$callName はまだ選んでいません';
+  }
+
+  @override
+  String usBridgePartnerUnderstood(String callName) {
+    return '$callName：わかった';
+  }
+
+  @override
+  String get usBridgeYourTurn => 'あなたの番';
+
+  @override
+  String usBridgePartnerReadDone(String callName) {
+    return '$callName は読み終えました';
+  }
+
+  @override
+  String usBridgeReadQuestion(String callName) {
+    return '$callName が共有した内容を読みましたか？';
+  }
+
+  @override
+  String get usBridgeClarify => 'もう少し伝えたい';
+
+  @override
+  String get usBridgeUnderstand => 'わかった';
+
+  @override
+  String get usBridgeClarifyNote => '「もう少し伝える」で1回分追加できます。送る前に内容をそのまま確認できます。';
+
+  @override
+  String get usBridgeLeaveNote => 'どちらもいつでも一時停止・退出できます。';
+
+  @override
+  String usBridgeWaiting(String callName) {
+    return '$callName が読み終えるのを待っています';
+  }
+
+  @override
+  String usBridgeClarifyTitle(String callName) {
+    return '$callName にもう少し伝える';
+  }
+
+  @override
+  String usBridgeClarifySent(String callName) {
+    return '$callName に送りました';
+  }
+
+  @override
+  String get usBridgeNextKicker => 'かけはし · ふたりとも理解';
+
+  @override
+  String get usBridgeNextSub => 'ふたりでできることをひとつ選びましょう。今日すべてを解決しなくて大丈夫。';
+
+  @override
+  String get usBridgeWhen => 'いつ？';
+
+  @override
+  String get usBridgeWhichChild => 'どの子を見る？';
+
+  @override
+  String get usBridgeReminder => 'ふたりにリマインド';
+
+  @override
+  String usBridgeReminderSub(String time) {
+    return '$time にリマインド — ふたりだけに表示';
+  }
+
+  @override
+  String get usBridgeNotConfirmed => '未確認';
+
+  @override
+  String get usBridgeAgreed => '同意済み';
+
+  @override
+  String get usBridgeConfirmStep => 'この一歩に決める';
+
+  @override
+  String get usBridgeConfirmNote => 'ふたりが確認すると決まります。選び直すこともできます。';
+
+  @override
+  String get usBridgeCloseTitle => 'このセッションを閉じますか？';
+
+  @override
+  String get usBridgeCloseSub => 'ふたりが同意したときだけ閉じます。';
+
+  @override
+  String usBridgeStepChosen(String when) {
+    return '選んだ一歩 · $when';
+  }
+
+  @override
+  String usBridgeRelativeWhen(String day, String time) {
+    String _temp0 = intl.Intl.selectLogic(day, {
+      'tonight': '今夜 $time',
+      'lastNight': '昨夜 $time',
+      'today': '今日 $time',
+      'yesterday': '昨日 $time',
+      'other': '$time',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String usBridgePartnerAgreedClose(String callName) {
+    return '$callName は閉じることに同意しました';
+  }
+
+  @override
+  String usBridgeThanksLabel(String callName) {
+    return '$callName にありがとうを送る？（任意）';
+  }
+
+  @override
+  String usBridgeThanksListened(String role) {
+    String _temp0 = intl.Intl.selectLogic(role, {'other': '聞いてくれてありがとう 💛'});
+    return '$_temp0';
+  }
+
+  @override
+  String usBridgeThanksShort(String role) {
+    String _temp0 = intl.Intl.selectLogic(role, {'other': 'ありがとう'});
+    return '$_temp0';
+  }
+
+  @override
+  String usBridgeRetention(int days, String date) {
+    return 'セッションの内容は $days 日後に削除され、「$date にかけはしセッションがありました」の一行だけが残ります。';
+  }
+
+  @override
+  String get usBridgeCloseConfirm => 'セッションを閉じる';
+
+  @override
+  String get usBridgeCloseLater => 'まだ、あとで';
+
+  @override
+  String get usBridgeClosed => 'かけはしセッションを閉じました';
+
+  @override
+  String get usSafetyQuickExit => 'すぐに閉じる';
+
+  @override
+  String get usSafetyHeadline => 'あなたの安全がいちばん大切です';
+
+  @override
+  String get usSafetyBody =>
+      '今は直接話す必要はありません。あなたや子どもに危険がある場合は、すぐに下の番号に電話してください。';
+
+  @override
+  String usSafetyCall(String number) {
+    return '$number に電話';
+  }
+
+  @override
+  String get usSafetyTrustedTitle => '信頼できる人に連絡する';
+
+  @override
+  String get usSafetyTrustedSub => '信頼できる家族・友人・近所の人';
+
+  @override
+  String get usSafetyPrivateNote => '書いた内容は非公開のままで、誰にも送られません。';
+
+  @override
+  String usSafetyNoNotify(String callName) {
+    return '$callName にこの画面について通知されることはありません。';
+  }
+
+  @override
+  String get usSafetyNoHistory => 'この画面はセッション履歴に記録されません。';
+
+  @override
+  String get usSafetyKeepPrivate => 'この内容を非公開にする';
+
+  @override
+  String get usSafetyDisclaimer =>
+      'Baby Family は緊急・治療サービスではありません。この機能はいつでも無料です。';
+
+  @override
+  String get usCoupleWeekCheckins => '回のチェックイン';
+
+  @override
+  String get usCoupleWeekCheckinsSub => 'ふたりで今日の気分を共有しました';
+
+  @override
+  String get usCoupleWeekRequests => '件のお願いをサポート';
+
+  @override
+  String get usCoupleWeekRequestsSub => 'お互いに引き受けました';
+
+  @override
+  String get usCoupleWeekThanks => '件のありがとう';
+
+  @override
+  String get usCoupleWeekThanksSub => '今週お互いに送りました';
+
+  @override
+  String get usCoupleWeekTogether => '件のふたりのミッション';
+
+  @override
+  String get usCoupleWeekTogetherSub => '「ふたり」ミッションから';
+
+  @override
+  String get usCoupleWeekThanksKicker => '今週のありがとう';
+
+  @override
+  String usCoupleWeekThanksMeta(String callName, String date) {
+    return '$callName · $date';
+  }
+
+  @override
+  String get usCoupleWeekTogetherLabel => 'ふたりでしたこと';
+
+  @override
+  String get usCoupleWeekNote => 'スコアも比較もありません。ふたりがお互いにしたことだけです。';
+
+  @override
+  String get usCoupleWeekSendThanks => 'ありがとうを送る';
+
+  @override
+  String get recapDayDiscard => '破棄';
+
+  @override
+  String recapDayKicker(String date) {
+    return '今日のストーリー · $date';
+  }
+
+  @override
+  String recapDayChild(String name, String age) {
+    return '$name · $age';
+  }
+
+  @override
+  String get recapDayRewrite => '書き直す';
+
+  @override
+  String get recapDayManual => '自分で書く';
+
+  @override
+  String get recapDayRewritten => '文章を書き直しました';
+
+  @override
+  String get recapDayMemories => '今日の思い出';
+
+  @override
+  String recapDaySelected(int selected, int total) {
+    return '$selected/$total 選択中';
+  }
+
+  @override
+  String recapDayItemMeta(String kind, String time) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'photo': '写真',
+      'mission': 'ミッション完了',
+      'voice': '声',
+      'quote': 'ことば',
+      'video': '動画',
+      'other': '思い出',
+    });
+    return '$_temp0 · $time';
+  }
+
+  @override
+  String get recapDayHint => 'ストーリーにはチェックした思い出だけを使います。';
+
+  @override
+  String get recapDayPhotos => '添える写真';
+
+  @override
+  String get recapDayWhoSees => '見られる人';
+
+  @override
+  String get recapDaySave => 'ストーリーを保存';
+
+  @override
+  String get recapDaySaved => '今日のストーリーを保存しました';
+
+  @override
+  String get recapDayTitleEdit => 'ストーリーのタイトル';
+
+  @override
+  String recapDayOpen(String name) {
+    return '$name の今日のストーリー';
+  }
+
+  @override
+  String recapMonthHeadline(String name, int month) {
+    return '$name が $month か月になりました 🎉';
+  }
+
+  @override
+  String recapMonthRange(int month, String range) {
+    return '$month か月目 · $range';
+  }
+
+  @override
+  String recapMonthLabel(int month) {
+    return '$month か月';
+  }
+
+  @override
+  String recapMonthNow(int month) {
+    return '$month か月 · 今日';
+  }
+
+  @override
+  String get recapMonthVoices => 'ことばと声';
+
+  @override
+  String get recapMonthVoicesKicker => 'ことばと声';
+
+  @override
+  String recapMonthFirstMeta(String age, String date) {
+    return '$age · $date';
+  }
+
+  @override
+  String recapMonthVoiceMeta(String date, String callName) {
+    return '$date · $callName が記録';
+  }
+
+  @override
+  String get careMenuStats => 'お世話の統計';
+
+  @override
+  String get careStatsDone => '家族で完了したミッション';
+
+  @override
+  String get careStatsUnit => '件（今週）';
+
+  @override
+  String careStatsCategory(String category) {
+    String _temp0 = intl.Intl.selectLogic(category, {
+      'care': 'お世話',
+      'bonding': 'ふれあい',
+      'outing': 'おでかけ',
+      'support': '支え合い',
+      'together': 'いっしょに',
+      'other': 'その他',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get careStatsNote => '「ふたり」ミッションはお世話に含みません。';
+
+  @override
+  String careStatsBloomOf(int total) {
+    return '/ $total 日';
+  }
+
+  @override
+  String get careStatsBloomLabel => '家族の木が花を咲かせた日';
+
+  @override
+  String get careStatsDisclaimer =>
+      'アプリに記録された活動だけに基づいています。親がお互いのためにしていることの多くは、アプリでは数えられません。';
+
+  @override
+  String get careStatsPrivacy => 'この統計は Papa & Mama だけが見られます';
+
+  @override
+  String get commonPrevWeek => '前の週';
+
+  @override
+  String get commonNextWeek => '次の週';
+
+  @override
+  String memPendingNotify(String name, int count, String child) {
+    return '$nameが$childの写真を$count枚投稿しました。承認をお待ちしています';
+  }
 }

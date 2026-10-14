@@ -1,5 +1,7 @@
 import 'package:baby_family/data/model/child/child.dart';
+import 'package:baby_family/data/model/family/family.dart';
 import 'package:baby_family/data/model/family/member.dart';
+import 'package:baby_family/data/model/family/plan_offer.dart';
 import 'package:baby_family/data/model/memory/memory.dart';
 import 'package:baby_family/data/provider/child.dart';
 import 'package:baby_family/data/provider/family.dart';
@@ -108,6 +110,27 @@ class MemoryComposerController extends BaseNotifier {
     notifyListeners();
   }
 
+  /// Đang soạn dở: có chữ / ảnh / ghi âm (ảnh tháng tự điền ảnh nên bỏ qua).
+  bool get hasContent =>
+      loaded &&
+      kind != MemoryKind.monthlyPhoto &&
+      (caption.text.trim().isNotEmpty ||
+          title.text.trim().isNotEmpty ||
+          mediaAssets.isNotEmpty ||
+          voiceDurationSec != null);
+
+  /// Đóng giữa chừng → nháp trên máy (MEM-18).
+  Future<void> saveDraft() async {
+    final heading = title.text.trim();
+    await memoryService.saveDraft(
+      kind: kind,
+      title: heading.isNotEmpty ? heading : caption.text.trim(),
+      childIds: childIds.toList(),
+      mediaAssets: mediaAssets,
+      voiceDurationSec: voiceDurationSec,
+    );
+  }
+
   void toggleChild(String id) {
     if (kind == MemoryKind.letter) {
       childIds
@@ -148,6 +171,21 @@ class MemoryComposerController extends BaseNotifier {
   void toggleVoice() {
     voiceDurationSec = voiceDurationSec == null ? 12 : null;
     notifyListeners();
+  }
+
+  /// SUB-05: giới hạn độ dài video (phút) của gói đang dùng và gói hiện tại
+  /// (gói chưa bán trên Store — dùng thử/hết hạn — theo giới hạn Family).
+  Future<({int maxMinutes, PlanState plan})> videoLimit() async {
+    final results = await Future.wait<Object?>([
+      familyService.currentFamily(),
+      familyService.planOffers(),
+    ]);
+    final plan = (results[0] as Family?)?.plan.state ?? PlanState.family;
+    final offers = results[1]! as List<PlanOffer>;
+    final offer =
+        offers.where((o) => o.code == plan).firstOrNull ??
+        offers.where((o) => o.code == PlanState.family).firstOrNull;
+    return (maxMinutes: offer?.videoMinutes ?? 0, plan: plan);
   }
 
   void removeMedia(String asset) {

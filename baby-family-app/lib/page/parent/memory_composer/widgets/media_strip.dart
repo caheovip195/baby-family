@@ -3,9 +3,12 @@ part of '../mobile/memory_composer_mobile_view.dart';
 /// Băng ảnh (`FVqSA`): ô 96×120 bo 10 cách 8, ảnh đầu có nhãn “Bìa” (nền
 /// `#2E2A27B3`, chữ trắng 11/600); ô “+” viền `border` chiếm phần còn lại.
 class _MediaStrip extends StatelessWidget {
-  const _MediaStrip({required this.controller});
+  const _MediaStrip({required this.controller, this.onAdd});
 
   final MemoryComposerController controller;
+
+  /// Ô “+” thêm ảnh/video (SUB-05 khi video vượt giới hạn gói).
+  final VoidCallback? onAdd;
 
   @override
   Widget build(BuildContext context) {
@@ -31,18 +34,25 @@ class _MediaStrip extends StatelessWidget {
               button: true,
               label: context.l10n.memoriesAddMedia,
               excludeSemantics: true,
-              child: Container(
-                constraints: const BoxConstraints(minWidth: 38),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                  border: Border.all(
-                    color: AppColors.resolve(context, kColorBorderEADFD6),
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: onAdd,
+                child: Container(
+                  constraints: const BoxConstraints(minWidth: 38),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                    border: Border.all(
+                      color: AppColors.resolve(context, kColorBorderEADFD6),
+                    ),
                   ),
-                ),
-                child: Icon(
-                  LucideIcons.plus,
-                  size: 24,
-                  color: AppColors.resolve(context, kColorTextSecondary6B625B),
+                  child: Icon(
+                    LucideIcons.plus,
+                    size: 24,
+                    color: AppColors.resolve(
+                      context,
+                      kColorTextSecondary6B625B,
+                    ),
+                  ),
                 ),
               ),
             ),

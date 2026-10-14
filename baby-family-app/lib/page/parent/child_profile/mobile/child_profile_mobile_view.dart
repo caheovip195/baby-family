@@ -11,10 +11,8 @@ import 'package:baby_family/utils/helper/mission_text.dart';
 import 'package:baby_family/utils/helper/relative_text.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
-import 'package:baby_family/utils/widget/app_button.dart';
 import 'package:baby_family/utils/widget/app_caps_label.dart';
 import 'package:baby_family/utils/widget/app_card.dart';
-import 'package:baby_family/utils/widget/app_dialog.dart';
 import 'package:baby_family/utils/widget/app_setting_row.dart';
 import 'package:baby_family/utils/widget/base_scaffold.dart';
 import 'package:baby_family/utils/widget/child_avatar.dart';
@@ -43,7 +41,6 @@ class ChildProfileMobileView extends HookConsumerWidget {
       controller.init(childId);
       return null;
     }, [childId]);
-    final l10n = context.l10n;
     final child = controller.child;
     final profile = controller.profile;
     if (!controller.loaded || child == null || profile == null) {
@@ -61,28 +58,10 @@ class ChildProfileMobileView extends HookConsumerWidget {
       await controller.load();
     }
 
+    /// “Lưu trữ hồ sơ bé” → CHD-05 (tác động, lưu trữ, xoá vĩnh viễn sau 7 ngày).
     Future<void> archive() async {
-      final confirmed = await AppDialog.show<bool>(
-        context: context,
-        title: l10n.childArchiveConfirmTitle(child.name),
-        content: l10n.childArchiveConfirmBody,
-        actions: [
-          AppButton.secondary(
-            label: l10n.commonCancel,
-            onPressed: () => Navigator.of(context).pop(false),
-          ),
-          AppButton(
-            label: l10n.childArchive,
-            onPressed: () => Navigator.of(context).pop(true),
-          ),
-        ],
-      );
-      if (!(confirmed ?? false) || !context.mounted) {
-        return;
-      }
-      final router = context.router;
-      await controller.archive();
-      await router.maybePop();
+      await context.router.push(ChildArchiveRoute(childId: child.id));
+      await controller.load();
     }
 
     return BaseScaffold(

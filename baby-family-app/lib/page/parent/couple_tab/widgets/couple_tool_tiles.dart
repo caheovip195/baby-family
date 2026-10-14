@@ -1,23 +1,26 @@
 part of '../mobile/couple_tab_mobile_view.dart';
 
 /// Lối vào (Pencil `odqsn`): Nhật ký riêng • Cầu nối • Tuần của hai ta — ô
-/// `surface` bo 16, đệm 14/6, icon 22 `us-700`, nhãn 12/600 giữa. Các màn
-/// US-07/08/14 chưa có → [onTap] báo “Sắp ra mắt”.
+/// `surface` bo 16, đệm 14/6, icon 22 `us-700`, nhãn 12/600 giữa → US-07 /
+/// US-08 / US-14.
 class _CoupleToolTiles extends StatelessWidget {
-  const _CoupleToolTiles({required this.onTap, this.onJournal});
+  const _CoupleToolTiles({
+    required this.onJournal,
+    required this.onBridge,
+    required this.onWeek,
+  });
 
-  final VoidCallback onTap;
-
-  /// “Nhật ký riêng” → US-07 (các ô khác chưa có màn).
-  final VoidCallback? onJournal;
+  final VoidCallback onJournal;
+  final VoidCallback onBridge;
+  final VoidCallback onWeek;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final tiles = [
-      (LucideIcons.notebookPen, l10n.usJournal),
-      (LucideIcons.waypoints, l10n.usBridgeShort),
-      (LucideIcons.chartNoAxesColumn, l10n.usWeekShort),
+      (LucideIcons.notebookPen, l10n.usJournal, onJournal),
+      (LucideIcons.waypoints, l10n.usBridgeShort, onBridge),
+      (LucideIcons.chartNoAxesColumn, l10n.usWeekShort, onWeek),
     ];
     return IntrinsicHeight(
       child: Row(
@@ -31,7 +34,7 @@ class _CoupleToolTiles extends StatelessWidget {
                 borderRadius: BorderRadius.circular(AppRadius.lg),
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
-                  onTap: index == 0 ? onJournal ?? onTap : onTap,
+                  onTap: tiles[index].$3,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       vertical: AppSpacing.cardInset,

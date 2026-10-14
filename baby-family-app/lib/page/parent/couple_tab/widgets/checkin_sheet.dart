@@ -3,10 +3,17 @@ part of '../mobile/couple_tab_mobile_view.dart';
 /// US-02 — Check-in cảm xúc (Pencil `w3t2ak`): 10 cảm xúc (2 hàng × 5) →
 /// năng lượng 5 vạch → “Mình cần…” → Chia sẻ với {bạn đời}/Chỉ mình tôi →
 /// “Gửi cho {bạn đời}”. Điền sẵn như Pencil (Mệt, năng lượng 2, Yên tĩnh).
+/// Chọn “Khó chịu” rồi biến thể “Khó chịu với {bạn đời}” (mục 7.16.1) → không
+/// lưu/gửi gì, đóng sheet và gọi [onPartnerAnnoyed] (hỏi mở Cầu nối).
 class _CheckinSheet extends HookWidget {
-  const _CheckinSheet({required this.partnerName, required this.onSave});
+  const _CheckinSheet({
+    required this.partnerName,
+    required this.onSave,
+    required this.onPartnerAnnoyed,
+  });
 
   final String partnerName;
+  final VoidCallback onPartnerAnnoyed;
   final Future<bool> Function({
     required MoodCode mood,
     required int energy,
@@ -24,6 +31,7 @@ class _CheckinSheet extends HookWidget {
     final energy = useState(2);
     final needs = useState(const <CoupleNeed>{CoupleNeed.quiet});
     final shared = useState(true);
+    final annoyedPartner = useState(false);
     final saving = useState(false);
     final label = AppTypography.adapt(
       context,
@@ -56,6 +64,11 @@ class _CheckinSheet extends HookWidget {
     };
 
     Future<void> save() async {
+      if (mood.value == MoodCode.annoyed && annoyedPartner.value) {
+        Navigator.of(context).pop();
+        onPartnerAnnoyed();
+        return;
+      }
       saving.value = true;
       final ok = await onSave(
         mood: mood.value,
@@ -83,6 +96,16 @@ class _CheckinSheet extends HookWidget {
         ),
         moodRow(MoodCode.values.take(half)),
         moodRow(MoodCode.values.skip(half)),
+        if (mood.value == MoodCode.annoyed)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: AppSelectableChip(
+              label: l10n.usCheckinAnnoyedPartner(partnerName),
+              selected: annoyedPartner.value,
+              filledSelection: false,
+              onPressed: () => annoyedPartner.value = !annoyedPartner.value,
+            ),
+          ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

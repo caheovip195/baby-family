@@ -17,6 +17,7 @@ import 'package:baby_family/utils/widget/app_bottom_sheet.dart';
 import 'package:baby_family/utils/widget/base_scaffold.dart';
 import 'package:baby_family/utils/widget/error_state.dart';
 import 'package:baby_family/utils/widget/loading_progress.dart';
+import 'package:baby_family/utils/widget/report_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -169,6 +170,7 @@ class MemoryCommentsMobileView extends HookConsumerWidget {
       anchor: anchor,
       canEdit: controller.canEdit(comment),
       canDelete: controller.isMine(comment),
+      canReport: !controller.isMine(comment),
     );
     if (!context.mounted || action == null) {
       return;
@@ -183,6 +185,19 @@ class MemoryCommentsMobileView extends HookConsumerWidget {
         }
       case CommentAction.delete:
         await controller.delete(comment);
+      case CommentAction.report:
+        final reasons = await controller.reportReasons();
+        if (!context.mounted) {
+          return;
+        }
+        await showReportSheet(
+          context,
+          target: ReportTarget.comment,
+          reasons: reasons,
+          canRemove: controller.me?.role.isParent ?? false,
+          onSubmit: (request) => controller.report(comment, request),
+          onTrack: () => context.router.push(const HelpRoute()),
+        );
     }
   }
 

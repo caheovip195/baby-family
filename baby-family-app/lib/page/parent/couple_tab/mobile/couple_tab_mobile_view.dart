@@ -5,6 +5,7 @@ import 'package:baby_family/data/model/us/daily_question.dart';
 import 'package:baby_family/data/model/us/mood_checkin.dart';
 import 'package:baby_family/data/model/us/thanks.dart';
 import 'package:baby_family/data/provider/shell.dart';
+import 'package:baby_family/gen/assets.gen.dart';
 import 'package:baby_family/page/parent/couple_tab/couple_tab_controller.dart';
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/enum.dart';
@@ -16,12 +17,14 @@ import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_bottom_sheet.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
+import 'package:baby_family/utils/widget/app_dialog.dart';
 import 'package:baby_family/utils/widget/app_pill_button.dart';
 import 'package:baby_family/utils/widget/app_selectable_chip.dart';
 import 'package:baby_family/utils/widget/app_text_field.dart';
 import 'package:baby_family/utils/widget/base_scaffold.dart';
 import 'package:baby_family/utils/widget/error_state.dart';
 import 'package:baby_family/utils/widget/skeleton_block.dart';
+import 'package:baby_family/utils/widget/us_private_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -36,6 +39,8 @@ part '../widgets/couple_tool_tiles.dart';
 part '../widgets/daily_question_card.dart';
 part '../widgets/mood_card.dart';
 part '../widgets/open_request_card.dart';
+part '../widgets/partner_left_feature.dart';
+part '../widgets/partner_left_view.dart';
 part '../widgets/question_answer_sheet.dart';
 part '../widgets/quick_replies.dart';
 part '../widgets/thanks_note.dart';
@@ -104,6 +109,9 @@ class CoupleTabMobileView extends HookConsumerWidget {
         ],
       );
     }
+    if (controller.partnerLeft) {
+      return _PartnerLeftView(controller: controller);
+    }
     final partner = controller.partner;
     final sections = <Widget>[
       IntrinsicHeight(
@@ -156,8 +164,9 @@ class CoupleTabMobileView extends HookConsumerWidget {
           onSeeAll: () => context.router.push(const ThanksWallRoute()),
         ),
       _CoupleToolTiles(
-        onTap: () => showComingSoonSnackBar(context),
         onJournal: () => context.router.push(const PrivateJournalRoute()),
+        onBridge: () => context.router.push(const BridgeStartRoute()),
+        onWeek: () => context.router.push(const CoupleWeekRoute()),
       ),
     ];
     return ListView(
@@ -197,8 +206,46 @@ class CoupleTabMobileView extends HookConsumerWidget {
       builder: (_) => _CheckinSheet(
         partnerName: controller.partner?.callName ?? '',
         onSave: controller.saveCheckin,
+        onPartnerAnnoyed: () => _askBridge(context, controller),
       ),
     );
+  }
+
+  /// US-02 “Khó chịu với bạn đời” → không gửi gì, chỉ hỏi có muốn dùng Cầu
+  /// nối (US-08) không (mục 7.16.1).
+  Future<void> _askBridge(
+    BuildContext context,
+    CoupleTabController controller,
+  ) async {
+    final l10n = context.l10n;
+    final open = await AppDialog.show<bool>(
+      context: context,
+      title: l10n.usBridgeAskTitle,
+      content: l10n.usBridgeAskBody(controller.partner?.callName ?? ''),
+      icon: Icon(
+        LucideIcons.heartHandshake,
+        size: 32,
+        color: AppColors.resolve(context, kColorUs7006A549F),
+      ),
+      actions: [
+        Builder(
+          builder: (dialog) => AppButton.us(
+            label: l10n.usBridgeAskOpen,
+            onPressed: () => Navigator.of(dialog).pop(true),
+          ),
+        ),
+        Builder(
+          builder: (dialog) => AppButton.text(
+            label: l10n.commonLater,
+            color: kColorTextSecondary6B625B,
+            onPressed: () => Navigator.of(dialog).pop(false),
+          ),
+        ),
+      ],
+    );
+    if ((open ?? false) && context.mounted) {
+      await context.router.push(const BridgeStartRoute());
+    }
   }
 
   Future<void> _openAnswer(

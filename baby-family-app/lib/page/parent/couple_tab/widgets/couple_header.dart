@@ -1,11 +1,13 @@
 part of '../mobile/couple_tab_mobile_view.dart';
 
-/// Thanh tiêu đề US-01: “Papa & Mama” 26/800 + khoá “Chỉ hai bạn nhìn thấy”
-/// (`us-700`), nút cài đặt 40×40 (US-15 — chưa có màn).
+/// Thanh tiêu đề US-01: “Papa & Mama” 26/800 + khoá [privacy] (`us-700`,
+/// mặc định “Chỉ hai bạn nhìn thấy”; US-00 “Chỉ dành cho Papa & Mama”), nút
+/// cài đặt 40×40 (US-15) khi có [onSettings].
 class _CoupleHeader extends StatelessWidget {
-  const _CoupleHeader({this.onSettings});
+  const _CoupleHeader({this.onSettings, this.privacy});
 
   final VoidCallback? onSettings;
+  final String? privacy;
 
   @override
   Widget build(BuildContext context) {
@@ -29,21 +31,7 @@ class _CoupleHeader extends StatelessWidget {
                   style: AppTypography.adapt(context, AppTypography.h1),
                 ),
                 const SizedBox(height: 2),
-                Row(
-                  children: [
-                    Icon(LucideIcons.lock, size: 13, color: accent),
-                    const SizedBox(width: AppSpacing.compact),
-                    Flexible(
-                      child: Text(
-                        l10n.usOnlyTwo,
-                        style: AppTypography.small.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: accent,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                UsPrivateLabel(privacy ?? l10n.usOnlyTwo),
               ],
             ),
           ),

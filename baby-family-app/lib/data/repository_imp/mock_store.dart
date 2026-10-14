@@ -104,11 +104,14 @@ class MockStore extends ChangeNotifier {
 
   Future<void> _load() async {
     for (final name in fixtureFiles) {
-      final raw = await _bundle.loadString(
-        'assets/data/mock/$name.json',
-        cache: false,
+      // Decode on this isolate: `loadString` hands files > 50 KB to
+      // `compute`, which never completes under widget tests' fake async.
+      final data = await _bundle.load('assets/data/mock/$name.json');
+      _fixtures[name] = jsonDecode(
+        utf8.decode(
+          data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
+        ),
       );
-      _fixtures[name] = jsonDecode(raw);
     }
     _applySeed();
   }

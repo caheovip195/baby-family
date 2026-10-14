@@ -9,6 +9,7 @@ import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/extension/date_time.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
+import 'package:baby_family/utils/helper/plan_text.dart';
 import 'package:baby_family/utils/helper/relative_text.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
@@ -27,7 +28,6 @@ import 'package:baby_family/utils/widget/child_avatar.dart';
 import 'package:baby_family/utils/widget/error_state.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
 
 part '../widgets/add_row.dart';
@@ -38,9 +38,10 @@ part '../widgets/plan_card.dart';
 part '../widgets/relative_row.dart';
 
 /// FAM-01 — Gia đình (Pencil `r8l6e` gói Family, biến thể `XwXfH` dùng thử).
-/// Dùng thử: người thân bị khoá → SUB-01; gói Family: “Quản lý gói” → SUB-01,
-/// người thân → FAM-04, “Mời người thân (3/12)” → FAM-03. Bánh răng → FAM-07;
-/// các con → CHD-01 (thai kỳ → PREG-01), “Thêm con / thai kỳ” → CHD-04.
+/// Dùng thử: người thân bị khoá → SUB-01; gói trả phí: “Quản lý gói” → SUB-03,
+/// người thân → FAM-04 (đang chờ tham gia → FAM-05), “Mời người thân
+/// (3/12)” → FAM-03. Bánh răng → FAM-07; các con → CHD-01 (thai kỳ →
+/// PREG-01), “Thêm con / thai kỳ” → CHD-04.
 class FamilyMobileView extends HookConsumerWidget {
   const FamilyMobileView({super.key});
 
@@ -78,7 +79,12 @@ class FamilyMobileView extends HookConsumerWidget {
             plan: family.plan,
             today: controller.today,
             price: controller.planPrice,
-            onPlans: () => context.router.push(const PlansRoute()),
+            onPlans: () => context.router.push(
+              family.plan.state == PlanState.family ||
+                      family.plan.state == PlanState.house
+                  ? const FamilyPlanRoute()
+                  : const PlansRoute(),
+            ),
           ),
           gap,
           AppCapsLabel(l10n.familyParents),
@@ -142,7 +148,9 @@ class FamilyMobileView extends HookConsumerWidget {
                       ),
                       childNames: controller.followedChildNames(relative),
                       onTap: () => context.router.push(
-                        RelativeDetailRoute(memberId: relative.id),
+                        relative.status == MemberStatus.pending
+                            ? const PendingInvitesRoute()
+                            : RelativeDetailRoute(memberId: relative.id),
                       ),
                     ),
                     const SizedBox(height: AppSpacing.cardInset),

@@ -744,12 +744,39 @@
   "bridge": {
     "feelings": [
       {
+        "code": "hurt",
+        "title": {
+          "vi": "Tổn thương",
+          "en": "Hurt",
+          "zh": "受伤",
+          "ja": "傷ついた"
+        }
+      },
+      {
+        "code": "angry",
+        "title": {
+          "vi": "Tức giận",
+          "en": "Angry",
+          "zh": "生气",
+          "ja": "怒っている"
+        }
+      },
+      {
         "code": "exhausted",
         "title": {
           "vi": "Kiệt sức",
           "en": "Exhausted",
           "zh": "筋疲力尽",
           "ja": "へとへと"
+        }
+      },
+      {
+        "code": "misunderstood",
+        "title": {
+          "vi": "Bị hiểu lầm",
+          "en": "Misunderstood",
+          "zh": "被误解",
+          "ja": "誤解されている"
         }
       },
       {
@@ -762,12 +789,12 @@
         }
       },
       {
-        "code": "misunderstood",
+        "code": "disappointed",
         "title": {
-          "vi": "Bị hiểu lầm",
-          "en": "Misunderstood",
-          "zh": "被误解",
-          "ja": "誤解されている"
+          "vi": "Thất vọng",
+          "en": "Disappointed",
+          "zh": "失望",
+          "ja": "がっかり"
         }
       }
     ],
@@ -908,6 +935,62 @@
           "en": "Write your own",
           "zh": "自己输入",
           "ja": "自分で入力"
+        }
+      }
+    ],
+    "topics": [
+      {
+        "code": "child",
+        "title": {
+          "vi": "Chăm {child}",
+          "en": "Caring for {child}",
+          "zh": "照顾{child}",
+          "ja": "{child}のお世話"
+        }
+      },
+      {
+        "code": "housework",
+        "title": {
+          "vi": "Chia việc nhà",
+          "en": "Sharing housework",
+          "zh": "分担家务",
+          "ja": "家事の分担"
+        }
+      },
+      {
+        "code": "money",
+        "title": {
+          "vi": "Tài chính",
+          "en": "Money",
+          "zh": "财务",
+          "ja": "お金"
+        }
+      },
+      {
+        "code": "couple_time",
+        "title": {
+          "vi": "Thời gian cho nhau",
+          "en": "Time for each other",
+          "zh": "彼此的时间",
+          "ja": "ふたりの時間"
+        }
+      },
+      {
+        "code": "families",
+        "title": {
+          "vi": "Gia đình hai bên",
+          "en": "Our families",
+          "zh": "双方家庭",
+          "ja": "両家の家族"
+        }
+      },
+      {
+        "code": "other",
+        "title": {
+          "vi": "Khác",
+          "en": "Other",
+          "zh": "其他",
+          "ja": "その他"
         }
       }
     ]

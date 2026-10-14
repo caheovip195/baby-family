@@ -11,6 +11,7 @@ import 'package:hooks_riverpod/legacy.dart';
 /// INV-01 — xem lời mời: biến thể bạn đời (gTSrl, chọn tên gọi) hoặc người
 /// thân (BSCuD, quyền với từng bé). “Tham gia” khi chưa đăng nhập → lưu lời
 /// mời chờ rồi đăng nhập (AUTH-01…04 áp dụng); đã đăng nhập → áp dụng ngay.
+/// Batch 3: các trạng thái INV-02/03/04 theo `InvitePreviewData.state`.
 final invitePreviewControllerProvider = ChangeNotifierProvider.autoDispose
     .family<InvitePreviewController, String?>(InvitePreviewController.new);
 
@@ -35,6 +36,15 @@ class InvitePreviewController extends BaseNotifier {
   String callName = '';
 
   bool get isPartner => data?.invite.kind == InviteKind.partner;
+
+  /// INV-01 hợp lệ / INV-02 không còn hiệu lực / INV-03 đang là Bố/Mẹ ở gia
+  /// đình khác / INV-04 đã nhận — chờ xác nhận.
+  InvitePreviewState get state => invalid
+      ? InvitePreviewState.invalid
+      : data?.state ?? InvitePreviewState.valid;
+
+  /// Vai trò của người đang xem ở gia đình hiện tại (INV-03 “Mama · Nhà Lan”).
+  FamilyRole? get myRole => session.role;
 
   bool get signedIn =>
       session.state != SessionState.signedOut &&

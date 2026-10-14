@@ -4,10 +4,12 @@ on:
   push:
     paths:
       - baby-backend/**
+      - baby-database/**
       - .github/workflows/backend-ci.yml
   pull_request:
     paths:
       - baby-backend/**
+      - baby-database/**
       - .github/workflows/backend-ci.yml
   workflow_dispatch:
 
@@ -29,6 +31,7 @@ jobs:
     env:
       NODE_ENV: test
       DATABASE_URL: postgresql://baby:baby_ci_only@127.0.0.1:5432/baby_family_test?schema=public
+      DATABASE_DOCKER_URL: postgresql://baby:baby_ci_only@baby-postgres:5432/baby_family_test?schema=public
       HOST: 127.0.0.1
       PORT: 3000
       CORS_ORIGINS: http://localhost:3000
@@ -62,6 +65,8 @@ jobs:
         run: npm ci
       - name: Validate Prisma schema
         run: npm run prisma:validate
+      - name: Check model and repository generation
+        run: npm run generate:persistence -- --check
       - name: Check formatting
         run: |
           npm run format:check
@@ -81,6 +86,8 @@ jobs:
       - name: PostgreSQL integration tests
         run: npm run test:integration
       - name: Validate Compose
-        run: docker compose config --quiet
+        run: |
+          docker compose config --quiet
+          docker compose --project-directory ../baby-database --file ../baby-database/compose.yaml --env-file ../baby-database/.env.example config --quiet
       - name: Build release and migration images
         run: docker compose build api migrate

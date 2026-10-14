@@ -19,8 +19,6 @@ class _PlanCard extends StatelessWidget {
   /// Giá gói đang dùng (“599.000đ/năm”); null → chỉ ngày gia hạn.
   final String? price;
 
-  static const _mbPerGb = 1024;
-
   String? paidSubtitle(AppLocalizations l10n, String? endsText) {
     if (endsText == null) {
       return price;
@@ -47,8 +45,7 @@ class _PlanCard extends StatelessWidget {
       PlanState.family => (l10n.famPlanFamily, paidSubtitle(l10n, endsText)),
       PlanState.expired => (l10n.setPlanExpired, null),
     };
-    final format = NumberFormat('#,##0.#', locale);
-    String gb(int mb) => format.format(mb / _mbPerGb);
+    String gb(int mb) => storageGbText(mb, locale);
     final quota = plan.storageQuotaMb;
     final isPaid =
         plan.state == PlanState.family || plan.state == PlanState.house;

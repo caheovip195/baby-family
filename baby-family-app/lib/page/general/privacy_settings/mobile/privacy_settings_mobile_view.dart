@@ -4,7 +4,6 @@ import 'package:baby_family/page/general/privacy_settings/privacy_settings_contr
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
-import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_caps_label.dart';
@@ -26,7 +25,8 @@ part '../widgets/stat_tile.dart';
 part '../widgets/visibility_option.dart';
 
 /// SET-04 — Quyền riêng tư (Pencil `mD130`). “Xem chi tiết & chỉnh quyền” →
-/// FAM-01 (danh sách người thân → FAM-04); “Thiết bị đăng nhập” → SET-07.
+/// FAM-01 (danh sách người thân → FAM-04); “Thiết bị đăng nhập” → SET-07;
+/// “Người bị chặn” → SET-13.
 class PrivacySettingsMobileView extends HookConsumerWidget {
   const PrivacySettingsMobileView({super.key});
 
@@ -211,7 +211,7 @@ class PrivacySettingsMobileView extends HookConsumerWidget {
               icon: LucideIcons.userX,
               title: l10n.setBlocked,
               value: l10n.setPeopleCount(settings.blockedCount),
-              onTap: () => showComingSoonSnackBar(context),
+              onTap: () => context.router.push(const BlockedPeopleRoute()),
             ),
           ],
         ),

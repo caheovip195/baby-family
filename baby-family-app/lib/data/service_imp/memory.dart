@@ -774,6 +774,42 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
   }
 
   @override
+  int get trashDays => _trashDays;
+
+  @override
+  Future<void> moveToTrash(String memoryId) async {
+    await ready();
+    _repository.moveToTrash(memoryId, {
+      'deletedAt': now.toIso8601String(),
+      'deletedByUserId': myUserId,
+    });
+  }
+
+  @override
+  Future<MemoryDraftItem> saveDraft({
+    required MemoryKind kind,
+    String title = '',
+    List<String> childIds = const [],
+    List<String> mediaAssets = const [],
+    int? voiceDurationSec,
+  }) async {
+    await ready();
+    return MemoryDraftItem.fromJson(
+      _repository.addDraft({
+        'kind': kind.name,
+        'title': title,
+        'childIds': childIds,
+        'updatedAt': now.toIso8601String(),
+        'location': DraftLocation.device.name,
+        'mediaAssets': mediaAssets.take(1).toList(),
+        'extraCount': mediaAssets.length > 1 ? mediaAssets.length - 1 : 0,
+        'voiceDurationSec': ?voiceDurationSec,
+        'userId': myUserId,
+      }),
+    );
+  }
+
+  @override
   Future<List<MemoryDraftItem>> drafts() async {
     await ready();
     final all = _repository.drafts(myUserId).map(MemoryDraftItem.fromJson);

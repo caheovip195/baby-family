@@ -215,10 +215,10 @@ void main() {
       expect(find.text('Mời người thân (3/12)'), findsOneWidget);
     });
 
-    testWidgets('“Quản lý gói” opens SUB-01', (tester) async {
+    testWidgets('“Quản lý gói” opens SUB-03', (tester) async {
       final router = await pumpRoute(tester, const FamilyRoute());
       await _tap(tester, find.text('Quản lý gói'));
-      expect(router.topRoute.name, PlansRoute.name);
+      expect(router.topRoute.name, FamilyPlanRoute.name);
     });
 
     testWidgets('relative row opens FAM-04, invite opens FAM-03', (

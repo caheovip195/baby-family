@@ -4,8 +4,11 @@ import 'package:baby_family/data/model/memory/milestone_option.dart';
 import 'package:baby_family/page/parent/memory_composer/memory_composer_controller.dart';
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/enum.dart';
+import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/memory_text.dart';
+import 'package:baby_family/utils/helper/plan_text.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_action_top_bar.dart';
@@ -13,6 +16,7 @@ import 'package:baby_family/utils/widget/base_scaffold.dart';
 import 'package:baby_family/utils/widget/child_avatar.dart';
 import 'package:baby_family/utils/widget/loading_progress.dart';
 import 'package:baby_family/utils/widget/memory_visibility_sheet.dart';
+import 'package:baby_family/utils/widget/plan_limit_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -64,12 +68,36 @@ class MemoryComposerMobileView extends HookConsumerWidget {
       }
     }
 
+    /// ✕ khi đang soạn dở → lưu nháp trên máy, báo kèm lối “Xem nháp”.
+    Future<void> close() async {
+      final router = context.router;
+      if (!controller.hasContent) {
+        await router.maybePop();
+        return;
+      }
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      await controller.saveDraft();
+      messenger
+        ?..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(l10n.memDraftSaved),
+            action: SnackBarAction(
+              label: l10n.memDraftView,
+              onPressed: () => router.push(const DraftsRoute()),
+            ),
+          ),
+        );
+      await router.maybePop();
+    }
+
     return BaseScaffold(
       isLoading: controller.isLoading,
       appBar: AppActionTopBar(
         title: title,
         actionLabel: l10n.commonSave,
         onAction: controller.loaded ? save : null,
+        onClose: close,
       ),
       body: !controller.loaded
           ? const Center(child: CircleLoadingProgress())
@@ -93,7 +121,11 @@ class MemoryComposerMobileView extends HookConsumerWidget {
     final type = controller.kind;
     final sections = <Widget>[
       if (type == MemoryKind.voice) _VoiceRecorder(controller: controller),
-      if (controller.hasMedia) _MediaStrip(controller: controller),
+      if (controller.hasMedia)
+        _MediaStrip(
+          controller: controller,
+          onAdd: () => _pickMedia(context, controller),
+        ),
       _CaptionBox(controller: controller),
       _kids(context, controller),
       _ComposerRow(
@@ -232,6 +264,52 @@ class MemoryComposerMobileView extends HookConsumerWidget {
       lastDate: DateTime(controller.today.year + 30),
     );
     controller.setSealedUntil(value);
+  }
+
+  /// Ô “+” (bản mẫu: luôn chọn một video dài [kValueMockPickedVideoMinutes]
+  /// phút). Dài hơn giới hạn của gói → SUB-05: cắt ngắn, chọn video khác, lưu
+  /// dạng nhật ký chữ (MEM-13) hoặc nâng cấp (SUB-04/SUB-01).
+  Future<void> _pickMedia(
+    BuildContext context,
+    MemoryComposerController controller,
+  ) async {
+    final limit = await controller.videoLimit();
+    const minutes = kValueMockPickedVideoMinutes;
+    if (!context.mounted || minutes <= limit.maxMinutes) {
+      return;
+    }
+    final l10n = context.l10n;
+    final choice = await showPlanLimitSheet(
+      context,
+      title: l10n.subLimitVideoTitle(minutes),
+      message: l10n.subLimitVideoBody(
+        planTitle(l10n, limit.plan),
+        limit.maxMinutes,
+      ),
+      primaryLabel: l10n.subLimitTrim(limit.maxMinutes),
+      secondaryLabel: l10n.subLimitPickAnother,
+      textActionLabel: l10n.subLimitSaveDiary,
+      isTopPlan: limit.plan == PlanState.family,
+    );
+    if (!context.mounted) {
+      return;
+    }
+    switch (choice) {
+      case PlanLimitChoice.primary:
+        showAppSnackBar(context, l10n.subLimitTrimmed(limit.maxMinutes));
+      case PlanLimitChoice.saveAsText:
+        await context.router.push(
+          DiaryEditorRoute(childId: controller.milestoneChildId),
+        );
+      case PlanLimitChoice.upgrade:
+        await context.router.push(
+          limit.plan == PlanState.house
+              ? const UpgradePlanRoute()
+              : const PlansRoute(),
+        );
+      case PlanLimitChoice.secondary || null:
+        break;
+    }
   }
 
   /// “Đánh dấu cột mốc” → MEM-11; cột mốc chọn được điền lại vào form.

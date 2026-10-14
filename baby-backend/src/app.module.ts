@@ -8,6 +8,7 @@ import { HttpExceptionFilter } from './common/errors/http-exception.filter';
 import { validateEnvironment } from './config/environment';
 import type { Environment } from './config/environment';
 import { DatabaseModule } from './database/database.module';
+import { DATABASE_REPOSITORY_PROVIDERS } from './database/repository.providers';
 import { HealthController } from './controllers/health.controller';
 import { NoteController } from './controllers/note.controller';
 import { NOTE_REPOSITORY } from './interfaces/repositories/note-repository.interface';
@@ -70,6 +71,7 @@ import { NoteService } from './services/note.service';
     // generator:controllers
   ],
   providers: [
+    ...DATABASE_REPOSITORY_PROVIDERS,
     { provide: APP_FILTER, useClass: HttpExceptionFilter },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: NOTE_REPOSITORY, useClass: NoteRepository },

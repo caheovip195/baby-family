@@ -9,6 +9,7 @@ import 'package:baby_family/data/service/family.dart';
 import 'package:baby_family/page/application_base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
+import 'package:baby_family/utils/helper/plan_text.dart';
 import 'package:hooks_riverpod/legacy.dart';
 
 /// FAM-01 — Tổng quan gia đình: gói, Papa & Mama, các con, người thân.
@@ -43,7 +44,7 @@ class FamilyController extends BaseNotifier {
     final state = family?.plan.state;
     for (final offer in offers) {
       if (offer.code == state) {
-        return offer.priceText.replaceAll(' / ', '/');
+        return compactPriceText(offer.priceText);
       }
     }
     return null;

@@ -84,6 +84,10 @@ const kValuePregnancyTotalDays = 280;
 /// BR-054/056: dùng thử 90 ngày khi gia đình đủ Papa + Mama.
 const kValueTrialDays = 90;
 
+/// Bản mẫu (không có thư viện ảnh thật): video chọn từ ô “+” của MEM-05 dài
+/// 12 phút, vượt giới hạn 10 phút của gói Family → SUB-05 (Pencil `aISrA`).
+const kValueMockPickedVideoMinutes = 12;
+
 /// CARE-06: hoàn tác hoàn thành nhiệm vụ trong 10 giây (mục 7.13.4).
 const kValueMissionUndoWindow = Duration(seconds: 10);
 
@@ -154,3 +158,11 @@ const kValueLetterDefaultBirthday = 18;
 
 /// MEM-07: số bình luận gốc hiện trước “Xem tất cả” (MEM-10).
 const kValueCommentPreviewCount = 2;
+
+/// US-08: độ dài tối đa của nháp riêng Cầu nối (như ghi chú check-in ≤ 500,
+/// mục 7.16.1).
+const kValueBridgeDraftMaxLength = 500;
+
+/// US-08: số bước của giai đoạn riêng tư (cảm xúc → chủ đề → nhu cầu + nháp →
+/// làm gì với nội dung → xem trước & gửi; mục 7.17.1).
+const kValueBridgeWizardSteps = 5;

@@ -6094,4 +6094,1953 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settingsBlockedTitle => '已屏蔽的人';
+
+  @override
+  String get subPlanActive => '生效中';
+
+  @override
+  String get subPlanAutoRenew => '自动续订';
+
+  @override
+  String get subPlanPayer => '付款人';
+
+  @override
+  String get subPlanChannel => '购买渠道';
+
+  @override
+  String get subPlanAppliesTo => '适用于';
+
+  @override
+  String subPlanWholeFamily(String family) {
+    return '$family全家';
+  }
+
+  @override
+  String subPlanGb(String value) {
+    return '$value GB';
+  }
+
+  @override
+  String subPlanUsedOf(String total) {
+    return '已用 / $total GB';
+  }
+
+  @override
+  String subPlanStorageKind(String kind, String size) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'photo': '照片',
+      'video': '视频',
+      'audio': '音频',
+      'other': '其他',
+    });
+    return '$_temp0 · $size GB';
+  }
+
+  @override
+  String get subPlanIncluded => '我们家的套餐包含';
+
+  @override
+  String get subPlanRelatives => '亲友';
+
+  @override
+  String subPlanSlots(int used, int max) {
+    return '$used/$max';
+  }
+
+  @override
+  String get subPlanAi => '本月 AI 次数';
+
+  @override
+  String subPlanAiRenews(String date) {
+    return '$date 重置';
+  }
+
+  @override
+  String subPlanAiLeft(int remaining, int total) {
+    return '剩余 $remaining/$total';
+  }
+
+  @override
+  String get subPlanVideo => '视频时长上限';
+
+  @override
+  String subPlanVideoHint(int count) {
+    return '原图 · 每条回忆 $count 张';
+  }
+
+  @override
+  String subPlanVideoHintCompressed(int count) {
+    return '每条回忆 $count 张';
+  }
+
+  @override
+  String subPlanMinutes(int count) {
+    return '$count 分钟';
+  }
+
+  @override
+  String subPlanManageStore(String channel) {
+    return '在 $channel 中管理';
+  }
+
+  @override
+  String get subPlanChange => '更换套餐';
+
+  @override
+  String subPlanNote(String channel, String payer, String partner) {
+    return '套餐在 $payer 的 $channel 账户中，只有 $payer 可以更改或取消。$partner 会看到请 $payer 操作的提示。随时可在 $channel 设置中取消——我们家的回忆不会被删除。';
+  }
+
+  @override
+  String subManageStoreMock(String channel) {
+    return '示例数据：$channel 订阅管理页仅为模拟。';
+  }
+
+  @override
+  String get subUpgradeTitle => '升级到 Family，邀请爷爷奶奶';
+
+  @override
+  String subUpgradeSubtitle(String payer, String channel) {
+    return '我们家正在使用 House 套餐 · $payer 通过 $channel 付款。Family 可加入爷爷奶奶、亲友，并提供更大空间。';
+  }
+
+  @override
+  String get subCmpRelatives => '爷爷奶奶、亲友';
+
+  @override
+  String get subCmpPhotos => '每条回忆照片数';
+
+  @override
+  String get subCmpVideo => '视频';
+
+  @override
+  String get subCmpVoice => '录音';
+
+  @override
+  String get subCmpOriginal => '保存原图';
+
+  @override
+  String get subCmpAi => '每月 AI 次数';
+
+  @override
+  String get subCmpDigest => '动态简报、审核亲友照片';
+
+  @override
+  String get subCmpNone => '—';
+
+  @override
+  String get subCmpYes => '有';
+
+  @override
+  String subCmpUpTo(int count) {
+    return '最多 $count';
+  }
+
+  @override
+  String subCmpMaxMinutes(int count) {
+    return '≤ $count 分钟';
+  }
+
+  @override
+  String get subUpgradeCurrent => '当前';
+
+  @override
+  String subUpgradeProrate(String channel) {
+    return '升级立即生效。$channel 会自动按 House 套餐剩余时间折算差价——无需再付一整年。';
+  }
+
+  @override
+  String subUpgradeCta(String price) {
+    return '升级到 Family · $price';
+  }
+
+  @override
+  String get subUpgradeLegal => '每年自动续订，可随时在 App Store 设置中取消。条款 · 隐私 · 恢复购买';
+
+  @override
+  String subUpgradeNotPayerLabel(String partner) {
+    return '$partner 会看到（非付款人）';
+  }
+
+  @override
+  String subUpgradeNotPayerBody(String payer) {
+    return 'House 套餐由 $payer 付款。为避免重复付款，请让 $payer 升级。';
+  }
+
+  @override
+  String subUpgradeAskPayer(String payer) {
+    return '给 $payer 留言';
+  }
+
+  @override
+  String subUpgradeAskSent(String payer) {
+    return '已给 $payer 留言';
+  }
+
+  @override
+  String subConfirmTitle(String plan) {
+    return '确认 $plan 套餐';
+  }
+
+  @override
+  String subConfirmAudienceFamily(String family, String papa, String mama) {
+    return '适用于$family全家 · $papa、$mama和亲友';
+  }
+
+  @override
+  String subConfirmAudienceHouse(String family, String papa, String mama) {
+    return '适用于$family全家 · $papa & $mama';
+  }
+
+  @override
+  String get subConfirmPrice => '价格';
+
+  @override
+  String get subConfirmMonthly => '折合';
+
+  @override
+  String get subConfirmCycle => '周期';
+
+  @override
+  String get subConfirmCycleValue => '1 年 · 自动续订';
+
+  @override
+  String get subConfirmEffective => '生效';
+
+  @override
+  String get subConfirmEffectiveValue => 'App Store 确认后立即生效';
+
+  @override
+  String get subConfirmPayVia => '付款方式';
+
+  @override
+  String get subConfirmPayViaValue => '你的 App Store 账户';
+
+  @override
+  String subConfirmRelatives(int count) {
+    return '立即邀请最多 $count 位爷爷奶奶、亲友';
+  }
+
+  @override
+  String subConfirmLimits(int storage, int video, String original) {
+    String _temp0 = intl.Intl.selectLogic(original, {
+      'yes': ' · 保存原图',
+      'other': '',
+    });
+    return '$storage GB · 视频 ≤ $video 分钟$_temp0';
+  }
+
+  @override
+  String get subConfirmTrialNote => '剩余试用期不叠加——年度周期从今天开始';
+
+  @override
+  String get subConfirmCta => '继续前往 App Store';
+
+  @override
+  String get subConfirmLegal =>
+      '下一步是 App Store 付款页面。每年自动续订，可随时在 App Store 设置中取消。';
+
+  @override
+  String get subLinkTerms => '条款';
+
+  @override
+  String subLimitVideoTitle(int minutes) {
+    return '这段视频长 $minutes 分钟';
+  }
+
+  @override
+  String subLimitVideoBody(String plan, int max) {
+    return '$plan每段视频最长可保存 $max 分钟。你可以剪短，或用文字记下这一刻。';
+  }
+
+  @override
+  String get subLimitSafe => '你的回忆依然安全——没有删除任何内容，正在编辑的内容也会保留。';
+
+  @override
+  String subLimitTrim(int max) {
+    return '剪至 $max 分钟';
+  }
+
+  @override
+  String get subLimitPickAnother => '选择其他视频';
+
+  @override
+  String get subLimitSaveDiary => '保存为文字日记';
+
+  @override
+  String get subLimitTopPlan => '我们家已在使用最高套餐（Family），无需再升级。';
+
+  @override
+  String get subLimitUpgrade => '升级到 Family';
+
+  @override
+  String subLimitTrimmed(int max) {
+    return '视频已剪至 $max 分钟';
+  }
+
+  @override
+  String get subIssueTitle => '续订付款未成功';
+
+  @override
+  String subIssueBody(String plan) {
+    return '请检查付款方式以免中断。在此期间，我们家的$plan仍正常使用。';
+  }
+
+  @override
+  String get subIssueAction => '在 App Store 中检查';
+
+  @override
+  String get invInvalidTipMessage => '联系邀请你的人（宝宝的爸妈），请他们创建新的邀请。';
+
+  @override
+  String get invInvalidTipCode => '如果已有新的 8 位邀请码，可以立即输入。';
+
+  @override
+  String get invEnterOtherCode => '输入其他邀请码';
+
+  @override
+  String invElsewhereTitle(String callName) {
+    return '你已是另一个家庭的$callName';
+  }
+
+  @override
+  String get invElsewhereBody => '每个账户只能是一个家庭的爸妈，所以你暂时无法接受这个邀请。';
+
+  @override
+  String invElsewhereInvite(String inviter, String family) {
+    return '$inviter 邀请你加入$family';
+  }
+
+  @override
+  String invElsewhereRole(String callName) {
+    return '建议角色：宝宝们的$callName';
+  }
+
+  @override
+  String get invElsewhereJoinRelative => '以亲友身份加入';
+
+  @override
+  String invElsewhereJoinRelativeHint(String inviter) {
+    return '不可用——此邀请仅限爸妈。如果想看宝宝们，请让 $inviter 发送亲友邀请。';
+  }
+
+  @override
+  String get invElsewhereLeave => '了解如何离开当前家庭';
+
+  @override
+  String get invElsewhereLeaveHint => '爸妈可选的方式及如何求助';
+
+  @override
+  String get invWaitingTitle => '请求已发送';
+
+  @override
+  String invWaitingBody(String inviter) {
+    return '$inviter 确认后即可完成。你可以先关闭应用——完成后会立即通知你。';
+  }
+
+  @override
+  String invWaitingStepJoined(String family) {
+    return '你已接受加入$family的邀请';
+  }
+
+  @override
+  String invWaitingStepRole(String callName) {
+    return '角色：宝宝们的$callName';
+  }
+
+  @override
+  String invWaitingStepConfirm(String inviter) {
+    return '等待 $inviter 确认';
+  }
+
+  @override
+  String invWaitingStepConfirmHint(String inviter) {
+    return '$inviter 开启了“最终确认”，以确保是你本人';
+  }
+
+  @override
+  String get invWaitingStepTrial => '我们家开始 3 个月免费试用';
+
+  @override
+  String get invWaitingNotice => '你会收到“欢迎回家！”的通知';
+
+  @override
+  String famPartnerLeftBanner(String partner, String family) {
+    return '$partner 已离开$family（删除了账户）。在新伴侣加入前，我们家处于仅查看和下载模式。';
+  }
+
+  @override
+  String get famPartnerInviteSubtitle =>
+      '伴侣加入后，全家又能一起记录回忆、完成任务，并使用 Papa & Mama 空间。';
+
+  @override
+  String get famPartnerInviteRole => '邀请身份';
+
+  @override
+  String get famPartnerRecipientSees => '对方加入前会看到';
+
+  @override
+  String famPartnerRecipientHint(String name, String callName) {
+    return '来自 $name（$callName）的邀请 · 仅宝宝们的名字和头像';
+  }
+
+  @override
+  String get famPartnerRevoke => '撤回邀请';
+
+  @override
+  String get famPartnerRevoked => '邀请已撤回';
+
+  @override
+  String famInvitesCapacity(String family, int active, int pending) {
+    return '$family亲友：$active 位已加入 · $pending 位待加入';
+  }
+
+  @override
+  String get famInvitesPending => '待处理';
+
+  @override
+  String get famInvitesExpired => '已过期';
+
+  @override
+  String get famInviteNotOpened => '尚未打开链接';
+
+  @override
+  String get famInviteOpened => '已打开链接';
+
+  @override
+  String get famInviteExpiredTag => '已过期';
+
+  @override
+  String get famInviteKindRelative => '亲友邀请';
+
+  @override
+  String get famInvitePermView => '查看';
+
+  @override
+  String get famInvitePermComment => '查看 + 评论';
+
+  @override
+  String get famInvitePermPost => '查看 + 评论 + 发照片';
+
+  @override
+  String famInviteDates(String created, String expires, String daysLeft) {
+    return '创建于 $created · $expires 过期 · $daysLeft';
+  }
+
+  @override
+  String famInviteDaysLeft(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '剩 $count 天',
+      zero: '今天过期',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String famInviteExpiredOn(String date) {
+    return '已于 $date 过期 · 链接无法打开';
+  }
+
+  @override
+  String get famInviteResend => '重新发送链接';
+
+  @override
+  String get famInviteRevoke => '撤回';
+
+  @override
+  String get famInviteRenew => '创建新邀请';
+
+  @override
+  String famInviteResent(String callName) {
+    return '已重新发送链接给 $callName';
+  }
+
+  @override
+  String famInviteRevokedName(String callName) {
+    return '已撤回给 $callName 的邀请';
+  }
+
+  @override
+  String famInviteRenewed(String callName) {
+    return '已为 $callName 创建新邀请';
+  }
+
+  @override
+  String get famInvitesRules =>
+      '亲友邀请 14 天后过期，且只能使用一次。撤回后旧链接将无法打开。最多 12 位亲友（含待处理邀请）。';
+
+  @override
+  String get famInviteMore => '邀请更多亲友';
+
+  @override
+  String get famInvitesEmpty => '暂无待处理的邀请';
+
+  @override
+  String get famSwitchTitle => '切换家庭';
+
+  @override
+  String famSwitchSubtitle(String callName, String family) {
+    return '你是$family的$callName，也是另一个家庭的亲友。';
+  }
+
+  @override
+  String famSwitchRoleParent(String callName) {
+    return '$callName（爸妈）';
+  }
+
+  @override
+  String famSwitchRoleRelative(String callName) {
+    return '$callName（亲友）';
+  }
+
+  @override
+  String get famSwitchViewing => '正在查看';
+
+  @override
+  String famSwitchFollows(String names) {
+    return '关注宝宝 $names';
+  }
+
+  @override
+  String famSwitchNote(String family) {
+    return '切换后整个应用都会换成所选家庭。在$family，你只能看到分享给你的宝宝照片——没有照顾宝宝和 Papa & Mama。每个账户只能是一个家庭的爸妈。';
+  }
+
+  @override
+  String famSwitchMock(String family) {
+    return '示例中只有$family的数据。';
+  }
+
+  @override
+  String get setAiMaster => '使用 AI 辅助';
+
+  @override
+  String get setAiMasterHint => 'AI 仅在你点按时运行。所有结果都是草稿，可修改、舍弃或保存。';
+
+  @override
+  String get setAiQuotaLabel => '本月剩余 AI 次数';
+
+  @override
+  String setAiQuotaTotal(int total) {
+    return '/ $total 次';
+  }
+
+  @override
+  String setAiRenews(String date) {
+    return '$date 重置';
+  }
+
+  @override
+  String setAiPlanQuota(String plan, int total) {
+    return '$plan · 全家每月 $total 次';
+  }
+
+  @override
+  String get setAiFeatures => '各项功能';
+
+  @override
+  String get setAiDataSection => '发送的数据';
+
+  @override
+  String get setAiData1 => '只发送各功能列出的内容，且仅限你点按的那一次。';
+
+  @override
+  String get setAiData2 => 'AI 不读取私人日记，不做诊断，也不会擅自给任何人发消息。';
+
+  @override
+  String get setAiData3 => '首次使用各项功能时，应用会先征得你的同意。';
+
+  @override
+  String get setAiData4 => '所有草稿都带有“✨ AI 建议”标签。';
+
+  @override
+  String get setAiDataLink => '查看发送给 AI 服务商的数据详情';
+
+  @override
+  String get setAiReport => '举报 AI 内容';
+
+  @override
+  String get setAiFoot => '关闭 AI 后，Baby Family 的所有功能仍可正常使用。';
+
+  @override
+  String get setBlockedBody => '被屏蔽的人无法评论或回应你的内容，你也不会收到与他们相关的通知。';
+
+  @override
+  String setBlockedSection(int count) {
+    return '已屏蔽 · $count 人';
+  }
+
+  @override
+  String setBlockedSince(String date) {
+    return '自 $date 起屏蔽';
+  }
+
+  @override
+  String get setUnblock => '取消屏蔽';
+
+  @override
+  String setUnblocked(String name) {
+    return '已取消屏蔽 $name';
+  }
+
+  @override
+  String get setUnblockInfo => '取消屏蔽后，此人可以像以前一样评论和回应你的内容。你可以随时在其主页再次屏蔽。';
+
+  @override
+  String get setBlockedPartnerNote =>
+      'Papa 和 Mama 在应用中不能互相屏蔽。如需安静一下，可以在 Papa & Mama 中关闭心情分享。';
+
+  @override
+  String get setBlockedEmpty => '你还没有屏蔽任何人';
+
+  @override
+  String get commonDeleteForever => '永久删除';
+
+  @override
+  String memTrashInfo(int days) {
+    return '已删除的回忆会保留 $days 天后才彻底删除。你能看到家里所有被删除的回忆。';
+  }
+
+  @override
+  String memTrashInfoOwn(int days) {
+    return '已删除的回忆会保留 $days 天后才彻底删除。你能看到自己删除的回忆。';
+  }
+
+  @override
+  String memTrashCount(int count) {
+    return '$count 条回忆';
+  }
+
+  @override
+  String memTrashDeletedBy(String callName, String date) {
+    return '$callName 于 $date 删除 ·';
+  }
+
+  @override
+  String get memTrashFootnote => '恢复后，回忆会回到时间线上原来的位置，评论和点赞也会一起恢复。';
+
+  @override
+  String get memTrashEmpty => '回收站是空的';
+
+  @override
+  String memTrashEmptyHint(int days) {
+    return '你删除的回忆会在这里保留 $days 天，方便你改变主意。';
+  }
+
+  @override
+  String memTrashRestored(String title) {
+    return '已恢复“$title”';
+  }
+
+  @override
+  String get memTrashDeleted => '已永久删除';
+
+  @override
+  String get memTrashConfirmTitle => '永久删除这条回忆？';
+
+  @override
+  String get memTrashConfirmBody => '这条回忆的照片、评论和点赞将彻底消失，之后无法恢复。';
+
+  @override
+  String get memTrashKeep => '保留在回收站';
+
+  @override
+  String memCommentCount(int count) {
+    return '$count 条评论';
+  }
+
+  @override
+  String memHeartCount(int count) {
+    return '$count 个点赞';
+  }
+
+  @override
+  String get memMoveToTrash => '删除回忆';
+
+  @override
+  String memMovedToTrash(int days) {
+    return '已移至回收站 · 保留 $days 天';
+  }
+
+  @override
+  String get memMoveToTrashTitle => '删除这条回忆？';
+
+  @override
+  String memMoveToTrashBody(int days) {
+    return '回忆会在回收站保留 $days 天，期间可以恢复。';
+  }
+
+  @override
+  String get memDraftsSubtitle => '未写完的回忆会在你中途退出时自动保存。只有你能看到草稿。';
+
+  @override
+  String get memDraftsDevice => '本设备';
+
+  @override
+  String get memDraftsCloud => '已保存到账户';
+
+  @override
+  String get memDraftsLocalNote => '本设备上的草稿尚未保存到账户——删除应用后会丢失。';
+
+  @override
+  String get memDraftContinue => '继续编辑';
+
+  @override
+  String memDraftEditedToday(String time) {
+    return '今天 $time 编辑';
+  }
+
+  @override
+  String memDraftEditedYesterday(String time) {
+    return '昨天 $time 编辑';
+  }
+
+  @override
+  String memDraftEditedOn(String date, String time) {
+    return '$date $time 编辑';
+  }
+
+  @override
+  String memDraftSavedOn(String date, String time) {
+    return '$date $time 保存';
+  }
+
+  @override
+  String memDraftSavedOnDevice(String date, String time, String device) {
+    return '$date $time 在 $device 上保存';
+  }
+
+  @override
+  String get memKindMoment => '瞬间';
+
+  @override
+  String memKindVoiceDuration(String duration) {
+    return '语音 $duration';
+  }
+
+  @override
+  String get memDraftsEmpty => '还没有草稿';
+
+  @override
+  String get memDraftsEmptyHint => '编辑时中途退出，回忆会保存在这里。';
+
+  @override
+  String get memDraftDeleted => '草稿已删除';
+
+  @override
+  String get memDraftSaved => '已存入草稿';
+
+  @override
+  String get memDraftView => '查看草稿';
+
+  @override
+  String get memShortcutTrash => '回收站';
+
+  @override
+  String get memShortcutDrafts => '草稿';
+
+  @override
+  String get memShortcutPending => '待审核照片';
+
+  @override
+  String memPendingSubtitle(String partner) {
+    return '亲人发的照片需你或$partner审核后才会对全家显示。等待期间只有发布者和父母能看到。';
+  }
+
+  @override
+  String get memPendingKids => '照片中的宝宝';
+
+  @override
+  String get memPendingAudience => '谁能看到';
+
+  @override
+  String get memPendingReject => '拒绝';
+
+  @override
+  String get memPendingApprove => '通过并显示';
+
+  @override
+  String get memPendingRejectReason => '拒绝原因（可选）';
+
+  @override
+  String memPendingRejectHint(String name) {
+    return '$name会收到这条温和的留言。照片不会对其他人显示。';
+  }
+
+  @override
+  String get memPendingRejectSend => '拒绝照片';
+
+  @override
+  String memPendingWaited(int count) {
+    return '已等待 $count 天';
+  }
+
+  @override
+  String get memPendingEmpty => '没有待审核的照片';
+
+  @override
+  String get memPendingEmptyHint => '亲人为孩子发的照片会显示在这里等你审核。';
+
+  @override
+  String get memPendingApproved => '已通过——照片已对全家显示';
+
+  @override
+  String get memPendingRejected => '已拒绝照片';
+
+  @override
+  String memPendingAddChild(String name) {
+    return '添加$name';
+  }
+
+  @override
+  String get rptTitleMemory => '举报这条回忆';
+
+  @override
+  String get rptTitleComment => '举报这条评论';
+
+  @override
+  String rptTitlePerson(String name) {
+    return '举报$name';
+  }
+
+  @override
+  String get rptSubtitle => '告诉我们哪里不对。Baby Family 安全团队会进行审查。';
+
+  @override
+  String get rptNoteHint => '补充说明（可选）…';
+
+  @override
+  String get rptHideMemory => '立即对我隐藏这条回忆';
+
+  @override
+  String get rptHideComment => '立即对我隐藏这条评论';
+
+  @override
+  String get rptHidePerson => '立即对我隐藏此人';
+
+  @override
+  String get rptRemoveContent => '从家庭中移除';
+
+  @override
+  String get rptRemoveContentHint => '仅限父母 · 回忆将不再对任何人显示';
+
+  @override
+  String get rptRemovePerson => '移除亲人';
+
+  @override
+  String rptRemovePersonHint(String name) {
+    return '仅限父母 · $name将无法再查看孩子的照片';
+  }
+
+  @override
+  String get rptSend => '提交举报';
+
+  @override
+  String get rptSentTitle => '举报已提交';
+
+  @override
+  String get rptSentBodyHidden => '感谢你的反馈。该回忆已暂时隐藏，将在24小时内审核。处理完成后我们会通知你。';
+
+  @override
+  String get rptSentBody => '感谢你的反馈。我们会尽快审核，处理完成后会通知你。';
+
+  @override
+  String get rptCodeLabel => '举报编号';
+
+  @override
+  String get rptStatusReviewing => '审核中';
+
+  @override
+  String get rptStatusResolved => '已处理';
+
+  @override
+  String get rptTrack => '在 设置 › 我的举报 中查看进度';
+
+  @override
+  String get rptDone => '完成';
+
+  @override
+  String rptBlockTitle(String name) {
+    return '屏蔽$name？';
+  }
+
+  @override
+  String rptBlockEffectComment(String name) {
+    return '$name将无法再评论或点赞你的回忆。';
+  }
+
+  @override
+  String rptBlockEffectNotify(String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': '她',
+      'grandpa': '他',
+      'other': '对方',
+    });
+    return '$_temp0不会收到与你有关的通知。';
+  }
+
+  @override
+  String rptBlockEffectStay(String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': '她',
+      'grandpa': '他',
+      'other': '对方',
+    });
+    return '$_temp0仍在家庭中，仍能看到共享的孩子照片。';
+  }
+
+  @override
+  String rptBlockRemove(String name) {
+    return '同时将$name移出家庭';
+  }
+
+  @override
+  String rptBlockRemoveHint(String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': '她',
+      'grandpa': '他',
+      'other': '对方',
+    });
+    return '如果你不希望$_temp0再看孩子的照片，请选择此项。';
+  }
+
+  @override
+  String get rptBlockConfirm => '屏蔽';
+
+  @override
+  String rptBlockDone(String name) {
+    return '已屏蔽$name';
+  }
+
+  @override
+  String rptBlockMenu(String name) {
+    return '屏蔽$name';
+  }
+
+  @override
+  String chdArchiveAddedBy(String birth, String callName, String date) {
+    return '出生于 $birth · $callName 于 $date 添加';
+  }
+
+  @override
+  String chdArchiveBorn(String birth) {
+    return '出生于 $birth';
+  }
+
+  @override
+  String chdArchiveDuplicate(String name) {
+    return '可能与$name重复';
+  }
+
+  @override
+  String chdArchiveSection(String name) {
+    return '归档$name后';
+  }
+
+  @override
+  String chdArchiveEffectHide(String name) {
+    return '$name会从宝宝切换、首页和回忆中隐藏。';
+  }
+
+  @override
+  String chdArchiveEffectPrivate(int count, String name) {
+    return '仅标记$name的 $count 条回忆也会隐藏。';
+  }
+
+  @override
+  String chdArchiveEffectShared(int count, String others) {
+    return '与$others共同的 $count 条回忆仍显示在$others的页面。';
+  }
+
+  @override
+  String get chdArchiveEffectRestore => '随时可在 孩子 › 已归档 中恢复。';
+
+  @override
+  String chdArchiveAction(String name) {
+    return '归档$name';
+  }
+
+  @override
+  String get chdArchiveDeleteSection => '永久删除';
+
+  @override
+  String chdArchiveLockedTitle(int days) {
+    return '需归档至少 $days 天';
+  }
+
+  @override
+  String chdArchiveLockedBody(String date, String name) {
+    return '为避免误删，若今天归档，可于 $date 起删除。仅属于$name的内容会进入回收站保留30天。';
+  }
+
+  @override
+  String chdArchiveLockedBodyArchived(String date, String name) {
+    return '为避免误删，可于 $date 起删除。仅属于$name的内容会进入回收站保留30天。';
+  }
+
+  @override
+  String chdArchived(String name) {
+    return '已归档$name';
+  }
+
+  @override
+  String chdRestored(String name) {
+    return '已恢复$name';
+  }
+
+  @override
+  String chdDeleteTitle(String name) {
+    return '永久删除$name';
+  }
+
+  @override
+  String chdDeleteArchivedName(String name) {
+    return '$name · 已归档';
+  }
+
+  @override
+  String chdDeleteArchivedFor(int days, String date) {
+    return '已归档 $days 天 · 自 $date';
+  }
+
+  @override
+  String chdDeleteEnough(int days) {
+    return '已满 $days 天';
+  }
+
+  @override
+  String chdDeleteEffectTrash(int count, String name) {
+    return '仅属于$name的 $count 条回忆会进入回收站30天，之后彻底删除。';
+  }
+
+  @override
+  String chdDeleteEffectShared(String others) {
+    return '与$others共同的回忆仍保留在$others的页面。';
+  }
+
+  @override
+  String get chdDeleteStep1 => '确认 1/2';
+
+  @override
+  String chdDeleteConfirm1(String name) {
+    return '我明白$name将被删除，且此档案无法恢复。';
+  }
+
+  @override
+  String get chdDeleteStep2 => '确认 2/2 · 输入宝宝名字';
+
+  @override
+  String chdDeleteHint(String name) {
+    return '准确输入“$name”以解锁删除按钮。';
+  }
+
+  @override
+  String chdDeleteAction(String name) {
+    return '永久删除$name';
+  }
+
+  @override
+  String chdDeleteRestoreInstead(String name) {
+    return '改为恢复$name';
+  }
+
+  @override
+  String chdDeleted(String name) {
+    return '已删除$name';
+  }
+
+  @override
+  String cirChildTomorrow(int months) {
+    return '🎉 明天满 $months 个月';
+  }
+
+  @override
+  String get cirChildFirsts => '宝贝的第一次';
+
+  @override
+  String get cirChildMemories => '宝贝的回忆';
+
+  @override
+  String cirChildMonth(int month) {
+    return '第 $month 个月';
+  }
+
+  @override
+  String cirChildMonthRange(String start, String end) {
+    return '· $start – $end';
+  }
+
+  @override
+  String get cirChildEmpty => '还没有宝贝的回忆';
+
+  @override
+  String cirDetailDownloadOff(String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': '您',
+      'grandpa': '您',
+      'other': '你',
+    });
+    return '下载照片：父母尚未为$_temp0开启';
+  }
+
+  @override
+  String cirDetailAuthorAge(String name, String age) {
+    return '$name $age';
+  }
+
+  @override
+  String get cirDetailLiked => '已点赞';
+
+  @override
+  String cirDetailYou(String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': '您',
+      'grandpa': '您',
+      'other': '你',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String cirDetailReactedBy(String names) {
+    return '$names点了赞';
+  }
+
+  @override
+  String cirDetailWishes(int count) {
+    return '祝福（$count）';
+  }
+
+  @override
+  String get cirDetailWishHint => '给宝贝写句祝福…';
+
+  @override
+  String get cirDetailVoice => '录制语音祝福';
+
+  @override
+  String get cirDetailSend => '发送祝福';
+
+  @override
+  String get cirDetailReported => '举报已提交';
+
+  @override
+  String get cirDetailMissing => '这条回忆已不再共享';
+
+  @override
+  String cirPostSelected(int count) {
+    return '已选照片（$count）';
+  }
+
+  @override
+  String get cirPostWhichKid => '是哪个宝贝的照片？';
+
+  @override
+  String get cirPostDate => '拍摄日期';
+
+  @override
+  String get cirPostMessage => '给宝贝的留言';
+
+  @override
+  String get cirPostMessageHint => '写几句话给宝贝…';
+
+  @override
+  String get cirPostApprovalTitle => '父母审核后才会显示';
+
+  @override
+  String get cirPostApprovalBody => '经宝贝的爸爸或妈妈同意后，照片才会对全家显示。';
+
+  @override
+  String get cirPostSend => '发送照片';
+
+  @override
+  String get cirPostRemovePhoto => '移除照片';
+
+  @override
+  String get cirPostSentTitle => '已发送！';
+
+  @override
+  String get cirPostSentBody => '爸爸/妈妈审核后才会对全家显示。';
+
+  @override
+  String get cirPostPending => '等待爸爸/妈妈审核';
+
+  @override
+  String get cirPostJustSent => '刚刚发送';
+
+  @override
+  String get cirPostBackHome => '返回宝贝页';
+
+  @override
+  String get cirPostMore => '再发照片';
+
+  @override
+  String get cirPostNoKid => '父母尚未为任何宝贝开启发照片权限';
+
+  @override
+  String cirPausedMessage(String family) {
+    return '$family已暂停与亲人分享';
+  }
+
+  @override
+  String get cirPausedSafe => '宝贝的照片依然安全保存';
+
+  @override
+  String cirMeRelation(String relation, String family) {
+    return '$relation · $family';
+  }
+
+  @override
+  String cirMeTextPreview(String name, String who) {
+    return '$name有新照片啦，快来看看吧 🌸';
+  }
+
+  @override
+  String get cirMeInstant => '有新照片时立即通知';
+
+  @override
+  String get cirMeDigest => '每日简报';
+
+  @override
+  String cirMeDigestHint(String time) {
+    return '$time 发送 · 汇总当天新照片';
+  }
+
+  @override
+  String get cirMeSwitchFamily => '切换家庭';
+
+  @override
+  String cirMeViewing(String family) {
+    return '正在查看：$family';
+  }
+
+  @override
+  String cirLeaveTitle(String family) {
+    return '离开$family';
+  }
+
+  @override
+  String cirLeaveBody(String who, String inviter) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': '您',
+      'grandpa': '您',
+      'other': '你',
+    });
+    return '$_temp0将无法再查看和评论宝贝的照片。想回来时，请$inviter重新发送邀请。';
+  }
+
+  @override
+  String cirLeaveFollowing(String who, String names) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': '您',
+      'grandpa': '您',
+      'other': '你',
+    });
+    return '$_temp0正在关注$names';
+  }
+
+  @override
+  String cirLeavePosted(String who, int photos, int comments) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': '您',
+      'grandpa': '您',
+      'other': '你',
+    });
+    return '$_temp0发布的内容 · $photos 张照片，$comments 条评论';
+  }
+
+  @override
+  String get cirLeaveKeep => '保留给家人';
+
+  @override
+  String cirLeaveKeepHint(String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': '您',
+      'grandpa': '您',
+      'other': '你',
+    });
+    return '家人仍能看到$_temp0的照片和留言。（默认）';
+  }
+
+  @override
+  String get cirLeaveRemove => '全部移除';
+
+  @override
+  String cirLeaveRemoveHint(String who, String family) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': '您',
+      'grandpa': '您',
+      'other': '你',
+    });
+    return '$_temp0的照片和评论将从$family移除。';
+  }
+
+  @override
+  String cirLeaveNotice(String inviter, String name, String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': '您',
+      'grandpa': '您',
+      'other': '你',
+    });
+    return '$inviter会收到一条简短通知：“$name已离开家庭。”确认后$_temp0将立即失去查看权限。';
+  }
+
+  @override
+  String get cirLeaveStay => '留下';
+
+  @override
+  String commonListAnd(String list, String last) {
+    return '$list和$last';
+  }
+
+  @override
+  String get commonAiSuggested => 'AI 建议';
+
+  @override
+  String get commonAiReport => '举报 AI 内容';
+
+  @override
+  String get commonAiReported => '谢谢——我们会复查这条 AI 内容。';
+
+  @override
+  String commonWeekRange(String range) {
+    return '$range 这一周';
+  }
+
+  @override
+  String get usOnlyParents => '仅限 Papa 和 Mama';
+
+  @override
+  String get usPartnerLeftTitle => '这个空间需要你们两个人';
+
+  @override
+  String usPartnerLeftBody(String callName, String familyName) {
+    return '$callName 的账户已删除，所以 Papa & Mama 暂时锁定。$familyName 的回忆都还在——你可以随时查看和下载。';
+  }
+
+  @override
+  String usPartnerLeftStateTitle(String familyName) {
+    return '$familyName 目前仅可查看和下载';
+  }
+
+  @override
+  String get usPartnerLeftStateSub => '邀请新的伴侣，继续创建回忆并使用 Papa & Mama。';
+
+  @override
+  String get usPartnerLeftSection => '两个人都在时';
+
+  @override
+  String get usPartnerLeftCheckinSub => '我今天怎么样';
+
+  @override
+  String get usPartnerLeftRequestSub => '互相请求，没有压力';
+
+  @override
+  String get usPartnerLeftThanksSub => '记住小事';
+
+  @override
+  String get usPartnerLeftJournalSub => '只有你能看';
+
+  @override
+  String get usPartnerLeftPrivacy => '祖父母和亲友永远看不到 Papa & Mama 里的内容。';
+
+  @override
+  String get usPartnerLeftInvite => '邀请伴侣加入';
+
+  @override
+  String usCheckinAnnoyedPartner(String callName) {
+    return '对 $callName 不满';
+  }
+
+  @override
+  String get usBridgeAskTitle => '要使用“心桥”吗？';
+
+  @override
+  String usBridgeAskBody(String callName) {
+    return '还没有发送任何内容给 $callName。“心桥”帮助你们说清感受，一起选一个小步骤——从私密的一步开始。';
+  }
+
+  @override
+  String get usBridgeAskOpen => '打开心桥';
+
+  @override
+  String usBridgeStepKicker(int step, int total) {
+    return '心桥 · 第 $step/$total 步';
+  }
+
+  @override
+  String usBridgeFeelSub(String callName) {
+    return '选择一种或几种感受。还没有发送任何内容给 $callName。';
+  }
+
+  @override
+  String get usBridgeTopicTitle => '这件事关于…';
+
+  @override
+  String usBridgeTopicSub(String callName) {
+    return '可选——你可以跳过。还没有发送任何内容给 $callName。';
+  }
+
+  @override
+  String get usBridgeNeedTitle => '此刻我需要…';
+
+  @override
+  String usBridgeNeedSub(String callName) {
+    return '选择一项或几项。还没有发送任何内容给 $callName。';
+  }
+
+  @override
+  String get usBridgeFeltLabel => '我感到';
+
+  @override
+  String get usBridgeAboutLabel => '关于';
+
+  @override
+  String get usBridgeDraftLabel => '私人草稿（可选）';
+
+  @override
+  String usBridgeDraftCount(int count, int max) {
+    return '$count/$max';
+  }
+
+  @override
+  String get usBridgeDraftHint => '写下你的想法——只有你能看。';
+
+  @override
+  String get usBridgeDraftNote => '这份草稿永远不会被原样或自动发送。';
+
+  @override
+  String get usBridgeUnsafe => '我感到不安全';
+
+  @override
+  String get usBridgeChoiceTitle => '你想怎么处理这些内容？';
+
+  @override
+  String usBridgeChoiceSub(String callName) {
+    return '由你决定。还没有发送任何内容给 $callName。';
+  }
+
+  @override
+  String get usBridgeKeepPrivateDesc => '到此为止，就像一页日记。';
+
+  @override
+  String get usBridgeRewriteOption => '发送前改写';
+
+  @override
+  String get usBridgeRewriteOptionDesc => '选一句话，用更温和的方式改写。';
+
+  @override
+  String get usBridgeShareOption => '选择要分享的内容';
+
+  @override
+  String usBridgeShareOptionDesc(String callName) {
+    return '选择 $callName 会看到的感受和需要。';
+  }
+
+  @override
+  String get usBridgeKeptPrivate => '已保持私密——只有你能看到。';
+
+  @override
+  String usBridgePreviewTitle(String callName) {
+    return '预览 $callName 会收到的内容';
+  }
+
+  @override
+  String get usBridgePreviewSub => '只会发送你选中的内容。你的私人草稿仍然保密。';
+
+  @override
+  String get usBridgeFeelShort => '感到';
+
+  @override
+  String get usBridgeNeedShort => '需要';
+
+  @override
+  String get usBridgeMessageLabel => '留言（可选）';
+
+  @override
+  String usBridgeMessageHint(String callName) {
+    return '一句你想让 $callName 读到的话';
+  }
+
+  @override
+  String get usBridgeSendInvite => '发送邀请';
+
+  @override
+  String usBridgeInviteSent(String callName) {
+    return '已向 $callName 发送邀请';
+  }
+
+  @override
+  String get usBridgeRewriteSub => '选一个版本，再按你的意思修改。不会自动发送任何内容。';
+
+  @override
+  String get usBridgeRewriteOriginal => '你的原句';
+
+  @override
+  String usBridgeRewriteTone(String tone) {
+    String _temp0 = intl.Intl.selectLogic(tone, {
+      'neutral': '中性',
+      'warm': '温暖',
+      'other': '简短',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get usBridgeRewriteEdit => '使用前修改';
+
+  @override
+  String get usBridgeRewriteKeep => '保留原句';
+
+  @override
+  String get usBridgeRewriteUse => '用这句';
+
+  @override
+  String get usBridgeRewriteDataNote => '只有你选中的句子会发送给 AI 改写。AI 不会读取你的私人草稿或日记。';
+
+  @override
+  String usBridgeInviteTitle(String callName) {
+    return '$callName 想在你准备好时平静地聊一聊';
+  }
+
+  @override
+  String get usBridgeInviteSub => '一个说清感受、一起选择下一小步的空间。没有输赢。';
+
+  @override
+  String usBridgeInviteShared(String callName) {
+    return '$callName 选择分享';
+  }
+
+  @override
+  String usBridgeInviteSharedSub(String callName) {
+    return '只有这些——其余的 $callName 保密';
+  }
+
+  @override
+  String get usBridgeInviteNote => '进入共同对话前，你也有一个私密步骤来说出感受和需要。';
+
+  @override
+  String get usBridgeJoinNow => '立即加入';
+
+  @override
+  String get usBridgeLaterLabel => '稍后——提醒我';
+
+  @override
+  String get usBridgeLaterCustom => '自选';
+
+  @override
+  String get usBridgeNotReady => '我还没准备好';
+
+  @override
+  String get usBridgeNotReadySub => '邀请会暂停——不会有任何负面通知。';
+
+  @override
+  String get usBridgeRemindSet => '已设置提醒——邀请会保留。';
+
+  @override
+  String get usBridgePaused => '已暂停。你可以随时回来。';
+
+  @override
+  String get usBridgeLive => '进行中';
+
+  @override
+  String usBridgeStartedAt(String time, String date) {
+    return '开始于 $time · $date';
+  }
+
+  @override
+  String get usBridgeSessionIntro => '慢慢读你们选择分享的内容。这里没有对错。';
+
+  @override
+  String usBridgeYouName(String callName) {
+    return '你（$callName）';
+  }
+
+  @override
+  String usBridgeFeels(String callName) {
+    return '$callName 感到';
+  }
+
+  @override
+  String usBridgeNeeds(String callName) {
+    return '$callName 需要';
+  }
+
+  @override
+  String get usBridgeYouPending => '你还没选择';
+
+  @override
+  String get usBridgeYouUnderstood => '你：我理解';
+
+  @override
+  String usBridgePartnerPending(String callName) {
+    return '$callName 还没选择';
+  }
+
+  @override
+  String usBridgePartnerUnderstood(String callName) {
+    return '$callName：我理解';
+  }
+
+  @override
+  String get usBridgeYourTurn => '轮到你了';
+
+  @override
+  String usBridgePartnerReadDone(String callName) {
+    return '$callName 已读完';
+  }
+
+  @override
+  String usBridgeReadQuestion(String callName) {
+    return '你读过 $callName 分享的内容了吗？';
+  }
+
+  @override
+  String get usBridgeClarify => '我需要说清楚些';
+
+  @override
+  String get usBridgeUnderstand => '我理解';
+
+  @override
+  String get usBridgeClarifyNote => '“说清楚些”会多给一次表达机会——发送前你会看到确切内容。';
+
+  @override
+  String get usBridgeLeaveNote => '任何一方都可以随时暂停或离开。';
+
+  @override
+  String usBridgeWaiting(String callName) {
+    return '等待 $callName 读完';
+  }
+
+  @override
+  String usBridgeClarifyTitle(String callName) {
+    return '向 $callName 说清楚些';
+  }
+
+  @override
+  String usBridgeClarifySent(String callName) {
+    return '已发送给 $callName';
+  }
+
+  @override
+  String get usBridgeNextKicker => '心桥 · 你们都理解了';
+
+  @override
+  String get usBridgeNextSub => '选一件你们都能做的事。不需要今天解决所有问题。';
+
+  @override
+  String get usBridgeWhen => '什么时候？';
+
+  @override
+  String get usBridgeWhichChild => '照看哪个宝宝？';
+
+  @override
+  String get usBridgeReminder => '为两人设置提醒';
+
+  @override
+  String usBridgeReminderSub(String time) {
+    return '$time 提醒——只有你们两人可见';
+  }
+
+  @override
+  String get usBridgeNotConfirmed => '未确认';
+
+  @override
+  String get usBridgeAgreed => '已同意';
+
+  @override
+  String get usBridgeConfirmStep => '确认这一步';
+
+  @override
+  String get usBridgeConfirmNote => '两人都确认后这一步才生效。你仍然可以更改选择。';
+
+  @override
+  String get usBridgeCloseTitle => '你们要结束这次对话吗？';
+
+  @override
+  String get usBridgeCloseSub => '只有两人都同意才会结束。';
+
+  @override
+  String usBridgeStepChosen(String when) {
+    return '已选步骤 · $when';
+  }
+
+  @override
+  String usBridgeRelativeWhen(String day, String time) {
+    String _temp0 = intl.Intl.selectLogic(day, {
+      'tonight': '今晚 $time',
+      'lastNight': '昨晚 $time',
+      'today': '今天 $time',
+      'yesterday': '昨天 $time',
+      'other': '$time',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String usBridgePartnerAgreedClose(String callName) {
+    return '$callName 已同意结束';
+  }
+
+  @override
+  String usBridgeThanksLabel(String callName) {
+    return '给 $callName 发一句感谢？（可选）';
+  }
+
+  @override
+  String usBridgeThanksListened(String role) {
+    String _temp0 = intl.Intl.selectLogic(role, {'other': '谢谢你愿意倾听 💛'});
+    return '$_temp0';
+  }
+
+  @override
+  String usBridgeThanksShort(String role) {
+    String _temp0 = intl.Intl.selectLogic(role, {'other': '谢谢你'});
+    return '$_temp0';
+  }
+
+  @override
+  String usBridgeRetention(int days, String date) {
+    return '对话内容将在 $days 天后自动删除，只保留“$date 有过一次心桥对话”这一行。';
+  }
+
+  @override
+  String get usBridgeCloseConfirm => '结束对话';
+
+  @override
+  String get usBridgeCloseLater => '还不，稍后';
+
+  @override
+  String get usBridgeClosed => '心桥对话已结束';
+
+  @override
+  String get usSafetyQuickExit => '快速退出';
+
+  @override
+  String get usSafetyHeadline => '你的安全最重要';
+
+  @override
+  String get usSafetyBody => '你现在不需要当面交谈。如果你或孩子们有危险，请立即拨打下面的号码之一。';
+
+  @override
+  String usSafetyCall(String number) {
+    return '拨打 $number';
+  }
+
+  @override
+  String get usSafetyTrustedTitle => '联系一位你信任的人';
+
+  @override
+  String get usSafetyTrustedSub => '你信任的亲友或邻居';
+
+  @override
+  String get usSafetyPrivateNote => '你刚写的内容会保密，不会发送给任何人。';
+
+  @override
+  String usSafetyNoNotify(String callName) {
+    return '$callName 不会收到关于此页面的任何通知。';
+  }
+
+  @override
+  String get usSafetyNoHistory => '此页面不会记录在对话历史中。';
+
+  @override
+  String get usSafetyKeepPrivate => '保密这些内容';
+
+  @override
+  String get usSafetyDisclaimer => 'Baby Family 不是紧急或治疗服务。此功能永远免费。';
+
+  @override
+  String get usCoupleWeekCheckins => '次签到';
+
+  @override
+  String get usCoupleWeekCheckinsSub => '你们分享了彼此的今天';
+
+  @override
+  String get usCoupleWeekRequests => '个请求得到帮助';
+
+  @override
+  String get usCoupleWeekRequestsSub => '互相接下并完成';
+
+  @override
+  String get usCoupleWeekThanks => '句感谢';
+
+  @override
+  String get usCoupleWeekThanksSub => '这周互相发送';
+
+  @override
+  String get usCoupleWeekTogether => '个共同任务';
+
+  @override
+  String get usCoupleWeekTogetherSub => '来自“我们俩”任务';
+
+  @override
+  String get usCoupleWeekThanksKicker => '本周的一句感谢';
+
+  @override
+  String usCoupleWeekThanksMeta(String callName, String date) {
+    return '$callName · $date';
+  }
+
+  @override
+  String get usCoupleWeekTogetherLabel => '我们一起';
+
+  @override
+  String get usCoupleWeekNote => '没有分数，没有比较——只是你们为彼此做的事。';
+
+  @override
+  String get usCoupleWeekSendThanks => '发一句感谢';
+
+  @override
+  String get recapDayDiscard => '放弃';
+
+  @override
+  String recapDayKicker(String date) {
+    return '今日故事 · $date';
+  }
+
+  @override
+  String recapDayChild(String name, String age) {
+    return '$name · $age';
+  }
+
+  @override
+  String get recapDayRewrite => '重写';
+
+  @override
+  String get recapDayManual => '自己写';
+
+  @override
+  String get recapDayRewritten => '段落已重写';
+
+  @override
+  String get recapDayMemories => '今天的回忆';
+
+  @override
+  String recapDaySelected(int selected, int total) {
+    return '已选 $selected/$total';
+  }
+
+  @override
+  String recapDayItemMeta(String kind, String time) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'photo': '照片',
+      'mission': '任务已完成',
+      'voice': '声音',
+      'quote': '语录',
+      'video': '视频',
+      'other': '回忆',
+    });
+    return '$_temp0 · $time';
+  }
+
+  @override
+  String get recapDayHint => '故事只使用你勾选的回忆。';
+
+  @override
+  String get recapDayPhotos => '附带照片';
+
+  @override
+  String get recapDayWhoSees => '谁能看到';
+
+  @override
+  String get recapDaySave => '保存故事';
+
+  @override
+  String get recapDaySaved => '今日故事已保存';
+
+  @override
+  String get recapDayTitleEdit => '故事标题';
+
+  @override
+  String recapDayOpen(String name) {
+    return '$name 的今日故事';
+  }
+
+  @override
+  String recapMonthHeadline(String name, int month) {
+    return '$name 满 $month 个月啦 🎉';
+  }
+
+  @override
+  String recapMonthRange(int month, String range) {
+    return '第 $month 个月 · $range';
+  }
+
+  @override
+  String recapMonthLabel(int month) {
+    return '第 $month 个月';
+  }
+
+  @override
+  String recapMonthNow(int month) {
+    return '第 $month 个月 · 今天';
+  }
+
+  @override
+  String get recapMonthVoices => '语录和声音';
+
+  @override
+  String get recapMonthVoicesKicker => '语录和声音';
+
+  @override
+  String recapMonthFirstMeta(String age, String date) {
+    return '$age · $date';
+  }
+
+  @override
+  String recapMonthVoiceMeta(String date, String callName) {
+    return '$date · $callName 录制';
+  }
+
+  @override
+  String get careMenuStats => '育儿统计';
+
+  @override
+  String get careStatsDone => '全家完成的任务';
+
+  @override
+  String get careStatsUnit => '件（本周）';
+
+  @override
+  String careStatsCategory(String category) {
+    String _temp0 = intl.Intl.selectLogic(category, {
+      'care': '照顾',
+      'bonding': '亲子',
+      'outing': '外出',
+      'support': '互相支持',
+      'together': '一起',
+      'other': '其他',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get careStatsNote => '“我们俩”任务不计入育儿。';
+
+  @override
+  String careStatsBloomOf(int total) {
+    return '/ $total 天';
+  }
+
+  @override
+  String get careStatsBloomLabel => '我们家的树开花了';
+
+  @override
+  String get careStatsDisclaimer => '仅基于应用中记录的活动。父母为彼此做的很多事，应用都数不过来。';
+
+  @override
+  String get careStatsPrivacy => '只有 Papa 和 Mama 能看到这些统计';
+
+  @override
+  String get commonPrevWeek => '上一周';
+
+  @override
+  String get commonNextWeek => '下一周';
+
+  @override
+  String memPendingNotify(String name, int count, String child) {
+    return '$name刚发布了$child的 $count 张照片——等待你审核';
+  }
 }

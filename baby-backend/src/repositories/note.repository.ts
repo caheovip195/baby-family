@@ -19,11 +19,12 @@ export class NoteRepository implements INoteRepository {
     const [rows, total] = await this.prisma.$transaction(
       [
         this.prisma.note.findMany({
+          where: { deletedAt: null },
           skip: (input.page - 1) * input.limit,
           take: input.limit,
           orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         }),
-        this.prisma.note.count(),
+        this.prisma.note.count({ where: { deletedAt: null } }),
       ],
       { isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead },
     );
@@ -35,7 +36,9 @@ export class NoteRepository implements INoteRepository {
   }
 
   async findById(id: string): Promise<Note | null> {
-    const row = await this.prisma.note.findUnique({ where: { id } });
+    const row = await this.prisma.note.findUnique({
+      where: { id, deletedAt: null },
+    });
     return row ? new Note(row) : null;
   }
 
@@ -46,7 +49,10 @@ export class NoteRepository implements INoteRepository {
 
   async update(id: string, input: UpdateNoteDto): Promise<Note | null> {
     try {
-      const row = await this.prisma.note.update({ where: { id }, data: input });
+      const row = await this.prisma.note.update({
+        where: { id, deletedAt: null },
+        data: input,
+      });
       return new Note(row);
     } catch (error) {
       if (
@@ -60,7 +66,10 @@ export class NoteRepository implements INoteRepository {
 
   async remove(id: string): Promise<boolean> {
     try {
-      await this.prisma.note.delete({ where: { id } });
+      await this.prisma.note.update({
+        where: { id, deletedAt: null },
+        data: { deletedAt: new Date() },
+      });
       return true;
     } catch (error) {
       if (

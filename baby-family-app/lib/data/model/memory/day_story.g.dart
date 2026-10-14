@@ -22,6 +22,11 @@ _DayStory _$DayStoryFromJson(Map<String, dynamic> json) => _DayStory(
           ?.map((e) => e as String)
           .toList() ??
       const [],
+  photoOptions:
+      (json['photoOptions'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      const [],
   coverAsset: json['coverAsset'] as String?,
   visibility:
       $enumDecodeNullable(_$MemoryVisibilityEnumMap, json['visibility']) ??
@@ -36,6 +41,7 @@ Map<String, dynamic> _$DayStoryToJson(_DayStory instance) => <String, dynamic>{
   'aiGenerated': instance.aiGenerated,
   'items': instance.items.map((e) => e.toJson()).toList(),
   'photoAssets': instance.photoAssets,
+  'photoOptions': instance.photoOptions,
   'coverAsset': instance.coverAsset,
   'visibility': _$MemoryVisibilityEnumMap[instance.visibility]!,
 };

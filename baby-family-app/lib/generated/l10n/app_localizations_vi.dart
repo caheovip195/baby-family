@@ -6209,4 +6209,2022 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get settingsBlockedTitle => 'Người bị chặn';
+
+  @override
+  String get subPlanActive => 'Đang hoạt động';
+
+  @override
+  String get subPlanAutoRenew => 'Gia hạn tự động';
+
+  @override
+  String get subPlanPayer => 'Người thanh toán';
+
+  @override
+  String get subPlanChannel => 'Kênh mua';
+
+  @override
+  String get subPlanAppliesTo => 'Áp dụng cho';
+
+  @override
+  String subPlanWholeFamily(String family) {
+    return 'Cả $family';
+  }
+
+  @override
+  String subPlanGb(String value) {
+    return '$value GB';
+  }
+
+  @override
+  String subPlanUsedOf(String total) {
+    return 'đã dùng / $total GB';
+  }
+
+  @override
+  String subPlanStorageKind(String kind, String size) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'photo': 'Ảnh',
+      'video': 'Video',
+      'audio': 'Âm thanh',
+      'other': 'Khác',
+    });
+    return '$_temp0 · $size GB';
+  }
+
+  @override
+  String get subPlanIncluded => 'Trong gói của nhà mình';
+
+  @override
+  String get subPlanRelatives => 'Người thân';
+
+  @override
+  String subPlanSlots(int used, int max) {
+    return '$used/$max';
+  }
+
+  @override
+  String get subPlanAi => 'Lượt AI tháng này';
+
+  @override
+  String subPlanAiRenews(String date) {
+    return 'Làm mới vào $date';
+  }
+
+  @override
+  String subPlanAiLeft(int remaining, int total) {
+    return 'Còn $remaining/$total';
+  }
+
+  @override
+  String get subPlanVideo => 'Video tối đa';
+
+  @override
+  String subPlanVideoHint(int count) {
+    return 'Ảnh gốc · $count ảnh mỗi ký ức';
+  }
+
+  @override
+  String subPlanVideoHintCompressed(int count) {
+    return '$count ảnh mỗi ký ức';
+  }
+
+  @override
+  String subPlanMinutes(int count) {
+    return '$count phút';
+  }
+
+  @override
+  String subPlanManageStore(String channel) {
+    return 'Quản lý trong $channel';
+  }
+
+  @override
+  String get subPlanChange => 'Đổi gói';
+
+  @override
+  String subPlanNote(String channel, String payer, String partner) {
+    return 'Gói nằm trong tài khoản $channel của $payer nên chỉ $payer đổi hoặc huỷ được. $partner sẽ thấy hướng dẫn nhờ $payer. Huỷ bất kỳ lúc nào trong cài đặt $channel — ký ức của nhà mình không bị xoá.';
+  }
+
+  @override
+  String subManageStoreMock(String channel) {
+    return 'Bản mẫu: trang quản lý gói của $channel chỉ được mô phỏng.';
+  }
+
+  @override
+  String get subUpgradeTitle => 'Nâng cấp lên Family để mời ông bà';
+
+  @override
+  String subUpgradeSubtitle(String payer, String channel) {
+    return 'Nhà mình đang dùng gói House · $payer thanh toán qua $channel. Family mở thêm ông bà, người thân và dung lượng lớn hơn.';
+  }
+
+  @override
+  String get subCmpRelatives => 'Ông bà, người thân';
+
+  @override
+  String get subCmpPhotos => 'Ảnh mỗi ký ức';
+
+  @override
+  String get subCmpVideo => 'Video';
+
+  @override
+  String get subCmpVoice => 'Ghi âm';
+
+  @override
+  String get subCmpOriginal => 'Lưu ảnh chất lượng gốc';
+
+  @override
+  String get subCmpAi => 'Lượt AI mỗi tháng';
+
+  @override
+  String get subCmpDigest => 'Bản tin, duyệt ảnh người thân';
+
+  @override
+  String get subCmpNone => '—';
+
+  @override
+  String get subCmpYes => 'Có';
+
+  @override
+  String subCmpUpTo(int count) {
+    return 'Tối đa $count';
+  }
+
+  @override
+  String subCmpMaxMinutes(int count) {
+    return '≤ $count phút';
+  }
+
+  @override
+  String get subUpgradeCurrent => 'Hiện tại';
+
+  @override
+  String subUpgradeProrate(String channel) {
+    return 'Nâng cấp có hiệu lực ngay. $channel tự tính phần chênh lệch cho thời gian còn lại của gói House — bạn không phải trả lại cả năm.';
+  }
+
+  @override
+  String subUpgradeCta(String price) {
+    return 'Nâng cấp lên Family · $price';
+  }
+
+  @override
+  String get subUpgradeLegal =>
+      'Tự động gia hạn hằng năm, huỷ bất kỳ lúc nào trong cài đặt App Store. Điều khoản · Quyền riêng tư · Khôi phục giao dịch';
+
+  @override
+  String subUpgradeNotPayerLabel(String partner) {
+    return '$partner sẽ thấy (không phải người thanh toán)';
+  }
+
+  @override
+  String subUpgradeNotPayerBody(String payer) {
+    return 'Gói House đang do $payer thanh toán. Để tránh trả 2 lần, hãy nhờ $payer nâng cấp.';
+  }
+
+  @override
+  String subUpgradeAskPayer(String payer) {
+    return 'Gửi lời nhắn cho $payer';
+  }
+
+  @override
+  String subUpgradeAskSent(String payer) {
+    return 'Đã gửi lời nhắn cho $payer';
+  }
+
+  @override
+  String subConfirmTitle(String plan) {
+    return 'Xác nhận gói $plan';
+  }
+
+  @override
+  String subConfirmAudienceFamily(String family, String papa, String mama) {
+    return 'Cho cả $family · $papa, $mama và người thân';
+  }
+
+  @override
+  String subConfirmAudienceHouse(String family, String papa, String mama) {
+    return 'Cho cả $family · $papa & $mama';
+  }
+
+  @override
+  String get subConfirmPrice => 'Giá';
+
+  @override
+  String get subConfirmMonthly => 'Quy đổi';
+
+  @override
+  String get subConfirmCycle => 'Chu kỳ';
+
+  @override
+  String get subConfirmCycleValue => '1 năm · tự động gia hạn';
+
+  @override
+  String get subConfirmEffective => 'Hiệu lực';
+
+  @override
+  String get subConfirmEffectiveValue => 'Ngay khi App Store xác nhận';
+
+  @override
+  String get subConfirmPayVia => 'Thanh toán qua';
+
+  @override
+  String get subConfirmPayViaValue => 'Tài khoản App Store của bạn';
+
+  @override
+  String subConfirmRelatives(int count) {
+    return 'Mời ngay tối đa $count ông bà, người thân';
+  }
+
+  @override
+  String subConfirmLimits(int storage, int video, String original) {
+    String _temp0 = intl.Intl.selectLogic(original, {
+      'yes': ' · lưu ảnh gốc',
+      'other': '',
+    });
+    return '$storage GB · video ≤ $video phút$_temp0';
+  }
+
+  @override
+  String get subConfirmTrialNote =>
+      'Thời gian dùng thử còn lại không cộng dồn — chu kỳ năm tính từ hôm nay';
+
+  @override
+  String get subConfirmCta => 'Tiếp tục với App Store';
+
+  @override
+  String get subConfirmLegal =>
+      'Bước tiếp theo là bảng thanh toán của App Store. Tự động gia hạn hằng năm, huỷ bất kỳ lúc nào trong cài đặt App Store.';
+
+  @override
+  String get subLinkTerms => 'Điều khoản';
+
+  @override
+  String subLimitVideoTitle(int minutes) {
+    return 'Video này dài $minutes phút';
+  }
+
+  @override
+  String subLimitVideoBody(String plan, int max) {
+    return '$plan lưu được video tối đa $max phút mỗi video. Bạn có thể cắt ngắn lại, hoặc giữ khoảnh khắc này bằng lời kể.';
+  }
+
+  @override
+  String get subLimitSafe =>
+      'Ký ức của bạn vẫn an toàn — chưa có gì bị xoá, nội dung đang soạn vẫn được giữ nguyên.';
+
+  @override
+  String subLimitTrim(int max) {
+    return 'Cắt video còn $max phút';
+  }
+
+  @override
+  String get subLimitPickAnother => 'Chọn video khác';
+
+  @override
+  String get subLimitSaveDiary => 'Lưu dạng nhật ký chữ';
+
+  @override
+  String get subLimitTopPlan =>
+      'Nhà mình đang dùng gói cao nhất (Family) nên không cần nâng cấp thêm.';
+
+  @override
+  String get subLimitUpgrade => 'Nâng cấp lên Family';
+
+  @override
+  String subLimitTrimmed(int max) {
+    return 'Đã cắt video còn $max phút';
+  }
+
+  @override
+  String get subIssueTitle => 'Thanh toán gia hạn chưa thành công';
+
+  @override
+  String subIssueBody(String plan) {
+    return 'Kiểm tra phương thức thanh toán để không gián đoạn. $plan của nhà mình vẫn hoạt động trong lúc này.';
+  }
+
+  @override
+  String get subIssueAction => 'Kiểm tra trong App Store';
+
+  @override
+  String get invInvalidTipMessage =>
+      'Nhắn cho người đã mời bạn (Bố/Mẹ của bé) để họ tạo lời mời mới.';
+
+  @override
+  String get invInvalidTipCode =>
+      'Nếu đã có mã 8 ký tự mới, bạn có thể nhập mã ngay.';
+
+  @override
+  String get invEnterOtherCode => 'Nhập mã mời khác';
+
+  @override
+  String invElsewhereTitle(String callName) {
+    return 'Bạn đang là $callName ở một gia đình khác';
+  }
+
+  @override
+  String get invElsewhereBody =>
+      'Mỗi tài khoản chỉ là Bố/Mẹ của một gia đình, nên bạn chưa thể nhận lời mời này.';
+
+  @override
+  String invElsewhereInvite(String inviter, String family) {
+    return '$inviter mời bạn tham gia $family';
+  }
+
+  @override
+  String invElsewhereRole(String callName) {
+    return 'Vai trò đề xuất: $callName của các bé';
+  }
+
+  @override
+  String get invElsewhereJoinRelative => 'Tham gia như người thân';
+
+  @override
+  String invElsewhereJoinRelativeHint(String inviter) {
+    return 'Không khả dụng — lời mời này dành cho Bố/Mẹ. Nhờ $inviter gửi lời mời người thân nếu bạn muốn xem các bé.';
+  }
+
+  @override
+  String get invElsewhereLeave => 'Tìm hiểu cách rời gia đình hiện tại';
+
+  @override
+  String get invElsewhereLeaveHint =>
+      'Các lựa chọn cho Bố/Mẹ và cách nhờ hỗ trợ';
+
+  @override
+  String get invWaitingTitle => 'Đã gửi yêu cầu';
+
+  @override
+  String invWaitingBody(String inviter) {
+    return '$inviter sẽ xác nhận để hoàn tất. Bạn có thể đóng app — mình sẽ báo ngay khi xong.';
+  }
+
+  @override
+  String invWaitingStepJoined(String family) {
+    return 'Bạn đã nhận lời mời vào $family';
+  }
+
+  @override
+  String invWaitingStepRole(String callName) {
+    return 'Vai trò: $callName của các bé';
+  }
+
+  @override
+  String invWaitingStepConfirm(String inviter) {
+    return 'Chờ $inviter xác nhận';
+  }
+
+  @override
+  String invWaitingStepConfirmHint(String inviter) {
+    return '$inviter bật “xác nhận lần cuối” để chắc đúng người';
+  }
+
+  @override
+  String get invWaitingStepTrial =>
+      'Nhà mình bắt đầu 3 tháng dùng thử miễn phí';
+
+  @override
+  String get invWaitingNotice => 'Bạn sẽ nhận thông báo “Chào mừng về nhà!”';
+
+  @override
+  String famPartnerLeftBanner(String partner, String family) {
+    return '$partner đã rời $family (xoá tài khoản). Nhà mình đang ở chế độ chỉ xem & tải về cho tới khi có bạn đời mới.';
+  }
+
+  @override
+  String get famPartnerInviteSubtitle =>
+      'Khi bạn đời tham gia, cả nhà lại cùng tạo ký ức, nhiệm vụ và góc Papa & Mama như trước.';
+
+  @override
+  String get famPartnerInviteRole => 'Mời với vai trò';
+
+  @override
+  String get famPartnerRecipientSees => 'Người nhận sẽ thấy trước khi tham gia';
+
+  @override
+  String famPartnerRecipientHint(String name, String callName) {
+    return 'Lời mời từ $name ($callName) · chỉ tên và ảnh đại diện các bé';
+  }
+
+  @override
+  String get famPartnerRevoke => 'Thu hồi lời mời';
+
+  @override
+  String get famPartnerRevoked => 'Đã thu hồi lời mời';
+
+  @override
+  String famInvitesCapacity(String family, int active, int pending) {
+    return 'Người thân $family: $active đang tham gia · $pending đang chờ';
+  }
+
+  @override
+  String get famInvitesPending => 'Đang chờ';
+
+  @override
+  String get famInvitesExpired => 'Đã hết hạn';
+
+  @override
+  String get famInviteNotOpened => 'Chưa mở link';
+
+  @override
+  String get famInviteOpened => 'Đã mở link';
+
+  @override
+  String get famInviteExpiredTag => 'Hết hạn';
+
+  @override
+  String get famInviteKindRelative => 'Lời mời người thân';
+
+  @override
+  String get famInvitePermView => 'Xem';
+
+  @override
+  String get famInvitePermComment => 'Xem + Bình luận';
+
+  @override
+  String get famInvitePermPost => 'Xem + Bình luận + Đăng ảnh';
+
+  @override
+  String famInviteDates(String created, String expires, String daysLeft) {
+    return 'Tạo $created · hết hạn $expires · $daysLeft';
+  }
+
+  @override
+  String famInviteDaysLeft(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'còn $count ngày',
+      zero: 'hết hạn hôm nay',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String famInviteExpiredOn(String date) {
+    return 'Hết hạn $date · link không còn mở được';
+  }
+
+  @override
+  String get famInviteResend => 'Gửi lại link';
+
+  @override
+  String get famInviteRevoke => 'Thu hồi';
+
+  @override
+  String get famInviteRenew => 'Tạo lời mời mới';
+
+  @override
+  String famInviteResent(String callName) {
+    return 'Đã gửi lại link cho $callName';
+  }
+
+  @override
+  String famInviteRevokedName(String callName) {
+    return 'Đã thu hồi lời mời của $callName';
+  }
+
+  @override
+  String famInviteRenewed(String callName) {
+    return 'Đã tạo lời mời mới cho $callName';
+  }
+
+  @override
+  String get famInvitesRules =>
+      'Lời mời người thân hết hạn sau 14 ngày và chỉ dùng 1 lần. Thu hồi để link cũ không mở được nữa. Tối đa 12 người thân, tính cả lời mời đang chờ.';
+
+  @override
+  String get famInviteMore => 'Mời thêm người thân';
+
+  @override
+  String get famInvitesEmpty => 'Chưa có lời mời nào đang chờ';
+
+  @override
+  String get famSwitchTitle => 'Chuyển gia đình';
+
+  @override
+  String famSwitchSubtitle(String callName, String family) {
+    return 'Bạn là $callName ở $family và là người thân ở một gia đình khác.';
+  }
+
+  @override
+  String famSwitchRoleParent(String callName) {
+    return '$callName (Bố/Mẹ)';
+  }
+
+  @override
+  String famSwitchRoleRelative(String callName) {
+    return '$callName (người thân)';
+  }
+
+  @override
+  String get famSwitchViewing => 'đang xem';
+
+  @override
+  String famSwitchFollows(String names) {
+    return 'Theo dõi bé $names';
+  }
+
+  @override
+  String famSwitchNote(String family) {
+    return 'Chuyển gia đình sẽ đổi toàn bộ app theo gia đình được chọn. Ở $family, bạn chỉ thấy ảnh của bé được chia sẻ — không có Chăm con hay Papa & Mama. Mỗi tài khoản chỉ là Bố/Mẹ của một gia đình.';
+  }
+
+  @override
+  String famSwitchMock(String family) {
+    return 'Bản mẫu chỉ có dữ liệu của $family.';
+  }
+
+  @override
+  String get setAiMaster => 'Dùng AI hỗ trợ';
+
+  @override
+  String get setAiMasterHint =>
+      'AI chỉ chạy khi bạn bấm. Mọi kết quả là bản nháp để bạn sửa, bỏ hoặc lưu.';
+
+  @override
+  String get setAiQuotaLabel => 'Lượt AI còn lại tháng này';
+
+  @override
+  String setAiQuotaTotal(int total) {
+    return '/ $total lượt';
+  }
+
+  @override
+  String setAiRenews(String date) {
+    return 'Làm mới $date';
+  }
+
+  @override
+  String setAiPlanQuota(String plan, int total) {
+    return '$plan · $total lượt mỗi tháng cho cả nhà';
+  }
+
+  @override
+  String get setAiFeatures => 'Từng tính năng';
+
+  @override
+  String get setAiDataSection => 'Dữ liệu gửi đi';
+
+  @override
+  String get setAiData1 =>
+      'Chỉ gửi những gì ghi ở từng tính năng, cho đúng lần bạn bấm.';
+
+  @override
+  String get setAiData2 =>
+      'AI không đọc nhật ký riêng, không chẩn đoán, không tự gửi tin cho ai.';
+
+  @override
+  String get setAiData3 =>
+      'Lần đầu dùng mỗi tính năng, app hỏi bạn đồng ý trước.';
+
+  @override
+  String get setAiData4 => 'Mọi bản nháp đều có nhãn “✨ Gợi ý bởi AI”.';
+
+  @override
+  String get setAiDataLink => 'Xem chi tiết dữ liệu gửi cho nhà cung cấp AI';
+
+  @override
+  String get setAiReport => 'Báo cáo nội dung AI';
+
+  @override
+  String get setAiFoot => 'Tắt AI, Baby Family vẫn dùng đầy đủ mọi tính năng.';
+
+  @override
+  String get setBlockedBody =>
+      'Người bị chặn không bình luận hay thả cảm xúc vào nội dung của bạn, và bạn không nhận thông báo liên quan đến họ.';
+
+  @override
+  String setBlockedSection(int count) {
+    return 'Đang chặn · $count người';
+  }
+
+  @override
+  String setBlockedSince(String date) {
+    return 'Chặn từ $date';
+  }
+
+  @override
+  String get setUnblock => 'Bỏ chặn';
+
+  @override
+  String setUnblocked(String name) {
+    return 'Đã bỏ chặn $name';
+  }
+
+  @override
+  String get setUnblockInfo =>
+      'Sau khi bỏ chặn, người này có thể bình luận và thả cảm xúc vào nội dung của bạn như trước. Bạn có thể chặn lại bất cứ lúc nào từ trang của họ.';
+
+  @override
+  String get setBlockedPartnerNote =>
+      'Papa và Mama không chặn nhau trong app. Nếu cần khoảng lặng, bạn có thể tắt chia sẻ cảm xúc trong Papa & Mama.';
+
+  @override
+  String get setBlockedEmpty => 'Bạn chưa chặn ai';
+
+  @override
+  String get commonDeleteForever => 'Xoá vĩnh viễn';
+
+  @override
+  String memTrashInfo(int days) {
+    return 'Ký ức đã xoá được giữ $days ngày rồi mới xoá hẳn. Bạn thấy mọi ký ức bị xoá trong gia đình.';
+  }
+
+  @override
+  String memTrashInfoOwn(int days) {
+    return 'Ký ức đã xoá được giữ $days ngày rồi mới xoá hẳn. Bạn thấy những ký ức bạn đã xoá.';
+  }
+
+  @override
+  String memTrashCount(int count) {
+    return '$count ký ức';
+  }
+
+  @override
+  String memTrashDeletedBy(String callName, String date) {
+    return '$callName xoá $date ·';
+  }
+
+  @override
+  String get memTrashFootnote =>
+      'Khôi phục để ký ức trở lại đúng chỗ cũ trên dòng thời gian, kèm bình luận và lượt thả tim.';
+
+  @override
+  String get memTrashEmpty => 'Thùng rác trống';
+
+  @override
+  String memTrashEmptyHint(int days) {
+    return 'Ký ức bạn xoá sẽ nằm ở đây $days ngày để bạn kịp đổi ý.';
+  }
+
+  @override
+  String memTrashRestored(String title) {
+    return 'Đã khôi phục “$title”';
+  }
+
+  @override
+  String get memTrashDeleted => 'Đã xoá vĩnh viễn';
+
+  @override
+  String get memTrashConfirmTitle => 'Xoá vĩnh viễn ký ức này?';
+
+  @override
+  String get memTrashConfirmBody =>
+      'Ảnh, bình luận và lượt thả tim của ký ức sẽ mất hẳn. Không thể khôi phục sau bước này.';
+
+  @override
+  String get memTrashKeep => 'Giữ lại trong thùng rác';
+
+  @override
+  String memCommentCount(int count) {
+    return '$count bình luận';
+  }
+
+  @override
+  String memHeartCount(int count) {
+    return '$count lượt thả tim';
+  }
+
+  @override
+  String get memMoveToTrash => 'Xoá ký ức';
+
+  @override
+  String memMovedToTrash(int days) {
+    return 'Đã chuyển vào thùng rác · giữ $days ngày';
+  }
+
+  @override
+  String get memMoveToTrashTitle => 'Xoá ký ức này?';
+
+  @override
+  String memMoveToTrashBody(int days) {
+    return 'Ký ức sẽ nằm trong Thùng rác $days ngày, bạn có thể khôi phục trong thời gian đó.';
+  }
+
+  @override
+  String get memDraftsSubtitle =>
+      'Ký ức đang soạn dở được tự lưu khi bạn thoát giữa chừng. Chỉ mình bạn thấy nháp.';
+
+  @override
+  String get memDraftsDevice => 'Trên máy này';
+
+  @override
+  String get memDraftsCloud => 'Đã lưu trên tài khoản';
+
+  @override
+  String get memDraftsLocalNote =>
+      'Nháp trên máy chưa được lưu lên tài khoản — xoá app sẽ mất.';
+
+  @override
+  String get memDraftContinue => 'Tiếp tục soạn';
+
+  @override
+  String memDraftEditedToday(String time) {
+    return 'Sửa lúc $time hôm nay';
+  }
+
+  @override
+  String memDraftEditedYesterday(String time) {
+    return 'Sửa lúc $time hôm qua';
+  }
+
+  @override
+  String memDraftEditedOn(String date, String time) {
+    return 'Sửa $date, $time';
+  }
+
+  @override
+  String memDraftSavedOn(String date, String time) {
+    return 'Lưu $date, $time';
+  }
+
+  @override
+  String memDraftSavedOnDevice(String date, String time, String device) {
+    return 'Lưu $date, $time trên $device';
+  }
+
+  @override
+  String get memKindMoment => 'Khoảnh khắc';
+
+  @override
+  String memKindVoiceDuration(String duration) {
+    return 'Giọng nói $duration';
+  }
+
+  @override
+  String get memDraftsEmpty => 'Chưa có nháp nào';
+
+  @override
+  String get memDraftsEmptyHint =>
+      'Khi bạn thoát giữa chừng lúc đang soạn, ký ức sẽ được giữ ở đây.';
+
+  @override
+  String get memDraftDeleted => 'Đã xoá nháp';
+
+  @override
+  String get memDraftSaved => 'Đã lưu vào Nháp';
+
+  @override
+  String get memDraftView => 'Xem nháp';
+
+  @override
+  String get memShortcutTrash => 'Thùng rác';
+
+  @override
+  String get memShortcutDrafts => 'Nháp';
+
+  @override
+  String get memShortcutPending => 'Ảnh chờ duyệt';
+
+  @override
+  String memPendingSubtitle(String partner) {
+    return 'Ảnh người thân đăng chỉ hiện với cả nhà sau khi bạn hoặc $partner duyệt. Trong lúc chờ, chỉ người đăng và bố mẹ thấy.';
+  }
+
+  @override
+  String get memPendingKids => 'Bé trong ảnh';
+
+  @override
+  String get memPendingAudience => 'Ai nhìn thấy';
+
+  @override
+  String get memPendingReject => 'Từ chối';
+
+  @override
+  String get memPendingApprove => 'Duyệt & hiện';
+
+  @override
+  String get memPendingRejectReason => 'Lý do từ chối (không bắt buộc)';
+
+  @override
+  String memPendingRejectHint(String name) {
+    return '$name sẽ nhận được lời nhắn nhẹ nhàng này. Ảnh không hiện với ai khác.';
+  }
+
+  @override
+  String get memPendingRejectSend => 'Từ chối ảnh';
+
+  @override
+  String memPendingWaited(int count) {
+    return 'Đã chờ $count ngày';
+  }
+
+  @override
+  String get memPendingEmpty => 'Không có ảnh nào chờ duyệt';
+
+  @override
+  String get memPendingEmptyHint =>
+      'Ảnh người thân đăng cho các con sẽ hiện ở đây để bạn duyệt.';
+
+  @override
+  String get memPendingApproved => 'Đã duyệt — ảnh đã hiện với cả nhà';
+
+  @override
+  String get memPendingRejected => 'Đã từ chối ảnh';
+
+  @override
+  String memPendingAddChild(String name) {
+    return 'Thêm $name';
+  }
+
+  @override
+  String get rptTitleMemory => 'Báo cáo ký ức này';
+
+  @override
+  String get rptTitleComment => 'Báo cáo bình luận này';
+
+  @override
+  String rptTitlePerson(String name) {
+    return 'Báo cáo $name';
+  }
+
+  @override
+  String get rptSubtitle =>
+      'Cho chúng tôi biết điều gì chưa ổn. Đội ngũ an toàn của Baby Family sẽ xem xét.';
+
+  @override
+  String get rptNoteHint => 'Mô tả thêm (không bắt buộc)…';
+
+  @override
+  String get rptHideMemory => 'Ẩn ký ức này với tôi ngay';
+
+  @override
+  String get rptHideComment => 'Ẩn bình luận này với tôi ngay';
+
+  @override
+  String get rptHidePerson => 'Ẩn người này với tôi ngay';
+
+  @override
+  String get rptRemoveContent => 'Gỡ khỏi gia đình';
+
+  @override
+  String get rptRemoveContentHint =>
+      'Dành cho bố mẹ · ký ức sẽ không còn hiện với ai';
+
+  @override
+  String get rptRemovePerson => 'Gỡ người thân';
+
+  @override
+  String rptRemovePersonHint(String name) {
+    return 'Dành cho bố mẹ · $name sẽ không còn xem ảnh các con';
+  }
+
+  @override
+  String get rptSend => 'Gửi báo cáo';
+
+  @override
+  String get rptSentTitle => 'Đã gửi báo cáo';
+
+  @override
+  String get rptSentBodyHidden =>
+      'Cảm ơn bạn đã lên tiếng. Ký ức đã được ẩn tạm thời và sẽ được xem xét trong 24 giờ. Chúng tôi sẽ báo cho bạn khi xử lý xong.';
+
+  @override
+  String get rptSentBody =>
+      'Cảm ơn bạn đã lên tiếng. Báo cáo sẽ được xem xét sớm. Chúng tôi sẽ báo cho bạn khi xử lý xong.';
+
+  @override
+  String get rptCodeLabel => 'Mã báo cáo';
+
+  @override
+  String get rptStatusReviewing => 'Đang xem xét';
+
+  @override
+  String get rptStatusResolved => 'Đã xử lý';
+
+  @override
+  String get rptTrack => 'Theo dõi trong Cài đặt › Báo cáo của tôi';
+
+  @override
+  String get rptDone => 'Xong';
+
+  @override
+  String rptBlockTitle(String name) {
+    return 'Chặn $name?';
+  }
+
+  @override
+  String rptBlockEffectComment(String name) {
+    return '$name không bình luận hay thả tim được vào ký ức của bạn nữa.';
+  }
+
+  @override
+  String rptBlockEffectNotify(String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': 'Bà',
+      'grandpa': 'Ông',
+      'other': 'Người này',
+    });
+    return '$_temp0 không nhận thông báo liên quan đến bạn.';
+  }
+
+  @override
+  String rptBlockEffectStay(String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': 'Bà',
+      'grandpa': 'Ông',
+      'other': 'Người này',
+    });
+    return '$_temp0 vẫn ở trong gia đình và vẫn xem ảnh các cháu được chia sẻ.';
+  }
+
+  @override
+  String rptBlockRemove(String name) {
+    return 'Gỡ $name khỏi gia đình luôn';
+  }
+
+  @override
+  String rptBlockRemoveHint(String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': 'bà',
+      'grandpa': 'ông',
+      'other': 'người này',
+    });
+    return 'Nên chọn nếu bạn không muốn $_temp0 xem ảnh các cháu nữa.';
+  }
+
+  @override
+  String get rptBlockConfirm => 'Chặn';
+
+  @override
+  String rptBlockDone(String name) {
+    return 'Đã chặn $name';
+  }
+
+  @override
+  String rptBlockMenu(String name) {
+    return 'Chặn $name';
+  }
+
+  @override
+  String chdArchiveAddedBy(String birth, String callName, String date) {
+    return 'Sinh $birth · $callName thêm ngày $date';
+  }
+
+  @override
+  String chdArchiveBorn(String birth) {
+    return 'Sinh $birth';
+  }
+
+  @override
+  String chdArchiveDuplicate(String name) {
+    return 'Có thể trùng với $name';
+  }
+
+  @override
+  String chdArchiveSection(String name) {
+    return 'Khi lưu trữ $name';
+  }
+
+  @override
+  String chdArchiveEffectHide(String name) {
+    return '$name ẩn khỏi bộ chuyển bé, Trang chủ và Ký ức.';
+  }
+
+  @override
+  String chdArchiveEffectPrivate(int count, String name) {
+    return '$count ký ức chỉ gắn riêng $name sẽ ẩn theo.';
+  }
+
+  @override
+  String chdArchiveEffectShared(int count, String others) {
+    return '$count ký ức chung với $others vẫn hiện ở trang của $others.';
+  }
+
+  @override
+  String get chdArchiveEffectRestore =>
+      'Khôi phục bất cứ lúc nào trong Các con › Đã lưu trữ.';
+
+  @override
+  String chdArchiveAction(String name) {
+    return 'Lưu trữ $name';
+  }
+
+  @override
+  String get chdArchiveDeleteSection => 'Xoá vĩnh viễn';
+
+  @override
+  String chdArchiveLockedTitle(int days) {
+    return 'Cần lưu trữ ít nhất $days ngày';
+  }
+
+  @override
+  String chdArchiveLockedBody(String date, String name) {
+    return 'Để tránh xoá nhầm, nếu lưu trữ hôm nay bạn xoá được từ $date. Nội dung chỉ thuộc riêng $name sẽ vào thùng rác 30 ngày.';
+  }
+
+  @override
+  String chdArchiveLockedBodyArchived(String date, String name) {
+    return 'Để tránh xoá nhầm, bạn xoá được từ $date. Nội dung chỉ thuộc riêng $name sẽ vào thùng rác 30 ngày.';
+  }
+
+  @override
+  String chdArchived(String name) {
+    return 'Đã lưu trữ $name';
+  }
+
+  @override
+  String chdRestored(String name) {
+    return 'Đã khôi phục $name';
+  }
+
+  @override
+  String chdDeleteTitle(String name) {
+    return 'Xoá vĩnh viễn $name';
+  }
+
+  @override
+  String chdDeleteArchivedName(String name) {
+    return '$name · đã lưu trữ';
+  }
+
+  @override
+  String chdDeleteArchivedFor(int days, String date) {
+    return 'Lưu trữ $days ngày · từ $date';
+  }
+
+  @override
+  String chdDeleteEnough(int days) {
+    return 'Đủ $days ngày';
+  }
+
+  @override
+  String chdDeleteEffectTrash(int count, String name) {
+    return '$count ký ức chỉ thuộc riêng $name chuyển vào thùng rác 30 ngày, sau đó xoá hẳn.';
+  }
+
+  @override
+  String chdDeleteEffectShared(String others) {
+    return 'Ký ức chung với $others vẫn giữ nguyên ở trang của $others.';
+  }
+
+  @override
+  String get chdDeleteStep1 => 'Xác nhận 1/2';
+
+  @override
+  String chdDeleteConfirm1(String name) {
+    return 'Tôi hiểu $name sẽ bị xoá và không thể khôi phục hồ sơ này.';
+  }
+
+  @override
+  String get chdDeleteStep2 => 'Xác nhận 2/2 · Nhập tên bé';
+
+  @override
+  String chdDeleteHint(String name) {
+    return 'Gõ đúng “$name” để mở nút xoá.';
+  }
+
+  @override
+  String chdDeleteAction(String name) {
+    return 'Xoá vĩnh viễn $name';
+  }
+
+  @override
+  String chdDeleteRestoreInstead(String name) {
+    return 'Khôi phục $name thay vì xoá';
+  }
+
+  @override
+  String chdDeleted(String name) {
+    return 'Đã xoá $name';
+  }
+
+  @override
+  String cirChildTomorrow(int months) {
+    return '🎉 Ngày mai tròn $months tháng';
+  }
+
+  @override
+  String get cirChildFirsts => 'Những lần đầu của cháu';
+
+  @override
+  String get cirChildMemories => 'Ký ức của cháu';
+
+  @override
+  String cirChildMonth(int month) {
+    return 'Tháng thứ $month';
+  }
+
+  @override
+  String cirChildMonthRange(String start, String end) {
+    return '· $start – $end';
+  }
+
+  @override
+  String get cirChildEmpty => 'Chưa có ký ức nào của cháu';
+
+  @override
+  String cirDetailDownloadOff(String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': 'bà',
+      'grandpa': 'ông',
+      'other': 'bạn',
+    });
+    return 'Tải ảnh về: bố mẹ chưa bật cho $_temp0';
+  }
+
+  @override
+  String cirDetailAuthorAge(String name, String age) {
+    return '$name $age';
+  }
+
+  @override
+  String get cirDetailLiked => 'Đã thả tim';
+
+  @override
+  String cirDetailYou(String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': 'Bà',
+      'grandpa': 'Ông',
+      'other': 'Bạn',
+    });
+    return '$_temp0 (bạn)';
+  }
+
+  @override
+  String cirDetailReactedBy(String names) {
+    return '$names đã thả tim';
+  }
+
+  @override
+  String cirDetailWishes(int count) {
+    return 'Lời chúc ($count)';
+  }
+
+  @override
+  String get cirDetailWishHint => 'Viết lời chúc cho cháu…';
+
+  @override
+  String get cirDetailVoice => 'Ghi âm lời chúc';
+
+  @override
+  String get cirDetailSend => 'Gửi lời chúc';
+
+  @override
+  String get cirDetailReported => 'Đã gửi báo cáo';
+
+  @override
+  String get cirDetailMissing => 'Ký ức này không còn được chia sẻ';
+
+  @override
+  String cirPostSelected(int count) {
+    return 'Ảnh đã chọn ($count)';
+  }
+
+  @override
+  String get cirPostWhichKid => 'Ảnh của cháu nào?';
+
+  @override
+  String get cirPostDate => 'Ngày chụp';
+
+  @override
+  String get cirPostMessage => 'Lời nhắn cho cháu';
+
+  @override
+  String get cirPostMessageHint => 'Viết vài lời cho cháu…';
+
+  @override
+  String get cirPostApprovalTitle => 'Bố mẹ sẽ duyệt trước khi hiện';
+
+  @override
+  String get cirPostApprovalBody =>
+      'Ảnh hiện với cả nhà sau khi bố hoặc mẹ của cháu đồng ý.';
+
+  @override
+  String get cirPostSend => 'Gửi ảnh';
+
+  @override
+  String get cirPostRemovePhoto => 'Bỏ ảnh';
+
+  @override
+  String get cirPostSentTitle => 'Đã gửi!';
+
+  @override
+  String get cirPostSentBody => 'Bố/Mẹ sẽ duyệt trước khi hiển thị cho cả nhà.';
+
+  @override
+  String get cirPostPending => 'Đang chờ Bố/Mẹ duyệt';
+
+  @override
+  String get cirPostJustSent => 'vừa gửi';
+
+  @override
+  String get cirPostBackHome => 'Về trang Cháu yêu';
+
+  @override
+  String get cirPostMore => 'Đăng thêm ảnh';
+
+  @override
+  String get cirPostNoKid => 'Bố mẹ chưa bật quyền đăng ảnh cho cháu nào';
+
+  @override
+  String cirPausedMessage(String family) {
+    return '$family đang tạm dừng chia sẻ với người thân';
+  }
+
+  @override
+  String get cirPausedSafe => 'Ảnh của cháu vẫn được giữ an toàn';
+
+  @override
+  String cirMeRelation(String relation, String family) {
+    return '$relation · $family';
+  }
+
+  @override
+  String cirMeTextPreview(String name, String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': 'bà',
+      'grandpa': 'ông',
+      'other': 'bạn',
+    });
+    return '$name vừa có ảnh mới, $_temp0 vào xem nhé 🌸';
+  }
+
+  @override
+  String get cirMeInstant => 'Báo ngay khi có ảnh mới';
+
+  @override
+  String get cirMeDigest => 'Bản tin mỗi ngày';
+
+  @override
+  String cirMeDigestHint(String time) {
+    return 'Gửi lúc $time · gom ảnh mới trong ngày';
+  }
+
+  @override
+  String get cirMeSwitchFamily => 'Chuyển gia đình';
+
+  @override
+  String cirMeViewing(String family) {
+    return 'Đang xem: $family';
+  }
+
+  @override
+  String cirLeaveTitle(String family) {
+    return 'Rời $family';
+  }
+
+  @override
+  String cirLeaveBody(String who, String inviter) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': 'Bà',
+      'grandpa': 'Ông',
+      'other': 'Bạn',
+    });
+    String _temp1 = intl.Intl.selectLogic(who, {
+      'grandma': 'bà',
+      'grandpa': 'ông',
+      'other': 'bạn',
+    });
+    return '$_temp0 sẽ không còn xem ảnh và bình luận cùng các cháu nữa. Khi nào muốn quay lại, $_temp1 nhờ $inviter gửi lời mời mới nhé.';
+  }
+
+  @override
+  String cirLeaveFollowing(String who, String names) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': 'Bà',
+      'grandpa': 'Ông',
+      'other': 'Bạn',
+    });
+    return '$_temp0 đang theo dõi $names';
+  }
+
+  @override
+  String cirLeavePosted(String who, int photos, int comments) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': 'bà',
+      'grandpa': 'ông',
+      'other': 'bạn',
+    });
+    return 'Những gì $_temp0 đã đăng · $photos ảnh, $comments bình luận';
+  }
+
+  @override
+  String get cirLeaveKeep => 'Giữ lại cho gia đình';
+
+  @override
+  String cirLeaveKeepHint(String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': 'bà',
+      'grandpa': 'ông',
+      'other': 'bạn',
+    });
+    return 'Cả nhà vẫn xem được ảnh và lời $_temp0 đã viết. (Mặc định)';
+  }
+
+  @override
+  String get cirLeaveRemove => 'Gỡ toàn bộ';
+
+  @override
+  String cirLeaveRemoveHint(String who, String family) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': 'bà',
+      'grandpa': 'ông',
+      'other': 'bạn',
+    });
+    return 'Ảnh và bình luận của $_temp0 sẽ được gỡ khỏi $family.';
+  }
+
+  @override
+  String cirLeaveNotice(String inviter, String name, String who) {
+    String _temp0 = intl.Intl.selectLogic(who, {
+      'grandma': 'Bà',
+      'grandpa': 'Ông',
+      'other': 'Bạn',
+    });
+    return '$inviter sẽ nhận một thông báo ngắn: “$name đã rời gia đình.” $_temp0 mất quyền xem ngay sau khi xác nhận.';
+  }
+
+  @override
+  String get cirLeaveStay => 'Ở lại';
+
+  @override
+  String commonListAnd(String list, String last) {
+    return '$list và $last';
+  }
+
+  @override
+  String get commonAiSuggested => 'Gợi ý bởi AI';
+
+  @override
+  String get commonAiReport => 'Báo cáo nội dung AI';
+
+  @override
+  String get commonAiReported =>
+      'Cảm ơn bạn — nội dung AI này sẽ được xem lại.';
+
+  @override
+  String commonWeekRange(String range) {
+    return 'Tuần $range';
+  }
+
+  @override
+  String get usOnlyParents => 'Chỉ dành cho Papa & Mama';
+
+  @override
+  String get usPartnerLeftTitle => 'Không gian này cần đủ hai người';
+
+  @override
+  String usPartnerLeftBody(String callName, String familyName) {
+    return 'Tài khoản của $callName đã được xoá, nên Papa & Mama đang tạm khoá. Ký ức của $familyName vẫn còn nguyên — bạn có thể xem và tải về bất cứ lúc nào.';
+  }
+
+  @override
+  String usPartnerLeftStateTitle(String familyName) {
+    return '$familyName đang ở chế độ chỉ xem & tải về';
+  }
+
+  @override
+  String get usPartnerLeftStateSub =>
+      'Mời bạn đời mới để tiếp tục tạo ký ức và dùng Papa & Mama.';
+
+  @override
+  String get usPartnerLeftSection => 'KHI CÓ ĐỦ HAI NGƯỜI';
+
+  @override
+  String get usPartnerLeftCheckinSub => 'Hôm nay mình thế nào';
+
+  @override
+  String get usPartnerLeftRequestSub => 'Nhờ nhau, không áp lực';
+
+  @override
+  String get usPartnerLeftThanksSub => 'Giữ lại điều nhỏ';
+
+  @override
+  String get usPartnerLeftJournalSub => 'Chỉ mình bạn đọc';
+
+  @override
+  String get usPartnerLeftPrivacy =>
+      'Ông bà và người thân không bao giờ thấy nội dung trong Papa & Mama.';
+
+  @override
+  String get usPartnerLeftInvite => 'Mời bạn đời tham gia';
+
+  @override
+  String usCheckinAnnoyedPartner(String callName) {
+    return 'Khó chịu với $callName';
+  }
+
+  @override
+  String get usBridgeAskTitle => 'Bạn muốn dùng Cầu nối không?';
+
+  @override
+  String usBridgeAskBody(String callName) {
+    return 'Chưa có gì được gửi cho $callName. Cầu nối giúp hai bạn nói rõ cảm xúc và cùng chọn một bước nhỏ — bắt đầu bằng một bước riêng tư.';
+  }
+
+  @override
+  String get usBridgeAskOpen => 'Mở Cầu nối';
+
+  @override
+  String usBridgeStepKicker(int step, int total) {
+    return 'CẦU NỐI · BƯỚC $step/$total';
+  }
+
+  @override
+  String usBridgeFeelSub(String callName) {
+    return 'Chọn một hoặc vài cảm xúc. Chưa có gì được gửi cho $callName.';
+  }
+
+  @override
+  String get usBridgeTopicTitle => 'Chuyện này về…';
+
+  @override
+  String usBridgeTopicSub(String callName) {
+    return 'Không bắt buộc — bạn có thể bỏ qua. Chưa có gì được gửi cho $callName.';
+  }
+
+  @override
+  String get usBridgeNeedTitle => 'Lúc này mình cần…';
+
+  @override
+  String usBridgeNeedSub(String callName) {
+    return 'Chọn một hoặc vài điều. Chưa có gì được gửi cho $callName.';
+  }
+
+  @override
+  String get usBridgeFeltLabel => 'Mình cảm thấy';
+
+  @override
+  String get usBridgeAboutLabel => 'Về chuyện';
+
+  @override
+  String get usBridgeDraftLabel => 'Viết nháp riêng (tuỳ chọn)';
+
+  @override
+  String usBridgeDraftCount(int count, int max) {
+    return '$count/$max';
+  }
+
+  @override
+  String get usBridgeDraftHint =>
+      'Viết ra điều bạn đang nghĩ — chỉ mình bạn đọc.';
+
+  @override
+  String get usBridgeDraftNote =>
+      'Nháp này không bao giờ được gửi nguyên văn hay tự động.';
+
+  @override
+  String get usBridgeUnsafe => 'Mình cảm thấy không an toàn';
+
+  @override
+  String get usBridgeChoiceTitle => 'Bạn muốn làm gì với nội dung này?';
+
+  @override
+  String usBridgeChoiceSub(String callName) {
+    return 'Bạn quyết định. Chưa có gì được gửi cho $callName.';
+  }
+
+  @override
+  String get usBridgeKeepPrivateDesc =>
+      'Kết thúc ở đây, như một trang nhật ký.';
+
+  @override
+  String get usBridgeRewriteOption => 'Viết lại trước khi gửi';
+
+  @override
+  String get usBridgeRewriteOptionDesc =>
+      'Chọn một câu và viết lại nhẹ nhàng hơn.';
+
+  @override
+  String get usBridgeShareOption => 'Chọn ý để chia sẻ';
+
+  @override
+  String usBridgeShareOptionDesc(String callName) {
+    return 'Chọn cảm xúc và nhu cầu $callName sẽ thấy.';
+  }
+
+  @override
+  String get usBridgeKeptPrivate => 'Đã giữ riêng — chỉ mình bạn thấy.';
+
+  @override
+  String usBridgePreviewTitle(String callName) {
+    return 'Xem trước điều $callName sẽ nhận';
+  }
+
+  @override
+  String get usBridgePreviewSub =>
+      'Chỉ những ý bạn chọn được gửi. Nháp riêng của bạn vẫn giữ riêng.';
+
+  @override
+  String get usBridgeFeelShort => 'Cảm thấy';
+
+  @override
+  String get usBridgeNeedShort => 'Cần';
+
+  @override
+  String get usBridgeMessageLabel => 'Lời nhắn (tuỳ chọn)';
+
+  @override
+  String usBridgeMessageHint(String callName) {
+    return 'Một câu bạn muốn $callName đọc';
+  }
+
+  @override
+  String get usBridgeSendInvite => 'Gửi lời mời';
+
+  @override
+  String usBridgeInviteSent(String callName) {
+    return 'Đã gửi lời mời cho $callName';
+  }
+
+  @override
+  String get usBridgeRewriteSub =>
+      'Chọn một phiên bản rồi sửa theo ý bạn. Không có gì được gửi tự động.';
+
+  @override
+  String get usBridgeRewriteOriginal => 'CÂU GỐC CỦA BẠN';
+
+  @override
+  String usBridgeRewriteTone(String tone) {
+    String _temp0 = intl.Intl.selectLogic(tone, {
+      'neutral': 'TRUNG TÍNH',
+      'warm': 'ẤM ÁP',
+      'other': 'NGẮN GỌN',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get usBridgeRewriteEdit => 'Sửa trước khi dùng';
+
+  @override
+  String get usBridgeRewriteKeep => 'Giữ câu gốc';
+
+  @override
+  String get usBridgeRewriteUse => 'Dùng câu này';
+
+  @override
+  String get usBridgeRewriteDataNote =>
+      'Chỉ câu bạn chọn được gửi cho AI để viết lại. AI không đọc nháp riêng hay nhật ký của bạn.';
+
+  @override
+  String usBridgeInviteTitle(String callName) {
+    return '$callName muốn trò chuyện bình tĩnh khi bạn sẵn sàng';
+  }
+
+  @override
+  String get usBridgeInviteSub =>
+      'Một không gian để nói rõ cảm xúc và cùng chọn một bước nhỏ tiếp theo. Không ai thắng, không ai thua.';
+
+  @override
+  String usBridgeInviteShared(String callName) {
+    return '$callName đã chọn chia sẻ';
+  }
+
+  @override
+  String usBridgeInviteSharedSub(String callName) {
+    return 'Chỉ những ý này — phần còn lại $callName giữ riêng';
+  }
+
+  @override
+  String get usBridgeInviteNote =>
+      'Trước khi vào phiên chung, bạn cũng có một bước riêng tư để nói cảm xúc và điều mình cần.';
+
+  @override
+  String get usBridgeJoinNow => 'Tham gia ngay';
+
+  @override
+  String get usBridgeLaterLabel => 'Để sau — nhắc mình lúc';
+
+  @override
+  String get usBridgeLaterCustom => 'Tự chọn';
+
+  @override
+  String get usBridgeNotReady => 'Mình chưa sẵn sàng';
+
+  @override
+  String get usBridgeNotReadySub =>
+      'Lời mời được tạm dừng — không có thông báo tiêu cực nào.';
+
+  @override
+  String get usBridgeRemindSet => 'Đã hẹn nhắc — lời mời vẫn được giữ.';
+
+  @override
+  String get usBridgePaused =>
+      'Đã tạm dừng. Bạn có thể quay lại bất cứ lúc nào.';
+
+  @override
+  String get usBridgeLive => 'Đang diễn ra';
+
+  @override
+  String usBridgeStartedAt(String time, String date) {
+    return 'Bắt đầu $time · $date';
+  }
+
+  @override
+  String get usBridgeSessionIntro =>
+      'Đọc chậm những gì hai bạn đã chọn chia sẻ. Ở đây không có ai đúng, ai sai.';
+
+  @override
+  String usBridgeYouName(String callName) {
+    return 'Bạn ($callName)';
+  }
+
+  @override
+  String usBridgeFeels(String callName) {
+    return '$callName cảm thấy';
+  }
+
+  @override
+  String usBridgeNeeds(String callName) {
+    return '$callName cần';
+  }
+
+  @override
+  String get usBridgeYouPending => 'Bạn chưa chọn';
+
+  @override
+  String get usBridgeYouUnderstood => 'Bạn: Mình hiểu';
+
+  @override
+  String usBridgePartnerPending(String callName) {
+    return '$callName chưa chọn';
+  }
+
+  @override
+  String usBridgePartnerUnderstood(String callName) {
+    return '$callName: Mình hiểu';
+  }
+
+  @override
+  String get usBridgeYourTurn => 'LƯỢT CỦA BẠN';
+
+  @override
+  String usBridgePartnerReadDone(String callName) {
+    return '$callName đã đọc xong';
+  }
+
+  @override
+  String usBridgeReadQuestion(String callName) {
+    return 'Bạn đã đọc những gì $callName chia sẻ?';
+  }
+
+  @override
+  String get usBridgeClarify => 'Mình cần nói rõ hơn';
+
+  @override
+  String get usBridgeUnderstand => 'Mình hiểu';
+
+  @override
+  String get usBridgeClarifyNote =>
+      '“Nói rõ hơn” mở thêm 1 lượt gửi ý — bạn sẽ xem trước chính xác trước khi gửi.';
+
+  @override
+  String get usBridgeLeaveNote =>
+      'Mỗi người có thể tạm dừng hoặc rời phiên bất cứ lúc nào.';
+
+  @override
+  String usBridgeWaiting(String callName) {
+    return 'Đang chờ $callName đọc xong';
+  }
+
+  @override
+  String usBridgeClarifyTitle(String callName) {
+    return 'Nói rõ hơn với $callName';
+  }
+
+  @override
+  String usBridgeClarifySent(String callName) {
+    return 'Đã gửi thêm ý cho $callName';
+  }
+
+  @override
+  String get usBridgeNextKicker => 'CẦU NỐI · HAI BẠN ĐỀU ĐÃ HIỂU';
+
+  @override
+  String get usBridgeNextSub =>
+      'Chọn một điều cả hai có thể làm. Không cần giải quyết hết mọi chuyện hôm nay.';
+
+  @override
+  String get usBridgeWhen => 'Khi nào?';
+
+  @override
+  String get usBridgeWhichChild => 'Trông bé nào?';
+
+  @override
+  String get usBridgeReminder => 'Tạo nhắc cho cả hai';
+
+  @override
+  String usBridgeReminderSub(String time) {
+    return 'Nhắc lúc $time — chỉ hai bạn thấy';
+  }
+
+  @override
+  String get usBridgeNotConfirmed => 'Chưa xác nhận';
+
+  @override
+  String get usBridgeAgreed => 'Đã đồng ý';
+
+  @override
+  String get usBridgeConfirmStep => 'Xác nhận bước này';
+
+  @override
+  String get usBridgeConfirmNote =>
+      'Bước được áp dụng khi cả hai cùng xác nhận. Bạn vẫn có thể đổi lựa chọn.';
+
+  @override
+  String get usBridgeCloseTitle => 'Hai bạn muốn đóng phiên này chứ?';
+
+  @override
+  String get usBridgeCloseSub => 'Phiên chỉ đóng khi cả hai cùng đồng ý.';
+
+  @override
+  String usBridgeStepChosen(String when) {
+    return 'Bước đã chọn · $when';
+  }
+
+  @override
+  String usBridgeRelativeWhen(String day, String time) {
+    String _temp0 = intl.Intl.selectLogic(day, {
+      'tonight': 'tối nay $time',
+      'lastNight': 'tối qua $time',
+      'today': 'hôm nay $time',
+      'yesterday': 'hôm qua $time',
+      'other': '$time',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String usBridgePartnerAgreedClose(String callName) {
+    return '$callName đã đồng ý đóng phiên';
+  }
+
+  @override
+  String usBridgeThanksLabel(String callName) {
+    return 'Gửi lời cảm ơn cho $callName? (tuỳ chọn)';
+  }
+
+  @override
+  String usBridgeThanksListened(String role) {
+    String _temp0 = intl.Intl.selectLogic(role, {
+      'father': 'Cảm ơn anh đã lắng nghe 💛',
+      'other': 'Cảm ơn em đã lắng nghe 💛',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String usBridgeThanksShort(String role) {
+    String _temp0 = intl.Intl.selectLogic(role, {
+      'father': 'Cảm ơn anh',
+      'other': 'Cảm ơn em',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String usBridgeRetention(int days, String date) {
+    return 'Nội dung phiên tự xoá sau $days ngày. Chỉ còn dòng “Đã có một phiên Cầu nối ngày $date”.';
+  }
+
+  @override
+  String get usBridgeCloseConfirm => 'Đóng phiên';
+
+  @override
+  String get usBridgeCloseLater => 'Chưa, để sau';
+
+  @override
+  String get usBridgeClosed => 'Đã đóng phiên Cầu nối';
+
+  @override
+  String get usSafetyQuickExit => 'Thoát nhanh';
+
+  @override
+  String get usSafetyHeadline => 'Sự an toàn của bạn là quan trọng nhất';
+
+  @override
+  String get usSafetyBody =>
+      'Bạn không cần nói chuyện trực tiếp lúc này. Nếu bạn hoặc các con đang gặp nguy hiểm, hãy gọi ngay cho một trong các số dưới đây.';
+
+  @override
+  String usSafetyCall(String number) {
+    return 'Gọi $number';
+  }
+
+  @override
+  String get usSafetyTrustedTitle => 'Liên hệ một người bạn tin cậy';
+
+  @override
+  String get usSafetyTrustedSub => 'Người thân, bạn bè hoặc hàng xóm bạn tin';
+
+  @override
+  String get usSafetyPrivateNote =>
+      'Nội dung bạn vừa viết được giữ riêng, không gửi cho ai.';
+
+  @override
+  String usSafetyNoNotify(String callName) {
+    return '$callName không nhận thông báo nào về màn hình này.';
+  }
+
+  @override
+  String get usSafetyNoHistory =>
+      'Màn hình này không được ghi vào lịch sử phiên.';
+
+  @override
+  String get usSafetyKeepPrivate => 'Giữ riêng nội dung này';
+
+  @override
+  String get usSafetyDisclaimer =>
+      'Baby Family không phải dịch vụ khẩn cấp hay trị liệu. Tính năng này luôn miễn phí.';
+
+  @override
+  String get usCoupleWeekCheckins => 'lần check-in';
+
+  @override
+  String get usCoupleWeekCheckinsSub =>
+      'Hai bạn đã chia sẻ hôm nay mình thế nào';
+
+  @override
+  String get usCoupleWeekRequests => 'lời nhờ được hỗ trợ';
+
+  @override
+  String get usCoupleWeekRequestsSub => 'Nhận và làm giúp nhau';
+
+  @override
+  String get usCoupleWeekThanks => 'lời cảm ơn';
+
+  @override
+  String get usCoupleWeekThanksSub => 'Gửi cho nhau trong tuần';
+
+  @override
+  String get usCoupleWeekTogether => 'nhiệm vụ cùng nhau';
+
+  @override
+  String get usCoupleWeekTogetherSub => 'Từ Nhiệm vụ hai ta';
+
+  @override
+  String get usCoupleWeekThanksKicker => 'MỘT LỜI CẢM ƠN TRONG TUẦN';
+
+  @override
+  String usCoupleWeekThanksMeta(String callName, String date) {
+    return '$callName · $date';
+  }
+
+  @override
+  String get usCoupleWeekTogetherLabel => 'Hai ta đã cùng nhau';
+
+  @override
+  String get usCoupleWeekNote =>
+      'Không có điểm số, không so sánh — chỉ là những điều hai bạn đã làm cho nhau.';
+
+  @override
+  String get usCoupleWeekSendThanks => 'Gửi một lời cảm ơn';
+
+  @override
+  String get recapDayDiscard => 'Bỏ';
+
+  @override
+  String recapDayKicker(String date) {
+    return 'CÂU CHUYỆN NGÀY · $date';
+  }
+
+  @override
+  String recapDayChild(String name, String age) {
+    return '$name · $age';
+  }
+
+  @override
+  String get recapDayRewrite => 'Viết lại';
+
+  @override
+  String get recapDayManual => 'Tự viết';
+
+  @override
+  String get recapDayRewritten => 'Đã viết lại đoạn văn';
+
+  @override
+  String get recapDayMemories => 'Ký ức hôm nay';
+
+  @override
+  String recapDaySelected(int selected, int total) {
+    return 'Đã chọn $selected/$total';
+  }
+
+  @override
+  String recapDayItemMeta(String kind, String time) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'photo': 'Ảnh',
+      'mission': 'Nhiệm vụ đã xong',
+      'voice': 'Giọng nói',
+      'quote': 'Câu nói',
+      'video': 'Video',
+      'other': 'Ký ức',
+    });
+    return '$_temp0 · $time';
+  }
+
+  @override
+  String get recapDayHint => 'Câu chuyện chỉ dùng những ký ức bạn đã tick.';
+
+  @override
+  String get recapDayPhotos => 'Ảnh kèm';
+
+  @override
+  String get recapDayWhoSees => 'Ai sẽ thấy';
+
+  @override
+  String get recapDaySave => 'Lưu câu chuyện';
+
+  @override
+  String get recapDaySaved => 'Đã lưu câu chuyện ngày';
+
+  @override
+  String get recapDayTitleEdit => 'Tiêu đề câu chuyện';
+
+  @override
+  String recapDayOpen(String name) {
+    return 'Câu chuyện ngày của $name';
+  }
+
+  @override
+  String recapMonthHeadline(String name, int month) {
+    return '$name tròn $month tháng 🎉';
+  }
+
+  @override
+  String recapMonthRange(int month, String range) {
+    return 'Tháng thứ $month · $range';
+  }
+
+  @override
+  String recapMonthLabel(int month) {
+    return 'Tháng $month';
+  }
+
+  @override
+  String recapMonthNow(int month) {
+    return 'Tháng $month · hôm nay';
+  }
+
+  @override
+  String get recapMonthVoices => 'câu nói & giọng nói';
+
+  @override
+  String get recapMonthVoicesKicker => 'CÂU NÓI & GIỌNG NÓI';
+
+  @override
+  String recapMonthFirstMeta(String age, String date) {
+    return '$age · $date';
+  }
+
+  @override
+  String recapMonthVoiceMeta(String date, String callName) {
+    return '$date · $callName ghi';
+  }
+
+  @override
+  String get careMenuStats => 'Thống kê chăm con';
+
+  @override
+  String get careStatsDone => 'Nhiệm vụ cả nhà đã hoàn thành';
+
+  @override
+  String get careStatsUnit => 'việc trong tuần';
+
+  @override
+  String careStatsCategory(String category) {
+    String _temp0 = intl.Intl.selectLogic(category, {
+      'care': 'Chăm sóc',
+      'bonding': 'Gắn kết',
+      'outing': 'Ra ngoài',
+      'support': 'Hỗ trợ nhau',
+      'together': 'Cùng nhau',
+      'other': 'Khác',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get careStatsNote => 'Nhiệm vụ “Hai ta” không tính vào chăm con.';
+
+  @override
+  String careStatsBloomOf(int total) {
+    return '/ $total ngày';
+  }
+
+  @override
+  String get careStatsBloomLabel => 'cây của nhà mình nở hoa';
+
+  @override
+  String get careStatsDisclaimer =>
+      'Chỉ dựa trên hoạt động ghi trong app. Còn rất nhiều điều bố mẹ làm cho nhau mà app không đếm được.';
+
+  @override
+  String get careStatsPrivacy => 'Chỉ Papa & Mama xem được thống kê này';
+
+  @override
+  String get commonPrevWeek => 'Tuần trước';
+
+  @override
+  String get commonNextWeek => 'Tuần sau';
+
+  @override
+  String memPendingNotify(String name, int count, String child) {
+    return '$name vừa đăng $count ảnh của $child — chờ bạn duyệt';
+  }
 }

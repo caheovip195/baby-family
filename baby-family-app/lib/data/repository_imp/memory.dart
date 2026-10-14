@@ -134,11 +134,25 @@ class MemoryRepositoryImp extends MockRepositoryImp
   void removeFromTrash(String id) => removeRow('trash', id);
 
   @override
+  void moveToTrash(String id, JsonMap patch) {
+    final row = store.find('memories', id);
+    if (row == null) {
+      return;
+    }
+    store.remove('memories', id);
+    store.table('trash').insert(0, {...row, ...patch});
+    store.commit();
+  }
+
+  @override
   List<JsonMap> drafts(String userId) =>
       rows('drafts', (row) => row['userId'] == userId);
 
   @override
   void removeDraft(String id) => removeRow('drafts', id);
+
+  @override
+  JsonMap addDraft(JsonMap draft) => insert('drafts', draft);
 
   @override
   List<JsonMap> pendingPosts(String familyId) =>

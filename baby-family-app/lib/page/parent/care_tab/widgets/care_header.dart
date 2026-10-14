@@ -55,6 +55,7 @@ class _CareHeader extends StatelessWidget {
                   context,
                   onHistory: () =>
                       context.router.push(const MissionHistoryRoute()),
+                  onStats: () => context.router.push(const CareStatsRoute()),
                   onBadges: () => context.router.push(const BadgesRoute()),
                   onSettings: () =>
                       context.router.push(const MissionSettingsRoute()),

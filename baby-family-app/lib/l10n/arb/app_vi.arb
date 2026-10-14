@@ -9101,5 +9101,3103 @@
   "settingsBlockedTitle": "Người bị chặn",
   "@settingsBlockedTitle": {
     "description": "SET-13 title"
+  },
+  "subPlanActive": "Đang hoạt động",
+  "@subPlanActive": {
+    "description": "SUB-03 status pill"
+  },
+  "subPlanAutoRenew": "Gia hạn tự động",
+  "@subPlanAutoRenew": {
+    "description": "SUB-03 info label"
+  },
+  "subPlanPayer": "Người thanh toán",
+  "@subPlanPayer": {
+    "description": "SUB-03 info label"
+  },
+  "subPlanChannel": "Kênh mua",
+  "@subPlanChannel": {
+    "description": "SUB-03 info label"
+  },
+  "subPlanAppliesTo": "Áp dụng cho",
+  "@subPlanAppliesTo": {
+    "description": "SUB-03 info label"
+  },
+  "subPlanWholeFamily": "Cả {family}",
+  "@subPlanWholeFamily": {
+    "description": "SUB-03 applies-to value",
+    "placeholders": {
+      "family": {
+        "type": "String"
+      }
+    }
+  },
+  "subPlanGb": "{value} GB",
+  "@subPlanGb": {
+    "description": "Storage amount in GB",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "subPlanUsedOf": "đã dùng / {total} GB",
+  "@subPlanUsedOf": {
+    "description": "SUB-03 storage caption",
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "subPlanStorageKind": "{kind, select, photo{Ảnh} video{Video} audio{Âm thanh} other{Khác}} · {size} GB",
+  "@subPlanStorageKind": {
+    "description": "SUB-03 storage legend",
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "subPlanIncluded": "Trong gói của nhà mình",
+  "@subPlanIncluded": {
+    "description": "SUB-03 section"
+  },
+  "subPlanRelatives": "Người thân",
+  "@subPlanRelatives": {
+    "description": "SUB-03 usage row"
+  },
+  "subPlanSlots": "{used}/{max}",
+  "@subPlanSlots": {
+    "description": "Used/max counter",
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "subPlanAi": "Lượt AI tháng này",
+  "@subPlanAi": {
+    "description": "SUB-03 usage row"
+  },
+  "subPlanAiRenews": "Làm mới vào {date}",
+  "@subPlanAiRenews": {
+    "description": "SUB-03 AI reset date",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "subPlanAiLeft": "Còn {remaining}/{total}",
+  "@subPlanAiLeft": {
+    "description": "SUB-03 AI remaining",
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "subPlanVideo": "Video tối đa",
+  "@subPlanVideo": {
+    "description": "SUB-03 usage row"
+  },
+  "subPlanVideoHint": "Ảnh gốc · {count} ảnh mỗi ký ức",
+  "@subPlanVideoHint": {
+    "description": "SUB-03 usage hint",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "subPlanVideoHintCompressed": "{count} ảnh mỗi ký ức",
+  "@subPlanVideoHintCompressed": {
+    "description": "SUB-03 usage hint (no original quality)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "subPlanMinutes": "{count} phút",
+  "@subPlanMinutes": {
+    "description": "Minutes value",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "subPlanManageStore": "Quản lý trong {channel}",
+  "@subPlanManageStore": {
+    "description": "SUB-03 primary button",
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      }
+    }
+  },
+  "subPlanChange": "Đổi gói",
+  "@subPlanChange": {
+    "description": "SUB-03 secondary button"
+  },
+  "subPlanNote": "Gói nằm trong tài khoản {channel} của {payer} nên chỉ {payer} đổi hoặc huỷ được. {partner} sẽ thấy hướng dẫn nhờ {payer}. Huỷ bất kỳ lúc nào trong cài đặt {channel} — ký ức của nhà mình không bị xoá.",
+  "@subPlanNote": {
+    "description": "SUB-03 note",
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      },
+      "payer": {
+        "type": "String"
+      },
+      "partner": {
+        "type": "String"
+      }
+    }
+  },
+  "subManageStoreMock": "Bản mẫu: trang quản lý gói của {channel} chỉ được mô phỏng.",
+  "@subManageStoreMock": {
+    "description": "SUB-03/06 mock store snackbar",
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      }
+    }
+  },
+  "subUpgradeTitle": "Nâng cấp lên Family để mời ông bà",
+  "@subUpgradeTitle": {
+    "description": "SUB-04 title"
+  },
+  "subUpgradeSubtitle": "Nhà mình đang dùng gói House · {payer} thanh toán qua {channel}. Family mở thêm ông bà, người thân và dung lượng lớn hơn.",
+  "@subUpgradeSubtitle": {
+    "description": "SUB-04 subtitle",
+    "placeholders": {
+      "payer": {
+        "type": "String"
+      },
+      "channel": {
+        "type": "String"
+      }
+    }
+  },
+  "subCmpRelatives": "Ông bà, người thân",
+  "@subCmpRelatives": {
+    "description": "SUB-04 compare row"
+  },
+  "subCmpPhotos": "Ảnh mỗi ký ức",
+  "@subCmpPhotos": {
+    "description": "SUB-04 compare row"
+  },
+  "subCmpVideo": "Video",
+  "@subCmpVideo": {
+    "description": "SUB-04 compare row"
+  },
+  "subCmpVoice": "Ghi âm",
+  "@subCmpVoice": {
+    "description": "SUB-04 compare row"
+  },
+  "subCmpOriginal": "Lưu ảnh chất lượng gốc",
+  "@subCmpOriginal": {
+    "description": "SUB-04 compare row"
+  },
+  "subCmpAi": "Lượt AI mỗi tháng",
+  "@subCmpAi": {
+    "description": "SUB-04 compare row"
+  },
+  "subCmpDigest": "Bản tin, duyệt ảnh người thân",
+  "@subCmpDigest": {
+    "description": "SUB-04 compare row"
+  },
+  "subCmpNone": "—",
+  "@subCmpNone": {
+    "description": "SUB-04 not included"
+  },
+  "subCmpYes": "Có",
+  "@subCmpYes": {
+    "description": "SUB-04 included"
+  },
+  "subCmpUpTo": "Tối đa {count}",
+  "@subCmpUpTo": {
+    "description": "SUB-04 relatives value",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "subCmpMaxMinutes": "≤ {count} phút",
+  "@subCmpMaxMinutes": {
+    "description": "SUB-04 max minutes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "subUpgradeCurrent": "Hiện tại",
+  "@subUpgradeCurrent": {
+    "description": "SUB-04 price label"
+  },
+  "subUpgradeProrate": "Nâng cấp có hiệu lực ngay. {channel} tự tính phần chênh lệch cho thời gian còn lại của gói House — bạn không phải trả lại cả năm.",
+  "@subUpgradeProrate": {
+    "description": "SUB-04 prorate note",
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      }
+    }
+  },
+  "subUpgradeCta": "Nâng cấp lên Family · {price}",
+  "@subUpgradeCta": {
+    "description": "SUB-04 button",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "subUpgradeLegal": "Tự động gia hạn hằng năm, huỷ bất kỳ lúc nào trong cài đặt App Store. Điều khoản · Quyền riêng tư · Khôi phục giao dịch",
+  "@subUpgradeLegal": {
+    "description": "SUB-04 legal"
+  },
+  "subUpgradeNotPayerLabel": "{partner} sẽ thấy (không phải người thanh toán)",
+  "@subUpgradeNotPayerLabel": {
+    "description": "SUB-04 non-payer preview label",
+    "placeholders": {
+      "partner": {
+        "type": "String"
+      }
+    }
+  },
+  "subUpgradeNotPayerBody": "Gói House đang do {payer} thanh toán. Để tránh trả 2 lần, hãy nhờ {payer} nâng cấp.",
+  "@subUpgradeNotPayerBody": {
+    "description": "SUB-04 non-payer preview body",
+    "placeholders": {
+      "payer": {
+        "type": "String"
+      }
+    }
+  },
+  "subUpgradeAskPayer": "Gửi lời nhắn cho {payer}",
+  "@subUpgradeAskPayer": {
+    "description": "SUB-04 non-payer button",
+    "placeholders": {
+      "payer": {
+        "type": "String"
+      }
+    }
+  },
+  "subUpgradeAskSent": "Đã gửi lời nhắn cho {payer}",
+  "@subUpgradeAskSent": {
+    "description": "SUB-04 snackbar",
+    "placeholders": {
+      "payer": {
+        "type": "String"
+      }
+    }
+  },
+  "subConfirmTitle": "Xác nhận gói {plan}",
+  "@subConfirmTitle": {
+    "description": "SUB-02 title",
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      }
+    }
+  },
+  "subConfirmAudienceFamily": "Cho cả {family} · {papa}, {mama} và người thân",
+  "@subConfirmAudienceFamily": {
+    "description": "SUB-02 subtitle (Family)",
+    "placeholders": {
+      "family": {
+        "type": "String"
+      },
+      "papa": {
+        "type": "String"
+      },
+      "mama": {
+        "type": "String"
+      }
+    }
+  },
+  "subConfirmAudienceHouse": "Cho cả {family} · {papa} & {mama}",
+  "@subConfirmAudienceHouse": {
+    "description": "SUB-02 subtitle (House)",
+    "placeholders": {
+      "family": {
+        "type": "String"
+      },
+      "papa": {
+        "type": "String"
+      },
+      "mama": {
+        "type": "String"
+      }
+    }
+  },
+  "subConfirmPrice": "Giá",
+  "@subConfirmPrice": {
+    "description": "SUB-02 row"
+  },
+  "subConfirmMonthly": "Quy đổi",
+  "@subConfirmMonthly": {
+    "description": "SUB-02 row"
+  },
+  "subConfirmCycle": "Chu kỳ",
+  "@subConfirmCycle": {
+    "description": "SUB-02 row"
+  },
+  "subConfirmCycleValue": "1 năm · tự động gia hạn",
+  "@subConfirmCycleValue": {
+    "description": "SUB-02 value"
+  },
+  "subConfirmEffective": "Hiệu lực",
+  "@subConfirmEffective": {
+    "description": "SUB-02 row"
+  },
+  "subConfirmEffectiveValue": "Ngay khi App Store xác nhận",
+  "@subConfirmEffectiveValue": {
+    "description": "SUB-02 value"
+  },
+  "subConfirmPayVia": "Thanh toán qua",
+  "@subConfirmPayVia": {
+    "description": "SUB-02 row"
+  },
+  "subConfirmPayViaValue": "Tài khoản App Store của bạn",
+  "@subConfirmPayViaValue": {
+    "description": "SUB-02 value"
+  },
+  "subConfirmRelatives": "Mời ngay tối đa {count} ông bà, người thân",
+  "@subConfirmRelatives": {
+    "description": "SUB-02 point",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "subConfirmLimits": "{storage} GB · video ≤ {video} phút{original, select, yes{ · lưu ảnh gốc} other{}}",
+  "@subConfirmLimits": {
+    "description": "SUB-02 point",
+    "placeholders": {
+      "storage": {
+        "type": "int"
+      },
+      "video": {
+        "type": "int"
+      },
+      "original": {
+        "type": "String"
+      }
+    }
+  },
+  "subConfirmTrialNote": "Thời gian dùng thử còn lại không cộng dồn — chu kỳ năm tính từ hôm nay",
+  "@subConfirmTrialNote": {
+    "description": "SUB-02 point"
+  },
+  "subConfirmCta": "Tiếp tục với App Store",
+  "@subConfirmCta": {
+    "description": "SUB-02 button"
+  },
+  "subConfirmLegal": "Bước tiếp theo là bảng thanh toán của App Store. Tự động gia hạn hằng năm, huỷ bất kỳ lúc nào trong cài đặt App Store.",
+  "@subConfirmLegal": {
+    "description": "SUB-02 legal"
+  },
+  "subLinkTerms": "Điều khoản",
+  "@subLinkTerms": {
+    "description": "SUB-02 link"
+  },
+  "subLimitVideoTitle": "Video này dài {minutes} phút",
+  "@subLimitVideoTitle": {
+    "description": "SUB-05 title",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "subLimitVideoBody": "{plan} lưu được video tối đa {max} phút mỗi video. Bạn có thể cắt ngắn lại, hoặc giữ khoảnh khắc này bằng lời kể.",
+  "@subLimitVideoBody": {
+    "description": "SUB-05 body",
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "subLimitSafe": "Ký ức của bạn vẫn an toàn — chưa có gì bị xoá, nội dung đang soạn vẫn được giữ nguyên.",
+  "@subLimitSafe": {
+    "description": "SUB-05 safe note"
+  },
+  "subLimitTrim": "Cắt video còn {max} phút",
+  "@subLimitTrim": {
+    "description": "SUB-05 primary",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "subLimitPickAnother": "Chọn video khác",
+  "@subLimitPickAnother": {
+    "description": "SUB-05 secondary"
+  },
+  "subLimitSaveDiary": "Lưu dạng nhật ký chữ",
+  "@subLimitSaveDiary": {
+    "description": "SUB-05 text button"
+  },
+  "subLimitTopPlan": "Nhà mình đang dùng gói cao nhất (Family) nên không cần nâng cấp thêm.",
+  "@subLimitTopPlan": {
+    "description": "SUB-05 plan note"
+  },
+  "subLimitUpgrade": "Nâng cấp lên Family",
+  "@subLimitUpgrade": {
+    "description": "SUB-05 upgrade link (House/trial)"
+  },
+  "subLimitTrimmed": "Đã cắt video còn {max} phút",
+  "@subLimitTrimmed": {
+    "description": "SUB-05 snackbar",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "subIssueTitle": "Thanh toán gia hạn chưa thành công",
+  "@subIssueTitle": {
+    "description": "SUB-06 banner title"
+  },
+  "subIssueBody": "Kiểm tra phương thức thanh toán để không gián đoạn. {plan} của nhà mình vẫn hoạt động trong lúc này.",
+  "@subIssueBody": {
+    "description": "SUB-06 banner body",
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      }
+    }
+  },
+  "subIssueAction": "Kiểm tra trong App Store",
+  "@subIssueAction": {
+    "description": "SUB-06 banner action"
+  },
+  "invInvalidTipMessage": "Nhắn cho người đã mời bạn (Bố/Mẹ của bé) để họ tạo lời mời mới.",
+  "@invInvalidTipMessage": {
+    "description": "INV-02 tip"
+  },
+  "invInvalidTipCode": "Nếu đã có mã 8 ký tự mới, bạn có thể nhập mã ngay.",
+  "@invInvalidTipCode": {
+    "description": "INV-02 tip"
+  },
+  "invEnterOtherCode": "Nhập mã mời khác",
+  "@invEnterOtherCode": {
+    "description": "INV-02 primary"
+  },
+  "invElsewhereTitle": "Bạn đang là {callName} ở một gia đình khác",
+  "@invElsewhereTitle": {
+    "description": "INV-03 title",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "invElsewhereBody": "Mỗi tài khoản chỉ là Bố/Mẹ của một gia đình, nên bạn chưa thể nhận lời mời này.",
+  "@invElsewhereBody": {
+    "description": "INV-03 body"
+  },
+  "invElsewhereInvite": "{inviter} mời bạn tham gia {family}",
+  "@invElsewhereInvite": {
+    "description": "INV-03 invite card",
+    "placeholders": {
+      "inviter": {
+        "type": "String"
+      },
+      "family": {
+        "type": "String"
+      }
+    }
+  },
+  "invElsewhereRole": "Vai trò đề xuất: {callName} của các bé",
+  "@invElsewhereRole": {
+    "description": "INV-03 invite card",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "invElsewhereJoinRelative": "Tham gia như người thân",
+  "@invElsewhereJoinRelative": {
+    "description": "INV-03 disabled option"
+  },
+  "invElsewhereJoinRelativeHint": "Không khả dụng — lời mời này dành cho Bố/Mẹ. Nhờ {inviter} gửi lời mời người thân nếu bạn muốn xem các bé.",
+  "@invElsewhereJoinRelativeHint": {
+    "description": "INV-03 disabled option hint",
+    "placeholders": {
+      "inviter": {
+        "type": "String"
+      }
+    }
+  },
+  "invElsewhereLeave": "Tìm hiểu cách rời gia đình hiện tại",
+  "@invElsewhereLeave": {
+    "description": "INV-03 option"
+  },
+  "invElsewhereLeaveHint": "Các lựa chọn cho Bố/Mẹ và cách nhờ hỗ trợ",
+  "@invElsewhereLeaveHint": {
+    "description": "INV-03 option hint"
+  },
+  "invWaitingTitle": "Đã gửi yêu cầu",
+  "@invWaitingTitle": {
+    "description": "INV-04 title"
+  },
+  "invWaitingBody": "{inviter} sẽ xác nhận để hoàn tất. Bạn có thể đóng app — mình sẽ báo ngay khi xong.",
+  "@invWaitingBody": {
+    "description": "INV-04 body",
+    "placeholders": {
+      "inviter": {
+        "type": "String"
+      }
+    }
+  },
+  "invWaitingStepJoined": "Bạn đã nhận lời mời vào {family}",
+  "@invWaitingStepJoined": {
+    "description": "INV-04 step",
+    "placeholders": {
+      "family": {
+        "type": "String"
+      }
+    }
+  },
+  "invWaitingStepRole": "Vai trò: {callName} của các bé",
+  "@invWaitingStepRole": {
+    "description": "INV-04 step hint",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "invWaitingStepConfirm": "Chờ {inviter} xác nhận",
+  "@invWaitingStepConfirm": {
+    "description": "INV-04 step",
+    "placeholders": {
+      "inviter": {
+        "type": "String"
+      }
+    }
+  },
+  "invWaitingStepConfirmHint": "{inviter} bật “xác nhận lần cuối” để chắc đúng người",
+  "@invWaitingStepConfirmHint": {
+    "description": "INV-04 step hint",
+    "placeholders": {
+      "inviter": {
+        "type": "String"
+      }
+    }
+  },
+  "invWaitingStepTrial": "Nhà mình bắt đầu 3 tháng dùng thử miễn phí",
+  "@invWaitingStepTrial": {
+    "description": "INV-04 step"
+  },
+  "invWaitingNotice": "Bạn sẽ nhận thông báo “Chào mừng về nhà!”",
+  "@invWaitingNotice": {
+    "description": "INV-04 notice"
+  },
+  "famPartnerLeftBanner": "{partner} đã rời {family} (xoá tài khoản). Nhà mình đang ở chế độ chỉ xem & tải về cho tới khi có bạn đời mới.",
+  "@famPartnerLeftBanner": {
+    "description": "FAM-02 banner",
+    "placeholders": {
+      "partner": {
+        "type": "String"
+      },
+      "family": {
+        "type": "String"
+      }
+    }
+  },
+  "famPartnerInviteSubtitle": "Khi bạn đời tham gia, cả nhà lại cùng tạo ký ức, nhiệm vụ và góc Papa & Mama như trước.",
+  "@famPartnerInviteSubtitle": {
+    "description": "FAM-02 subtitle"
+  },
+  "famPartnerInviteRole": "Mời với vai trò",
+  "@famPartnerInviteRole": {
+    "description": "FAM-02 role label"
+  },
+  "famPartnerRecipientSees": "Người nhận sẽ thấy trước khi tham gia",
+  "@famPartnerRecipientSees": {
+    "description": "FAM-02 preview title"
+  },
+  "famPartnerRecipientHint": "Lời mời từ {name} ({callName}) · chỉ tên và ảnh đại diện các bé",
+  "@famPartnerRecipientHint": {
+    "description": "FAM-02 preview hint",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "famPartnerRevoke": "Thu hồi lời mời",
+  "@famPartnerRevoke": {
+    "description": "FAM-02 revoke"
+  },
+  "famPartnerRevoked": "Đã thu hồi lời mời",
+  "@famPartnerRevoked": {
+    "description": "FAM-02 snackbar"
+  },
+  "famInvitesCapacity": "Người thân {family}: {active} đang tham gia · {pending} đang chờ",
+  "@famInvitesCapacity": {
+    "description": "FAM-05 capacity",
+    "placeholders": {
+      "family": {
+        "type": "String"
+      },
+      "active": {
+        "type": "int"
+      },
+      "pending": {
+        "type": "int"
+      }
+    }
+  },
+  "famInvitesPending": "Đang chờ",
+  "@famInvitesPending": {
+    "description": "FAM-05 section"
+  },
+  "famInvitesExpired": "Đã hết hạn",
+  "@famInvitesExpired": {
+    "description": "FAM-05 section"
+  },
+  "famInviteNotOpened": "Chưa mở link",
+  "@famInviteNotOpened": {
+    "description": "FAM-05 status"
+  },
+  "famInviteOpened": "Đã mở link",
+  "@famInviteOpened": {
+    "description": "FAM-05 status"
+  },
+  "famInviteExpiredTag": "Hết hạn",
+  "@famInviteExpiredTag": {
+    "description": "FAM-05 status"
+  },
+  "famInviteKindRelative": "Lời mời người thân",
+  "@famInviteKindRelative": {
+    "description": "FAM-05 description"
+  },
+  "famInvitePermView": "Xem",
+  "@famInvitePermView": {
+    "description": "FAM-05/08 permission"
+  },
+  "famInvitePermComment": "Xem + Bình luận",
+  "@famInvitePermComment": {
+    "description": "FAM-05/08 permission"
+  },
+  "famInvitePermPost": "Xem + Bình luận + Đăng ảnh",
+  "@famInvitePermPost": {
+    "description": "FAM-05 permission"
+  },
+  "famInviteDates": "Tạo {created} · hết hạn {expires} · {daysLeft}",
+  "@famInviteDates": {
+    "description": "FAM-05 dates",
+    "placeholders": {
+      "created": {
+        "type": "String"
+      },
+      "expires": {
+        "type": "String"
+      },
+      "daysLeft": {
+        "type": "String"
+      }
+    }
+  },
+  "famInviteDaysLeft": "{count, plural, =0{hết hạn hôm nay} other{còn {count} ngày}}",
+  "@famInviteDaysLeft": {
+    "description": "FAM-05 days left",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "famInviteExpiredOn": "Hết hạn {date} · link không còn mở được",
+  "@famInviteExpiredOn": {
+    "description": "FAM-05 expired date",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "famInviteResend": "Gửi lại link",
+  "@famInviteResend": {
+    "description": "FAM-05 action"
+  },
+  "famInviteRevoke": "Thu hồi",
+  "@famInviteRevoke": {
+    "description": "FAM-05 action"
+  },
+  "famInviteRenew": "Tạo lời mời mới",
+  "@famInviteRenew": {
+    "description": "FAM-05 action"
+  },
+  "famInviteResent": "Đã gửi lại link cho {callName}",
+  "@famInviteResent": {
+    "description": "FAM-05 snackbar",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "famInviteRevokedName": "Đã thu hồi lời mời của {callName}",
+  "@famInviteRevokedName": {
+    "description": "FAM-05 snackbar",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "famInviteRenewed": "Đã tạo lời mời mới cho {callName}",
+  "@famInviteRenewed": {
+    "description": "FAM-05 snackbar",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "famInvitesRules": "Lời mời người thân hết hạn sau 14 ngày và chỉ dùng 1 lần. Thu hồi để link cũ không mở được nữa. Tối đa 12 người thân, tính cả lời mời đang chờ.",
+  "@famInvitesRules": {
+    "description": "FAM-05 rules"
+  },
+  "famInviteMore": "Mời thêm người thân",
+  "@famInviteMore": {
+    "description": "FAM-05 button"
+  },
+  "famInvitesEmpty": "Chưa có lời mời nào đang chờ",
+  "@famInvitesEmpty": {
+    "description": "FAM-05 empty"
+  },
+  "famSwitchTitle": "Chuyển gia đình",
+  "@famSwitchTitle": {
+    "description": "FAM-08 title"
+  },
+  "famSwitchSubtitle": "Bạn là {callName} ở {family} và là người thân ở một gia đình khác.",
+  "@famSwitchSubtitle": {
+    "description": "FAM-08 subtitle",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      },
+      "family": {
+        "type": "String"
+      }
+    }
+  },
+  "famSwitchRoleParent": "{callName} (Bố/Mẹ)",
+  "@famSwitchRoleParent": {
+    "description": "FAM-08 role pill",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "famSwitchRoleRelative": "{callName} (người thân)",
+  "@famSwitchRoleRelative": {
+    "description": "FAM-08 role pill",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "famSwitchViewing": "đang xem",
+  "@famSwitchViewing": {
+    "description": "FAM-08 current marker"
+  },
+  "famSwitchFollows": "Theo dõi bé {names}",
+  "@famSwitchFollows": {
+    "description": "FAM-08 relative line",
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "famSwitchNote": "Chuyển gia đình sẽ đổi toàn bộ app theo gia đình được chọn. Ở {family}, bạn chỉ thấy ảnh của bé được chia sẻ — không có Chăm con hay Papa & Mama. Mỗi tài khoản chỉ là Bố/Mẹ của một gia đình.",
+  "@famSwitchNote": {
+    "description": "FAM-08 note",
+    "placeholders": {
+      "family": {
+        "type": "String"
+      }
+    }
+  },
+  "famSwitchMock": "Bản mẫu chỉ có dữ liệu của {family}.",
+  "@famSwitchMock": {
+    "description": "FAM-08 mock snackbar",
+    "placeholders": {
+      "family": {
+        "type": "String"
+      }
+    }
+  },
+  "setAiMaster": "Dùng AI hỗ trợ",
+  "@setAiMaster": {
+    "description": "SET-05 master"
+  },
+  "setAiMasterHint": "AI chỉ chạy khi bạn bấm. Mọi kết quả là bản nháp để bạn sửa, bỏ hoặc lưu.",
+  "@setAiMasterHint": {
+    "description": "SET-05 master hint"
+  },
+  "setAiQuotaLabel": "Lượt AI còn lại tháng này",
+  "@setAiQuotaLabel": {
+    "description": "SET-05 quota"
+  },
+  "setAiQuotaTotal": "/ {total} lượt",
+  "@setAiQuotaTotal": {
+    "description": "SET-05 quota total",
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "setAiRenews": "Làm mới {date}",
+  "@setAiRenews": {
+    "description": "SET-05 reset",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "setAiPlanQuota": "{plan} · {total} lượt mỗi tháng cho cả nhà",
+  "@setAiPlanQuota": {
+    "description": "SET-05 quota footer",
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "setAiFeatures": "Từng tính năng",
+  "@setAiFeatures": {
+    "description": "SET-05 section"
+  },
+  "setAiDataSection": "Dữ liệu gửi đi",
+  "@setAiDataSection": {
+    "description": "SET-05 section"
+  },
+  "setAiData1": "Chỉ gửi những gì ghi ở từng tính năng, cho đúng lần bạn bấm.",
+  "@setAiData1": {
+    "description": "SET-05 data point"
+  },
+  "setAiData2": "AI không đọc nhật ký riêng, không chẩn đoán, không tự gửi tin cho ai.",
+  "@setAiData2": {
+    "description": "SET-05 data point"
+  },
+  "setAiData3": "Lần đầu dùng mỗi tính năng, app hỏi bạn đồng ý trước.",
+  "@setAiData3": {
+    "description": "SET-05 data point"
+  },
+  "setAiData4": "Mọi bản nháp đều có nhãn “✨ Gợi ý bởi AI”.",
+  "@setAiData4": {
+    "description": "SET-05 data point"
+  },
+  "setAiDataLink": "Xem chi tiết dữ liệu gửi cho nhà cung cấp AI",
+  "@setAiDataLink": {
+    "description": "SET-05 link"
+  },
+  "setAiReport": "Báo cáo nội dung AI",
+  "@setAiReport": {
+    "description": "SET-05 row"
+  },
+  "setAiFoot": "Tắt AI, Baby Family vẫn dùng đầy đủ mọi tính năng.",
+  "@setAiFoot": {
+    "description": "SET-05 footer"
+  },
+  "setBlockedBody": "Người bị chặn không bình luận hay thả cảm xúc vào nội dung của bạn, và bạn không nhận thông báo liên quan đến họ.",
+  "@setBlockedBody": {
+    "description": "SET-13 body"
+  },
+  "setBlockedSection": "Đang chặn · {count} người",
+  "@setBlockedSection": {
+    "description": "SET-13 section",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "setBlockedSince": "Chặn từ {date}",
+  "@setBlockedSince": {
+    "description": "SET-13 row",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "setUnblock": "Bỏ chặn",
+  "@setUnblock": {
+    "description": "SET-13 button"
+  },
+  "setUnblocked": "Đã bỏ chặn {name}",
+  "@setUnblocked": {
+    "description": "SET-13 snackbar",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "setUnblockInfo": "Sau khi bỏ chặn, người này có thể bình luận và thả cảm xúc vào nội dung của bạn như trước. Bạn có thể chặn lại bất cứ lúc nào từ trang của họ.",
+  "@setUnblockInfo": {
+    "description": "SET-13 info"
+  },
+  "setBlockedPartnerNote": "Papa và Mama không chặn nhau trong app. Nếu cần khoảng lặng, bạn có thể tắt chia sẻ cảm xúc trong Papa & Mama.",
+  "@setBlockedPartnerNote": {
+    "description": "SET-13 partner note"
+  },
+  "setBlockedEmpty": "Bạn chưa chặn ai",
+  "@setBlockedEmpty": {
+    "description": "SET-13 empty"
+  },
+  "commonDeleteForever": "Xoá vĩnh viễn",
+  "@commonDeleteForever": {
+    "description": "Delete permanently (MEM-17, CHD-05)"
+  },
+  "memTrashInfo": "Ký ức đã xoá được giữ {days} ngày rồi mới xoá hẳn. Bạn thấy mọi ký ức bị xoá trong gia đình.",
+  "@memTrashInfo": {
+    "description": "MEM-17 info",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "memTrashInfoOwn": "Ký ức đã xoá được giữ {days} ngày rồi mới xoá hẳn. Bạn thấy những ký ức bạn đã xoá.",
+  "@memTrashInfoOwn": {
+    "description": "MEM-17 info for relatives",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "memTrashCount": "{count} ký ức",
+  "@memTrashCount": {
+    "description": "MEM-17 section",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "memTrashDeletedBy": "{callName} xoá {date} ·",
+  "@memTrashDeletedBy": {
+    "description": "MEM-17 who deleted",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "memTrashFootnote": "Khôi phục để ký ức trở lại đúng chỗ cũ trên dòng thời gian, kèm bình luận và lượt thả tim.",
+  "@memTrashFootnote": {
+    "description": "MEM-17 footnote"
+  },
+  "memTrashEmpty": "Thùng rác trống",
+  "@memTrashEmpty": {
+    "description": "MEM-17 empty title"
+  },
+  "memTrashEmptyHint": "Ký ức bạn xoá sẽ nằm ở đây {days} ngày để bạn kịp đổi ý.",
+  "@memTrashEmptyHint": {
+    "description": "MEM-17 empty hint",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "memTrashRestored": "Đã khôi phục “{title}”",
+  "@memTrashRestored": {
+    "description": "MEM-17 snackbar",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "memTrashDeleted": "Đã xoá vĩnh viễn",
+  "@memTrashDeleted": {
+    "description": "MEM-17 snackbar"
+  },
+  "memTrashConfirmTitle": "Xoá vĩnh viễn ký ức này?",
+  "@memTrashConfirmTitle": {
+    "description": "MEM-17b title"
+  },
+  "memTrashConfirmBody": "Ảnh, bình luận và lượt thả tim của ký ức sẽ mất hẳn. Không thể khôi phục sau bước này.",
+  "@memTrashConfirmBody": {
+    "description": "MEM-17b body"
+  },
+  "memTrashKeep": "Giữ lại trong thùng rác",
+  "@memTrashKeep": {
+    "description": "MEM-17b secondary button"
+  },
+  "memCommentCount": "{count} bình luận",
+  "@memCommentCount": {
+    "description": "Comment count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "memHeartCount": "{count} lượt thả tim",
+  "@memHeartCount": {
+    "description": "Heart count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "memMoveToTrash": "Xoá ký ức",
+  "@memMoveToTrash": {
+    "description": "MEM-07 menu"
+  },
+  "memMovedToTrash": "Đã chuyển vào thùng rác · giữ {days} ngày",
+  "@memMovedToTrash": {
+    "description": "MEM-07 snackbar",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "memMoveToTrashTitle": "Xoá ký ức này?",
+  "@memMoveToTrashTitle": {
+    "description": "MEM-07 delete dialog"
+  },
+  "memMoveToTrashBody": "Ký ức sẽ nằm trong Thùng rác {days} ngày, bạn có thể khôi phục trong thời gian đó.",
+  "@memMoveToTrashBody": {
+    "description": "MEM-07 delete dialog",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "memDraftsSubtitle": "Ký ức đang soạn dở được tự lưu khi bạn thoát giữa chừng. Chỉ mình bạn thấy nháp.",
+  "@memDraftsSubtitle": {
+    "description": "MEM-18 subtitle"
+  },
+  "memDraftsDevice": "Trên máy này",
+  "@memDraftsDevice": {
+    "description": "MEM-18 section"
+  },
+  "memDraftsCloud": "Đã lưu trên tài khoản",
+  "@memDraftsCloud": {
+    "description": "MEM-18 section"
+  },
+  "memDraftsLocalNote": "Nháp trên máy chưa được lưu lên tài khoản — xoá app sẽ mất.",
+  "@memDraftsLocalNote": {
+    "description": "MEM-18 note"
+  },
+  "memDraftContinue": "Tiếp tục soạn",
+  "@memDraftContinue": {
+    "description": "MEM-18 action"
+  },
+  "memDraftEditedToday": "Sửa lúc {time} hôm nay",
+  "@memDraftEditedToday": {
+    "description": "MEM-18 meta",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "memDraftEditedYesterday": "Sửa lúc {time} hôm qua",
+  "@memDraftEditedYesterday": {
+    "description": "MEM-18 meta",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "memDraftEditedOn": "Sửa {date}, {time}",
+  "@memDraftEditedOn": {
+    "description": "MEM-18 meta",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "memDraftSavedOn": "Lưu {date}, {time}",
+  "@memDraftSavedOn": {
+    "description": "MEM-18 meta",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "memDraftSavedOnDevice": "Lưu {date}, {time} trên {device}",
+  "@memDraftSavedOnDevice": {
+    "description": "MEM-18 meta",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      },
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "memKindMoment": "Khoảnh khắc",
+  "@memKindMoment": {
+    "description": "Memory kind label (photo)"
+  },
+  "memKindVoiceDuration": "Giọng nói {duration}",
+  "@memKindVoiceDuration": {
+    "description": "MEM-18 voice draft",
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "memDraftsEmpty": "Chưa có nháp nào",
+  "@memDraftsEmpty": {
+    "description": "MEM-18 empty"
+  },
+  "memDraftsEmptyHint": "Khi bạn thoát giữa chừng lúc đang soạn, ký ức sẽ được giữ ở đây.",
+  "@memDraftsEmptyHint": {
+    "description": "MEM-18 empty hint"
+  },
+  "memDraftDeleted": "Đã xoá nháp",
+  "@memDraftDeleted": {
+    "description": "MEM-18 snackbar"
+  },
+  "memDraftSaved": "Đã lưu vào Nháp",
+  "@memDraftSaved": {
+    "description": "Composer close snackbar"
+  },
+  "memDraftView": "Xem nháp",
+  "@memDraftView": {
+    "description": "Composer close snackbar action"
+  },
+  "memShortcutTrash": "Thùng rác",
+  "@memShortcutTrash": {
+    "description": "MEM-15 shortcut"
+  },
+  "memShortcutDrafts": "Nháp",
+  "@memShortcutDrafts": {
+    "description": "MEM-15 shortcut"
+  },
+  "memShortcutPending": "Ảnh chờ duyệt",
+  "@memShortcutPending": {
+    "description": "MEM-15 shortcut"
+  },
+  "memPendingSubtitle": "Ảnh người thân đăng chỉ hiện với cả nhà sau khi bạn hoặc {partner} duyệt. Trong lúc chờ, chỉ người đăng và bố mẹ thấy.",
+  "@memPendingSubtitle": {
+    "description": "MEM-19 subtitle",
+    "placeholders": {
+      "partner": {
+        "type": "String"
+      }
+    }
+  },
+  "memPendingKids": "Bé trong ảnh",
+  "@memPendingKids": {
+    "description": "MEM-19 edit row"
+  },
+  "memPendingAudience": "Ai nhìn thấy",
+  "@memPendingAudience": {
+    "description": "MEM-19 edit row"
+  },
+  "memPendingReject": "Từ chối",
+  "@memPendingReject": {
+    "description": "MEM-19 button"
+  },
+  "memPendingApprove": "Duyệt & hiện",
+  "@memPendingApprove": {
+    "description": "MEM-19 button"
+  },
+  "memPendingRejectReason": "Lý do từ chối (không bắt buộc)",
+  "@memPendingRejectReason": {
+    "description": "MEM-19 reject panel"
+  },
+  "memPendingRejectHint": "{name} sẽ nhận được lời nhắn nhẹ nhàng này. Ảnh không hiện với ai khác.",
+  "@memPendingRejectHint": {
+    "description": "MEM-19 reject hint",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memPendingRejectSend": "Từ chối ảnh",
+  "@memPendingRejectSend": {
+    "description": "MEM-19 reject confirm"
+  },
+  "memPendingWaited": "Đã chờ {count} ngày",
+  "@memPendingWaited": {
+    "description": "MEM-19 waiting badge",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "memPendingEmpty": "Không có ảnh nào chờ duyệt",
+  "@memPendingEmpty": {
+    "description": "MEM-19 empty"
+  },
+  "memPendingEmptyHint": "Ảnh người thân đăng cho các con sẽ hiện ở đây để bạn duyệt.",
+  "@memPendingEmptyHint": {
+    "description": "MEM-19 empty hint"
+  },
+  "memPendingApproved": "Đã duyệt — ảnh đã hiện với cả nhà",
+  "@memPendingApproved": {
+    "description": "MEM-19 snackbar"
+  },
+  "memPendingRejected": "Đã từ chối ảnh",
+  "@memPendingRejected": {
+    "description": "MEM-19 snackbar"
+  },
+  "memPendingAddChild": "Thêm {name}",
+  "@memPendingAddChild": {
+    "description": "MEM-19 add child chip (semantics)",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "rptTitleMemory": "Báo cáo ký ức này",
+  "@rptTitleMemory": {
+    "description": "RPT-01 title"
+  },
+  "rptTitleComment": "Báo cáo bình luận này",
+  "@rptTitleComment": {
+    "description": "RPT-01 title (comment)"
+  },
+  "rptTitlePerson": "Báo cáo {name}",
+  "@rptTitlePerson": {
+    "description": "RPT-01 title (member)",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "rptSubtitle": "Cho chúng tôi biết điều gì chưa ổn. Đội ngũ an toàn của Baby Family sẽ xem xét.",
+  "@rptSubtitle": {
+    "description": "RPT-01 subtitle"
+  },
+  "rptNoteHint": "Mô tả thêm (không bắt buộc)…",
+  "@rptNoteHint": {
+    "description": "RPT-01 note"
+  },
+  "rptHideMemory": "Ẩn ký ức này với tôi ngay",
+  "@rptHideMemory": {
+    "description": "RPT-01 toggle"
+  },
+  "rptHideComment": "Ẩn bình luận này với tôi ngay",
+  "@rptHideComment": {
+    "description": "RPT-01 toggle (comment)"
+  },
+  "rptHidePerson": "Ẩn người này với tôi ngay",
+  "@rptHidePerson": {
+    "description": "RPT-01 toggle (member)"
+  },
+  "rptRemoveContent": "Gỡ khỏi gia đình",
+  "@rptRemoveContent": {
+    "description": "RPT-01 parent toggle"
+  },
+  "rptRemoveContentHint": "Dành cho bố mẹ · ký ức sẽ không còn hiện với ai",
+  "@rptRemoveContentHint": {
+    "description": "RPT-01 parent toggle hint"
+  },
+  "rptRemovePerson": "Gỡ người thân",
+  "@rptRemovePerson": {
+    "description": "RPT-01 parent toggle (member)"
+  },
+  "rptRemovePersonHint": "Dành cho bố mẹ · {name} sẽ không còn xem ảnh các con",
+  "@rptRemovePersonHint": {
+    "description": "RPT-01 parent toggle hint (member)",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "rptSend": "Gửi báo cáo",
+  "@rptSend": {
+    "description": "RPT-01 button"
+  },
+  "rptSentTitle": "Đã gửi báo cáo",
+  "@rptSentTitle": {
+    "description": "RPT-01b title"
+  },
+  "rptSentBodyHidden": "Cảm ơn bạn đã lên tiếng. Ký ức đã được ẩn tạm thời và sẽ được xem xét trong 24 giờ. Chúng tôi sẽ báo cho bạn khi xử lý xong.",
+  "@rptSentBodyHidden": {
+    "description": "RPT-01b body (content hidden)"
+  },
+  "rptSentBody": "Cảm ơn bạn đã lên tiếng. Báo cáo sẽ được xem xét sớm. Chúng tôi sẽ báo cho bạn khi xử lý xong.",
+  "@rptSentBody": {
+    "description": "RPT-01b body"
+  },
+  "rptCodeLabel": "Mã báo cáo",
+  "@rptCodeLabel": {
+    "description": "RPT-01b label"
+  },
+  "rptStatusReviewing": "Đang xem xét",
+  "@rptStatusReviewing": {
+    "description": "RPT-01b status"
+  },
+  "rptStatusResolved": "Đã xử lý",
+  "@rptStatusResolved": {
+    "description": "RPT-01b status"
+  },
+  "rptTrack": "Theo dõi trong Cài đặt › Báo cáo của tôi",
+  "@rptTrack": {
+    "description": "RPT-01b link"
+  },
+  "rptDone": "Xong",
+  "@rptDone": {
+    "description": "RPT-01b button"
+  },
+  "rptBlockTitle": "Chặn {name}?",
+  "@rptBlockTitle": {
+    "description": "RPT-02 title",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "rptBlockEffectComment": "{name} không bình luận hay thả tim được vào ký ức của bạn nữa.",
+  "@rptBlockEffectComment": {
+    "description": "RPT-02 effect",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "rptBlockEffectNotify": "{who, select, grandma{Bà} grandpa{Ông} other{Người này}} không nhận thông báo liên quan đến bạn.",
+  "@rptBlockEffectNotify": {
+    "description": "RPT-02 effect",
+    "placeholders": {
+      "who": {
+        "type": "String"
+      }
+    }
+  },
+  "rptBlockEffectStay": "{who, select, grandma{Bà} grandpa{Ông} other{Người này}} vẫn ở trong gia đình và vẫn xem ảnh các cháu được chia sẻ.",
+  "@rptBlockEffectStay": {
+    "description": "RPT-02 effect",
+    "placeholders": {
+      "who": {
+        "type": "String"
+      }
+    }
+  },
+  "rptBlockRemove": "Gỡ {name} khỏi gia đình luôn",
+  "@rptBlockRemove": {
+    "description": "RPT-02 option",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "rptBlockRemoveHint": "Nên chọn nếu bạn không muốn {who, select, grandma{bà} grandpa{ông} other{người này}} xem ảnh các cháu nữa.",
+  "@rptBlockRemoveHint": {
+    "description": "RPT-02 option hint",
+    "placeholders": {
+      "who": {
+        "type": "String"
+      }
+    }
+  },
+  "rptBlockConfirm": "Chặn",
+  "@rptBlockConfirm": {
+    "description": "RPT-02 button"
+  },
+  "rptBlockDone": "Đã chặn {name}",
+  "@rptBlockDone": {
+    "description": "RPT-02 snackbar",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "rptBlockMenu": "Chặn {name}",
+  "@rptBlockMenu": {
+    "description": "FAM-04 row",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chdArchiveAddedBy": "Sinh {birth} · {callName} thêm ngày {date}",
+  "@chdArchiveAddedBy": {
+    "description": "CHD-05 child meta",
+    "placeholders": {
+      "birth": {
+        "type": "String"
+      },
+      "callName": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "chdArchiveBorn": "Sinh {birth}",
+  "@chdArchiveBorn": {
+    "description": "CHD-05 child meta (no adder)",
+    "placeholders": {
+      "birth": {
+        "type": "String"
+      }
+    }
+  },
+  "chdArchiveDuplicate": "Có thể trùng với {name}",
+  "@chdArchiveDuplicate": {
+    "description": "CHD-05 badge",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chdArchiveSection": "Khi lưu trữ {name}",
+  "@chdArchiveSection": {
+    "description": "CHD-05 section",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chdArchiveEffectHide": "{name} ẩn khỏi bộ chuyển bé, Trang chủ và Ký ức.",
+  "@chdArchiveEffectHide": {
+    "description": "CHD-05 effect",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chdArchiveEffectPrivate": "{count} ký ức chỉ gắn riêng {name} sẽ ẩn theo.",
+  "@chdArchiveEffectPrivate": {
+    "description": "CHD-05 effect",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chdArchiveEffectShared": "{count} ký ức chung với {others} vẫn hiện ở trang của {others}.",
+  "@chdArchiveEffectShared": {
+    "description": "CHD-05 effect",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "others": {
+        "type": "String"
+      }
+    }
+  },
+  "chdArchiveEffectRestore": "Khôi phục bất cứ lúc nào trong Các con › Đã lưu trữ.",
+  "@chdArchiveEffectRestore": {
+    "description": "CHD-05 effect"
+  },
+  "chdArchiveAction": "Lưu trữ {name}",
+  "@chdArchiveAction": {
+    "description": "CHD-05 button",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chdArchiveDeleteSection": "Xoá vĩnh viễn",
+  "@chdArchiveDeleteSection": {
+    "description": "CHD-05 section"
+  },
+  "chdArchiveLockedTitle": "Cần lưu trữ ít nhất {days} ngày",
+  "@chdArchiveLockedTitle": {
+    "description": "CHD-05 locked title",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "chdArchiveLockedBody": "Để tránh xoá nhầm, nếu lưu trữ hôm nay bạn xoá được từ {date}. Nội dung chỉ thuộc riêng {name} sẽ vào thùng rác 30 ngày.",
+  "@chdArchiveLockedBody": {
+    "description": "CHD-05 locked body",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chdArchiveLockedBodyArchived": "Để tránh xoá nhầm, bạn xoá được từ {date}. Nội dung chỉ thuộc riêng {name} sẽ vào thùng rác 30 ngày.",
+  "@chdArchiveLockedBodyArchived": {
+    "description": "CHD-05 locked body (already archived)",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chdArchived": "Đã lưu trữ {name}",
+  "@chdArchived": {
+    "description": "CHD-05 snackbar",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chdRestored": "Đã khôi phục {name}",
+  "@chdRestored": {
+    "description": "CHD-05b snackbar",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chdDeleteTitle": "Xoá vĩnh viễn {name}",
+  "@chdDeleteTitle": {
+    "description": "CHD-05b title",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chdDeleteArchivedName": "{name} · đã lưu trữ",
+  "@chdDeleteArchivedName": {
+    "description": "CHD-05b card",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chdDeleteArchivedFor": "Lưu trữ {days} ngày · từ {date}",
+  "@chdDeleteArchivedFor": {
+    "description": "CHD-05b card",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "chdDeleteEnough": "Đủ {days} ngày",
+  "@chdDeleteEnough": {
+    "description": "CHD-05b badge",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "chdDeleteEffectTrash": "{count} ký ức chỉ thuộc riêng {name} chuyển vào thùng rác 30 ngày, sau đó xoá hẳn.",
+  "@chdDeleteEffectTrash": {
+    "description": "CHD-05b effect",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chdDeleteEffectShared": "Ký ức chung với {others} vẫn giữ nguyên ở trang của {others}.",
+  "@chdDeleteEffectShared": {
+    "description": "CHD-05b effect",
+    "placeholders": {
+      "others": {
+        "type": "String"
+      }
+    }
+  },
+  "chdDeleteStep1": "Xác nhận 1/2",
+  "@chdDeleteStep1": {
+    "description": "CHD-05b step"
+  },
+  "chdDeleteConfirm1": "Tôi hiểu {name} sẽ bị xoá và không thể khôi phục hồ sơ này.",
+  "@chdDeleteConfirm1": {
+    "description": "CHD-05b checkbox",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chdDeleteStep2": "Xác nhận 2/2 · Nhập tên bé",
+  "@chdDeleteStep2": {
+    "description": "CHD-05b step"
+  },
+  "chdDeleteHint": "Gõ đúng “{name}” để mở nút xoá.",
+  "@chdDeleteHint": {
+    "description": "CHD-05b hint",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chdDeleteAction": "Xoá vĩnh viễn {name}",
+  "@chdDeleteAction": {
+    "description": "CHD-05b button",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chdDeleteRestoreInstead": "Khôi phục {name} thay vì xoá",
+  "@chdDeleteRestoreInstead": {
+    "description": "CHD-05b secondary",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chdDeleted": "Đã xoá {name}",
+  "@chdDeleted": {
+    "description": "CHD-05b snackbar",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cirChildTomorrow": "🎉 Ngày mai tròn {months} tháng",
+  "@cirChildTomorrow": {
+    "description": "CIR-02 badge",
+    "placeholders": {
+      "months": {
+        "type": "int"
+      }
+    }
+  },
+  "cirChildFirsts": "Những lần đầu của cháu",
+  "@cirChildFirsts": {
+    "description": "CIR-02 section"
+  },
+  "cirChildMemories": "Ký ức của cháu",
+  "@cirChildMemories": {
+    "description": "CIR-02 section"
+  },
+  "cirChildMonth": "Tháng thứ {month}",
+  "@cirChildMonth": {
+    "description": "CIR-02 month header",
+    "placeholders": {
+      "month": {
+        "type": "int"
+      }
+    }
+  },
+  "cirChildMonthRange": "· {start} – {end}",
+  "@cirChildMonthRange": {
+    "description": "CIR-02 month range",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "cirChildEmpty": "Chưa có ký ức nào của cháu",
+  "@cirChildEmpty": {
+    "description": "CIR-02 empty"
+  },
+  "cirDetailDownloadOff": "Tải ảnh về: bố mẹ chưa bật cho {who, select, grandma{bà} grandpa{ông} other{bạn}}",
+  "@cirDetailDownloadOff": {
+    "description": "CIR-03 menu note",
+    "placeholders": {
+      "who": {
+        "type": "String"
+      }
+    }
+  },
+  "cirDetailAuthorAge": "{name} {age}",
+  "@cirDetailAuthorAge": {
+    "description": "CIR-03 author meta (child age)",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "age": {
+        "type": "String"
+      }
+    }
+  },
+  "cirDetailLiked": "Đã thả tim",
+  "@cirDetailLiked": {
+    "description": "CIR-03 button"
+  },
+  "cirDetailYou": "{who, select, grandma{Bà} grandpa{Ông} other{Bạn}} (bạn)",
+  "@cirDetailYou": {
+    "description": "CIR-03 own name",
+    "placeholders": {
+      "who": {
+        "type": "String"
+      }
+    }
+  },
+  "cirDetailReactedBy": "{names} đã thả tim",
+  "@cirDetailReactedBy": {
+    "description": "CIR-03 reacted line",
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "cirDetailWishes": "Lời chúc ({count})",
+  "@cirDetailWishes": {
+    "description": "CIR-03 comments title",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cirDetailWishHint": "Viết lời chúc cho cháu…",
+  "@cirDetailWishHint": {
+    "description": "CIR-03 input hint"
+  },
+  "cirDetailVoice": "Ghi âm lời chúc",
+  "@cirDetailVoice": {
+    "description": "CIR-03 mic"
+  },
+  "cirDetailSend": "Gửi lời chúc",
+  "@cirDetailSend": {
+    "description": "CIR-03 send"
+  },
+  "cirDetailReported": "Đã gửi báo cáo",
+  "@cirDetailReported": {
+    "description": "CIR-03 snackbar"
+  },
+  "cirDetailMissing": "Ký ức này không còn được chia sẻ",
+  "@cirDetailMissing": {
+    "description": "CIR-03 missing"
+  },
+  "cirPostSelected": "Ảnh đã chọn ({count})",
+  "@cirPostSelected": {
+    "description": "CIR-04 section",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cirPostWhichKid": "Ảnh của cháu nào?",
+  "@cirPostWhichKid": {
+    "description": "CIR-04 section"
+  },
+  "cirPostDate": "Ngày chụp",
+  "@cirPostDate": {
+    "description": "CIR-04 section"
+  },
+  "cirPostMessage": "Lời nhắn cho cháu",
+  "@cirPostMessage": {
+    "description": "CIR-04 section"
+  },
+  "cirPostMessageHint": "Viết vài lời cho cháu…",
+  "@cirPostMessageHint": {
+    "description": "CIR-04 field hint"
+  },
+  "cirPostApprovalTitle": "Bố mẹ sẽ duyệt trước khi hiện",
+  "@cirPostApprovalTitle": {
+    "description": "CIR-04 note title"
+  },
+  "cirPostApprovalBody": "Ảnh hiện với cả nhà sau khi bố hoặc mẹ của cháu đồng ý.",
+  "@cirPostApprovalBody": {
+    "description": "CIR-04 note body"
+  },
+  "cirPostSend": "Gửi ảnh",
+  "@cirPostSend": {
+    "description": "CIR-04 button"
+  },
+  "cirPostRemovePhoto": "Bỏ ảnh",
+  "@cirPostRemovePhoto": {
+    "description": "CIR-04 remove (semantics)"
+  },
+  "cirPostSentTitle": "Đã gửi!",
+  "@cirPostSentTitle": {
+    "description": "CIR-04b title"
+  },
+  "cirPostSentBody": "Bố/Mẹ sẽ duyệt trước khi hiển thị cho cả nhà.",
+  "@cirPostSentBody": {
+    "description": "CIR-04b body"
+  },
+  "cirPostPending": "Đang chờ Bố/Mẹ duyệt",
+  "@cirPostPending": {
+    "description": "CIR-04b banner"
+  },
+  "cirPostJustSent": "vừa gửi",
+  "@cirPostJustSent": {
+    "description": "CIR-04b meta"
+  },
+  "cirPostBackHome": "Về trang Cháu yêu",
+  "@cirPostBackHome": {
+    "description": "CIR-04b button"
+  },
+  "cirPostMore": "Đăng thêm ảnh",
+  "@cirPostMore": {
+    "description": "CIR-04b button"
+  },
+  "cirPostNoKid": "Bố mẹ chưa bật quyền đăng ảnh cho cháu nào",
+  "@cirPostNoKid": {
+    "description": "CIR-04 no contribute permission"
+  },
+  "cirPausedMessage": "{family} đang tạm dừng chia sẻ với người thân",
+  "@cirPausedMessage": {
+    "description": "CIR-05 title",
+    "placeholders": {
+      "family": {
+        "type": "String"
+      }
+    }
+  },
+  "cirPausedSafe": "Ảnh của cháu vẫn được giữ an toàn",
+  "@cirPausedSafe": {
+    "description": "CIR-05 pill"
+  },
+  "cirMeRelation": "{relation} · {family}",
+  "@cirMeRelation": {
+    "description": "CIR-06 profile meta",
+    "placeholders": {
+      "relation": {
+        "type": "String"
+      },
+      "family": {
+        "type": "String"
+      }
+    }
+  },
+  "cirMeTextPreview": "{name} vừa có ảnh mới, {who, select, grandma{bà} grandpa{ông} other{bạn}} vào xem nhé 🌸",
+  "@cirMeTextPreview": {
+    "description": "CIR-06 text size preview",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "who": {
+        "type": "String"
+      }
+    }
+  },
+  "cirMeInstant": "Báo ngay khi có ảnh mới",
+  "@cirMeInstant": {
+    "description": "CIR-06 notification option"
+  },
+  "cirMeDigest": "Bản tin mỗi ngày",
+  "@cirMeDigest": {
+    "description": "CIR-06 notification option"
+  },
+  "cirMeDigestHint": "Gửi lúc {time} · gom ảnh mới trong ngày",
+  "@cirMeDigestHint": {
+    "description": "CIR-06 digest hint",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "cirMeSwitchFamily": "Chuyển gia đình",
+  "@cirMeSwitchFamily": {
+    "description": "CIR-06 row"
+  },
+  "cirMeViewing": "Đang xem: {family}",
+  "@cirMeViewing": {
+    "description": "CIR-06 row hint",
+    "placeholders": {
+      "family": {
+        "type": "String"
+      }
+    }
+  },
+  "cirLeaveTitle": "Rời {family}",
+  "@cirLeaveTitle": {
+    "description": "SET-10 title",
+    "placeholders": {
+      "family": {
+        "type": "String"
+      }
+    }
+  },
+  "cirLeaveBody": "{who, select, grandma{Bà} grandpa{Ông} other{Bạn}} sẽ không còn xem ảnh và bình luận cùng các cháu nữa. Khi nào muốn quay lại, {who, select, grandma{bà} grandpa{ông} other{bạn}} nhờ {inviter} gửi lời mời mới nhé.",
+  "@cirLeaveBody": {
+    "description": "SET-10 body",
+    "placeholders": {
+      "who": {
+        "type": "String"
+      },
+      "inviter": {
+        "type": "String"
+      }
+    }
+  },
+  "cirLeaveFollowing": "{who, select, grandma{Bà} grandpa{Ông} other{Bạn}} đang theo dõi {names}",
+  "@cirLeaveFollowing": {
+    "description": "SET-10 following",
+    "placeholders": {
+      "who": {
+        "type": "String"
+      },
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "cirLeavePosted": "Những gì {who, select, grandma{bà} grandpa{ông} other{bạn}} đã đăng · {photos} ảnh, {comments} bình luận",
+  "@cirLeavePosted": {
+    "description": "SET-10 section",
+    "placeholders": {
+      "who": {
+        "type": "String"
+      },
+      "photos": {
+        "type": "int"
+      },
+      "comments": {
+        "type": "int"
+      }
+    }
+  },
+  "cirLeaveKeep": "Giữ lại cho gia đình",
+  "@cirLeaveKeep": {
+    "description": "SET-10 option"
+  },
+  "cirLeaveKeepHint": "Cả nhà vẫn xem được ảnh và lời {who, select, grandma{bà} grandpa{ông} other{bạn}} đã viết. (Mặc định)",
+  "@cirLeaveKeepHint": {
+    "description": "SET-10 option hint",
+    "placeholders": {
+      "who": {
+        "type": "String"
+      }
+    }
+  },
+  "cirLeaveRemove": "Gỡ toàn bộ",
+  "@cirLeaveRemove": {
+    "description": "SET-10 option"
+  },
+  "cirLeaveRemoveHint": "Ảnh và bình luận của {who, select, grandma{bà} grandpa{ông} other{bạn}} sẽ được gỡ khỏi {family}.",
+  "@cirLeaveRemoveHint": {
+    "description": "SET-10 option hint",
+    "placeholders": {
+      "who": {
+        "type": "String"
+      },
+      "family": {
+        "type": "String"
+      }
+    }
+  },
+  "cirLeaveNotice": "{inviter} sẽ nhận một thông báo ngắn: “{name} đã rời gia đình.” {who, select, grandma{Bà} grandpa{Ông} other{Bạn}} mất quyền xem ngay sau khi xác nhận.",
+  "@cirLeaveNotice": {
+    "description": "SET-10 notice",
+    "placeholders": {
+      "inviter": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      },
+      "who": {
+        "type": "String"
+      }
+    }
+  },
+  "cirLeaveStay": "Ở lại",
+  "@cirLeaveStay": {
+    "description": "SET-10 button"
+  },
+  "commonListAnd": "{list} và {last}",
+  "@commonListAnd": {
+    "description": "Join a list with its last item (“Bà, Ông và Papa”)",
+    "placeholders": {
+      "list": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      }
+    }
+  },
+  "commonAiSuggested": "Gợi ý bởi AI",
+  "@commonAiSuggested": {
+    "description": "Nhãn bản nháp AI (US-09, REC-01)"
+  },
+  "commonAiReport": "Báo cáo nội dung AI",
+  "@commonAiReport": {
+    "description": "Nút báo cáo nội dung AI (US-09, REC-01)"
+  },
+  "commonAiReported": "Cảm ơn bạn — nội dung AI này sẽ được xem lại.",
+  "@commonAiReported": {
+    "description": "Snack sau khi báo cáo nội dung AI"
+  },
+  "commonWeekRange": "Tuần {range}",
+  "@commonWeekRange": {
+    "description": "Bộ chọn tuần (US-14, CARE-11)",
+    "placeholders": {
+      "range": {
+        "type": "String"
+      }
+    }
+  },
+  "usOnlyParents": "Chỉ dành cho Papa & Mama",
+  "@usOnlyParents": {
+    "description": "US-00 — dải khoá dưới tiêu đề"
+  },
+  "usPartnerLeftTitle": "Không gian này cần đủ hai người",
+  "@usPartnerLeftTitle": {
+    "description": "US-00 tiêu đề"
+  },
+  "usPartnerLeftBody": "Tài khoản của {callName} đã được xoá, nên Papa & Mama đang tạm khoá. Ký ức của {familyName} vẫn còn nguyên — bạn có thể xem và tải về bất cứ lúc nào.",
+  "@usPartnerLeftBody": {
+    "description": "US-00 nội dung",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      },
+      "familyName": {
+        "type": "String"
+      }
+    }
+  },
+  "usPartnerLeftStateTitle": "{familyName} đang ở chế độ chỉ xem & tải về",
+  "@usPartnerLeftStateTitle": {
+    "description": "US-00 thẻ trạng thái gia đình",
+    "placeholders": {
+      "familyName": {
+        "type": "String"
+      }
+    }
+  },
+  "usPartnerLeftStateSub": "Mời bạn đời mới để tiếp tục tạo ký ức và dùng Papa & Mama.",
+  "@usPartnerLeftStateSub": {
+    "description": "US-00 thẻ trạng thái — dòng phụ"
+  },
+  "usPartnerLeftSection": "KHI CÓ ĐỦ HAI NGƯỜI",
+  "@usPartnerLeftSection": {
+    "description": "US-00 nhãn nhóm tính năng"
+  },
+  "usPartnerLeftCheckinSub": "Hôm nay mình thế nào",
+  "@usPartnerLeftCheckinSub": {
+    "description": "US-00 ô Check-in"
+  },
+  "usPartnerLeftRequestSub": "Nhờ nhau, không áp lực",
+  "@usPartnerLeftRequestSub": {
+    "description": "US-00 ô Lời nhờ"
+  },
+  "usPartnerLeftThanksSub": "Giữ lại điều nhỏ",
+  "@usPartnerLeftThanksSub": {
+    "description": "US-00 ô Lời cảm ơn"
+  },
+  "usPartnerLeftJournalSub": "Chỉ mình bạn đọc",
+  "@usPartnerLeftJournalSub": {
+    "description": "US-00 ô Nhật ký riêng"
+  },
+  "usPartnerLeftPrivacy": "Ông bà và người thân không bao giờ thấy nội dung trong Papa & Mama.",
+  "@usPartnerLeftPrivacy": {
+    "description": "US-00 ghi chú riêng tư"
+  },
+  "usPartnerLeftInvite": "Mời bạn đời tham gia",
+  "@usPartnerLeftInvite": {
+    "description": "US-00 nút chính"
+  },
+  "usCheckinAnnoyedPartner": "Khó chịu với {callName}",
+  "@usCheckinAnnoyedPartner": {
+    "description": "US-02 biến thể “Khó chịu với bạn đời” (mục 7.16.1)",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeAskTitle": "Bạn muốn dùng Cầu nối không?",
+  "@usBridgeAskTitle": {
+    "description": "US-02 → hỏi Cầu nối"
+  },
+  "usBridgeAskBody": "Chưa có gì được gửi cho {callName}. Cầu nối giúp hai bạn nói rõ cảm xúc và cùng chọn một bước nhỏ — bắt đầu bằng một bước riêng tư.",
+  "@usBridgeAskBody": {
+    "description": "US-02 → hỏi Cầu nối — nội dung",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeAskOpen": "Mở Cầu nối",
+  "@usBridgeAskOpen": {
+    "description": "US-02 → mở US-08"
+  },
+  "usBridgeStepKicker": "CẦU NỐI · BƯỚC {step}/{total}",
+  "@usBridgeStepKicker": {
+    "description": "US-08 kicker",
+    "placeholders": {
+      "step": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "usBridgeFeelSub": "Chọn một hoặc vài cảm xúc. Chưa có gì được gửi cho {callName}.",
+  "@usBridgeFeelSub": {
+    "description": "US-08 bước 1",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeTopicTitle": "Chuyện này về…",
+  "@usBridgeTopicTitle": {
+    "description": "US-08 bước 2"
+  },
+  "usBridgeTopicSub": "Không bắt buộc — bạn có thể bỏ qua. Chưa có gì được gửi cho {callName}.",
+  "@usBridgeTopicSub": {
+    "description": "US-08 bước 2",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeNeedTitle": "Lúc này mình cần…",
+  "@usBridgeNeedTitle": {
+    "description": "US-08 bước 3"
+  },
+  "usBridgeNeedSub": "Chọn một hoặc vài điều. Chưa có gì được gửi cho {callName}.",
+  "@usBridgeNeedSub": {
+    "description": "US-08 bước 3",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeFeltLabel": "Mình cảm thấy",
+  "@usBridgeFeltLabel": {
+    "description": "US-08 thẻ tóm tắt"
+  },
+  "usBridgeAboutLabel": "Về chuyện",
+  "@usBridgeAboutLabel": {
+    "description": "US-08 thẻ tóm tắt"
+  },
+  "usBridgeDraftLabel": "Viết nháp riêng (tuỳ chọn)",
+  "@usBridgeDraftLabel": {
+    "description": "US-08 nháp riêng"
+  },
+  "usBridgeDraftCount": "{count}/{max}",
+  "@usBridgeDraftCount": {
+    "description": "US-08 đếm ký tự",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "usBridgeDraftHint": "Viết ra điều bạn đang nghĩ — chỉ mình bạn đọc.",
+  "@usBridgeDraftHint": {
+    "description": "US-08 gợi ý ô nháp"
+  },
+  "usBridgeDraftNote": "Nháp này không bao giờ được gửi nguyên văn hay tự động.",
+  "@usBridgeDraftNote": {
+    "description": "US-08 ghi chú nháp (BR-030)"
+  },
+  "usBridgeUnsafe": "Mình cảm thấy không an toàn",
+  "@usBridgeUnsafe": {
+    "description": "US-08 → US-13"
+  },
+  "usBridgeChoiceTitle": "Bạn muốn làm gì với nội dung này?",
+  "@usBridgeChoiceTitle": {
+    "description": "US-08 bước 4"
+  },
+  "usBridgeChoiceSub": "Bạn quyết định. Chưa có gì được gửi cho {callName}.",
+  "@usBridgeChoiceSub": {
+    "description": "US-08 bước 4",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeKeepPrivateDesc": "Kết thúc ở đây, như một trang nhật ký.",
+  "@usBridgeKeepPrivateDesc": {
+    "description": "US-08 bước 4 — Giữ riêng"
+  },
+  "usBridgeRewriteOption": "Viết lại trước khi gửi",
+  "@usBridgeRewriteOption": {
+    "description": "US-08 bước 4 → US-09"
+  },
+  "usBridgeRewriteOptionDesc": "Chọn một câu và viết lại nhẹ nhàng hơn.",
+  "@usBridgeRewriteOptionDesc": {
+    "description": "US-08 bước 4"
+  },
+  "usBridgeShareOption": "Chọn ý để chia sẻ",
+  "@usBridgeShareOption": {
+    "description": "US-08 bước 4"
+  },
+  "usBridgeShareOptionDesc": "Chọn cảm xúc và nhu cầu {callName} sẽ thấy.",
+  "@usBridgeShareOptionDesc": {
+    "description": "US-08 bước 4",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeKeptPrivate": "Đã giữ riêng — chỉ mình bạn thấy.",
+  "@usBridgeKeptPrivate": {
+    "description": "Snack sau Giữ riêng"
+  },
+  "usBridgePreviewTitle": "Xem trước điều {callName} sẽ nhận",
+  "@usBridgePreviewTitle": {
+    "description": "US-08 bước 5",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgePreviewSub": "Chỉ những ý bạn chọn được gửi. Nháp riêng của bạn vẫn giữ riêng.",
+  "@usBridgePreviewSub": {
+    "description": "US-08 bước 5"
+  },
+  "usBridgeFeelShort": "Cảm thấy",
+  "@usBridgeFeelShort": {
+    "description": "Nhãn hàng cảm xúc (US-08, US-10)"
+  },
+  "usBridgeNeedShort": "Cần",
+  "@usBridgeNeedShort": {
+    "description": "Nhãn hàng nhu cầu (US-08, US-10)"
+  },
+  "usBridgeMessageLabel": "Lời nhắn (tuỳ chọn)",
+  "@usBridgeMessageLabel": {
+    "description": "US-08 bước 5"
+  },
+  "usBridgeMessageHint": "Một câu bạn muốn {callName} đọc",
+  "@usBridgeMessageHint": {
+    "description": "US-08 bước 5",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeSendInvite": "Gửi lời mời",
+  "@usBridgeSendInvite": {
+    "description": "US-08 bước 5"
+  },
+  "usBridgeInviteSent": "Đã gửi lời mời cho {callName}",
+  "@usBridgeInviteSent": {
+    "description": "Snack sau khi gửi lời mời",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeRewriteSub": "Chọn một phiên bản rồi sửa theo ý bạn. Không có gì được gửi tự động.",
+  "@usBridgeRewriteSub": {
+    "description": "US-09"
+  },
+  "usBridgeRewriteOriginal": "CÂU GỐC CỦA BẠN",
+  "@usBridgeRewriteOriginal": {
+    "description": "US-09"
+  },
+  "usBridgeRewriteTone": "{tone, select, neutral{TRUNG TÍNH} warm{ẤM ÁP} other{NGẮN GỌN}}",
+  "@usBridgeRewriteTone": {
+    "description": "US-09 nhãn giọng",
+    "placeholders": {
+      "tone": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeRewriteEdit": "Sửa trước khi dùng",
+  "@usBridgeRewriteEdit": {
+    "description": "US-09"
+  },
+  "usBridgeRewriteKeep": "Giữ câu gốc",
+  "@usBridgeRewriteKeep": {
+    "description": "US-09"
+  },
+  "usBridgeRewriteUse": "Dùng câu này",
+  "@usBridgeRewriteUse": {
+    "description": "US-09"
+  },
+  "usBridgeRewriteDataNote": "Chỉ câu bạn chọn được gửi cho AI để viết lại. AI không đọc nháp riêng hay nhật ký của bạn.",
+  "@usBridgeRewriteDataNote": {
+    "description": "US-09 ghi chú dữ liệu AI"
+  },
+  "usBridgeInviteTitle": "{callName} muốn trò chuyện bình tĩnh khi bạn sẵn sàng",
+  "@usBridgeInviteTitle": {
+    "description": "US-10 tiêu đề",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeInviteSub": "Một không gian để nói rõ cảm xúc và cùng chọn một bước nhỏ tiếp theo. Không ai thắng, không ai thua.",
+  "@usBridgeInviteSub": {
+    "description": "US-10"
+  },
+  "usBridgeInviteShared": "{callName} đã chọn chia sẻ",
+  "@usBridgeInviteShared": {
+    "description": "US-10 thẻ chia sẻ",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeInviteSharedSub": "Chỉ những ý này — phần còn lại {callName} giữ riêng",
+  "@usBridgeInviteSharedSub": {
+    "description": "US-10 thẻ chia sẻ",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeInviteNote": "Trước khi vào phiên chung, bạn cũng có một bước riêng tư để nói cảm xúc và điều mình cần.",
+  "@usBridgeInviteNote": {
+    "description": "US-10"
+  },
+  "usBridgeJoinNow": "Tham gia ngay",
+  "@usBridgeJoinNow": {
+    "description": "US-10"
+  },
+  "usBridgeLaterLabel": "Để sau — nhắc mình lúc",
+  "@usBridgeLaterLabel": {
+    "description": "US-10"
+  },
+  "usBridgeLaterCustom": "Tự chọn",
+  "@usBridgeLaterCustom": {
+    "description": "US-10"
+  },
+  "usBridgeNotReady": "Mình chưa sẵn sàng",
+  "@usBridgeNotReady": {
+    "description": "US-10"
+  },
+  "usBridgeNotReadySub": "Lời mời được tạm dừng — không có thông báo tiêu cực nào.",
+  "@usBridgeNotReadySub": {
+    "description": "US-10"
+  },
+  "usBridgeRemindSet": "Đã hẹn nhắc — lời mời vẫn được giữ.",
+  "@usBridgeRemindSet": {
+    "description": "US-10 snack"
+  },
+  "usBridgePaused": "Đã tạm dừng. Bạn có thể quay lại bất cứ lúc nào.",
+  "@usBridgePaused": {
+    "description": "Snack tạm dừng (US-10/11/12)"
+  },
+  "usBridgeLive": "Đang diễn ra",
+  "@usBridgeLive": {
+    "description": "US-11 trạng thái"
+  },
+  "usBridgeStartedAt": "Bắt đầu {time} · {date}",
+  "@usBridgeStartedAt": {
+    "description": "US-11",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeSessionIntro": "Đọc chậm những gì hai bạn đã chọn chia sẻ. Ở đây không có ai đúng, ai sai.",
+  "@usBridgeSessionIntro": {
+    "description": "US-11"
+  },
+  "usBridgeYouName": "Bạn ({callName})",
+  "@usBridgeYouName": {
+    "description": "US-11 cột của tôi",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeFeels": "{callName} cảm thấy",
+  "@usBridgeFeels": {
+    "description": "US-11",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeNeeds": "{callName} cần",
+  "@usBridgeNeeds": {
+    "description": "US-11",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeYouPending": "Bạn chưa chọn",
+  "@usBridgeYouPending": {
+    "description": "US-11 trạng thái của tôi"
+  },
+  "usBridgeYouUnderstood": "Bạn: Mình hiểu",
+  "@usBridgeYouUnderstood": {
+    "description": "US-11 trạng thái của tôi"
+  },
+  "usBridgePartnerPending": "{callName} chưa chọn",
+  "@usBridgePartnerPending": {
+    "description": "US-11",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgePartnerUnderstood": "{callName}: Mình hiểu",
+  "@usBridgePartnerUnderstood": {
+    "description": "US-11",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeYourTurn": "LƯỢT CỦA BẠN",
+  "@usBridgeYourTurn": {
+    "description": "US-11"
+  },
+  "usBridgePartnerReadDone": "{callName} đã đọc xong",
+  "@usBridgePartnerReadDone": {
+    "description": "US-11",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeReadQuestion": "Bạn đã đọc những gì {callName} chia sẻ?",
+  "@usBridgeReadQuestion": {
+    "description": "US-11",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeClarify": "Mình cần nói rõ hơn",
+  "@usBridgeClarify": {
+    "description": "US-11"
+  },
+  "usBridgeUnderstand": "Mình hiểu",
+  "@usBridgeUnderstand": {
+    "description": "US-11"
+  },
+  "usBridgeClarifyNote": "“Nói rõ hơn” mở thêm 1 lượt gửi ý — bạn sẽ xem trước chính xác trước khi gửi.",
+  "@usBridgeClarifyNote": {
+    "description": "US-11"
+  },
+  "usBridgeLeaveNote": "Mỗi người có thể tạm dừng hoặc rời phiên bất cứ lúc nào.",
+  "@usBridgeLeaveNote": {
+    "description": "US-11"
+  },
+  "usBridgeWaiting": "Đang chờ {callName} đọc xong",
+  "@usBridgeWaiting": {
+    "description": "US-11",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeClarifyTitle": "Nói rõ hơn với {callName}",
+  "@usBridgeClarifyTitle": {
+    "description": "US-11 sheet",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeClarifySent": "Đã gửi thêm ý cho {callName}",
+  "@usBridgeClarifySent": {
+    "description": "US-11 snack",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeNextKicker": "CẦU NỐI · HAI BẠN ĐỀU ĐÃ HIỂU",
+  "@usBridgeNextKicker": {
+    "description": "US-12 kicker"
+  },
+  "usBridgeNextSub": "Chọn một điều cả hai có thể làm. Không cần giải quyết hết mọi chuyện hôm nay.",
+  "@usBridgeNextSub": {
+    "description": "US-12"
+  },
+  "usBridgeWhen": "Khi nào?",
+  "@usBridgeWhen": {
+    "description": "US-12"
+  },
+  "usBridgeWhichChild": "Trông bé nào?",
+  "@usBridgeWhichChild": {
+    "description": "US-12"
+  },
+  "usBridgeReminder": "Tạo nhắc cho cả hai",
+  "@usBridgeReminder": {
+    "description": "US-12"
+  },
+  "usBridgeReminderSub": "Nhắc lúc {time} — chỉ hai bạn thấy",
+  "@usBridgeReminderSub": {
+    "description": "US-12",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeNotConfirmed": "Chưa xác nhận",
+  "@usBridgeNotConfirmed": {
+    "description": "US-12"
+  },
+  "usBridgeAgreed": "Đã đồng ý",
+  "@usBridgeAgreed": {
+    "description": "US-12"
+  },
+  "usBridgeConfirmStep": "Xác nhận bước này",
+  "@usBridgeConfirmStep": {
+    "description": "US-12"
+  },
+  "usBridgeConfirmNote": "Bước được áp dụng khi cả hai cùng xác nhận. Bạn vẫn có thể đổi lựa chọn.",
+  "@usBridgeConfirmNote": {
+    "description": "US-12"
+  },
+  "usBridgeCloseTitle": "Hai bạn muốn đóng phiên này chứ?",
+  "@usBridgeCloseTitle": {
+    "description": "US-12b"
+  },
+  "usBridgeCloseSub": "Phiên chỉ đóng khi cả hai cùng đồng ý.",
+  "@usBridgeCloseSub": {
+    "description": "US-12b"
+  },
+  "usBridgeStepChosen": "Bước đã chọn · {when}",
+  "@usBridgeStepChosen": {
+    "description": "US-12b",
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeRelativeWhen": "{day, select, tonight{tối nay {time}} lastNight{tối qua {time}} today{hôm nay {time}} yesterday{hôm qua {time}} other{{time}}}",
+  "@usBridgeRelativeWhen": {
+    "description": "US-12b thời điểm tương đối",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgePartnerAgreedClose": "{callName} đã đồng ý đóng phiên",
+  "@usBridgePartnerAgreedClose": {
+    "description": "US-12b",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeThanksLabel": "Gửi lời cảm ơn cho {callName}? (tuỳ chọn)",
+  "@usBridgeThanksLabel": {
+    "description": "US-12b",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeThanksListened": "{role, select, father{Cảm ơn anh đã lắng nghe 💛} other{Cảm ơn em đã lắng nghe 💛}}",
+  "@usBridgeThanksListened": {
+    "description": "US-12b câu cảm ơn (xưng hô theo vai bạn đời)",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeThanksShort": "{role, select, father{Cảm ơn anh} other{Cảm ơn em}}",
+  "@usBridgeThanksShort": {
+    "description": "US-12b câu cảm ơn ngắn",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeRetention": "Nội dung phiên tự xoá sau {days} ngày. Chỉ còn dòng “Đã có một phiên Cầu nối ngày {date}”.",
+  "@usBridgeRetention": {
+    "description": "US-12b lưu trữ ngắn (D-14)",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "usBridgeCloseConfirm": "Đóng phiên",
+  "@usBridgeCloseConfirm": {
+    "description": "US-12b"
+  },
+  "usBridgeCloseLater": "Chưa, để sau",
+  "@usBridgeCloseLater": {
+    "description": "US-12b"
+  },
+  "usBridgeClosed": "Đã đóng phiên Cầu nối",
+  "@usBridgeClosed": {
+    "description": "US-12b snack"
+  },
+  "usSafetyQuickExit": "Thoát nhanh",
+  "@usSafetyQuickExit": {
+    "description": "US-13"
+  },
+  "usSafetyHeadline": "Sự an toàn của bạn là quan trọng nhất",
+  "@usSafetyHeadline": {
+    "description": "US-13"
+  },
+  "usSafetyBody": "Bạn không cần nói chuyện trực tiếp lúc này. Nếu bạn hoặc các con đang gặp nguy hiểm, hãy gọi ngay cho một trong các số dưới đây.",
+  "@usSafetyBody": {
+    "description": "US-13"
+  },
+  "usSafetyCall": "Gọi {number}",
+  "@usSafetyCall": {
+    "description": "US-13 nút gọi (trợ năng)",
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "usSafetyTrustedTitle": "Liên hệ một người bạn tin cậy",
+  "@usSafetyTrustedTitle": {
+    "description": "US-13"
+  },
+  "usSafetyTrustedSub": "Người thân, bạn bè hoặc hàng xóm bạn tin",
+  "@usSafetyTrustedSub": {
+    "description": "US-13"
+  },
+  "usSafetyPrivateNote": "Nội dung bạn vừa viết được giữ riêng, không gửi cho ai.",
+  "@usSafetyPrivateNote": {
+    "description": "US-13"
+  },
+  "usSafetyNoNotify": "{callName} không nhận thông báo nào về màn hình này.",
+  "@usSafetyNoNotify": {
+    "description": "US-13",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "usSafetyNoHistory": "Màn hình này không được ghi vào lịch sử phiên.",
+  "@usSafetyNoHistory": {
+    "description": "US-13"
+  },
+  "usSafetyKeepPrivate": "Giữ riêng nội dung này",
+  "@usSafetyKeepPrivate": {
+    "description": "US-13"
+  },
+  "usSafetyDisclaimer": "Baby Family không phải dịch vụ khẩn cấp hay trị liệu. Tính năng này luôn miễn phí.",
+  "@usSafetyDisclaimer": {
+    "description": "US-13"
+  },
+  "usCoupleWeekCheckins": "lần check-in",
+  "@usCoupleWeekCheckins": {
+    "description": "US-14"
+  },
+  "usCoupleWeekCheckinsSub": "Hai bạn đã chia sẻ hôm nay mình thế nào",
+  "@usCoupleWeekCheckinsSub": {
+    "description": "US-14"
+  },
+  "usCoupleWeekRequests": "lời nhờ được hỗ trợ",
+  "@usCoupleWeekRequests": {
+    "description": "US-14"
+  },
+  "usCoupleWeekRequestsSub": "Nhận và làm giúp nhau",
+  "@usCoupleWeekRequestsSub": {
+    "description": "US-14"
+  },
+  "usCoupleWeekThanks": "lời cảm ơn",
+  "@usCoupleWeekThanks": {
+    "description": "US-14"
+  },
+  "usCoupleWeekThanksSub": "Gửi cho nhau trong tuần",
+  "@usCoupleWeekThanksSub": {
+    "description": "US-14"
+  },
+  "usCoupleWeekTogether": "nhiệm vụ cùng nhau",
+  "@usCoupleWeekTogether": {
+    "description": "US-14"
+  },
+  "usCoupleWeekTogetherSub": "Từ Nhiệm vụ hai ta",
+  "@usCoupleWeekTogetherSub": {
+    "description": "US-14"
+  },
+  "usCoupleWeekThanksKicker": "MỘT LỜI CẢM ƠN TRONG TUẦN",
+  "@usCoupleWeekThanksKicker": {
+    "description": "US-14"
+  },
+  "usCoupleWeekThanksMeta": "{callName} · {date}",
+  "@usCoupleWeekThanksMeta": {
+    "description": "US-14",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "usCoupleWeekTogetherLabel": "Hai ta đã cùng nhau",
+  "@usCoupleWeekTogetherLabel": {
+    "description": "US-14"
+  },
+  "usCoupleWeekNote": "Không có điểm số, không so sánh — chỉ là những điều hai bạn đã làm cho nhau.",
+  "@usCoupleWeekNote": {
+    "description": "US-14"
+  },
+  "usCoupleWeekSendThanks": "Gửi một lời cảm ơn",
+  "@usCoupleWeekSendThanks": {
+    "description": "US-14"
+  },
+  "recapDayDiscard": "Bỏ",
+  "@recapDayDiscard": {
+    "description": "REC-01"
+  },
+  "recapDayKicker": "CÂU CHUYỆN NGÀY · {date}",
+  "@recapDayKicker": {
+    "description": "REC-01 kicker",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recapDayChild": "{name} · {age}",
+  "@recapDayChild": {
+    "description": "REC-01 bé",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "age": {
+        "type": "String"
+      }
+    }
+  },
+  "recapDayRewrite": "Viết lại",
+  "@recapDayRewrite": {
+    "description": "REC-01"
+  },
+  "recapDayManual": "Tự viết",
+  "@recapDayManual": {
+    "description": "REC-01"
+  },
+  "recapDayRewritten": "Đã viết lại đoạn văn",
+  "@recapDayRewritten": {
+    "description": "REC-01 snack"
+  },
+  "recapDayMemories": "Ký ức hôm nay",
+  "@recapDayMemories": {
+    "description": "REC-01"
+  },
+  "recapDaySelected": "Đã chọn {selected}/{total}",
+  "@recapDaySelected": {
+    "description": "REC-01",
+    "placeholders": {
+      "selected": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recapDayItemMeta": "{kind, select, photo{Ảnh} mission{Nhiệm vụ đã xong} voice{Giọng nói} quote{Câu nói} video{Video} other{Ký ức}} · {time}",
+  "@recapDayItemMeta": {
+    "description": "REC-01 dòng ký ức",
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "recapDayHint": "Câu chuyện chỉ dùng những ký ức bạn đã tick.",
+  "@recapDayHint": {
+    "description": "REC-01"
+  },
+  "recapDayPhotos": "Ảnh kèm",
+  "@recapDayPhotos": {
+    "description": "REC-01"
+  },
+  "recapDayWhoSees": "Ai sẽ thấy",
+  "@recapDayWhoSees": {
+    "description": "REC-01"
+  },
+  "recapDaySave": "Lưu câu chuyện",
+  "@recapDaySave": {
+    "description": "REC-01"
+  },
+  "recapDaySaved": "Đã lưu câu chuyện ngày",
+  "@recapDaySaved": {
+    "description": "REC-01 snack"
+  },
+  "recapDayTitleEdit": "Tiêu đề câu chuyện",
+  "@recapDayTitleEdit": {
+    "description": "REC-01 sheet sửa tiêu đề"
+  },
+  "recapDayOpen": "Câu chuyện ngày của {name}",
+  "@recapDayOpen": {
+    "description": "HOME-02 → REC-01 (nhãn trợ năng)",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recapMonthHeadline": "{name} tròn {month} tháng 🎉",
+  "@recapMonthHeadline": {
+    "description": "REC-03 tiêu đề",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "month": {
+        "type": "int"
+      }
+    }
+  },
+  "recapMonthRange": "Tháng thứ {month} · {range}",
+  "@recapMonthRange": {
+    "description": "REC-03 phụ đề",
+    "placeholders": {
+      "month": {
+        "type": "int"
+      },
+      "range": {
+        "type": "String"
+      }
+    }
+  },
+  "recapMonthLabel": "Tháng {month}",
+  "@recapMonthLabel": {
+    "description": "REC-03 ảnh tháng trước",
+    "placeholders": {
+      "month": {
+        "type": "int"
+      }
+    }
+  },
+  "recapMonthNow": "Tháng {month} · hôm nay",
+  "@recapMonthNow": {
+    "description": "REC-03 ảnh tháng này",
+    "placeholders": {
+      "month": {
+        "type": "int"
+      }
+    }
+  },
+  "recapMonthVoices": "câu nói & giọng nói",
+  "@recapMonthVoices": {
+    "description": "REC-03"
+  },
+  "recapMonthVoicesKicker": "CÂU NÓI & GIỌNG NÓI",
+  "@recapMonthVoicesKicker": {
+    "description": "REC-03"
+  },
+  "recapMonthFirstMeta": "{age} · {date}",
+  "@recapMonthFirstMeta": {
+    "description": "REC-03 lần đầu",
+    "placeholders": {
+      "age": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recapMonthVoiceMeta": "{date} · {callName} ghi",
+  "@recapMonthVoiceMeta": {
+    "description": "REC-03 giọng nói",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "careMenuStats": "Thống kê chăm con",
+  "@careMenuStats": {
+    "description": "CARE ⋯ → CARE-11"
+  },
+  "careStatsDone": "Nhiệm vụ cả nhà đã hoàn thành",
+  "@careStatsDone": {
+    "description": "CARE-11"
+  },
+  "careStatsUnit": "việc trong tuần",
+  "@careStatsUnit": {
+    "description": "CARE-11"
+  },
+  "careStatsCategory": "{category, select, care{Chăm sóc} bonding{Gắn kết} outing{Ra ngoài} support{Hỗ trợ nhau} together{Cùng nhau} other{Khác}}",
+  "@careStatsCategory": {
+    "description": "CARE-11 nhãn cột",
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "careStatsNote": "Nhiệm vụ “Hai ta” không tính vào chăm con.",
+  "@careStatsNote": {
+    "description": "CARE-11 (mục 7.15)"
+  },
+  "careStatsBloomOf": "/ {total} ngày",
+  "@careStatsBloomOf": {
+    "description": "CARE-11",
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "careStatsBloomLabel": "cây của nhà mình nở hoa",
+  "@careStatsBloomLabel": {
+    "description": "CARE-11"
+  },
+  "careStatsDisclaimer": "Chỉ dựa trên hoạt động ghi trong app. Còn rất nhiều điều bố mẹ làm cho nhau mà app không đếm được.",
+  "@careStatsDisclaimer": {
+    "description": "CARE-11 disclaimer cố định (mục 7.15)"
+  },
+  "careStatsPrivacy": "Chỉ Papa & Mama xem được thống kê này",
+  "@careStatsPrivacy": {
+    "description": "CARE-11"
+  },
+  "commonPrevWeek": "Tuần trước",
+  "@commonPrevWeek": {
+    "description": "Bộ chọn tuần — nhãn trợ năng (US-14, CARE-11)"
+  },
+  "commonNextWeek": "Tuần sau",
+  "@commonNextWeek": {
+    "description": "Bộ chọn tuần — nhãn trợ năng (US-14, CARE-11)"
+  },
+  "memPendingNotify": "{name} vừa đăng {count} ảnh của {child} — chờ bạn duyệt",
+  "@memPendingNotify": {
+    "description": "Parent notification after a relative posts (CIR-04 → MEM-19)",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "child": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/data/model/child/child.dart';
 import 'package:baby_family/data/model/memory/memory.dart';
 import 'package:baby_family/page/circle/circle_home/circle_home_controller.dart';
@@ -8,11 +9,13 @@ import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
 import 'package:baby_family/utils/helper/relative_time.dart';
 import 'package:baby_family/utils/helper/theme.dart';
+import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_bottom_sheet.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
 import 'package:baby_family/utils/widget/app_text_field.dart';
 import 'package:baby_family/utils/widget/base_scaffold.dart';
 import 'package:baby_family/utils/widget/child_avatar.dart';
+import 'package:baby_family/utils/widget/circle_big_action.dart';
 import 'package:baby_family/utils/widget/empty_state.dart';
 import 'package:baby_family/utils/widget/error_state.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +23,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
 
-part '../widgets/big_action.dart';
 part '../widgets/hero_card.dart';
 part '../widgets/kid_chip.dart';
 part '../widgets/voice_tip.dart';
@@ -132,12 +134,15 @@ class CircleHomeMobileView extends HookConsumerWidget {
               memory: hero,
               author: controller.authorName(hero.authorId),
               today: controller.now,
+              onTap: () => context.router.push(
+                CircleMemoryDetailRoute(memoryId: hero.id),
+              ),
             ),
             const SizedBox(height: AppSpacing.s5),
             Row(
               children: [
                 Expanded(
-                  child: _BigAction(
+                  child: CircleBigAction(
                     icon: LucideIcons.heart,
                     label: l10n.circleLike,
                     color: kColorPrimary50FFF4F1,
@@ -148,7 +153,7 @@ class CircleHomeMobileView extends HookConsumerWidget {
                 ),
                 const SizedBox(width: AppSpacing.s3),
                 Expanded(
-                  child: _BigAction(
+                  child: CircleBigAction(
                     icon: LucideIcons.messageCircle,
                     label: l10n.circleSendWish,
                     color: kColorSecondary100E4F2EA,
@@ -173,7 +178,9 @@ class CircleHomeMobileView extends HookConsumerWidget {
                     ),
                   ),
                   InkWell(
-                    onTap: () => showComingSoonSnackBar(context),
+                    onTap: () => AutoTabsRouter.of(
+                      context,
+                    ).setActiveIndex(CircleTab.memories.index),
                     child: Text(
                       l10n.commonSeeAll,
                       style: AppTypography.adapt(
@@ -195,12 +202,21 @@ class CircleHomeMobileView extends HookConsumerWidget {
                     if (index > 0) const SizedBox(width: AppSpacing.itemGap),
                     Expanded(
                       child: index < photos.length
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(AppRadius.lg),
-                              child: Image.asset(
-                                photos[index],
-                                height: 108,
-                                fit: BoxFit.cover,
+                          ? GestureDetector(
+                              onTap: () => context.router.push(
+                                CircleMemoryDetailRoute(
+                                  memoryId: photos[index].$1.id,
+                                ),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.lg,
+                                ),
+                                child: Image.asset(
+                                  photos[index].$2,
+                                  height: 108,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             )
                           : const SizedBox.shrink(),

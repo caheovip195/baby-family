@@ -29,7 +29,6 @@ class CircleHomeController extends BaseNotifier {
   static const _week = Duration(days: 7);
 
   CircleView? view;
-  String? selectedChildId;
   bool hasError = false;
   final Set<String> _liked = {};
 
@@ -37,6 +36,9 @@ class CircleHomeController extends BaseNotifier {
   Map<String, String> _authorNames = const {};
 
   DateTime get now => ref.read(appClockProvider).now();
+
+  /// Cháu đang xem — dùng chung với CIR-02 (`circleSelectedChildProvider`).
+  String? get selectedChildId => ref.read(circleSelectedChildProvider);
 
   Child? get selectedChild =>
       view?.children.where((child) => child.id == selectedChildId).firstOrNull;
@@ -53,14 +55,14 @@ class CircleHomeController extends BaseNotifier {
         memories.firstOrNull;
   }
 
-  /// Ảnh trong 7 ngày qua (trừ ảnh lớn), tối đa 3.
-  List<String> get weekPhotos {
+  /// Ảnh trong 7 ngày qua (trừ ảnh lớn), tối đa 3 — (ký ức, ảnh).
+  List<(Memory, String)> get weekPhotos {
     final heroMemory = hero;
     final since = now.subtract(_week);
     return [
       for (final memory in _childMemories)
         if (memory.id != heroMemory?.id && memory.occurredAt.isAfter(since))
-          ...memory.mediaAssets,
+          for (final asset in memory.mediaAssets) (memory, asset),
     ].take(_weekPhotoCount).toList();
   }
 
@@ -88,7 +90,9 @@ class CircleHomeController extends BaseNotifier {
         final sorted =
             children.where((child) => child.birthDate != null).toList()
               ..sort((a, b) => b.birthDate!.compareTo(a.birthDate!));
-        selectedChildId = (sorted.firstOrNull ?? children.firstOrNull)?.id;
+        ref
+            .read(circleSelectedChildProvider.notifier)
+            .select((sorted.firstOrNull ?? children.firstOrNull)?.id);
       }
     } catch (_) {
       if (isDisposed) {
@@ -100,7 +104,7 @@ class CircleHomeController extends BaseNotifier {
   }
 
   void selectChild(String id) {
-    selectedChildId = id;
+    ref.read(circleSelectedChildProvider.notifier).select(id);
     notifyListeners();
   }
 

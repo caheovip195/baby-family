@@ -6,6 +6,12 @@
 > **Tài liệu đi kèm:** `02_TAI_LIEU_KY_THUAT_BABY_FAMILY_v3.md` (kiến trúc, DB, API, Flutter, triển khai)  
 > **Tagline:** *“Cùng con lớn lên — Giữ mãi yêu thương”* (EN: *Grow together. Remember forever.*)
 
+> **Cập nhật ngày 13/10/2026 — BF-20261013-005:** Giữ hai gói hiện có House/Family; dùng thử mặc định **7 ngày**, lấy từ cấu hình có phiên bản. Catalog cho phép thêm gói bằng dữ liệu, không khóa danh sách gói bằng enum hay tên gói trong client. License luôn thuộc **family gốc**, không chuyển trong bất kỳ trường hợp nào, kể cả restore hoặc CSKH; Store gia hạn đã thanh toán sau khi payer xóa tài khoản vẫn cấp quyền cho family gốc.
+>
+> **Lịch sử quyết định:** Ngày 06/10/2026, C-05/C-10 từng xác nhận dùng thử 90 ngày (hiển thị “3 tháng”). Quyết định 13/10/2026 thay thời lượng mặc định đó bằng 7 ngày; các mô tả trial, BR/AC và copy bên dưới theo quyết định mới. Thời hạn grant đã cấp được lưu theo policy/version tại lúc cấp, không tự sửa khi đổi cấu hình. Các mốc 90 ngày của catalog nội dung, chờ bạn đời, phiên đăng nhập, inbox hoặc retention không đổi.
+
+> **Đồng bộ kỹ thuật 14/10/2026 — BF-20261013-006/BF-20261014-001:** trial mặc định là **604800 giây = đúng 7 × 24 giờ**, expiry UTC tính một lần, thay các ví dụ kết thúc cuối ngày. [Schema và migration](database/README.md) thuộc backend; migration chỉ thay cấu trúc, seed catalog chạy riêng. Migration domain chưa áp dụng lên DB ứng dụng; các API nghiệp vụ ngoài Note vẫn chưa triển khai. Các câu hỏi xóa dữ liệu/retention còn mở trong [requirements](database/requirements.md), không tự chốt bằng schema.
+
 ---
 
 ## MỤC LỤC
@@ -15,7 +21,7 @@
 - [2. Thị trường mục tiêu & đặc thù gia đình Việt](#2-thị-trường-mục-tiêu--đặc-thù-gia-đình-việt)
 - [3. Mô hình gia đình & thuật ngữ](#3-mô-hình-gia-đình--thuật-ngữ)
 - [4. Vai trò & ma trận quyền](#4-vai-trò--ma-trận-quyền)
-- [5. Gói dịch vụ: Dùng thử 3 tháng • House • Family](#5-gói-dịch-vụ-dùng-thử-3-tháng--house--family)
+- [5. Gói dịch vụ: Dùng thử 7 ngày • House • Family](#5-gói-dịch-vụ-dùng-thử-7-ngày--house--family)
 - [6. Hành trình người dùng tổng thể](#6-hành-trình-người-dùng-tổng-thể)
 - [7. Đặc tả chức năng theo module](#7-đặc-tả-chức-năng-theo-module)
 - [8. Kiến trúc thông tin & điều hướng](#8-kiến-trúc-thông-tin--điều-hướng)
@@ -45,7 +51,7 @@ Ký hiệu phạm vi: **[MVP]** làm ở bản 1.0 • **[1.1] [1.2] [2.0]** cá
 
 | # | Vấn đề ở v2.0 | Mức độ | Cách xử lý trong v3.0 |
 |---|---|---|---|
-| 1 | **Không có phân chia gói cụ thể**: chỉ ghi “Free / Family Pro” với các giới hạn “hợp lý”, không có giá, quota, luồng nâng/hạ cấp. | Cao | Chốt (khách hàng xác nhận): **Dùng thử miễn phí 3 tháng** khi gia đình đủ Bố + Mẹ → bắt buộc mua **House 399.000đ/năm** hoặc **Family 599.000đ/năm**. Không có gói Free vĩnh viễn. Đặc tả quota, nâng/hạ cấp, người trả tiền, hết hạn, hoàn tiền (mục 5). |
+| 1 | **Không có phân chia gói cụ thể**: chỉ ghi “Free / Family Pro” với các giới hạn “hợp lý”, không có giá, quota, luồng nâng/hạ cấp. | Cao | Chốt (khách hàng xác nhận): **Dùng thử miễn phí 7 ngày** khi gia đình đủ Bố + Mẹ → bắt buộc mua **House 399.000đ/năm** hoặc **Family 599.000đ/năm**. Không có gói Free vĩnh viễn. Đặc tả quota, nâng/hạ cấp, người trả tiền, hết hạn, hoàn tiền (mục 5). |
 | 2 | Ông bà (Family Circle) có thể dùng ở mọi gói → không có lý do nâng cấp rõ ràng. | Cao | **Family Circle chỉ có ở gói Family.** Gói House chỉ dành cho Bố + Mẹ. Hạ gói → người thân bị *tạm dừng*, không bị xoá. |
 | 3 | Hai tài liệu mâu thuẫn **state machine nhiệm vụ** (nghiệp vụ: Suggested/Accepted/Snoozed/Reassigned…; kỹ thuật: DRAFT/SCHEDULED/ACTIVE…). | Cao | Hợp nhất 1 state machine duy nhất (mục 7.13.5), dùng chung cho cả 2 tài liệu. |
 | 4 | **Visibility** không thống nhất (nghiệp vụ có 5 mức gồm “Selected members”, kỹ thuật chỉ có `family/parents_only`). | Cao | Chốt 3 mức MVP: `Chỉ mình tôi` / `Bố mẹ` / `Cả nhà` (Family Circle của các bé được gắn). “Chọn người cụ thể” để phase 2.0. |
@@ -66,7 +72,7 @@ Ký hiệu phạm vi: **[MVP]** làm ở bản 1.0 • **[1.1] [1.2] [2.0]** cá
 | 19 | Chưa nói rõ khi **hai bố mẹ cùng mua gói**, khi người trả tiền rời gia đình, khi hoàn tiền. | Trung bình | Mục 5.6 – 5.9. |
 | 20 | Thiếu tính năng **Lịch tiêm/khám**? — cố ý không làm (y tế). | — | Giữ nguyên: không làm tracker y tế trong MVP; chỉ cho “Sự kiện gia đình” dạng ghi chú chung. Tăng trưởng (cân nặng/chiều cao) chỉ *ghi lại*, không đánh giá — phase 1.2. |
 
-### 0.3 Quyết định đã được khách hàng xác nhận (06/10/2026)
+### 0.3 Quyết định đã được khách hàng xác nhận (06/10/2026; cập nhật 13/10/2026)
 
 | # | Quyết định | Ảnh hưởng chính |
 |---|---|---|
@@ -74,13 +80,13 @@ Ký hiệu phạm vi: **[MVP]** làm ở bản 1.0 • **[1.1] [1.2] [2.0]** cá
 | C-02 | Chọn Bố → **bắt buộc mời Mẹ** (và ngược lại). Chưa có đủ Bố + Mẹ thì **không dùng được bất kỳ tính năng nào, kể cả tạo bé** | 6.1, 7.2, ONB-07, ONB-WAIT, BR-051/052 |
 | C-03 | Người thân (ông bà…) cũng không dùng được gì cho tới khi được Bố/Mẹ mời vào gia đình | 6.3, CIR-WAIT, BR-053 |
 | C-04 | Chỉ khi gia đình **đủ Bố + Mẹ** mới được nâng cấp gói; **Bố hoặc Mẹ** mua đều được | 5.6, BR-055 |
-| C-05 | **Dùng thử miễn phí 3 tháng**; hết 3 tháng **bắt buộc** nâng cấp lên House hoặc Family | 5.2–5.4, SUB-07, BR-054/056 |
+| C-05 | **Dùng thử miễn phí 7 ngày**; hết 7 ngày **bắt buộc** nâng cấp lên House hoặc Family | 5.2–5.4, SUB-07, BR-054/056 |
 | C-06 | 2 gói: **House 399.000đ/năm** (Bố + Mẹ), **Family 599.000đ/năm** (mở rộng ông bà, người thân theo dõi bé) | 5.3 |
 
-| C-07 | Dùng thử 3 tháng **không mời được người thân**, chỉ giới hạn **10 GB** | 5.3, 7.4, BR-007 |
+| C-07 | Dùng thử 7 ngày **không mời được người thân**, chỉ giới hạn **10 GB** | 5.3, 7.4, BR-007 |
 | C-08 | Hết hạn → dữ liệu **giữ nguyên ~12 tháng** rồi mới xoá, **có báo trước** | 5.4, BR-036, BR-058 |
 | C-09 | **Tạm thời chưa cho phép rời gia đình** (Bố/Mẹ không rời, không tách bạn đời) | 7.25.2, BR-057 |
-| C-10 | Gói vẫn bán trên Store; khi gia đình tạo thành công (đủ Bố + Mẹ) hệ thống **tự động cấp 3 tháng dùng thử**; hết 3 tháng **thông báo Bố Mẹ phải nâng cấp** | 5.4, BR-054/056 |
+| C-10 | Gói vẫn bán trên Store; khi gia đình tạo thành công (đủ Bố + Mẹ) hệ thống **tự động cấp 7 ngày dùng thử**; hết 7 ngày **thông báo Bố Mẹ phải nâng cấp** | 5.4, BR-054/056 |
 | C-11 | Người nuôi con một mình / không dùng smartphone **không phải đối tượng mục tiêu** | 2.2, 13.1 |
 | C-13 | **Nhãn mặc định của Bố/Mẹ là “Papa” và “Mama”** (mọi ngôn ngữ); khu vực riêng của hai người tên **“Papa & Mama”** | 2.3, 3.2, ONB-03, 7.27 |
 | C-14 | **Nhiệm vụ = bảng nhiệm vụ hằng ngày** lấy từ thư viện định sẵn; Papa và Mama mỗi ngày **cùng số lượng** nhiệm vụ (+ việc Cùng nhau); chia tab **Của tôi / Của bạn đời / Cùng nhau**; mỗi nhiệm vụ có Hearts; **người làm tự bấm hoàn thành** | 7.13, CARE-01…06, BR-019 |
@@ -309,16 +315,19 @@ Ký hiệu: ✅ được • ❌ không • 🔸 có điều kiện
 
 ---
 
-## 5. Gói dịch vụ: Dùng thử 3 tháng • House • Family
+## 5. Gói dịch vụ: Dùng thử 7 ngày • House • Family
 
-> ✅ **Đã được khách hàng xác nhận (06/10/2026):**
-> 1. Chỉ có **2 gói trả phí**: **House 399.000đ/năm** (Bố + Mẹ) và **Family 599.000đ/năm** (Bố + Mẹ + ông bà, người thân).
-> 2. **Không có gói Free vĩnh viễn.** Mỗi gia đình được **dùng thử miễn phí 3 tháng**; hết 3 tháng **bắt buộc** nâng cấp lên House hoặc Family mới tiếp tục dùng.
+> ✅ **Đã xác nhận 06/10/2026; thời lượng trial và ownership cập nhật 13/10/2026:**
+> 1. Hiện có **2 gói trả phí**: **House 399.000đ/năm** (Bố + Mẹ) và **Family 599.000đ/năm** (Bố + Mẹ + ông bà, người thân).
+> 2. **Không có gói Free vĩnh viễn.** Mỗi gia đình được **dùng thử miễn phí 7 ngày**; hết 7 ngày **bắt buộc** nâng cấp lên House hoặc Family mới tiếp tục dùng.
 > 3. Chỉ được nâng cấp (mua gói) khi gia đình **đã có đủ Bố và Mẹ**; **Bố hoặc Mẹ** mua đều được.
 
 ### 5.1 Triết lý định giá
 
 - Gói gắn với **Gia đình**: một người trả, cả nhà dùng.
+- **Catalog mở rộng:** House và Family là hai gói hiện có, không phải danh sách enum cố định. Thêm gói bằng bản ghi catalog và phiên bản quota/features; backend, admin/web và mobile đọc capabilities/quota/giá từ contract đã xác thực, không suy quyền từ tên gói hoặc số lượng thẻ cố định. Giá mua do Store trả về. State thanh toán/access tách khỏi mã plan.
+- **Trial policy có phiên bản:** mặc định 604800 giây, đúng 7 × 24 giờ; duration, quota và lịch nhắc lấy từ cấu hình được kiểm tra, ghi lại phiên bản đã áp dụng khi cấp grant. Expiry UTC tính một lần từ lúc cấp, không làm tròn cuối ngày. Copy “7 ngày” trong các ví dụ là cấu hình hiện tại, màn hình thực tế hiển thị thời hạn server. Không sửa hồi tố grant cũ khi đổi default hoặc timezone.
+- **License không chuyển:** owner family gốc là bất biến, kể cả restore, đổi account hay hỗ trợ thủ công. Payer là actor thanh toán; giao dịch Store gia hạn đã trả tiền sau khi payer xóa account vẫn cấp cho family gốc, không tự chuyển hoặc bỏ quyền đã thanh toán.
 - Bán **sự tiện lợi, dung lượng và mở rộng gia đình** (ông bà, người thân ở gói Family).
 - Hết hạn → khoá sử dụng, nhưng **không xoá ký ức** và luôn cho **tải dữ liệu về / xoá tài khoản** (bắt buộc theo quyền dữ liệu cá nhân và chính sách Store).
 - Nhánh an toàn (safety) trong Papa & Mama, báo cáo nội dung, xoá tài khoản, xuất dữ liệu **không bao giờ** bị khoá.
@@ -332,8 +341,8 @@ Ký hiệu: ✅ được • ❌ không • 🔸 có điều kiện
 [CHƯA KÍCH HOẠT]  — chỉ có 1 Parent: KHÔNG dùng được tính năng nào (kể cả tạo bé)
      │  bạn đời chấp nhận lời mời
      ▼
-[DÙNG THỬ 90 NGÀY]  — tự động cấp khi gia đình đủ Bố + Mẹ; tính năng như gói House, giới hạn 10 GB, chưa mời người thân
-     │  mua House/Family (bất kỳ lúc nào trong 90 ngày, Bố hoặc Mẹ)          │ hết 90 ngày không mua
+[DÙNG THỬ 7 NGÀY]  — tự động cấp khi gia đình đủ Bố + Mẹ; tính năng như gói House, giới hạn 10 GB, chưa mời người thân
+     │  mua House/Family (bất kỳ lúc nào trong thời gian dùng thử, Bố hoặc Mẹ)          │ hết thời gian dùng thử không mua
      ▼                                                                        ▼
 [HOUSE] / [FAMILY]  ◄─────────── mua gói ────────────────────────────── [HẾT HẠN — KHOÁ]
      │  hết hạn / huỷ / hoàn tiền (sau ân hạn)                                ▲
@@ -343,13 +352,13 @@ Ký hiệu: ✅ được • ❌ không • 🔸 có điều kiện
 | Trạng thái quyền sử dụng | Khi nào | Được làm gì |
 |---|---|---|
 | **Chưa kích hoạt** (`INCOMPLETE`) | Gia đình mới có 1 Parent | Chỉ: xem/gửi lại/thu hồi lời mời bạn đời, sửa tên gia đình, cài đặt tài khoản, đăng xuất, xoá tài khoản. **Không** tạo bé/thai kỳ, ký ức, nhiệm vụ, mời người thân, mua gói. |
-| **Dùng thử** (`TRIAL`) | 90 ngày kể từ khi đủ Bố + Mẹ | Tính năng như gói **House** (Bố + Mẹ), giới hạn **10 GB**, **không mời người thân** (5.3) |
-| **House** / **Family** | Đã mua, đang hiệu lực (gồm thời gian ân hạn thanh toán của Store) | Theo gói |
+| **Dùng thử** (`TRIAL`) | Mặc định 7 ngày kể từ khi đủ Bố + Mẹ, theo policy/version được cấp | Tính năng như gói **House** (Bố + Mẹ), giới hạn **10 GB**, **không mời người thân** (5.3) |
+| **Gói trả phí** (hiện House / Family) | Đã mua, đang hiệu lực (gồm thời gian ân hạn thanh toán của Store); mã plan lấy từ catalog | Theo capabilities/quota của phiên bản được cấp |
 | **Hết hạn** (`EXPIRED`) | Hết dùng thử mà chưa mua, hoặc gói hết hạn/huỷ/hoàn tiền | **Khoá**: màn hình bắt buộc nâng cấp (SUB-07). Chỉ được: mua gói, khôi phục giao dịch, **xuất/tải dữ liệu**, xoá tài khoản, hỗ trợ, đăng xuất. Người thân thấy “Gia đình tạm dừng” (CIR-05). Thông báo đẩy dừng (trừ thông báo về gói). |
 
 ### 5.3 Bảng tính năng & giới hạn
 
-| Nhóm | Tính năng | **Dùng thử 3 tháng** | **House** 399.000đ/năm | **Family** 599.000đ/năm |
+| Nhóm | Tính năng | **Dùng thử 7 ngày** | **House** 399.000đ/năm | **Family** 599.000đ/năm |
 |---|---|---|---|---|
 | Giá | | 0đ (1 lần/gia đình) | ≈ 33.000đ/tháng | ≈ 50.000đ/tháng |
 | **Gia đình** | Bố + Mẹ | ✅ (bắt buộc đủ 2) | ✅ | ✅ |
@@ -373,22 +382,22 @@ Ký hiệu: ✅ được • ❌ không • 🔸 có điều kiện
 
 > Dùng thử: **không mời được người thân**, giới hạn **10 GB** (đã chốt). Muốn mời ông bà → nâng cấp gói Family ngay trong thời gian dùng thử. Mọi con số cấu hình được ở Admin.
 
-### 5.4 Quy tắc dùng thử 3 tháng
+### 5.4 Quy tắc dùng thử 7 ngày
 
 | Quy tắc | Giá trị |
 |---|---|
 | Bắt đầu | Thời điểm gia đình **đủ Bố + Mẹ** (bạn đời chấp nhận lời mời và được xác nhận). Không bắt đầu khi mới đăng ký. |
-| Thời lượng | **90 ngày** (hiển thị “3 tháng”), kết thúc lúc 23:59 ngày thứ 90 theo giờ gia đình. |
+| Thời lượng | Mặc định **604800 giây = 7 × 24 giờ**, lấy từ policy có phiên bản. Server tính `trial_ends_at = trial_started_at + duration_seconds`, lưu expiry UTC cùng policy/version đã áp dụng; không làm tròn cuối ngày. Client hiển thị thời hạn server trả về. Đổi cấu hình/timezone không thay thời hạn grant đã cấp. |
 | Cách cấp | **Tự động** khi gia đình tạo thành công (đủ Bố + Mẹ) — hệ thống Baby Family cấp, **không cần mua trên Store, không cần nhập thẻ**. Gói House/Family vẫn bán trên Store như bình thường; người dùng có thể mua bất cứ lúc nào. |
 | Mỗi gia đình | 1 lần. |
 | Chống lạm dụng | Nếu **Bố hoặc Mẹ** đã từng dùng hết/đang dùng thử ở một gia đình khác (cùng tài khoản, cùng SĐT, cùng Apple/Google ID) → gia đình mới **không** được dùng thử, phải mua gói ngay sau khi đủ Bố + Mẹ. |
-| Nhắc trước khi hết | Ngày 60, ngày 83 (còn 7 ngày), ngày 88 (còn 2 ngày), ngày cuối: banner + thông báo cho **cả Bố và Mẹ**: “Còn 7 ngày dùng thử. Chọn gói để tiếp tục lưu giữ hành trình của Hana.” |
+| Nhắc trước khi hết | Banner/thông báo cho **cả Bố và Mẹ** theo số ngày còn lại và cấu hình reminder của policy. Không dùng các mốc nhắc của policy cũ; lịch nhắc cụ thể cho trial 7 ngày cần cấu hình và kiểm chứng trước phát hành. |
 | Mua trong thời gian dùng thử | Gói có hiệu lực ngay; thời gian dùng thử còn lại **không cộng dồn** (chu kỳ năm tính từ ngày mua) — **[PO]** có thể chọn cộng dồn bằng cách dùng *offer* của Store. |
 | Hết dùng thử | Trạng thái **Hết hạn — Khoá** (5.2). |
-| Hết 3 tháng | Thông báo cho **cả Bố và Mẹ**: “3 tháng dùng thử đã kết thúc. Nâng cấp gói để tiếp tục lưu giữ hành trình của con.” → app khoá ở SUB-07. |
+| Hết thời gian dùng thử | Thông báo cho **cả Bố và Mẹ**: “Thời gian dùng thử đã kết thúc. Nâng cấp gói để tiếp tục lưu giữ hành trình của con.” → app khoá ở SUB-07. |
 | Sau khi hết hạn | Dữ liệu **giữ nguyên khoảng 12 tháng** kể từ ngày khoá. Báo trước khi xoá: **30 ngày** và **7 ngày** (push + email/SMS nếu có), và nhắc nâng cấp hằng tháng (tối đa 1 lần/tháng). Trong thời gian này luôn xuất/tải dữ liệu được. Hết 12 tháng không gia hạn → xoá toàn bộ dữ liệu gia đình. |
 
-> **Lưu ý Store:** dùng thử do server cấp (không qua IAP) giúp người dùng không phải nhập thẻ — tỉ lệ kích hoạt cao hơn. App phải hiển thị rõ ở onboarding và paywall: *“Dùng thử miễn phí 3 tháng. Sau đó cần đăng ký gói House hoặc Family để tiếp tục sử dụng.”* Không dùng *Introductory Offer* của Store. Chi tiết kỹ thuật: tài liệu kỹ thuật mục 6.5 và 18.
+> **Lưu ý Store:** dùng thử do server cấp (không qua IAP) giúp người dùng không phải nhập thẻ — tỉ lệ kích hoạt cao hơn. App phải hiển thị rõ ở onboarding và paywall: *“Dùng thử miễn phí 7 ngày. Sau đó cần đăng ký gói House hoặc Family để tiếp tục sử dụng.”* Không dùng *Introductory Offer* của Store. Chi tiết kỹ thuật: tài liệu kỹ thuật mục 6.5 và 18.
 
 ### 5.5 Sản phẩm trên Store
 
@@ -437,9 +446,9 @@ Ký hiệu: ✅ được • ❌ không • 🔸 có điều kiện
 | Case | Quy tắc |
 |---|---|
 | Hai bố mẹ cùng mua (2 Apple ID) | Hệ thống dùng gói cao hơn; người mua sau nhận thông báo: “Gia đình đã có gói. Bạn có thể huỷ gói của mình trong App Store để không bị trừ tiền lần sau.” + hướng dẫn xin hoàn tiền. Trước khi mua, app luôn kiểm tra và ẩn nút mua nếu gia đình đã có gói ≥ gói đang chọn. |
-| Người trả tiền **xoá tài khoản** | Gia đình giữ quyền lợi tới hết chu kỳ đã trả; không tự gia hạn cho gia đình cũ. Parent còn lại được nhắc 14 ngày trước hết hạn để tự mua (khi gia đình lại đủ Bố + Mẹ). |
+| Người trả tiền **xoá tài khoản** | License và thời gian đã thanh toán vẫn thuộc **family gốc**. Nếu Store tiếp tục gia hạn và giao dịch được xác minh đã thanh toán, quyền lợi tiếp tục cấp cho **family gốc**, không chuyển sang family khác. Xóa account không tự hủy subscription Store; gate `PARTNER_LEFT` và điều kiện đủ hai Parent vẫn áp dụng độc lập. |
 | Một Parent xoá tài khoản trong thời gian dùng thử | Đồng hồ dùng thử **vẫn chạy**; gia đình về `PARTNER_LEFT` cho tới khi có bạn đời mới. |
-| Khôi phục mua hàng (Restore) trên máy mới | Nút “Khôi phục giao dịch” ở paywall & màn gói. |
+| Khôi phục mua hàng (Restore) trên máy mới | Nút “Khôi phục giao dịch” ở paywall và màn gói; khôi phục trạng thái purchase đã gắn **family gốc**. Nếu người dùng đang ở family khác thì không chuyển license, kể cả qua CSKH. |
 | Mua trên iOS, dùng trên Android | Quyền lợi gắn gia đình nên dùng được mọi nền tảng; quản lý/huỷ ở Store gốc. |
 | Apple **Family Sharing** | Tắt cho các sản phẩm. |
 | Tạo gia đình mới để “lách” dùng thử | Bị chặn bởi quy tắc chống lạm dụng 5.4. |
@@ -448,7 +457,7 @@ Ký hiệu: ✅ được • ❌ không • 🔸 có điều kiện
 ### 5.10 Paywall — điểm xuất hiện
 
 1. **Bắt buộc** khi Hết hạn (SUB-07, không đóng được).
-2. Banner nhắc dùng thử (ngày 60, 83, 88, 90).
+2. Banner nhắc dùng thử theo thời hạn server và cấu hình reminder của policy hiện hành.
 3. Bấm “Mời người thân” khi đang dùng thử hoặc ở gói House (→ gợi ý gói Family).
 4. Vượt dung lượng / video dài hơn giới hạn gói.
 5. Hết lượt AI.
@@ -470,7 +479,7 @@ Cài app → Welcome (3 slide) → Đăng nhập (Apple/Google/SĐT) → Hồ s�
   → BẮT BUỘC mời bạn đời: chia sẻ link/QR/mã qua Zalo/Messenger/SMS (không có nút "Để sau")
   → Màn CHỜ BẠN ĐỜI (ONB-WAIT): app khoá mọi tính năng; xem trạng thái lời mời, gửi lại, đổi cách mời
         ▼  bạn đời chấp nhận (+ Parent A xác nhận lần cuối)
-  → Chúc mừng "Nhà mình đã đủ Bố và Mẹ 🎉 — Bắt đầu 3 tháng dùng thử miễn phí"
+  → Chúc mừng "Nhà mình đã đủ Bố và Mẹ 🎉 — Bắt đầu 7 ngày dùng thử miễn phí"
   → Giai đoạn: [Đang mang thai] [Bé đã chào đời] [Đã có bé và đang mang thai]
   → Tạo thai kỳ / hồ sơ bé (một trong hai Parent làm, người kia thấy ngay)
   → Giải thích quyền riêng tư → Bật thông báo → (tuỳ chọn) Ký ức đầu tiên → TRANG CHỦ
@@ -484,7 +493,7 @@ Nhận link (Zalo…) → mở link
   └─ Đã cài app → mở thẳng màn Lời mời
 → Đăng nhập → Hồ sơ cơ bản
 → Xem lời mời: "Lan (Mẹ) mời bạn làm BỐ trong Nhà Cà Chua" → chọn cách gọi → Chấp nhận
-→ Parent A xác nhận lần cuối (nếu bật) → gia đình KÍCH HOẠT, bắt đầu dùng thử 3 tháng
+→ Parent A xác nhận lần cuối (nếu bật) → gia đình KÍCH HOẠT, bắt đầu dùng thử 7 ngày
 → Cùng Parent A thiết lập bé/thai kỳ (ai làm trước cũng được) → Trang chủ
 ```
 
@@ -570,7 +579,7 @@ Cách 2: Ông bà tự cài app trước
 - **BR-051 — Bố/Mẹ bắt buộc mời bạn đời.** Sau khi tạo gia đình, Parent A phải gửi lời mời; **không có nút “Để sau”**.
 - **BR-052 — Gia đình chỉ dùng được khi đủ Bố + Mẹ.** Khi mới có 1 Parent, **mọi tính năng bị khoá, kể cả tạo bé/thai kỳ**, ký ức, nhiệm vụ, mời người thân, mua gói. Người dùng chỉ ở màn Chờ bạn đời (ONB-WAIT).
 - **BR-053 — Người thân chỉ dùng được khi đã tham gia một gia đình** qua lời mời của Bố/Mẹ. Chọn vai trò Người thân mà chưa có lời mời → màn Chờ lời mời (CIR-WAIT), không dùng được tính năng nào.
-- **BR-054 — Dùng thử 3 tháng bắt đầu khi gia đình đủ Bố + Mẹ** (mục 5.4).
+- **BR-054 — Dùng thử 7 ngày bắt đầu khi gia đình đủ Bố + Mẹ** (mục 5.4).
 
 **Quy tắc khác**
 - Một tài khoản chỉ là **Parent của 1 gia đình**. Có thể đồng thời là **người thân** ở gia đình khác (vd. vừa là Mẹ ở nhà mình, vừa là Cô ở nhà anh trai) → *bộ chuyển gia đình* ở avatar. **[PO]**
@@ -604,7 +613,7 @@ Cách 2: Ông bà tự cài app trước
 4. Người nhận mở → đăng nhập → thấy: tên gia đình, người mời, vai trò đề xuất, lời nhắn (gia đình chưa kích hoạt nên chưa có bé; trường hợp `PARTNER_LEFT` thì hiện tên + avatar các bé).
 5. Chấp nhận / Từ chối.
 6. Nếu bật **“Tôi xác nhận lần cuối”** (mặc định BẬT): Parent A nhận thông báo “Anh Minh muốn tham gia làm Bố. Xác nhận?” → Đồng ý/Từ chối. Chống trường hợp link bị chuyển nhầm người.
-7. Thành công: gia đình chuyển `ACTIVE`, **bắt đầu dùng thử 3 tháng**; cả hai nhận thông báo “Nhà mình đã đủ Bố và Mẹ 🎉” và được đưa vào bước thiết lập bé/thai kỳ; Papa & Mama Space mở với màn giới thiệu quyền riêng tư.
+7. Thành công: gia đình chuyển `ACTIVE`, **bắt đầu dùng thử 7 ngày**; cả hai nhận thông báo “Nhà mình đã đủ Bố và Mẹ 🎉” và được đưa vào bước thiết lập bé/thai kỳ; Papa & Mama Space mở với màn giới thiệu quyền riêng tư.
 
 **Quy tắc**
 - Lời mời bạn đời hết hạn sau **7 ngày**, dùng **1 lần**. Tạo lời mời mới sẽ vô hiệu lời mời cũ. Hết hạn mà chưa ai nhận → màn Chờ hiện “Lời mời đã hết hạn” + nút tạo lời mời mới.
@@ -1783,12 +1792,12 @@ Mở link tới nội dung không có quyền → màn “Nội dung không kh�
 
 #### ONB-WAIT — Chờ bạn đời
 - **Ai:** Parent A khi gia đình `WAITING_PARTNER`. Mở app luôn vào màn này (không vào được tab nào).
-- **Bố cục:** minh hoạ ngôi nhà đang sáng đèn; “Đang chờ **Bố** tham gia…”; trạng thái lời mời (Đã tạo lúc… • Hết hạn sau 6 ngày • *Bố đã mở link* nếu đã resolve); nút **Gửi lại lời mời**, **Hiện mã QR**, **Đổi cách mời** (tạo link mới, vô hiệu link cũ); thẻ giải thích “Sau khi Bố tham gia, nhà mình được **dùng thử miễn phí 3 tháng**”; link nhỏ: “Huỷ gia đình này” (chọn lại vai trò / nhận lời mời người khác), Cài đặt tài khoản, Đăng xuất.
+- **Bố cục:** minh hoạ ngôi nhà đang sáng đèn; “Đang chờ **Bố** tham gia…”; trạng thái lời mời (Đã tạo lúc… • Hết hạn sau 6 ngày • *Bố đã mở link* nếu đã resolve); nút **Gửi lại lời mời**, **Hiện mã QR**, **Đổi cách mời** (tạo link mới, vô hiệu link cũ); thẻ giải thích “Sau khi Bố tham gia, nhà mình được **dùng thử miễn phí 7 ngày**”; link nhỏ: “Huỷ gia đình này” (chọn lại vai trò / nhận lời mời người khác), Cài đặt tài khoản, Đăng xuất.
 - **Trạng thái:** có người chấp nhận & cần xác nhận → thẻ nổi bật “**Minh** muốn tham gia làm **Bố**” [Xác nhận] [Không phải người này]; lời mời hết hạn → “Lời mời đã hết hạn” + [Tạo lời mời mới].
 - **Quy tắc:** nhắc Parent A gửi lại lời mời sau 2 ngày, 5 ngày (push nhẹ, tối đa 3 lần).
 
 #### ONB-ACT — Nhà mình đã đủ Bố và Mẹ
-- Hiệu ứng chúc mừng; “Bắt đầu **3 tháng dùng thử miễn phí** — đến hết ngày dd/mm/yyyy”; dòng nhỏ “Sau đó cần đăng ký gói House (399.000đ/năm) hoặc Family (599.000đ/năm) để tiếp tục”; nút **Thiết lập cho bé** → ONB-04. Hiển thị cho **cả hai** Parent (lần đầu mở app sau kích hoạt).
+- Hiệu ứng chúc mừng; “Bắt đầu **7 ngày dùng thử miễn phí** — đến hết ngày dd/mm/yyyy”; dòng nhỏ “Sau đó cần đăng ký gói House (399.000đ/năm) hoặc Family (599.000đ/năm) để tiếp tục”; nút **Thiết lập cho bé** → ONB-04. Hiển thị cho **cả hai** Parent (lần đầu mở app sau kích hoạt).
 - Nếu gia đình không đủ điều kiện dùng thử (5.4 chống lạm dụng) → thay bằng “Chọn gói để bắt đầu” → SUB-01.
 
 #### ONB-04 — Nhà mình đang ở giai đoạn nào?
@@ -2176,7 +2185,7 @@ Mở link tới nội dung không có quyền → màn “Nội dung không kh�
 ### 9.11 Gói dịch vụ
 
 #### SUB-01 — Chọn gói (Paywall)
-- Tiêu đề theo ngữ cảnh (“Mời ông bà cùng xem Hana” khi vào từ mời người thân); 2 thẻ gói **House** / **Family** (Family có nhãn “Phổ biến”/“Cả đại gia đình”), giá năm + quy đổi tháng; danh sách 4–6 lợi ích chính mỗi gói; bảng so sánh mở rộng; dòng trạng thái “Dùng thử miễn phí còn N ngày” (nếu đang dùng thử); nút **Đăng ký 399.000đ/năm** / **Đăng ký 599.000đ/năm**; text bắt buộc về tự gia hạn; link Điều khoản • Quyền riêng tư; **Khôi phục giao dịch**; “Để sau” (chỉ khi còn dùng thử/gói còn hạn).
+- Tiêu đề theo ngữ cảnh (“Mời ông bà cùng xem Hana” khi vào từ mời người thân); các thẻ gói lấy từ catalog đang bán (hiện **House** / **Family**) (Family có nhãn “Phổ biến”/“Cả đại gia đình”), giá năm + quy đổi tháng; danh sách 4–6 lợi ích chính mỗi gói; bảng so sánh mở rộng; dòng trạng thái “Dùng thử miễn phí còn N ngày” (nếu đang dùng thử); nút **Đăng ký 399.000đ/năm** / **Đăng ký 599.000đ/năm**; text bắt buộc về tự gia hạn; link Điều khoản • Quyền riêng tư; **Khôi phục giao dịch**; “Để sau” (chỉ khi còn dùng thử/gói còn hạn).
 - **Quy tắc:** chỉ hiện khi gia đình đủ Bố + Mẹ (BR-055); gia đình đã có gói ≥ gói đang xem → nút thành “Gói hiện tại”; người thân không bao giờ thấy màn này.
 
 #### SUB-02 — Xác nhận mua
@@ -2193,11 +2202,11 @@ Mở link tới nội dung không có quyền → màn “Nội dung không kh�
 - Biến thể: dung lượng (10/50/200 GB), video dài, số người thân, AI. Nội dung: giải thích ngắn, “Ký ức của bạn vẫn an toàn”, CTA Nâng cấp, phương án thay thế (vd. “Cắt video ngắn hơn”, “Lưu dạng nhật ký chữ”).
 
 #### SUB-06 — Banner trạng thái gói
-- Trên Trang chủ (cả Bố và Mẹ): Dùng thử còn 30/7/2 ngày • Hôm nay là ngày dùng thử cuối • Thanh toán lỗi (ân hạn) — đóng được, hiện lại sau 1 ngày (khi còn ≤ 7 ngày) hoặc 3 ngày.
+- Trên Trang chủ (cả Bố và Mẹ): thời gian dùng thử còn lại do server trả về • hôm nay là ngày cuối • thanh toán lỗi (ân hạn). Mốc nhắc và tần suất hiện lại lấy từ cấu hình/version của policy, không hardcode các mốc nhắc của bản trial cũ.
 
 #### SUB-07 — Hết thời gian dùng thử / Gói đã hết hạn (bắt buộc)
 - **Ai:** Bố, Mẹ khi trạng thái quyền sử dụng = Hết hạn. Toàn màn hình, **không đóng được**, thay thế mọi tab.
-- **Bố cục:** ảnh bìa gia đình mờ + “3 tháng dùng thử của nhà mình đã kết thúc” (hoặc “Gói Family đã hết hạn ngày dd/mm”); thống kê ấm áp “Nhà mình đã lưu 248 ký ức, 12 cột mốc của Hana” (động lực); 2 thẻ gói House / Family (như SUB-01); **Khôi phục giao dịch**; khu vực phụ: **Tải dữ liệu về** (→ SET-08), **Hỗ trợ**, **Đăng xuất**, **Xoá tài khoản**.
+- **Bố cục:** ảnh bìa gia đình mờ + “Thời gian dùng thử của nhà mình đã kết thúc” (hoặc “Gói Family đã hết hạn ngày dd/mm”); thống kê ấm áp “Nhà mình đã lưu 248 ký ức, 12 cột mốc của Hana” (động lực); các gói đang bán từ catalog (hiện House/Family, như SUB-01); **Khôi phục giao dịch**; khu vực phụ: **Tải dữ liệu về** (→ SET-08), **Hỗ trợ**, **Đăng xuất**, **Xoá tài khoản**.
 - **Quy tắc:** ký ức không bị xoá; người thân thấy CIR-05; thông báo đẩy dừng (trừ thông báo về gói, tối đa 1 lần/tuần trong 4 tuần); mua thành công → mở khoá ngay, quay lại HOME-01.
 
 ### 9.12 Cài đặt cá nhân
@@ -2556,7 +2565,7 @@ Dark mode: thay bóng bằng `surface` sáng hơn 1 bậc + viền `border`.
 | BR-035 | Tối đa 3 thông báo không gấp/người/ngày; sự kiện nhiều bé = 1 thông báo. |
 | BR-036 | Hết hạn dùng thử/gói → khoá sử dụng (SUB-07) nhưng không xoá ký ức; luôn cho tải dữ liệu về, xoá tài khoản, liên hệ hỗ trợ. Vượt dung lượng → chỉ chặn tải lên mới. |
 | BR-037 | Quyền riêng tư, báo cáo, xoá tài khoản, xuất dữ liệu cơ bản, nhánh an toàn không bao giờ sau paywall. |
-| BR-038 | Gói thuộc Family; chỉ Parent mua; chỉ payer đổi/huỷ. |
+| BR-038 | Gói/license thuộc **family gốc**; chỉ Parent mua, chỉ payer quản lý Store. License không chuyển family trong bất kỳ trường hợp nào. Store renewal đã thanh toán sau khi payer xóa account vẫn cấp family gốc. |
 | BR-039 | Xoá tài khoản không xoá dữ liệu của người khác; có 30 ngày chờ; đăng xuất mọi thiết bị ngay. |
 | BR-040 | Không bên nào đơn phương xoá toàn bộ dữ liệu bé khi còn Parent kia. |
 | BR-041 | Lời mời: token ngẫu nhiên, dùng 1 lần, hết hạn (7 ngày bạn đời / 14 ngày người thân), thu hồi được; lời mời hiển thị rõ vai trò & quyền trước khi chấp nhận. |
@@ -2571,9 +2580,9 @@ Dark mode: thay bóng bằng `surface` sáng hơn 1 bậc + viền `border`.
 | BR-051 | Bố/Mẹ tạo gia đình bắt buộc mời bạn đời; không có lựa chọn bỏ qua. |
 | BR-052 | Gia đình chưa đủ Bố + Mẹ (`WAITING_PARTNER`) không dùng được bất kỳ tính năng nào, kể cả tạo bé/thai kỳ. Khi một Parent xoá tài khoản (`PARTNER_LEFT`), người còn lại chỉ xem & tải về. |
 | BR-053 | Người thân chỉ dùng app khi đã tham gia gia đình qua lời mời của Bố/Mẹ; người thân không tạo được gia đình/bé. |
-| BR-054 | Mỗi gia đình được dùng thử miễn phí 90 ngày, bắt đầu khi đủ Bố + Mẹ; Parent đã từng dùng thử ở gia đình khác thì gia đình mới không được dùng thử. |
+| BR-054 | Mỗi gia đình được dùng thử miễn phí mặc định 7 ngày theo cấu hình có phiên bản, bắt đầu khi đủ Bố + Mẹ; Parent đã từng dùng thử ở gia đình khác thì gia đình mới không được dùng thử. |
 | BR-055 | Chỉ mua/nâng cấp gói khi gia đình đủ Bố + Mẹ; Bố hoặc Mẹ đều mua được; gói áp dụng cho cả gia đình. |
-| BR-056 | Dùng thử 90 ngày được cấp tự động khi gia đình đủ Bố + Mẹ (không qua Store); hết hạn → thông báo Papa & Mama, bắt buộc nâng cấp mới tiếp tục sử dụng (BR-036). |
+| BR-056 | Dùng thử mặc định 7 ngày theo cấu hình có phiên bản được cấp tự động khi gia đình đủ Bố + Mẹ (không qua Store); hết hạn → thông báo Papa & Mama, bắt buộc nâng cấp mới tiếp tục sử dụng (BR-036). |
 | BR-057 | Tạm thời không hỗ trợ Bố/Mẹ rời gia đình hoặc tách bạn đời; chỉ có xoá tài khoản (bắt buộc theo Store). Người thân vẫn rời được. |
 | BR-058 | Gia đình hết hạn được giữ dữ liệu ~12 tháng, báo trước 30 và 7 ngày trước khi xoá vĩnh viễn. |
 | BR-060 | Hệ thống hỗ trợ đa ngôn ngữ; MVP: vi (mặc định) + en. Thêm ngôn ngữ không cần sửa code màn hình. |
@@ -2680,7 +2689,7 @@ Xem 5.8 – 5.9.
 
 | ID | Use case | Luồng rút gọn | Kết quả mong đợi |
 |---|---|---|---|
-| UC-01 | Mẹ bầu tạo gia đình, mời Bố | Đăng nhập → Vai trò Mẹ → Tên gia đình → Mời Bố qua Zalo (bắt buộc) → Chờ → Bố chấp nhận → Mẹ xác nhận → dùng thử 3 tháng → Đang mang thai → Bơ, dự sinh | 1 gia đình ACTIVE, Bố thấy thai kỳ, Papa & Mama mở khoá |
+| UC-01 | Mẹ bầu tạo gia đình, mời Bố | Đăng nhập → Vai trò Mẹ → Tên gia đình → Mời Bố qua Zalo (bắt buộc) → Chờ → Bố chấp nhận → Mẹ xác nhận → dùng thử 7 ngày → Đang mang thai → Bơ, dự sinh | 1 gia đình ACTIVE, Bố thấy thai kỳ, Papa & Mama mở khoá |
 | UC-02 | Bố lưu ảnh siêu âm | + → Ký ức → ảnh → loại Siêu âm (tuần tự điền) → Bố mẹ → Lưu | Ký ức trên dòng thời gian thai kỳ |
 | UC-03 | Bé chào đời | Bé đã chào đời → 1 bé → thông tin → xác nhận | Hồ sơ Hana, cột mốc Chào đời, ký ức thai kỳ ở đầu timeline Hana, nhiệm vụ sơ sinh |
 | UC-04 | Mời bà nội (gói Family) | Mời người thân → Bà nội → Hana → Bình luận → Zalo → bà đăng nhập SĐT | Bà chỉ thấy Hana, bình luận được |
@@ -2699,7 +2708,7 @@ Xem 5.8 – 5.9.
 | UC-17 | Người thân đăng ảnh không phù hợp | (đã duyệt) → Parent Báo cáo/Gỡ khỏi gia đình | Ảnh gỡ, case kiểm duyệt |
 | UC-18 | Bố xoá tài khoản (gia đình vẫn còn Mẹ) | Xoá tài khoản → xác thực → 30 ngày | Gia đình `PARTNER_LEFT`; Mẹ chỉ xem & tải về, có thể mời bạn đời mới |
 | UC-19 | Parent xoá tài khoản | Xoá → (là Parent duy nhất) xoá cả gia đình → OTP → xác nhận | Đăng xuất mọi máy, 30 ngày chờ, sau đó xoá |
-| UC-20 | Hết 3 tháng dùng thử chưa mua | Ngày 91 mở app | SUB-07 bắt buộc; vẫn tải dữ liệu về được; người thân thấy CIR-05; mua House/Family → mở khoá ngay |
+| UC-20 | Hết thời gian dùng thử chưa mua | Mở app khi đã tới `trial_ends_at` của policy được cấp (mặc định 7 ngày) | SUB-07 bắt buộc; vẫn tải dữ liệu về được; người thân thấy CIR-05; mua House/Family → mở khoá ngay |
 | UC-20b | Gói Family hết hạn không gia hạn | Hết ân hạn | Như UC-20 |
 | UC-23 | Bố đăng nhập chưa có lời mời | Vai trò Bố → mời Mẹ → mở app lại | Luôn ở ONB-WAIT, không tạo được bé |
 | UC-24 | Bà tự cài app | Vai trò Người thân → CIR-WAIT → “Nhờ con mời mình” → Mẹ mời → Bà chấp nhận | Bà vào CIR-01 |
@@ -2771,8 +2780,8 @@ Xem 5.8 – 5.9.
 - AC-060: Paywall có giá, chu kỳ, tự gia hạn, Điều khoản, Quyền riêng tư, Khôi phục giao dịch.
 - AC-061: Mua thành công → quyền lợi áp dụng cho cả Bố, Mẹ (và người thân) trong ≤ 1 phút.
 - AC-062: Hoàn tiền/thu hồi từ Store → mất quyền lợi, không mất dữ liệu.
-- AC-063: Dùng thử 90 ngày bắt đầu đúng lúc gia đình đủ Bố + Mẹ, chỉ 1 lần; Parent đã từng dùng thử thì gia đình mới không được dùng thử.
-- AC-064: Ngày thứ 91 (giờ gia đình) chưa mua → SUB-07 với cả Bố và Mẹ; API tạo mới trả lỗi “cần nâng cấp”; tải dữ liệu về & xoá tài khoản vẫn hoạt động.
+- AC-063: Dùng thử mặc định 7 ngày theo cấu hình có phiên bản bắt đầu đúng lúc gia đình đủ Bố + Mẹ, chỉ 1 lần; Parent đã từng dùng thử thì gia đình mới không được dùng thử.
+- AC-064: Khi tới `trial_ends_at` do server cấp theo policy/version (mặc định 7 ngày), chưa mua → SUB-07 với cả Bố và Mẹ; API tạo mới trả lỗi “cần nâng cấp”; tải dữ liệu về & xoá tài khoản vẫn hoạt động. Đổi đồng hồ hoặc timezone không gia hạn grant đã cấp.
 - AC-065: Bố hoặc Mẹ mua đều mở khoá cho cả gia đình trong ≤ 1 phút.
 
 **Đa ngôn ngữ**
@@ -2815,7 +2824,7 @@ Xem 5.8 – 5.9.
 | Người thân | Số người thân/gia đình Family; % người thân hoạt động/tuần | ≥ 3; ≥ 50% |
 | Giữ chân | D7 / D30 / D90 gia đình | ≥ 45% / 30% / 20% |
 | Kích hoạt gia đình | % tài khoản Bố/Mẹ có bạn đời tham gia trong 7 ngày | ≥ 60% |
-| Doanh thu | Dùng thử 3 tháng → trả phí; tỷ lệ gia hạn năm; tỷ lệ House→Family | ≥ 25%; ≥ 55%; theo dõi |
+| Doanh thu | Dùng thử 7 ngày → trả phí; tỷ lệ gia hạn năm; tỷ lệ House→Family | ≥ 25%; ≥ 55%; theo dõi |
 | An toàn | Báo cáo/1.000 gia đình; thời gian xử lý báo cáo trẻ em | ≤ 24h |
 | Chất lượng | Crash-free sessions; % tải lên thành công | ≥ 99.5%; ≥ 98% |
 
@@ -2827,7 +2836,7 @@ Xem 5.8 – 5.9.
 
 | Phase | Mục tiêu | Tính năng |
 |---|---|---|
-| **MVP 1.0** | Chứng minh vòng lặp Ký ức + Gia đình + Nhiệm vụ, phát hành Store, bán gói | Đăng nhập Apple/Google/SĐT • Onboarding • Gia đình 2 Parent • Nhiều bé, thai kỳ, chào đời (sinh đôi) • Ký ức (ảnh/video/chữ/giọng nói/**câu nói của con**/kỷ vật), nhật ký, thư gửi con (time capsule cơ bản) • **Ảnh tháng & “Con lớn từng tháng”** • **Kể cùng nhau (góc nhìn thứ hai)** • **Hôm nay của các con** • Gợi ý ghi lại • Bộ sưu tập • Timeline, album, cột mốc (gồm truyền thống VN), thùng rác • Feed, bình luận, reaction • **Family Circle (gói Family)** + duyệt ảnh • Nhiệm vụ: bảng hằng ngày chia đều, thư viện, tự thêm, lặp, hoàn thành → ký ức • Hearts riêng/Cây gia đình, huy hiệu cơ bản • Papa & Mama: check-in, **lời nhờ**, cảm ơn, nhật ký riêng • Lịch cơ bản (âm lịch) • Recap tuần • Thông báo, giờ yên tĩnh, ẩn nội dung • Báo cáo/chặn/kiểm duyệt • Xoá tài khoản, xuất dữ liệu • **Dùng thử 3 tháng + gói House/Family (IAP)** • Admin CMS • Dark mode, chữ lớn • **Đa ngôn ngữ vi + en** (7.27) |
+| **MVP 1.0** | Chứng minh vòng lặp Ký ức + Gia đình + Nhiệm vụ, phát hành Store, bán gói | Đăng nhập Apple/Google/SĐT • Onboarding • Gia đình 2 Parent • Nhiều bé, thai kỳ, chào đời (sinh đôi) • Ký ức (ảnh/video/chữ/giọng nói/**câu nói của con**/kỷ vật), nhật ký, thư gửi con (time capsule cơ bản) • **Ảnh tháng & “Con lớn từng tháng”** • **Kể cùng nhau (góc nhìn thứ hai)** • **Hôm nay của các con** • Gợi ý ghi lại • Bộ sưu tập • Timeline, album, cột mốc (gồm truyền thống VN), thùng rác • Feed, bình luận, reaction • **Family Circle (gói Family)** + duyệt ảnh • Nhiệm vụ: bảng hằng ngày chia đều, thư viện, tự thêm, lặp, hoàn thành → ký ức • Hearts riêng/Cây gia đình, huy hiệu cơ bản • Papa & Mama: check-in, **lời nhờ**, cảm ơn, nhật ký riêng • Lịch cơ bản (âm lịch) • Recap tuần • Thông báo, giờ yên tĩnh, ẩn nội dung • Báo cáo/chặn/kiểm duyệt • Xoá tài khoản, xuất dữ liệu • **Dùng thử 7 ngày + gói House/Family (IAP)** • Admin CMS • Dark mode, chữ lớn • **Đa ngôn ngữ vi + en** (7.27) |
 | **1.1** | Gắn kết cặp đôi sâu hơn | Cầu nối (không AI) + nhánh an toàn • Thống kê chăm con • Bàn giao ca • Tuần của hai ta • Câu hỏi kết nối • Recap ngày/tháng • Ngày này năm xưa đầy đủ, tìm kiếm nâng cao • Share Extension (chia sẻ từ app Ảnh) • @nhắc tên • Gộp hồ sơ bé trùng |
 | **1.2** | AI có kiểm soát | Gợi ý chú thích • Câu chuyện ngày • Gợi ý nhiệm vụ AI • Viết lại nhẹ nhàng • Tóm tắt Cầu nối • Báo cáo nội dung AI • Ghi tăng trưởng (không đánh giá) |
 | **2.0** | Tài sản ký ức dài hạn | Year Story, Sách của con (PDF), in sách (đối tác), time capsule nâng cao, video tổng hợp tự động, “Chọn người cụ thể” visibility, layout tablet |
@@ -2980,14 +2989,14 @@ Mỗi template có: `mã`, tên ngắn, mô tả 1 câu, giai đoạn (tuần th
 
 | # | Câu hỏi | Khuyến nghị v3.0 |
 |---|---|---|
-| D-01 | ~~Có mức Free không?~~ | **Đã chốt:** không có Free; dùng thử 3 tháng rồi bắt buộc mua (C-05) |
+| D-01 | ~~Có mức Free không?~~ | **Đã chốt:** không có Free; dùng thử 7 ngày rồi bắt buộc mua (C-05) |
 | D-01b | Giới hạn dùng thử | **Đã chốt:** 10 GB, không mời người thân (C-07) |
 | D-01c | Giữ dữ liệu sau khi hết hạn | **Đã chốt:** ~12 tháng, báo trước (C-08) |
 | D-01d | Rời gia đình | **Đã chốt:** tạm thời không cho phép (C-09) |
 | D-01e | Cách cấp dùng thử | **Đã chốt:** tự động khi tạo gia đình thành công, không qua Store (C-10) |
 | D-02 | Có gói tháng không? | Chưa ở MVP; thêm ở 2.x nếu tỷ lệ chuyển đổi năm thấp |
 | D-03 | Price point chính xác trên Store | Chọn 399.000đ/599.000đ hoặc mức gần nhất |
-| D-04 | Quota dung lượng (2/50/200 GB) | Giữ, theo dõi chi phí lưu trữ thực tế sau 3 tháng |
+| D-04 | Quota dung lượng hiện tại (10/50/200 GB) | Giữ, theo dõi chi phí lưu trữ thực tế sau 3 tháng |
 | D-05 | Một tài khoản vừa là Parent nhà mình vừa là người thân nhà khác? | **Cho phép** (bộ chuyển gia đình) |
 | D-06 | Người thân có thấy Cây gia đình không? | Thấy cây (không chi tiết) — mặc định tắt, Parent bật |
 | D-07 | Người thân có được viết “Thư gửi cháu” không? | **Có** (Contributor) |

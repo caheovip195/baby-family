@@ -26,6 +26,7 @@ const INITIAL_SCHEMA = `generator client {
 
 datasource db {
   provider = "postgresql"
+  schemas = ["public", "app"]
 }
 `;
 const INITIAL_APP_MODULE = `import { Module } from '@nestjs/common';
@@ -169,6 +170,14 @@ test('generates category folders, I-prefixed DI interfaces, a real model and App
   );
   assert.match(schema, /model Task \{/);
   assert.match(schema, /@@map\("task"\)/);
+  assert.match(schema, /@@schema\("public"\)/);
+  assert.match(schema, /updatedAt DateTime @default\(now\(\)\) @updatedAt/);
+  assert.match(schema, /deletedAt DateTime\? @map\("deleted_at"\)/);
+  const repository = await read('repositories/task.repository.ts');
+  assert.match(repository, /count\(\{\s*where: \{ deletedAt: null \}/);
+  assert.match(repository, /where: \{ id, deletedAt: null \}/);
+  assert.match(repository, /data: \{ deletedAt: new Date\(\) \}/);
+  assert.doesNotMatch(repository, /\.delete\(/);
   const appModule = await read('app.module.ts');
   assert.match(
     appModule,
@@ -190,6 +199,7 @@ test('generates category folders, I-prefixed DI interfaces, a real model and App
     content: 'Details',
     createdAt: new Date(),
     updatedAt: new Date(),
+    deletedAt: null,
   };
   const model = new Task(attributes);
   assert.equal(model instanceof Task, true);
@@ -226,6 +236,22 @@ test('supports kebab-case resources with PascalCase interfaces and camelCase Pri
     await readFile(path.join(rootDir, 'prisma', 'schema.prisma'), 'utf8'),
     /@@map\("family_category"\)/,
   );
+});
+
+test('allows the same table name in another database schema without changing that model', async (t) => {
+  const rootDir = await createFixture(t);
+  const domainModel = `model DomainTask {\n  id String @id\n  @@map("task")\n  @@schema("app")\n}\n`;
+  await writeFile(
+    path.join(rootDir, 'prisma', 'schema.prisma'),
+    INITIAL_SCHEMA + domainModel,
+  );
+  await generateResource('task', { rootDir });
+  const schema = await readFile(
+    path.join(rootDir, 'prisma', 'schema.prisma'),
+    'utf8',
+  );
+  assert.ok(schema.includes(domainModel.trim()));
+  assert.match(schema, /model Task \{[\s\S]*?@@schema\("public"\)/);
 });
 
 test('refuses any existing target without overwriting changes or leaving other category files', async (t) => {

@@ -9,10 +9,12 @@ import 'package:baby_family/data/model/memory/memory_comment.dart';
 import 'package:baby_family/data/repository/child.dart';
 import 'package:baby_family/data/repository/family.dart';
 import 'package:baby_family/data/repository/memory.dart';
+import 'package:baby_family/data/repository/notification.dart';
 import 'package:baby_family/data/service/circle.dart';
 import 'package:baby_family/data/service_imp/child.dart';
 import 'package:baby_family/data/service_imp/mock_service.dart';
 import 'package:baby_family/utils/constants/enum.dart';
+import 'package:baby_family/utils/helper/app_l10n.dart';
 
 class CircleServiceImp extends MockServiceImp implements ICircleService {
   CircleServiceImp(
@@ -21,11 +23,13 @@ class CircleServiceImp extends MockServiceImp implements ICircleService {
     this._familyRepository,
     this._childRepository,
     this._memoryRepository,
+    this._notificationRepository,
   );
 
   final IFamilyRepository _familyRepository;
   final IChildRepository _childRepository;
   final IMemoryRepository _memoryRepository;
+  final INotificationRepository _notificationRepository;
 
   @override
   Future<CircleView?> view({String? childId}) async {
@@ -168,6 +172,33 @@ class CircleServiceImp extends MockServiceImp implements ICircleService {
       'mediaAssets': post.mediaAssets,
       ChildServiceImp.localKey: true,
     });
+    // Báo bố mẹ có ảnh chờ duyệt (NOTI → MEM-19).
+    final author = _familyRepository.member(myMemberId);
+    final childNames = [
+      for (final id in post.childIds) ?_childRepository.child(id)?['name'],
+    ].join(', ');
+    final text = currentL10n().memPendingNotify(
+      (author?['callName'] as String?) ?? '',
+      post.mediaAssets.length,
+      childNames,
+    );
+    for (final member in _familyRepository.members(familyId)) {
+      final role = FamilyRole.values.asNameMap()[member['role']];
+      final userId = member['userId'] as String?;
+      if (role == null || !role.isParent || userId == null) {
+        continue;
+      }
+      _notificationRepository.addNotification({
+        'familyId': familyId,
+        'recipientUserId': userId,
+        'group': NotificationGroup.family.name,
+        'kind': NotificationKind.memory.name,
+        'text': text,
+        'createdAt': now.toIso8601String(),
+        'unread': true,
+        'route': '/review',
+      });
+    }
   }
 
   @override

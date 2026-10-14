@@ -49,7 +49,11 @@ final _screens = <String, (PageRouteInfo, DemoSeed, String)>{
   'SUB-07': (const ExpiredRoute(), DemoSeed.expired, 'mama'),
   'SET-01': (const SettingsRoute(), DemoSeed.active, 'papa'),
   'SET-06': (const DisplaySettingsRoute(), DemoSeed.active, 'mama'),
-  'CIR-01': (const CircleShellRoute(children: [CircleHomeRoute()]), DemoSeed.circle, 'mama'),
+  'CIR-01': (
+    const CircleShellRoute(children: [CircleHomeRoute()]),
+    DemoSeed.circle,
+    'mama',
+  ),
 };
 
 void main() {
@@ -103,7 +107,8 @@ void main() {
             themeMode: dark ? ThemeMode.dark : ThemeMode.light,
           );
           expect(tester.takeException(), isNull);
-          expect(router.topRoute.name, route.routeName);
+          final top = route.initialChildren?.lastOrNull ?? route;
+          expect(router.topRoute.name, top.routeName);
         });
       }
     }
@@ -167,6 +172,8 @@ void main() {
       );
       await _tap(tester, find.text('Xem gói House / Family'));
       await _tap(tester, find.text('Nâng cấp Family · 599.000đ'));
+      // SUB-02: xác nhận trước bảng thanh toán của Store.
+      await _tap(tester, find.text('Tiếp tục với App Store'));
       expect(router.topRoute.name, FamilyRoute.name);
       expect(find.text('Nhà mình đã lên gói Family 🎉'), findsOneWidget);
       expect(find.text('Mời ông bà ở gói Family'), findsNothing);
@@ -178,7 +185,8 @@ void main() {
       await tester.pump(const Duration(seconds: 5));
       await tester.pumpAndSettle();
       await _tap(tester, find.text('Tạo lời mời'));
-      expect(router.topRoute.name, FamilyRoute.name);
+      // FAM-05: the new invite shows in “Lời mời đang chờ”.
+      expect(router.topRoute.name, PendingInvitesRoute.name);
       expect(find.textContaining('Đã tạo lời mời cho Ông nội'), findsOneWidget);
     });
 
@@ -203,7 +211,8 @@ void main() {
 
     for (final (label, route) in [
       ('Hiển thị & Ngôn ngữ', DisplaySettingsRoute.name),
-      ('Gói & thanh toán', PlansRoute.name),
+      ('Gói & thanh toán', FamilyPlanRoute.name),
+      ('AI hỗ trợ', AiSettingsRoute.name),
       ('Lan', ProfileSettingsRoute.name),
     ]) {
       testWidgets('“$label” opens $route', (tester) async {
@@ -212,12 +221,6 @@ void main() {
         expect(router.topRoute.name, route);
       });
     }
-
-    testWidgets('rows without a screen show “Sắp ra mắt”', (tester) async {
-      await pumpRoute(tester, const SettingsRoute());
-      await _tap(tester, find.text('AI hỗ trợ'));
-      expect(find.text('Sắp ra mắt'), findsOneWidget);
-    });
 
     testWidgets('Đăng xuất resets the session to Welcome', (tester) async {
       final router = await pumpRoute(tester, const SettingsRoute());
@@ -292,6 +295,7 @@ void main() {
       await _tap(tester, find.text('Chọn gói House / Family'));
       expect(router.topRoute.name, PlansRoute.name);
       await _tap(tester, find.text('Nâng cấp Family · 599.000đ'));
+      await _tap(tester, find.text('Tiếp tục với App Store'));
       expect(router.topRoute.name, isNot(ExpiredRoute.name));
       expect(router.topRoute.name, isNot(PlansRoute.name));
     });
@@ -311,7 +315,11 @@ void main() {
     testWidgets('greets the relative and shows Haru’s latest memory', (
       tester,
     ) async {
-      await pumpRoute(tester, const CircleShellRoute(children: [CircleHomeRoute()]), seed: DemoSeed.circle);
+      await pumpRoute(
+        tester,
+        const CircleShellRoute(children: [CircleHomeRoute()]),
+        seed: DemoSeed.circle,
+      );
       expect(find.text('Chào Bà ngoại'), findsOneWidget);
       expect(find.text('Cháu yêu của bà'), findsOneWidget);
       expect(find.text('Haru · 17 tháng 29 ngày'), findsOneWidget);
@@ -323,13 +331,21 @@ void main() {
     });
 
     testWidgets('kid chips switch the child', (tester) async {
-      await pumpRoute(tester, const CircleShellRoute(children: [CircleHomeRoute()]), seed: DemoSeed.circle);
+      await pumpRoute(
+        tester,
+        const CircleShellRoute(children: [CircleHomeRoute()]),
+        seed: DemoSeed.circle,
+      );
       await _tap(tester, find.text('Hana'));
       expect(find.text('Hana · 2 tuổi 4 tháng'), findsOneWidget);
     });
 
     testWidgets('Thả tim and Gửi lời chúc (mock)', (tester) async {
-      await pumpRoute(tester, const CircleShellRoute(children: [CircleHomeRoute()]), seed: DemoSeed.circle);
+      await pumpRoute(
+        tester,
+        const CircleShellRoute(children: [CircleHomeRoute()]),
+        seed: DemoSeed.circle,
+      );
       await _tap(tester, find.text('Thả tim'));
       expect(find.text('Đã thả tim cho Haru 💛'), findsOneWidget);
       await _tap(tester, find.text('Gửi lời chúc'));

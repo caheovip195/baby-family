@@ -132,6 +132,10 @@ abstract class IUsService extends IBaseService {
   /// US-11 “Mình hiểu”.
   Future<void> markBridgeUnderstood(String sessionId);
 
+  /// US-11 “Mình cần nói rõ hơn”: thêm một lượt gửi ý — thay lời nhắn đã chia
+  /// sẻ của tôi bằng [message] (người dùng đã xem trước chính xác).
+  Future<void> clarifyBridgeShare(String sessionId, String message);
+
   /// US-12: chọn / xác nhận bước tiếp theo.
   Future<void> chooseNextStep(String sessionId, BridgeNextStep step);
 

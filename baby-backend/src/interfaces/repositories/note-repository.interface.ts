@@ -13,5 +13,6 @@ export interface INoteRepository {
   findById(id: string): Promise<Note | null>;
   create(input: CreateNoteDto): Promise<Note>;
   update(id: string, input: UpdateNoteDto): Promise<Note | null>;
+  /** Soft delete an active note; return false when it is missing or already deleted. */
   remove(id: string): Promise<boolean>;
 }

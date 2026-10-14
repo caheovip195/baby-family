@@ -4,6 +4,8 @@ import 'package:baby_family/data/dto/fetal_size.dart';
 import 'package:baby_family/data/model/care/family_tree.dart';
 import 'package:baby_family/data/model/care/mission.dart';
 import 'package:baby_family/data/model/child/child.dart';
+import 'package:baby_family/data/model/family/family.dart';
+import 'package:baby_family/data/model/family/family_membership.dart';
 import 'package:baby_family/data/model/family/member.dart';
 import 'package:baby_family/data/model/memory/bump_photo.dart';
 import 'package:baby_family/data/model/memory/chapter_summary.dart';
@@ -71,6 +73,10 @@ class HomeTabController extends BaseNotifier {
   Member? me;
   int unreadCount = 0;
 
+  /// SUB-06: gói của gia đình (banner thanh toán gia hạn chưa thành công).
+  Family? family;
+  bool _paymentIssueDismissed = false;
+
   // HOME-01
   List<StoryItem> stories = const [];
   CareBoard? board;
@@ -129,6 +135,25 @@ class HomeTabController extends BaseNotifier {
   void selectSubject(String? childId) =>
       ref.read(selectedSubjectProvider.notifier).select(childId);
 
+  /// SUB-06 — hiện banner khi gia hạn chưa thành công (seed `paymentIssue`);
+  /// đóng banner chỉ ẩn trong phiên xem này.
+  bool get showPaymentIssue =>
+      family?.plan.paymentIssue == true && !_paymentIssueDismissed;
+
+  PlanState? get planState => family?.plan.state;
+
+  void dismissPaymentIssue() {
+    _paymentIssueDismissed = true;
+    notifyListeners();
+  }
+
+  /// FAM-08 — các gia đình của tài khoản (sheet “Chuyển gia đình”).
+  Future<List<FamilyMembership>> memberships() =>
+      ref.read(familyServiceProvider).memberships();
+
+  Future<void> switchFamily(String familyId) =>
+      ref.read(familyServiceProvider).switchFamily(familyId);
+
   Future<void> load({bool silent = false}) async {
     final revision = ++_revision;
     hasError = false;
@@ -143,6 +168,7 @@ class HomeTabController extends BaseNotifier {
       final loadedMembers = await familyService.members();
       final loadedMe = await familyService.me();
       final unread = await ref.read(notificationServiceProvider).unreadCount();
+      final loadedFamily = await familyService.currentFamily();
       final subjectId = this.subjectId;
       final current = loadedChildren
           .where((child) => child.id == subjectId)
@@ -156,6 +182,7 @@ class HomeTabController extends BaseNotifier {
       members = loadedMembers;
       me = loadedMe;
       unreadCount = unread;
+      family = loadedFamily;
       if (current == null) {
         await _loadFamily(revision);
       } else if (current.isPregnancy) {

@@ -38,6 +38,9 @@ class MemorySearchController extends BaseNotifier {
   final focus = FocusNode();
 
   bool loaded = false;
+
+  /// Ảnh người thân đăng đang chờ duyệt (lối tắt MEM-19).
+  int pendingCount = 0;
   List<String> recents = const [];
   List<Child> children = const [];
   List<Member> members = const [];
@@ -82,15 +85,17 @@ class MemorySearchController extends BaseNotifier {
 
   Future<void> load() async {
     try {
-      final (rows, kids, people) = await (
+      final (rows, kids, people, pending) = await (
         memoryService.searchRecents(),
         childService.children(),
         familyService.members(),
+        memoryService.pendingPosts(),
       ).wait;
       if (isDisposed) {
         return;
       }
       recents = rows;
+      pendingCount = pending.length;
       children = kids.where((item) => !item.isPregnancy).toList();
       members = people;
     } catch (_) {
