@@ -17,6 +17,9 @@ node_modules/
 /baby-database/data/
 /baby-database/backups/
 
+# Host-mounted local storage services (Valkey, MinIO, Mailpit)
+/baby-storage/data/
+
 # Build output and caches for each application
 /baby-backend/dist/
 /baby-backend/coverage/

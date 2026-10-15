@@ -1,0 +1,123 @@
+name: baby-storage
+
+# Local-only supporting services: Valkey (cache/queue), MinIO (S3 object storage), Mailpit (SMTP sink).
+# Host ports bind 127.0.0.1 only. Data is bind-mounted under STORAGE_DATA_DIR; create the folders first.
+
+services:
+  valkey:
+    image: valkey/valkey:9.0.6-alpine3.24
+    restart: unless-stopped
+    # noeviction: BullMQ requires keys never be evicted; AOF keeps queued jobs across restarts.
+    command:
+      - valkey-server
+      - --requirepass
+      - ${VALKEY_PASSWORD:?Set VALKEY_PASSWORD in baby-storage/.env}
+      - --appendonly
+      - "yes"
+      - --appendfsync
+      - everysec
+      - --maxmemory
+      - ${VALKEY_MAXMEMORY:-256mb}
+      - --maxmemory-policy
+      - noeviction
+    environment:
+      REDISCLI_AUTH: ${VALKEY_PASSWORD}
+    ports:
+      - "127.0.0.1:${VALKEY_PORT:-6379}:6379"
+    volumes:
+      - type: bind
+        source: ${STORAGE_DATA_DIR:?Set STORAGE_DATA_DIR in baby-storage/.env}/valkey
+        target: /data
+        bind:
+          create_host_path: false
+    networks:
+      storage:
+        aliases:
+          - baby-valkey
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    security_opt:
+      - no-new-privileges:true
+
+  minio:
+    # Official MinIO images are no longer published; Chainguard's build is pinned by digest
+    # (minio RELEASE.2026-09-22T19-25-18Z, verified 2026-10-15). See README for the risk note.
+    image: chainguard/minio@sha256:2136d593beacf4461187035eca949fe49abd589d5079735025c711ca58fee0c8
+    restart: unless-stopped
+    command:
+      ["server", "/data", "--address", ":9000", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?Set MINIO_ROOT_USER in baby-storage/.env}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?Set MINIO_ROOT_PASSWORD in baby-storage/.env}
+      MINIO_BROWSER_REDIRECT_URL: http://localhost:${MINIO_CONSOLE_PORT:-9001}
+    ports:
+      - "127.0.0.1:${MINIO_API_PORT:-9000}:9000"
+      - "127.0.0.1:${MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - type: bind
+        source: ${STORAGE_DATA_DIR}/minio
+        target: /data
+        bind:
+          create_host_path: false
+    networks:
+      storage:
+        aliases:
+          - baby-minio
+    stop_grace_period: 30s
+    security_opt:
+      - no-new-privileges:true
+
+  # One-shot: wait for MinIO, create private buckets, versioning/lifecycle and the backend's
+  # least-privilege user. Idempotent; safe to re-run.
+  minio-init:
+    build:
+      context: ./minio-init
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_APP_ACCESS_KEY: ${MINIO_APP_ACCESS_KEY:?Set MINIO_APP_ACCESS_KEY in baby-storage/.env}
+      MINIO_APP_SECRET_KEY: ${MINIO_APP_SECRET_KEY:?Set MINIO_APP_SECRET_KEY in baby-storage/.env}
+    depends_on:
+      minio:
+        condition: service_started
+    networks:
+      - storage
+    restart: "no"
+    security_opt:
+      - no-new-privileges:true
+
+  mailpit:
+    image: axllent/mailpit:v1.31.6
+    restart: unless-stopped
+    environment:
+      MP_DATABASE: /data/mailpit.db
+      MP_MAX_MESSAGES: 5000
+      MP_SMTP_AUTH_ACCEPT_ANY: "true"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "true"
+    ports:
+      - "127.0.0.1:${MAILPIT_SMTP_PORT:-1025}:1025"
+      - "127.0.0.1:${MAILPIT_UI_PORT:-8025}:8025"
+    volumes:
+      - type: bind
+        source: ${STORAGE_DATA_DIR}/mailpit
+        target: /data
+        bind:
+          create_host_path: false
+    networks:
+      storage:
+        aliases:
+          - baby-mailpit
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  storage:
+    name: ${STORAGE_NETWORK:-baby-family-storage}

@@ -63,7 +63,7 @@ class OnboardingInvitePartnerMobileView extends HookConsumerWidget {
       children: [
         AppStepHeading(
           title: l10n.onboardingInviteTitle(partner),
-          subtitle: l10n.onbInviteSubtitle(partner),
+          subtitle: l10n.onbInviteSubtitle(partner, controller.trialDays),
         ),
         InviteCodeCard(
           code: formatInviteCode(code),

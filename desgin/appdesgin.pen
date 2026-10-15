@@ -1363,7 +1363,7 @@
                           "id": "ftsLL",
                           "name": "T",
                           "fill": "$text-secondary",
-                          "content": "3 tháng miễn phí",
+                          "content": "7 ngày miễn phí",
                           "fontFamily": "$font-body",
                           "fontSize": 12,
                           "fontWeight": "600"
@@ -3000,7 +3000,7 @@
                   "fill": "$text-secondary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Baby Family cần cả Papa và Mama. Khi Papa tham gia, nhà mình bắt đầu 3 tháng dùng thử miễn phí.",
+                  "content": "Baby Family cần cả Papa và Mama. Khi Papa tham gia, nhà mình bắt đầu 7 ngày dùng thử miễn phí.",
                   "lineHeight": 1.5,
                   "fontFamily": "$font-body",
                   "fontSize": 15,
@@ -3317,7 +3317,7 @@
                   "fill": "$text-secondary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Khi Papa nhận lời mời, nhà mình sẽ được mở khoá và bắt đầu 3 tháng dùng thử miễn phí.",
+                  "content": "Khi Papa nhận lời mời, nhà mình sẽ được mở khoá và bắt đầu 7 ngày dùng thử miễn phí.",
                   "lineHeight": 1.5,
                   "textAlign": "center",
                   "fontFamily": "$font-body",
@@ -3705,7 +3705,7 @@
                       "id": "UEkvt",
                       "name": "Label",
                       "fill": "$primary-700",
-                      "content": "3 tháng dùng thử miễn phí",
+                      "content": "7 ngày dùng thử miễn phí",
                       "fontFamily": "$font-heading",
                       "fontSize": 17,
                       "fontWeight": "800"
@@ -3719,7 +3719,7 @@
                   "fill": "$text-secondary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Đến hết ngày 05/01/2027 · không cần thẻ thanh toán",
+                  "content": "Đến hết ngày 14/10/2026 · không cần thẻ thanh toán",
                   "fontFamily": "$font-body",
                   "fontSize": 13,
                   "fontWeight": "normal"
@@ -19983,7 +19983,7 @@
                   "id": "PIjAs",
                   "name": "T",
                   "fill": "$text-primary",
-                  "content": "Dùng thử còn 90 ngày",
+                  "content": "Dùng thử còn 7 ngày",
                   "fontFamily": "$font-body",
                   "fontSize": 13,
                   "fontWeight": "700"
@@ -20679,7 +20679,7 @@
               "fill": "$text-primary",
               "textGrowth": "fixed-width",
               "width": "fill_container",
-              "content": "3 tháng dùng thử của nhà mình đã kết thúc",
+              "content": "Thời gian dùng thử của nhà mình đã kết thúc",
               "lineHeight": 1.2,
               "textAlign": "center",
               "fontFamily": "$font-heading",
@@ -90235,7 +90235,7 @@
                       "id": "s0jDG",
                       "name": "Text",
                       "fill": "$text-secondary",
-                      "content": "Lưu trữ 02/10/2026",
+                      "content": "Khang",
                       "fontFamily": "$font-body",
                       "fontSize": 14,
                       "fontWeight": "600"
@@ -90247,7 +90247,7 @@
                       "fill": "$text-tertiary",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "Lưu trữ 02/10/2026 · 0 ký ức riêng",
+                      "content": "Lưu trữ 02/10/2026 · 2 ký ức riêng",
                       "fontFamily": "$font-body",
                       "fontSize": 12,
                       "fontWeight": "normal"
@@ -90892,7 +90892,7 @@
                           "id": "c2atD",
                           "name": "S",
                           "fill": "$text-secondary",
-                          "content": "Còn 90 ngày · hết hạn 05/01/2027",
+                          "content": "Còn 7 ngày · hết hạn 14/10/2026",
                           "fontFamily": "$font-body",
                           "fontSize": 12,
                           "fontWeight": "normal"
@@ -100854,7 +100854,7 @@
                       "id": "F9b8EM",
                       "name": "T",
                       "fill": "$text-primary",
-                      "content": "Dùng thử còn 12 ngày",
+                      "content": "Dùng thử còn 7 ngày",
                       "fontFamily": "$font-body",
                       "fontSize": 13,
                       "fontWeight": "700"
@@ -112486,7 +112486,7 @@
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "Nhà mình bắt đầu 3 tháng dùng thử miễn phí",
+                              "content": "Nhà mình bắt đầu 7 ngày dùng thử miễn phí",
                               "fontFamily": "$font-body",
                               "fontSize": 14,
                               "fontWeight": "500"

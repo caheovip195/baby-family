@@ -32,6 +32,18 @@ services:
       AUTH_JWT_PUBLIC_KEY: ${AUTH_JWT_PUBLIC_KEY:-}
       AUTH_JWT_ISSUER: ${AUTH_JWT_ISSUER:-baby-family}
       AUTH_JWT_AUDIENCE: ${AUTH_JWT_AUDIENCE:-baby-family-app}
+      # Supporting services from ../baby-storage (optional; empty disables the adapter).
+      REDIS_URL: ${REDIS_DOCKER_URL:-}
+      S3_ENDPOINT: ${S3_DOCKER_ENDPOINT:-http://baby-minio:9000}
+      S3_PUBLIC_ENDPOINT: ${S3_PUBLIC_ENDPOINT:-http://localhost:9000}
+      S3_REGION: ${S3_REGION:-us-east-1}
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-}
+      S3_FORCE_PATH_STYLE: 'true'
+      SMTP_HOST: ${SMTP_DOCKER_HOST:-baby-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      # Mailpit has no TLS; only the local .env sets this. Real SMTP must keep it false.
+      SMTP_ALLOW_INSECURE: ${SMTP_ALLOW_INSECURE:-false}
     ports:
       - '${PORT:-3000}:3000'
     depends_on:
@@ -39,6 +51,7 @@ services:
         condition: service_completed_successfully
     networks:
       - database
+      - storage
     restart: unless-stopped
     init: true
     read_only: true
@@ -50,7 +63,46 @@ services:
       - ALL
     stop_grace_period: 20s
 
+  # Background jobs: outbox relay, media processing, purge-orphans, reconcile-uploads.
+  worker:
+    build:
+      context: .
+      target: worker
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: *database-url
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      REDIS_URL: ${REDIS_DOCKER_URL:-}
+      S3_ENDPOINT: ${S3_DOCKER_ENDPOINT:-http://baby-minio:9000}
+      S3_PUBLIC_ENDPOINT: ${S3_PUBLIC_ENDPOINT:-http://localhost:9000}
+      S3_REGION: ${S3_REGION:-us-east-1}
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-}
+      S3_FORCE_PATH_STYLE: 'true'
+      MEDIA_WORKER_CONCURRENCY: ${MEDIA_WORKER_CONCURRENCY:-2}
+      MEDIA_PURGE_UNATTACHED_AFTER_HOURS: ${MEDIA_PURGE_UNATTACHED_AFTER_HOURS:-}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - database
+      - storage
+    restart: unless-stopped
+    init: true
+    read_only: true
+    # Media is processed in /tmp; size bounds the largest file the worker can handle.
+    tmpfs:
+      - /tmp:size=2g
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    stop_grace_period: 60s
+
 networks:
   database:
     name: ${DATABASE_NETWORK:-baby-family-data}
+    external: true
+  storage:
+    name: ${STORAGE_NETWORK:-baby-family-storage}
     external: true

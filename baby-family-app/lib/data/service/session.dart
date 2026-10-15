@@ -54,7 +54,7 @@ abstract class ISessionService extends IBaseService {
   Future<void> markPartnerInviteSent();
 
   /// ONB-WAIT (debug): “Giả lập: bạn đời đã tham gia” → activatedSetup,
-  /// bắt đầu dùng thử 90 ngày.
+  /// bắt đầu dùng thử theo trial policy (mặc định 7 ngày).
   Future<void> simulatePartnerJoined();
 
   /// ONB-04.

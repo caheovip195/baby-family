@@ -104,7 +104,7 @@ class AuthMobileView extends HookConsumerWidget {
                                 ),
                                 _AuthTrustChip(
                                   icon: LucideIcons.gift,
-                                  label: l10n.authTrial,
+                                  label: l10n.authTrial(controller.trialDays),
                                 ),
                                 _AuthTrustChip(
                                   icon: LucideIcons.users,

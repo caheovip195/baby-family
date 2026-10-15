@@ -2342,6 +2342,7 @@ Mở link tới nội dung không có quyền → màn “Nội dung không kh�
 | `success` | `#3E9B6E` | `#6FCB9C` | Thành công |
 | `warning` | `#D98E1F` | `#F2B85B` | Cảnh báo (ví dụ sắp hết dung lượng) |
 | `error` | `#D14B4B` | `#F08080` | **Chỉ dùng cho lỗi hệ thống/validate** — không dùng cho nhiệm vụ chưa làm |
+| `error-50` | `#FBE4E4` | `#3D231D` | Nền nhạt cho trạng thái nguy hiểm/không hoàn tác (nhãn “Còn ≤ 3 ngày” ở Thùng rác MEM-17, vòng icon dialog xoá/chặn MEM-17b, RPT-02) — không dùng cho nhiệm vụ chưa làm |
 | `info` | `#3F82BF` | `#7DB3E0` | Thông tin |
 
 #### Màu nhận diện bé (8 màu, tự gán theo thứ tự, đổi được)

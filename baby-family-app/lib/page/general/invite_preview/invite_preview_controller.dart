@@ -1,6 +1,7 @@
 import 'package:baby_family/data/dto/invite_preview_data.dart';
 import 'package:baby_family/data/model/session/app_session.dart';
 import 'package:baby_family/data/provider/child.dart';
+import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/provider/session.dart';
 import 'package:baby_family/data/service/session.dart';
 import 'package:baby_family/page/application_base.dart';
@@ -35,6 +36,10 @@ class InvitePreviewController extends BaseNotifier {
   bool invalid = false;
   String callName = '';
 
+  /// Thời lượng dùng thử (ngày) theo trial policy của catalog; giá trị mặc
+  /// định tới khi tải xong (BF-20261013-005).
+  int trialDays = kValueDefaultTrialDuration.inDays;
+
   bool get isPartner => data?.invite.kind == InviteKind.partner;
 
   /// INV-01 hợp lệ / INV-02 không còn hiệu lực / INV-03 đang là Bố/Mẹ ở gia
@@ -61,10 +66,12 @@ class InvitePreviewController extends BaseNotifier {
       }
       return;
     }
+    final duration = await ref.read(familyServiceProvider).trialDuration();
     if (isDisposed) {
       return;
     }
     data = value;
+    trialDays = duration.inDays;
     final invited = value.invite.callName;
     callName = invited != null && invited.isNotEmpty
         ? invited

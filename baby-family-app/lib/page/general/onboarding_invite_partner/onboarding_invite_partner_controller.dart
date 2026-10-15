@@ -1,4 +1,5 @@
 import 'package:baby_family/data/model/family/invite_info.dart';
+import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/provider/session.dart';
 import 'package:baby_family/data/service/session.dart';
 import 'package:baby_family/page/application_base.dart';
@@ -27,6 +28,10 @@ class OnboardingInvitePartnerController extends BaseNotifier {
   /// “Tôi xác nhận lần cuối khi {Papa} tham gia” — mặc định bật (9.2).
   bool requireApproval = true;
 
+  /// Thời lượng dùng thử (ngày) theo trial policy của catalog; giá trị mặc
+  /// định tới khi tải xong (BF-20261013-005).
+  int trialDays = kValueDefaultTrialDuration.inDays;
+
   String get partnerCallName {
     final value = invite?.callName;
     if (value != null && value.isNotEmpty) {
@@ -39,11 +44,15 @@ class OnboardingInvitePartnerController extends BaseNotifier {
   }
 
   Future<void> load() async {
-    final value = await sessionService.partnerInvite();
+    final (value, duration) = await (
+      sessionService.partnerInvite(),
+      ref.read(familyServiceProvider).trialDuration(),
+    ).wait;
     if (isDisposed) {
       return;
     }
     invite = value;
+    trialDays = duration.inDays;
     notifyListeners();
   }
 

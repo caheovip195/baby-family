@@ -5,3 +5,17 @@ process.env.DATABASE_URL =
   process.env.TEST_DATABASE_URL ??
   process.env.DATABASE_URL ??
   'postgresql://baby:baby_local_only@localhost:5433/baby_family_test?schema=public';
+// Supporting services stay disabled unless explicitly provided (ConfigModule would
+// otherwise read them from a developer's .env). Storage integration tests opt in.
+for (const name of [
+  'REDIS_URL',
+  'S3_ENDPOINT',
+  'S3_PUBLIC_ENDPOINT',
+  'S3_ACCESS_KEY_ID',
+  'S3_SECRET_ACCESS_KEY',
+  'SMTP_HOST',
+  'SMTP_USER',
+  'SMTP_PASSWORD',
+]) {
+  process.env[name] = '';
+}

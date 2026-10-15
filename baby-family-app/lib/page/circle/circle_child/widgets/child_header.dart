@@ -3,8 +3,8 @@ part of '../mobile/circle_child_mobile_view.dart';
 /// Đầu trang cháu (Pencil “Child Header”): avatar 84 viền màu bé, tên 30/800,
 /// tuổi 18 `text-secondary`, nhãn “🎉 Ngày mai tròn 18 tháng” (`accent-100`
 /// 14/700) khi ngày mai tròn tháng.
-class _ChildHeader extends StatelessWidget {
-  const _ChildHeader({
+class _CircleChildHeader extends StatelessWidget {
+  const _CircleChildHeader({
     required this.child,
     required this.today,
     required this.monthsTomorrow,

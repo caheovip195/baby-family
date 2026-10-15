@@ -81,8 +81,11 @@ final kValueDemoStartTime = DateTime(2026, 10, 7, 20, 25);
 /// Thai kỳ chuẩn 280 ngày (40 tuần) tính từ kỳ kinh cuối — tuần thai = (ngày - LMP) / 7.
 const kValuePregnancyTotalDays = 280;
 
-/// BR-054/056: dùng thử 90 ngày khi gia đình đủ Papa + Mama.
-const kValueTrialDays = 90;
+/// BR-054/056 (BF-20261013-005): thời lượng dùng thử **mặc định** 604800 giây
+/// (7 × 24 giờ). Giá trị thật lấy từ trial policy có phiên bản trong catalog
+/// (`catalog.json` → `trialPolicy.durationSeconds`); hằng số chỉ dùng khi
+/// catalog thiếu policy.
+const kValueDefaultTrialDuration = Duration(seconds: 604800);
 
 /// Bản mẫu (không có thư viện ảnh thật): video chọn từ ô “+” của MEM-05 dài
 /// 12 phút, vượt giới hạn 10 phút của gói Family → SUB-05 (Pencil `aISrA`).

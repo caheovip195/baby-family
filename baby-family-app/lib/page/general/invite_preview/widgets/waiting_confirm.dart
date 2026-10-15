@@ -4,9 +4,16 @@ part of '../mobile/invite_preview_mobile_view.dart';
 /// Papa): khối 220×150 `primary-50` với hai avatar 72 nối bằng đồng hồ cát,
 /// tiêu đề 26/800, mô tả 15, 3 bước, ghi chú thông báo; nút “Đóng”.
 class _WaitingConfirm extends StatelessWidget {
-  const _WaitingConfirm({required this.invite, required this.onClose});
+  const _WaitingConfirm({
+    required this.invite,
+    required this.trialDays,
+    required this.onClose,
+  });
 
   final InviteInfo invite;
+
+  /// Thời lượng dùng thử theo trial policy (“Nhà mình bắt đầu 7 ngày…”).
+  final int trialDays;
   final VoidCallback onClose;
 
   @override
@@ -130,7 +137,7 @@ class _WaitingConfirm extends StatelessWidget {
                 state: 1,
               ),
               const SizedBox(height: AppSpacing.cardInset),
-              _StepMark(title: l10n.invWaitingStepTrial, state: 2),
+              _StepMark(title: l10n.invWaitingStepTrial(trialDays), state: 2),
             ],
           ),
         ),

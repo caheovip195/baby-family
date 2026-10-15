@@ -32,6 +32,11 @@ import { BillingCatalogController } from '../../controllers/billing-catalog.cont
 import { FAMILY_BILLING_SERVICE } from '../../interfaces/services/family-billing-service.interface';
 import { FamilyBillingService } from '../../services/family-billing.service';
 import { FamilyBillingController } from '../../controllers/family-billing.controller';
+import { MEDIA_SERVICE } from '../../interfaces/services/media-service.interface';
+import { MediaService } from '../../services/media.service';
+import { MediaController } from '../../controllers/media.controller';
+import { MEDIA_REPOSITORY } from '../../interfaces/repositories/media-repository.interface';
+import { MediaRepository } from '../../repositories/media.repository';
 
 export const APPLICATION_CONTROLLERS: Type[] = [
   UserController,
@@ -41,6 +46,7 @@ export const APPLICATION_CONTROLLERS: Type[] = [
   PregnancyController,
   BillingCatalogController,
   FamilyBillingController,
+  MediaController,
 ];
 
 export const APPLICATION_PROVIDERS: Provider[] = [
@@ -48,6 +54,8 @@ export const APPLICATION_PROVIDERS: Provider[] = [
   AccessTokenGuard,
   { provide: AUTH_ACCESS_REPOSITORY, useClass: AuthAccessRepository },
   { provide: CATALOG_QUERY_REPOSITORY, useClass: CatalogQueryRepository },
+  { provide: MEDIA_REPOSITORY, useClass: MediaRepository },
+  { provide: MEDIA_SERVICE, useClass: MediaService },
   {
     provide: PREGNANCY_COMMAND_REPOSITORY,
     useClass: PregnancyCommandRepository,

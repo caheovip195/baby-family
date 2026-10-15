@@ -1,9 +1,11 @@
 import 'package:baby_family/data/model/session/app_session.dart';
 import 'package:baby_family/data/provider/app_setting.dart';
+import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/provider/session.dart';
 import 'package:baby_family/data/service/session.dart';
 import 'package:baby_family/page/application_base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
+import 'package:baby_family/utils/constants/values.dart';
 import 'package:hooks_riverpod/legacy.dart';
 
 /// AUTH-01 — đăng nhập Apple/Google (mock luôn thành công) hoặc số điện thoại.
@@ -11,7 +13,9 @@ final authControllerProvider =
     ChangeNotifierProvider.autoDispose<AuthController>(AuthController.new);
 
 class AuthController extends BaseNotifier {
-  AuthController(super.ref);
+  AuthController(super.ref) {
+    load();
+  }
 
   ISessionService get sessionService => ref.read(sessionServiceProvider);
 
@@ -19,6 +23,20 @@ class AuthController extends BaseNotifier {
   AppSession get session => ref.read(sessionServiceProvider).current;
 
   AppLanguage get language => ref.read(appLanguageProvider);
+
+  /// Thời lượng dùng thử (ngày) theo trial policy của catalog; giá trị mặc
+  /// định tới khi tải xong (BF-20261013-005).
+  int trialDays = kValueDefaultTrialDuration.inDays;
+
+  /// Chip “{days} ngày miễn phí” lấy thời lượng từ trial policy.
+  Future<void> load() async {
+    final duration = await ref.read(familyServiceProvider).trialDuration();
+    if (isDisposed) {
+      return;
+    }
+    trialDays = duration.inDays;
+    notifyListeners();
+  }
 
   Future<void> changeLanguage(AppLanguage language) async {
     await ref.read(appLanguageProvider.notifier).change(language);

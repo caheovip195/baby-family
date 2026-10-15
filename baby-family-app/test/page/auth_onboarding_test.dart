@@ -58,6 +58,8 @@ Future<void> _parentFlow(
   await _tap(tester, 'Bắt đầu');
   expect(router.topRoute.name, AuthRoute.name);
   await _shot(tester, 'auth_01$suffix', shots);
+  // BF-20261013-005: trial length comes from the catalog trial policy (7 days).
+  expect(find.text('7 ngày miễn phí'), findsOneWidget);
   await _tap(tester, 'Dùng số điện thoại');
   expect(router.topRoute.name, AuthPhoneRoute.name);
   await _shot(tester, 'auth_02$suffix', shots);
@@ -76,15 +78,35 @@ Future<void> _parentFlow(
   await _tap(tester, 'Tạo gia đình');
   expect(router.topRoute.name, OnboardingInvitePartnerRoute.name);
   await _shot(tester, 'onb_07$suffix', shots);
+  expect(
+    find.text(
+      'Baby Family cần cả Papa và Mama. Khi Papa tham gia, nhà mình bắt đầu '
+      '7 ngày dùng thử miễn phí.',
+    ),
+    findsOneWidget,
+  );
   await _tap(tester, 'Sao chép link mời');
   expect(router.topRoute.name, OnboardingWaitingRoute.name);
   await tester.pump(const Duration(seconds: 5));
   await tester.pumpAndSettle();
   await _shot(tester, 'onb_wait$suffix', shots);
+  expect(
+    find.text(
+      'Khi Papa nhận lời mời, nhà mình sẽ được mở khoá và bắt đầu 7 ngày dùng '
+      'thử miễn phí.',
+    ),
+    findsOneWidget,
+  );
   await _tap(tester, 'Hiện mã QR');
   await _tap(tester, 'Mô phỏng bạn đời tham gia');
   expect(router.topRoute.name, OnboardingActivatedRoute.name);
   await _shot(tester, 'onb_act$suffix', shots);
+  // Mock today 07/10/2026 20:25 + 604800 s → ends 14/10/2026.
+  expect(find.text('7 ngày dùng thử miễn phí'), findsOneWidget);
+  expect(
+    find.text('Đến hết ngày 14/10/2026 · không cần thẻ thanh toán'),
+    findsOneWidget,
+  );
   await _tap(tester, 'Thiết lập cho bé');
   expect(router.topRoute.name, OnboardingStageRoute.name);
   await _shot(tester, 'onb_04$suffix', shots);

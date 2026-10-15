@@ -59,6 +59,14 @@ class FamilyRepositoryImp extends MockRepositoryImp
   }
 
   @override
+  JsonMap trialPolicy() {
+    final catalog = store.meta['catalog'] as Map?;
+    return Map<String, dynamic>.from(
+      (catalog?['trialPolicy'] as Map?) ?? const {},
+    );
+  }
+
+  @override
   JsonMap config() =>
       Map<String, dynamic>.from((store.meta['config'] as Map?) ?? const {});
 

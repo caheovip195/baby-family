@@ -26,6 +26,12 @@ abstract class IFamilyService extends IBaseService {
   /// Gói bán trên Store (House/Family) với giá đã định dạng.
   Future<List<PlanOffer>> planOffers();
 
+  /// Thời lượng dùng thử theo trial policy hiện hành của catalog (mặc định
+  /// 7 ngày — BF-20261013-005). Dùng cho copy trước khi gia đình được cấp
+  /// dùng thử (AUTH-01, ONB-07, ONB-WAIT, INV-04); gia đình đã cấp thì đọc
+  /// `plan.startedAt`/`endsAt` (không hồi tố khi policy đổi).
+  Future<Duration> trialDuration();
+
   /// SUB-01/07 (mock): mua gói thành công ngay, hết hạn → dùng tiếp.
   Future<void> purchasePlan(PlanState plan);
 

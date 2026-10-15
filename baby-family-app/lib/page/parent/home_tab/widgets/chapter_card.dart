@@ -3,8 +3,8 @@ part of '../mobile/home_tab_mobile_view.dart';
 /// Chương hiện tại (Pencil `OC0hK`): ô “Ảnh tháng 6” 72×90 (`secondary-100`,
 /// viền 2 `secondary-500`, bo 14) + “CHƯƠNG HIỆN TẠI” 10/800, “Tháng thứ 6 của
 /// Haru” 17/800, số liệu 12.
-class _ChapterCard extends StatelessWidget {
-  const _ChapterCard({
+class _HomeChapterCard extends StatelessWidget {
+  const _HomeChapterCard({
     required this.controller,
     required this.child,
     required this.chapter,

@@ -315,19 +315,26 @@ class SessionServiceImp extends MockServiceImp implements ISessionService {
     _activate(familyId);
   }
 
+  /// BR-054: đủ Papa + Mama → cấp dùng thử theo trial policy hiện hành của
+  /// catalog; expiry tính một lần (`startedAt + durationSeconds`), không làm
+  /// tròn cuối ngày.
   void _activate(String familyId) {
+    final policy = _familyRepository.trialPolicy();
+    final seconds = policy['durationSeconds'] as int?;
+    final duration = seconds == null
+        ? kValueDefaultTrialDuration
+        : Duration(seconds: seconds);
+    final startedAt = now;
     _familyRepository.updateFamily(familyId, {
-      'activatedAt': now.toIso8601String(),
+      'activatedAt': startedAt.toIso8601String(),
       'plan': {
         'state': PlanState.trial.name,
-        'startedAt': now.toIso8601String(),
-        'endsAt': now
-            .add(const Duration(days: kValueTrialDays))
-            .toIso8601String(),
+        'startedAt': startedAt.toIso8601String(),
+        'endsAt': startedAt.add(duration).toIso8601String(),
         'storageUsedMb': 0,
-        'storageQuotaMb': 10240,
+        'storageQuotaMb': policy['storageQuotaMb'] as int? ?? 10240,
         'relativeSlotsUsed': 0,
-        'relativeSlotsMax': 0,
+        'relativeSlotsMax': policy['relativeSlotsMax'] as int? ?? 0,
       },
     });
     for (final invite in _familyRepository.invites(familyId)) {

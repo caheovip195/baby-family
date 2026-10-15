@@ -1020,10 +1020,10 @@ abstract class AppLocalizations {
   /// **'Nâng cấp gói'**
   String get billingUpgrade;
 
-  /// SUB — Gói của gia đình đã hết hạn
+  /// SUB-07 — tiêu đề hết hạn dùng thử (không ghi cứng thời lượng)
   ///
   /// In vi, this message translates to:
-  /// **'3 tháng dùng thử của nhà mình đã kết thúc'**
+  /// **'Thời gian dùng thử của nhà mình đã kết thúc'**
   String get billingExpired;
 
   /// SUB — Tải dữ liệu của gia đình
@@ -1698,11 +1698,11 @@ abstract class AppLocalizations {
   /// **'Riêng tư'**
   String get authPrivate;
 
-  /// AUTH — 3 tháng miễn phí
+  /// AUTH-01 — chip dùng thử; {days} = thời lượng trial policy (mặc định 7)
   ///
   /// In vi, this message translates to:
-  /// **'3 tháng miễn phí'**
-  String get authTrial;
+  /// **'{days} ngày miễn phí'**
+  String authTrial(int days);
 
   /// AUTH — Cả nhà
   ///
@@ -1992,11 +1992,11 @@ abstract class AppLocalizations {
   /// **'Mời {callName} cùng tham gia'**
   String onboardingInviteTitle(String callName);
 
-  /// ONB — Baby Family cần cả Papa và Mama. Khi bạn đời tham gia, nhà mình bắt đầu 3 tháng dùng thử miễn phí.
+  /// ONB — dòng phụ mời bạn đời (bản cũ); {days} = thời lượng trial policy
   ///
   /// In vi, this message translates to:
-  /// **'Baby Family cần cả Papa và Mama. Khi bạn đời tham gia, nhà mình bắt đầu 3 tháng dùng thử miễn phí.'**
-  String get onboardingInviteSubtitle;
+  /// **'Baby Family cần cả Papa và Mama. Khi bạn đời tham gia, nhà mình bắt đầu {days} ngày dùng thử miễn phí.'**
+  String onboardingInviteSubtitle(int days);
 
   /// ONB — Mã mời
   ///
@@ -2040,11 +2040,11 @@ abstract class AppLocalizations {
   /// **'Đang chờ {callName} tham gia…'**
   String onboardingWaitingTitle(String callName);
 
-  /// ONB — Khi bạn đời nhận lời mời, nhà mình sẽ được mở khoá và bắt đầu 3 tháng dùng thử miễn phí.
+  /// ONB — dòng phụ chờ bạn đời (bản cũ); {days} = thời lượng trial policy
   ///
   /// In vi, this message translates to:
-  /// **'Khi bạn đời nhận lời mời, nhà mình sẽ được mở khoá và bắt đầu 3 tháng dùng thử miễn phí.'**
-  String get onboardingWaitingSubtitle;
+  /// **'Khi bạn đời nhận lời mời, nhà mình sẽ được mở khoá và bắt đầu {days} ngày dùng thử miễn phí.'**
+  String onboardingWaitingSubtitle(int days);
 
   /// ONB — Gửi lại lời mời
   ///
@@ -2088,11 +2088,11 @@ abstract class AppLocalizations {
   /// **'Cùng nhau lưu giữ hành trình của con, chia sẻ việc chăm con và luôn hiểu nhau hơn.'**
   String get onboardingActivatedSubtitle;
 
-  /// ONB — 3 tháng dùng thử miễn phí
+  /// ONB-ACT — tiêu đề thẻ dùng thử; {days} = thời lượng đã cấp
   ///
   /// In vi, this message translates to:
-  /// **'3 tháng dùng thử miễn phí'**
-  String get onboardingTrial;
+  /// **'{days} ngày dùng thử miễn phí'**
+  String onboardingTrial(int days);
 
   /// ONB — Thiết lập cho bé
   ///
@@ -5262,11 +5262,11 @@ abstract class AppLocalizations {
   /// **'Đổi ảnh bìa'**
   String get onbChangeCover;
 
-  /// ONB-07 — dòng phụ
+  /// ONB-07 — dòng phụ; {days} = thời lượng trial policy
   ///
   /// In vi, this message translates to:
-  /// **'Baby Family cần cả Papa và Mama. Khi {callName} tham gia, nhà mình bắt đầu 3 tháng dùng thử miễn phí.'**
-  String onbInviteSubtitle(String callName);
+  /// **'Baby Family cần cả Papa và Mama. Khi {callName} tham gia, nhà mình bắt đầu {days} ngày dùng thử miễn phí.'**
+  String onbInviteSubtitle(String callName, int days);
 
   /// ONB-07 — công tắc xác nhận
   ///
@@ -5280,11 +5280,11 @@ abstract class AppLocalizations {
   /// **'Vào Baby Family cùng mình lưu giữ hành trình của con nhé! Mã mời: {code} · {link}'**
   String onbInviteShareMessage(String code, String link);
 
-  /// ONB-WAIT — dòng phụ
+  /// ONB-WAIT — dòng phụ; {days} = thời lượng trial policy
   ///
   /// In vi, this message translates to:
-  /// **'Khi {callName} nhận lời mời, nhà mình sẽ được mở khoá và bắt đầu 3 tháng dùng thử miễn phí.'**
-  String onbWaitingSubtitle(String callName);
+  /// **'Khi {callName} nhận lời mời, nhà mình sẽ được mở khoá và bắt đầu {days} ngày dùng thử miễn phí.'**
+  String onbWaitingSubtitle(String callName, int days);
 
   /// ONB-WAIT — trạng thái lời mời
   ///
@@ -10182,11 +10182,11 @@ abstract class AppLocalizations {
   /// **'{inviter} bật “xác nhận lần cuối” để chắc đúng người'**
   String invWaitingStepConfirmHint(String inviter);
 
-  /// INV-04 step
+  /// INV-04 step; {days} = thời lượng trial policy
   ///
   /// In vi, this message translates to:
-  /// **'Nhà mình bắt đầu 3 tháng dùng thử miễn phí'**
-  String get invWaitingStepTrial;
+  /// **'Nhà mình bắt đầu {days} ngày dùng thử miễn phí'**
+  String invWaitingStepTrial(int days);
 
   /// INV-04 notice
   ///

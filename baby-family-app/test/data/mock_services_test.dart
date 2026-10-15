@@ -28,6 +28,27 @@ ProviderContainer _container({
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  group('trial policy (BF-20261013-005)', () {
+    test('catalog trial policy is 7 days', () async {
+      final c = _container(seed: DemoSeed.fresh);
+      expect(
+        await c.read(familyServiceProvider).trialDuration(),
+        const Duration(days: 7),
+      );
+    });
+
+    test('trial seed ends 7 days after mock now (14/10/2026)', () async {
+      final c = _container(seed: DemoSeed.trial);
+      final plan = (await c.read(familyServiceProvider).currentFamily())!.plan;
+      expect(plan.state, PlanState.trial);
+      expect(plan.endsAt!.difference(plan.startedAt!), const Duration(days: 7));
+      expect(
+        DateTime(plan.endsAt!.year, plan.endsAt!.month, plan.endsAt!.day),
+        DateTime(2026, 10, 14),
+      );
+    });
+  });
+
   group('design story data (active seed, Mama Lan)', () {
     test('family, plan and children match FAM-01 / SW-01', () async {
       final c = _container();
@@ -235,7 +256,10 @@ void main() {
         expect(session.current.state, SessionState.activatedSetup);
         final plan =
             (await c.read(familyServiceProvider).currentFamily())!.plan;
-        expect(plan.endsAt!.difference(plan.startedAt!).inDays, 90);
+        expect(
+          plan.endsAt!.difference(plan.startedAt!),
+          const Duration(seconds: 604800),
+        );
         await c.read(childServiceProvider).addChild(name: 'Bin');
         await session.completeSetup();
         expect(session.current.state, SessionState.active);

@@ -7,18 +7,17 @@ InputDecoration bareInputDecoration({
   String? hint,
   TextStyle? hintStyle,
   int hintMaxLines = 1,
-}) =>
-    InputDecoration(
-      isCollapsed: true,
-      filled: false,
-      hintText: hint,
-      hintStyle: hintStyle,
-      hintMaxLines: hintMaxLines,
-      contentPadding: EdgeInsets.zero,
-      border: InputBorder.none,
-      enabledBorder: InputBorder.none,
-      focusedBorder: InputBorder.none,
-      disabledBorder: InputBorder.none,
-      errorBorder: InputBorder.none,
-      focusedErrorBorder: InputBorder.none,
-    );
+}) => InputDecoration(
+  isCollapsed: true,
+  filled: false,
+  hintText: hint,
+  hintStyle: hintStyle,
+  hintMaxLines: hintMaxLines,
+  contentPadding: EdgeInsets.zero,
+  border: InputBorder.none,
+  enabledBorder: InputBorder.none,
+  focusedBorder: InputBorder.none,
+  disabledBorder: InputBorder.none,
+  errorBorder: InputBorder.none,
+  focusedErrorBorder: InputBorder.none,
+);

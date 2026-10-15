@@ -10,6 +10,7 @@ import 'package:baby_family/data/repository/family.dart';
 import 'package:baby_family/data/service/family.dart';
 import 'package:baby_family/data/service_imp/mock_service.dart';
 import 'package:baby_family/utils/constants/enum.dart';
+import 'package:baby_family/utils/constants/values.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class FamilyServiceImp extends MockServiceImp implements IFamilyService {
@@ -66,6 +67,15 @@ class FamilyServiceImp extends MockServiceImp implements IFamilyService {
   Future<List<PlanOffer>> planOffers() async {
     await ready();
     return _repository.planOffers().map(PlanOffer.fromJson).toList();
+  }
+
+  @override
+  Future<Duration> trialDuration() async {
+    await ready();
+    final seconds = _repository.trialPolicy()['durationSeconds'] as int?;
+    return seconds == null
+        ? kValueDefaultTrialDuration
+        : Duration(seconds: seconds);
   }
 
   @override

@@ -46,8 +46,9 @@ class ChildArchiveMobileView extends HookConsumerWidget {
     /// Rời CHD-05 và hồ sơ bé (bé đã ẩn / đã xoá).
     void leave() => context.router.popUntil(
       (route) =>
-          route.settings.name != ChildArchiveRoute.name &&
-          route.settings.name != ChildProfileRoute.name,
+          route.isFirst ||
+          (route.settings.name != ChildArchiveRoute.name &&
+              route.settings.name != ChildProfileRoute.name),
     );
 
     Future<void> archive() async {

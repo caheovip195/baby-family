@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import type { OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../generated/prisma/client';
@@ -8,7 +8,7 @@ import type { Environment } from '../config/environment';
 @Injectable()
 export class PrismaService
   extends PrismaClient
-  implements OnModuleInit, OnModuleDestroy
+  implements OnModuleInit, OnApplicationShutdown
 {
   constructor(config: ConfigService<Environment, true>) {
     super({
@@ -24,7 +24,8 @@ export class PrismaService
   async onModuleInit(): Promise<void> {
     await this.$connect();
   }
-  async onModuleDestroy(): Promise<void> {
+  // After every module has drained (workers finish their DB writes first).
+  async onApplicationShutdown(): Promise<void> {
     await this.$disconnect();
   }
 }

@@ -52,7 +52,7 @@ class CircleChildMobileView extends HookConsumerWidget {
           28 + MediaQuery.paddingOf(context).bottom,
         ),
         children: [
-          _ChildHeader(
+          _CircleChildHeader(
             child: child,
             today: controller.today,
             monthsTomorrow: controller.monthsTomorrow,
@@ -69,7 +69,7 @@ class CircleChildMobileView extends HookConsumerWidget {
                 children: [
                   for (final (index, first) in controller.firsts.indexed) ...[
                     if (index > 0) const SizedBox(width: AppSpacing.itemGap),
-                    _FirstCard(
+                    _CircleFirstCard(
                       memory: first,
                       age: childAgeText(
                         l10n,

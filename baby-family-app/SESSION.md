@@ -285,3 +285,25 @@ do agent tự đặt tên (06/10, 09/10, 11/10).
 - Kiểm chứng: `make runner`, `make check` (509 test pass), build iOS simulator staging (active).
 - Còn mở: ảnh stock Haru trông khoảng 2–3 tuổi (hơi lớn so với 18 tháng); golden CHD-01
   chưa hiện ảnh avatar/cover (có từ trước).
+
+## 2026-10-15 — BF-20261012-001 / BF-20261012-002 / BF-20261015-002: Đợt 3 UI + trial 7 ngày
+
+- Đợt 3 (BF-20261012-001): 41 frame Pencil mới; app có 26 route mới + shell người thân
+  `/circle` (home/child/post/me). Màn: Cầu nối US-08…12b, US-13 hỗ trợ an toàn, US-14,
+  REC-01/03, CARE-11, SUB-02…06, INV-02/03/04, FAM-02/05/08, SET-05/13, MEM-17/18/19,
+  RPT-01/02, CHD-05, CIR-02…06, SET-10. Widget dùng chung mới trong `lib/utils/widget`:
+  `report_sheet`, `block_dialog`, `app_dialog_card`, `app_check_mark`, `memory_thumb`,
+  `circle_big_action`, `plan_confirm_sheet`, `plan_limit_sheet`, `plan_status_banner`,
+  `switch_family_sheet`; helper `input_decoration.dart`, `external_launcher.dart`.
+  Đã xoá `app_skeleton_screen.dart` (không còn màn nào dùng).
+- Việc tồn đợt 2 (BF-20261012-002): ghi ở mục 2026-10-12 bên trên.
+- Trial 7 ngày (BF-20261015-002): `catalog.json` `trialPolicy` → `IFamilyService.trialDuration()`;
+  `kValueDefaultTrialDuration` chỉ là dự phòng; mock hết hạn 14/10/2026 “Còn 7 ngày”.
+- Token mới `kColorError50FBE4E4` đã ghi vào đặc tả mục 10.2 (`error-50`). Đổi tên widget
+  private trùng tên: `_CircleChildHeader`, `_CircleFirstCard`, `_HomeChapterCard`.
+- Kiểm chứng: `make check` 679/679; build iOS simulator staging (active) thành công; mở app
+  kiểm tra Trang chủ, Papa & Mama, Cầu nối.
+- Còn mở: quyền ảnh Bà ngoại cho Hana (CIR-04, fixture `pp-meo`); báo cáo nội dung AI
+  (`ReportTarget`); câu “Đến hết ngày” ở ONB-ACT; lối vào MEM-19 trên FAM-01/NOTI-01;
+  `PlanInfo` chưa có trường phiên bản policy; có thể thay các `InputDecoration` bỏ viền lặp
+  lại bằng `bareInputDecoration`.

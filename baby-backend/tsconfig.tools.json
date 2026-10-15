@@ -1,0 +1,7 @@
+{
+  "extends": "./tsconfig.json",
+  "ts-node": {
+    "compiler": "typescript",
+    "experimentalResolver": true
+  }
+}

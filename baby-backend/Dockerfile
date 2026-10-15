@@ -35,6 +35,32 @@ FROM build AS production-dependencies
 RUN npm prune --omit=dev --omit=optional --ignore-scripts \
     && npm cache clean --force
 
+# The worker keeps optional dependencies: sharp ships its native binaries that way.
+FROM build AS worker-dependencies
+RUN npm prune --omit=dev --ignore-scripts \
+    && npm cache clean --force
+
+FROM base AS worker
+
+# ffmpeg/ffprobe for video and audio renditions (spec §10.4).
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV NODE_ENV=production
+
+COPY --from=worker-dependencies --chown=node:node /app/node_modules ./node_modules
+COPY --from=build --chown=node:node /app/dist ./dist
+COPY --from=build --chown=node:node /app/package.json ./package.json
+
+USER node
+
+# Refreshed only after a database query and a Valkey ping succeed.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD node -e "const f=require('path').join(require('os').tmpdir(),'baby-worker-heartbeat');try{process.exit(Date.now()-require('fs').statSync(f).mtimeMs<60000?0:1)}catch{process.exit(1)}"
+
+CMD ["node", "dist/workers/worker.js"]
+
 FROM base AS runtime
 
 ENV NODE_ENV=production \

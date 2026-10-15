@@ -7,7 +7,9 @@ import { LoggerModule } from 'nestjs-pino';
 import { HttpExceptionFilter } from './common/errors/http-exception.filter';
 import { validateEnvironment } from './config/environment';
 import type { Environment } from './config/environment';
+import { ValkeyThrottlerStorage } from './common/throttling/valkey-throttler.storage';
 import { DatabaseModule } from './database/database.module';
+import { ValkeyConnection } from './database/valkey.connection';
 import { DATABASE_REPOSITORY_PROVIDERS } from './database/repository.providers';
 import {
   APPLICATION_CONTROLLERS,
@@ -17,8 +19,14 @@ import { HealthController } from './controllers/health.controller';
 import { NoteController } from './controllers/note.controller';
 import { NOTE_REPOSITORY } from './interfaces/repositories/note-repository.interface';
 import { NOTE_SERVICE } from './interfaces/services/note-service.interface';
+import { CACHE_REPOSITORY } from './interfaces/repositories/cache-repository.interface';
+import { MAIL_SERVICE } from './interfaces/services/mail-service.interface';
+import { OBJECT_STORAGE_SERVICE } from './interfaces/services/object-storage-service.interface';
 import { NoteRepository } from './repositories/note.repository';
 import { NoteService } from './services/note.service';
+import { CacheRepository } from './repositories/cache.repository';
+import { MailService } from './services/mail.service';
+import { ObjectStorageService } from './services/object-storage.service';
 // generator:imports
 
 @Module({
@@ -59,13 +67,23 @@ import { NoteService } from './services/note.service';
       }),
     }),
     ThrottlerModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (config: ConfigService<Environment, true>) => [
-        {
-          ttl: config.get('THROTTLE_TTL_MS', { infer: true }),
-          limit: config.get('THROTTLE_LIMIT', { infer: true }),
-        },
-      ],
+      imports: [DatabaseModule],
+      inject: [ConfigService, ValkeyConnection],
+      useFactory: (
+        config: ConfigService<Environment, true>,
+        valkey: ValkeyConnection,
+      ) => ({
+        throttlers: [
+          {
+            ttl: config.get('THROTTLE_TTL_MS', { infer: true }),
+            limit: config.get('THROTTLE_LIMIT', { infer: true }),
+          },
+        ],
+        // Shared across replicas when REDIS_URL is set; in-memory otherwise.
+        storage: valkey.client
+          ? new ValkeyThrottlerStorage(valkey.client)
+          : undefined,
+      }),
     }),
     DatabaseModule,
   ],
@@ -80,6 +98,9 @@ import { NoteService } from './services/note.service';
     ...DATABASE_REPOSITORY_PROVIDERS,
     { provide: APP_FILTER, useClass: HttpExceptionFilter },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
+    { provide: CACHE_REPOSITORY, useClass: CacheRepository },
+    { provide: OBJECT_STORAGE_SERVICE, useClass: ObjectStorageService },
+    { provide: MAIL_SERVICE, useClass: MailService },
     { provide: NOTE_REPOSITORY, useClass: NoteRepository },
     { provide: NOTE_SERVICE, useClass: NoteService },
     // generator:providers

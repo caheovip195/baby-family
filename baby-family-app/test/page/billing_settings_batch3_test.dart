@@ -448,7 +448,7 @@ void main() {
         'Bạn đã nhận lời mời vào Nhà Lan',
         'Vai trò: Papa của các bé',
         'Chờ Lan xác nhận',
-        'Nhà mình bắt đầu 3 tháng dùng thử miễn phí',
+        'Nhà mình bắt đầu 7 ngày dùng thử miễn phí',
         'Bạn sẽ nhận thông báo “Chào mừng về nhà!”',
       ]) {
         expect(find.text(text), findsOneWidget, reason: text);

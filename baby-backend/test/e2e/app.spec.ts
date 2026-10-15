@@ -6,6 +6,8 @@ import type { Server } from 'node:http';
 import { AppModule } from '../../src/app.module';
 import { configureApp } from '../../src/bootstrap';
 import { PrismaService } from '../../src/database/prisma.service';
+import { CACHE_REPOSITORY } from '../../src/interfaces/repositories/cache-repository.interface';
+import type { ICacheRepository } from '../../src/interfaces/repositories/cache-repository.interface';
 import { NOTE_REPOSITORY } from '../../src/interfaces/repositories/note-repository.interface';
 import type { INoteRepository } from '../../src/interfaces/repositories/note-repository.interface';
 import { Note } from '../../src/models/note.model';
@@ -55,9 +57,20 @@ describe('HTTP application (repository replaced through DI)', () => {
     await request(app.getHttpServer())
       .get('/health/live')
       .expect(200, { status: 'ok' });
-    await request(app.getHttpServer())
+    await request(app.getHttpServer()).get('/health/ready').expect(200, {
+      status: 'ok',
+      database: 'up',
+      cache: 'disabled',
+      objectStorage: 'disabled',
+    });
+  });
+  it('fails readiness when a configured dependency is down', async () => {
+    const cache = app.get<ICacheRepository>(CACHE_REPOSITORY);
+    jest.spyOn(cache, 'checkHealth').mockResolvedValueOnce('down');
+    const response = await request(app.getHttpServer())
       .get('/health/ready')
-      .expect(200, { status: 'ok', database: 'up' });
+      .expect(503);
+    expect(JSON.stringify(response.body)).toContain('cache');
   });
   it('validates and trims creation input before calling the service', async () => {
     const response = await request(app.getHttpServer())

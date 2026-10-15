@@ -1,6 +1,6 @@
 # Backend conventions
 
-Follow the user's chosen OOP architecture: **controller → service → repository → model**. Organize source by role, with global `controllers/`, `services/`, `repositories/`, `models/`, `interfaces/services/`, `interfaces/repositories/`, `dto/`, `database/`, `config/`, and `common/` directories. Keep this structure when adding resources; do not introduce feature modules or domain/application/infrastructure/presentation subtrees.
+Follow the user's chosen OOP architecture: **controller → service → repository → model**. Organize source by role, with global `controllers/`, `services/`, `repositories/`, `models/`, `interfaces/services/`, `interfaces/repositories/`, `dto/`, `database/`, `config/`, `common/` and `workers/` directories. `workers/` (approved 2026-10-15) holds only the worker entrypoint, its composition root and queue/loop adapters that call service interfaces. Keep this structure when adding resources; do not introduce feature modules or domain/application/infrastructure/presentation subtrees.
 
 - Controllers handle HTTP/DTOs and inject service interfaces. Business rules and orchestration belong in services.
 - Use `NoteService implements INoteService` and `NoteRepository implements INoteRepository` naming, following the same pattern for other resources.
@@ -12,6 +12,7 @@ Follow the user's chosen OOP architecture: **controller → service → reposito
 - PostgreSQL server/Compose, host data and backups belong in `../baby-database/`. Backend Compose only owns API/migrations and connects through the external database network. Keep Prisma schema/migrations and the TypeScript connector here; do not put the database server back into backend Compose.
 - Keep generated code aligned with these conventions. Use `npm run generate -- resource <singular-kebab-name>` and preserve generator markers in AppModule.
 - Tests live under `test/unit/`, `test/e2e/`, and `test/integration/`. After refactoring, run `npm run check`; run `npm run test:integration` when persistence or DI wiring changes. Integration databases must end in `_test`.
+- Build/typecheck/watch use native TypeScript 7 through the package scripts; do not replace them with Nest CLI compilation, which uses the legacy Compiler API. The `typescript` alias intentionally supplies TS6 compatibility for Jest, typed ESLint, AST generators and `ts-node`. Keep this distinction explicit; see [TypeScript toolchain](docs/typescript-7.md). `npm run test:compiled` checks the actual emitted JavaScript and Nest decorator metadata. Seed uses `tsconfig.tools.json` so fresh Prisma NodeNext `.js` imports resolve to `.ts` sources; keep seed explicit and separate from migrations/startup.
 
 See `README.md` for commands and `docs/architecture.md` for responsibilities and DI examples.
 

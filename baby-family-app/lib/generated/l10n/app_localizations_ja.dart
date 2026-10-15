@@ -516,7 +516,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get billingUpgrade => 'プランをアップグレード';
 
   @override
-  String get billingExpired => '家族の3か月のお試し期間が終了しました';
+  String get billingExpired => '家族のお試し期間が終了しました';
 
   @override
   String get billingExport => 'データをダウンロード';
@@ -875,7 +875,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get authPrivate => 'プライベート';
 
   @override
-  String get authTrial => '3か月無料';
+  String authTrial(int days) {
+    return '$days日間無料';
+  }
 
   @override
   String get authFamily => '家族みんな';
@@ -1037,8 +1039,9 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get onboardingInviteSubtitle =>
-      'Baby Family は Papa と Mama で使います。パートナーが参加すると、家族の3か月無料お試しが始まります。';
+  String onboardingInviteSubtitle(int days) {
+    return 'Baby Family は Papa と Mama で使います。パートナーが参加すると、家族の$days日間無料お試しが始まります。';
+  }
 
   @override
   String get onboardingInviteCode => '招待コード';
@@ -1064,8 +1067,9 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get onboardingWaitingSubtitle =>
-      'パートナーが招待を受けると、家族の機能が使えるようになり、3か月無料お試しが始まります。';
+  String onboardingWaitingSubtitle(int days) {
+    return 'パートナーが招待を受けると、家族の機能が使えるようになり、$days日間の無料お試しが始まります。';
+  }
 
   @override
   String get onboardingResendInvite => '招待を再送信';
@@ -1090,7 +1094,9 @@ class AppLocalizationsJa extends AppLocalizations {
       'お子さまの成長を残し、子育てを分かち合い、お互いをもっと理解しましょう。';
 
   @override
-  String get onboardingTrial => '3か月無料お試し';
+  String onboardingTrial(int days) {
+    return '$days日間の無料お試し';
+  }
 
   @override
   String get onboardingSetupChild => 'お子さまの情報を設定';
@@ -3100,8 +3106,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get onbChangeCover => 'カバーを変更';
 
   @override
-  String onbInviteSubtitle(String callName) {
-    return 'Baby Family にはパパとママの両方が必要です。$callNameが参加すると、3か月の無料体験が始まります。';
+  String onbInviteSubtitle(String callName, int days) {
+    return 'Baby Family にはパパとママの両方が必要です。$callNameが参加すると、$days日間の無料体験が始まります。';
   }
 
   @override
@@ -3115,8 +3121,8 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String onbWaitingSubtitle(String callName) {
-    return '$callNameが招待を受けると、家族のスペースが開き、3か月の無料体験が始まります。';
+  String onbWaitingSubtitle(String callName, int days) {
+    return '$callNameが招待を受けると、家族のスペースが開き、$days日間の無料体験が始まります。';
   }
 
   @override
@@ -6480,7 +6486,9 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get invWaitingStepTrial => 'わが家の 3 か月無料体験が始まります';
+  String invWaitingStepTrial(int days) {
+    return 'わが家の $days 日間無料体験が始まります';
+  }
 
   @override
   String get invWaitingNotice => '「おかえりなさい！」の通知が届きます';

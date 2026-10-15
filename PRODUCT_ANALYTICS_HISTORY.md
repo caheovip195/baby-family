@@ -126,10 +126,10 @@ Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hi�
 - Vấn đề / mục tiêu: Mọi lối vào trong app mở được màn thật đúng thiết kế (hết "Sắp ra mắt"), đủ luồng Papa & Mama (Cầu nối), người thân (Circle), gói dịch vụ và quản trị dữ liệu.
 - Quan sát: Đặc tả mục 9 liệt kê ~36 màn chưa có thiết kế/app sau đợt 2; app đang chạy dữ liệu mock.
 - Phân tích / quyết định: Giữ quy trình thiết kế trước rồi code; nhánh an toàn chỉ dùng số chính thức 111/113/115; người thân có thanh tab riêng theo đặc tả 9.14.
-- Tác động: Thêm màn/luồng UI mock; chưa đổi API/backend; không thêm tracking.
-- Giả thuyết / đo lường: Chưa có dữ liệu đo (mock UI).
-- Kết quả / trạng thái: Đang thực hiện.
-- Theo dõi: Cập nhật sau khi code và kiểm thử xong.
+- Tác động: Thêm màn/luồng UI mock; chưa đổi API/backend; không thêm tracking. Mọi lối vào đợt 3 mở màn thật (bỏ “Sắp ra mắt”); người thân có shell 4 tab riêng; quyền người thân được giữ khi lệch với frame (CIR-04 chỉ hiện bé được phép đóng góp).
+- Giả thuyết / đo lường: Chưa có dữ liệu đo (mock UI). Khi nối backend nên đo: tỉ lệ mở Cầu nối → gửi lời mời → đóng phiên; số báo cáo/chặn trên mỗi gia đình; tỉ lệ ảnh người thân được duyệt; tỉ lệ khôi phục từ Thùng rác.
+- Kết quả / trạng thái: Hoàn thành (2026-10-15). Kiểm chứng: `make check` 679/679, build iOS simulator thành công, kiểm tra thủ công vài màn trên simulator.
+- Theo dõi: Người dùng chốt quyền đóng góp ảnh của Bà ngoại cho Hana (CIR-04/fixture `pp-meo`), báo cáo nội dung AI, câu “Đến hết ngày” ở ONB-ACT, lối vào MEM-19 trên FAM-01/NOTI-01, ảnh Haru đúng tuổi.
 - Session: [BF-20261012-001](SESSIONS.md#bf-20261012-001).
 
 <a id="bf-20261012-002"></a>
@@ -142,10 +142,10 @@ Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hi�
 - Vấn đề / mục tiêu: Thiết kế và app hiển thị cùng một câu chuyện/số liệu; bổ sung font và trường dữ liệu còn thiếu.
 - Quan sát: Nhiều chỗ lệch số giữa frame và dữ liệu mock (mã mời, ngày hết dùng thử, số tên, bộ đếm story, số cột mốc).
 - Phân tích / quyết định: Dữ liệu thật là nguồn đúng; sửa chữ Pencil cho khớp. Dùng thử hết hạn 05/01/2027 (hôm nay + 90 ngày).
-- Tác động: Không đổi hành vi nghiệp vụ; chỉ UI/dữ liệu mock và font.
+- Tác động: Không đổi hành vi nghiệp vụ; chỉ UI/dữ liệu mock và font (Dancing Script, giấy phép OFL, đóng gói kèm file giấy phép).
 - Giả thuyết / đo lường: Chưa có dữ liệu đo.
-- Kết quả / trạng thái: Đang thực hiện.
-- Theo dõi: Cập nhật khi xong.
+- Kết quả / trạng thái: Hoàn thành (2026-10-15). Quyết định “dùng thử 90 ngày, hết hạn 05/01/2027” đã bị **thay thế** bởi BF-20261013-005 (7 ngày), áp dụng ở BF-20261015-002.
+- Theo dõi: Ảnh Haru vẫn trông lớn hơn 18 tháng.
 - Session: [BF-20261012-002](SESSIONS.md#bf-20261012-002).
 
 <a id="bf-20261013-001"></a>
@@ -291,3 +291,200 @@ Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hi�
 - Kết quả / trạng thái: Hoàn thành tầng nền: 122 domain service/interface (117 internal scaffolding +5 manual business services), 7 controllers, JWT/session/Parent/license gate và catalog/quyền lợi theo family. Final check 115 unit, 34 HTTP, 10 generator tests và 6 migration policy groups đạt; 17 PostgreSQL integration tests thực đạt, gồm Pregnancy POST đồng thời không tái dùng seqNo và chống mass assignment. Review độc lập và production audit đạt; container kiểm thử đã dọn. Không suy diễn cải thiện retention/conversion hoặc claim full app.
 - Theo dõi: [API scope](baby-backend/docs/api.md) phân biệt implemented/planned và contract base page/limit với cursor/envelope/If-Match/idempotency trong spec. Cấu hình public key issuer trước khi dùng domain API; token issuance, Store, Circle/private ACL, jobs và workflow nhiều bảng triển khai theo tính năng. Migration/seed vẫn là bước backend riêng, không tự deploy; chưa có dữ liệu KPI để đánh giá tác động sản phẩm.
 - Session: [BF-20261014-003](SESSIONS.md#bf-20261014-003).
+
+<a id="bf-20261014-004"></a>
+
+## BF-20261014-004 — Nâng TypeScript 7.0.2 và đánh giá tương thích
+
+- Ngày làm: 2026-10-14T21:26:07+07:00; hoàn tất 2026-10-15T19:10:55+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Muốn dùng TypeScript7 thay6; hỏi bản7.0.2 có gì mới và áp dụng vào project có ổn không.
+- Role: BACKEND, ARCHITECT, TESTER/QUALITY, DEVOPS; ORCHESTRATOR/DATA_ANALYST tổng hợp.
+- Vấn đề / mục tiêu: Compiler mới phù hợp codebase và pipeline hiện tại, giữ bảo trì/DI/runtime ổn định.
+- Quan sát: Nguồn Microsoft xác nhận 7.0.2 là stable đầu tiên 7.0; native Go compiler và API compatibility6 chạy song song. npm dependency tree hợp lệ, API6.0.3 được khóa; fresh Prisma NodeNext sinh .js specifiers cần resolver khi tooling chạy source.ts.
+- Phân tích / quyết định: Áp dụng recipe alias chính thức: CLI7 cho build/typecheck/watch; giữ API6 cho Jest/typed ESLint/generator/seed. Chuyển main config sang NodeNext, seed/tools và test transformer cấu hình riêng; thêm kiểm tra actual dist metadata/DI và regression resolver. Không ép peer dependencies hoặc làm yếu strict checks.
+- Tác động: Toolchain local/CI/Docker và thời gian typecheck; giữ kiến trúc OOP/DI, API nghiệp vụ/UI/schema. Không chạy migration/seed lên DB ứng dụng và không thêm tracking/SDK.
+- Giả thuyết / đo lường: Đã đo kỹ thuật trên Apple M1 Max/macOSarm64/Node26.11.1: cùng tsconfig/source/tests/fresh Prisma, 1 warmup mỗi compiler +3 lượt xen kẽ, noEmit, CLI startup tính trong thời gian và filesystem cache ấm. Median TS6.0.3 5.2054s, TS7.0.2 1.0873s (~4.79×). Mẫu nhỏ một máy; không phải benchmark cold build/CI/Jest/runtime hoặc KPI sản phẩm.
+- Kết quả / trạng thái: Hoàn thành nâng native compiler7.0.2. Fullcheck PASS: 115 unit +34 HTTP +17 PostgreSQL integration (riêng) và generator/migration/compiler/runner/actual dist contracts. Docker build, explicit seed, API readiness/Note CRUD trên DB kiểm thử và actual native watch PASS. Review độc lập đạt; dependency tree hợp lệ, production image không có compiler, môi trường kiểm thử đã dọn. Chưa có dữ liệu retention/conversion/latency sản phẩm; không suy cải thiện KPI từ compiler.
+- Theo dõi: [Chi tiết và nguồn](baby-backend/docs/typescript-7.md). API6 còn cần cho tooling; Windows watch chưa chạy runtime; warning DEP0180 từ ts-node trên Node26 không làm seed fail. Lượt14 bị gián đoạn trước mutation, hoàn tất lượt15; DB ứng dụng healthy và không đổi dữ liệu.
+- Session: [BF-20261014-004](SESSIONS.md#bf-20261014-004).
+
+<a id="bf-20261015-001"></a>
+
+## BF-20261015-001 — Tiếp tục nâng TypeScript 7.0.2
+
+- Ngày làm: 2026-10-15T18:39:45+07:00; hoàn tất 2026-10-15T19:10:55+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Tiếp tục yêu cầu nâng/đánh giá TypeScript7.0.2 sau lượt bị gián đoạn.
+- Role: BACKEND, ARCHITECT, TESTER/QUALITY, DEVOPS; ORCHESTRATOR/DATA_ANALYST tổng hợp.
+- Vấn đề / mục tiêu: Compiler mới phù hợp codebase và pipeline hiện tại, giữ bảo trì/DI/runtime ổn định.
+- Quan sát: Nguồn Microsoft xác nhận 7.0.2 là stable đầu tiên 7.0; native Go compiler và API compatibility6 chạy song song. npm dependency tree hợp lệ, API6.0.3 được khóa; fresh Prisma NodeNext sinh .js specifiers cần resolver khi tooling chạy source.ts.
+- Phân tích / quyết định: Áp dụng recipe alias chính thức: CLI7 cho build/typecheck/watch; giữ API6 cho Jest/typed ESLint/generator/seed. Chuyển main config sang NodeNext, seed/tools và test transformer cấu hình riêng; thêm kiểm tra actual dist metadata/DI và regression resolver. Không ép peer dependencies hoặc làm yếu strict checks.
+- Tác động: Toolchain local/CI/Docker và thời gian typecheck; giữ kiến trúc OOP/DI, API nghiệp vụ/UI/schema. Không chạy migration/seed lên DB ứng dụng và không thêm tracking/SDK.
+- Giả thuyết / đo lường: Đã đo kỹ thuật trên Apple M1 Max/macOSarm64/Node26.11.1: cùng tsconfig/source/tests/fresh Prisma, 1 warmup mỗi compiler +3 lượt xen kẽ, noEmit, CLI startup tính trong thời gian và filesystem cache ấm. Median TS6.0.3 5.2054s, TS7.0.2 1.0873s (~4.79×). Mẫu nhỏ một máy; không phải benchmark cold build/CI/Jest/runtime hoặc KPI sản phẩm.
+- Kết quả / trạng thái: Hoàn thành nâng native compiler7.0.2. Fullcheck PASS: 115 unit +34 HTTP +17 PostgreSQL integration (riêng) và generator/migration/compiler/runner/actual dist contracts. Docker build, explicit seed, API readiness/Note CRUD trên DB kiểm thử và actual native watch PASS. Review độc lập đạt; dependency tree hợp lệ, production image không có compiler, môi trường kiểm thử đã dọn. Chưa có dữ liệu retention/conversion/latency sản phẩm; không suy cải thiện KPI từ compiler.
+- Theo dõi: [Chi tiết và nguồn](baby-backend/docs/typescript-7.md). API6 còn cần cho tooling; Windows watch chưa chạy runtime; warning DEP0180 từ ts-node trên Node26 không làm seed fail. Lượt14 bị gián đoạn trước mutation, hoàn tất lượt15; DB ứng dụng healthy và không đổi dữ liệu.
+- Session: [BF-20261015-001](SESSIONS.md#bf-20261015-001).
+
+<a id="bf-20261015-002"></a>
+## BF-20261015-002 — Hoàn tất đợt 3 UI và đồng bộ trial 7 ngày trên mock
+
+- Ngày làm: 2026-10-15 (Asia/Ho_Chi_Minh); entry tạo lúc 2026-10-15T19:05:41+07:00.
+- Yêu cầu: Tiếp tục hoàn tất đợt 3 UI Flutter sau gián đoạn.
+- Role: ORCHESTRATOR, MOBILE, DESIGN, SECURITY_PRIVACY, DATA_ANALYST.
+- Vấn đề / mục tiêu: Hoàn tất các màn đợt 3 và để UI mock phản ánh quyết định trial 7 ngày.
+- Quan sát: BF-20261013-005 đổi trial mặc định thành 7 ngày; app mock và canvas còn copy 90 ngày / 3 tháng.
+- Phân tích / quyết định: Theo quyết định mới nhất của người dùng: copy và dữ liệu mock dùng 7 ngày.
+- Tác động: Chỉ UI/dữ liệu mock; không đổi backend/API. Số ngày dùng thử không còn viết cứng: lấy từ `trialPolicy` (có `code`/`version`) trong catalog; grant đã cấp giữ thời lượng của nó khi policy đổi.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo. Khi có backend nên đo tỉ lệ chuyển từ dùng thử 7 ngày sang trả phí và thời điểm rời bỏ trong 7 ngày.
+- Kết quả / trạng thái: Hoàn thành (2026-10-15). `make check` 679/679; build simulator thành công; Pencil đã đổi 10 chỗ ghi 90 ngày.
+- Theo dõi: Model `PlanInfo` trên app chưa có trường phiên bản policy; cần thêm khi nối API.
+- Session: [BF-20261015-002](SESSIONS.md#bf-20261015-002).
+
+<a id="bf-20261015-003"></a>
+## BF-20261015-003 — Đánh giá độ sẵn sàng backend/DB cho tính năng app
+
+- Ngày làm: 2026-10-15 (Asia/Ho_Chi_Minh); entry tạo lúc 2026-10-15T19:30:00+07:00, cập nhật lúc 2026-10-15T19:50:00+07:00.
+- Yêu cầu: Rà backend/DB, xác định thành phần còn thiếu (service, cache, storage…) để đáp ứng tính năng app; môi trường Docker local.
+- Role: ARCHITECT, DBA, DEVOPS, INTEGRATION, SECURITY_PRIVACY, DATA_ANALYST.
+- Vấn đề / mục tiêu: App có đủ màn trên mock nhưng chưa có backend thật để nối; cần biết khoảng trống trước khi tích hợp.
+- Quan sát: Backend có khoảng 16 endpoint (me, settings, family, children, pregnancies, billing catalog/projection); chưa phát token đăng nhập nên app chưa đăng nhập thật được. Chưa có storage, Redis, worker. Migration domain chưa áp dụng ở DB local.
+- Phân tích / quyết định: Thứ tự đề xuất: migration + seed → auth → storage + media → Redis + worker/outbox → API theo luồng (onboarding/trial → ký ức → nhiệm vụ/Hearts → Circle → Papa & Mama → billing Store → xuất/xoá). Giữ PostgreSQL là nguồn sự thật; không thêm MongoDB lúc này vì inbox/notification đã nằm trong PG.
+- Tác động: Không đổi hành vi sản phẩm (chỉ đánh giá). Quyết định thứ tự ảnh hưởng thời điểm app thoát mock.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo. Khi luồng onboarding chạy thật mới đo được tỉ lệ hoàn tất onboarding và kích hoạt trial.
+- Kết quả / trạng thái: Đã giải thích; chưa triển khai hạng mục nào.
+- Theo dõi: Người dùng chọn hạng mục; nếu thêm storage cần quyết định dịch vụ S3 local (MinIO/thay thế) theo rủi ro đặc tả §10.8.
+- Session: [BF-20261015-003](SESSIONS.md#bf-20261015-003).
+
+<a id="bf-20261015-004"></a>
+## BF-20261015-004 — Quy trình dùng agent ngoài
+
+- Ngày làm: 2026-10-15T19:52:00+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Có thể gọi agent Gemini (Antigravity) / ChatGPT qua CLI để tiết kiệm token.
+- Role: ORCHESTRATOR.
+- Vấn đề / mục tiêu: Giảm chi phí token khi phân tích.
+- Quan sát: Có `agy` trên máy; chưa thấy CLI ChatGPT.
+- Phân tích / quyết định: Dùng cho phần đọc/phân tích độc lập; kết quả agent ngoài được agent chính kiểm lại trước khi kết luận.
+- Tác động: Không đổi hành vi sản phẩm; chỉ quy trình làm việc.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo.
+- Kết quả / trạng thái: Đã ghi nhận.
+- Theo dõi: Xác nhận lệnh CLI của ChatGPT.
+- Session: [BF-20261015-004](SESSIONS.md#bf-20261015-004).
+
+<a id="bf-20261015-005"></a>
+## BF-20261015-005 — Hạ tầng local: schema domain, cache/queue, object storage, mail
+
+- Ngày làm: 2026-10-15 (Asia/Ho_Chi_Minh); entry tạo lúc 2026-10-15T20:00:00+07:00, hoàn thành khoảng 2026-10-15T20:15:00+07:00.
+- Yêu cầu: Áp migration + seed DB local; dựng Valkey, MinIO, Mailpit ở baby-storage.
+- Role: DEVOPS, DBA, BACKEND, SECURITY_PRIVACY, DATA_ANALYST.
+- Vấn đề / mục tiêu: Có nền hạ tầng local để triển khai auth, upload ký ức, hàng đợi và email.
+- Quan sát: DB local trước đó chỉ có migration init. Image MinIO chính thức đã ngừng phát hành.
+- Phân tích / quyết định: Dùng MinIO bản Chainguard pin digest chỉ cho local; backend chỉ dùng S3 API chuẩn để có thể đổi provider. Bucket ảnh gia đình và nhật ký riêng tách nhau, private; chỉ bf-public cho tải công khai.
+- Tác động: Không đổi hành vi sản phẩm. DB local có đủ schema domain và catalog gói/trial 7 ngày từ seed. Dữ liệu riêng tư chưa được ghi vào storage.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo.
+- Kết quả / trạng thái: Đã triển khai và kiểm tra trên local (xem Session).
+- Theo dõi: Quyết định object storage cho production; adapter S3/Redis/SMTP trong backend.
+- Session: [BF-20261015-005](SESSIONS.md#bf-20261015-005).
+
+<a id="bf-20261015-006"></a>
+## BF-20261015-006 — Adapter cache/object storage/mail cho backend
+
+- Ngày làm: 2026-10-15 (Asia/Ho_Chi_Minh); entry tạo lúc 2026-10-15T19:50:00+07:00, hoàn thành lúc 2026-10-15T20:02:42+07:00.
+- Yêu cầu: Thêm adapter Valkey/S3/SMTP, readiness và rate limit lưu ở Valkey trong baby-backend.
+- Role: BACKEND, SECURITY_PRIVACY, DEVOPS; QUALITY review qua Codex CLI.
+- Vấn đề / mục tiêu: Có lớp hạ tầng để triển khai upload ký ức, OTP/email và rate limit nhiều instance.
+- Quan sát: Trước task, backend có biến REDIS/S3/SMTP nhưng không dùng; rate limit chỉ in-memory theo instance. AWS SDK mặc định sinh presigned PUT kèm checksum và không ký content-type.
+- Phân tích / quyết định: Dịch vụ phụ trợ là tùy chọn và fail-closed (503), không âm thầm bỏ qua; PostgreSQL vẫn là nguồn sự thật. Presigned PUT ký content-type để app không lưu file khác loại đã được duyệt; giới hạn dung lượng vẫn phải kiểm ở bước complete (§10.2). URL được ký bằng endpoint công khai cho app. Rate limit dùng sliding log trên Valkey cho nhiều instance, dự phòng in-memory khi Valkey lỗi.
+- Tác động: Chưa đổi hành vi sản phẩm hay API nghiệp vụ. `/health/ready` có thêm trường `cache`, `objectStorage`. Rate limit dùng chung giữa các replica khi có REDIS_URL. Chưa ghi dữ liệu người dùng vào storage.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo.
+- Kết quả / trạng thái: Đã triển khai; `npm run check` đạt và integration test đạt với stack local (xem Session).
+- Theo dõi: API upload-intent/complete và ký URL xem theo quyền; cache OTP/AccessContext; BullMQ/worker; thêm dịch vụ phụ trợ vào CI.
+- Session: [BF-20261015-006](SESSIONS.md#bf-20261015-006).
+
+<a id="bf-20261015-007"></a>
+## BF-20261015-007 — Dùng Codex/Antigravity CLI để giảm token
+
+- Ngày làm: 2026-10-15T19:52:17+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Dùng thêm codex hoặc agy CLI để tra cứu.
+- Role: ORCHESTRATOR.
+- Vấn đề / mục tiêu: Giảm chi phí token khi tra cứu/review.
+- Quan sát: Có `codex` (0.162.1) và `agy` trên máy.
+- Phân tích / quyết định: Giao tra cứu/review đọc-only cho codex; agent chính xác minh lại trước khi kết luận.
+- Tác động: Không đổi hành vi sản phẩm; chỉ quy trình làm việc.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo.
+- Kết quả / trạng thái: Đã ghi nhận và áp dụng.
+- Theo dõi: Không.
+- Session: [BF-20261015-007](SESSIONS.md#bf-20261015-007).
+
+<a id="bf-20261015-008"></a>
+## BF-20261015-008 — Chạy adapter dịch vụ phụ trợ trong container API
+
+- Ngày làm: 2026-10-15 (Asia/Ho_Chi_Minh); entry tạo lúc 2026-10-15T20:11:18+07:00, hoàn thành lúc 2026-10-15T20:17:14+07:00.
+- Yêu cầu: Tiếp tục sau BF-20261015-006.
+- Role: DEVOPS, BACKEND.
+- Vấn đề / mục tiêu: API chạy trong Docker dùng được Valkey/MinIO/Mailpit.
+- Quan sát: Quy tắc TLS cho production đã chặn compose local khởi động API (fail-fast đúng thiết kế), vì Mailpit không hỗ trợ TLS.
+- Phân tích / quyết định: Giữ mặc định an toàn (bắt buộc TLS), thêm opt-out tường minh `SMTP_ALLOW_INSECURE` chỉ bật ở `.env` local.
+- Tác động: Không đổi hành vi sản phẩm.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo.
+- Kết quả / trạng thái: API trong Docker dùng được Valkey/MinIO/Mailpit; readiness và rate limit đã kiểm tra thực tế (xem Session).
+- Theo dõi: Chọn hạng mục tiếp theo; cấu hình SMTP TLS thật khi triển khai.
+- Session: [BF-20261015-008](SESSIONS.md#bf-20261015-008).
+
+<a id="bf-20261015-009"></a>
+## BF-20261015-009 — Upload media và URL xem theo quyền
+
+- Ngày làm: 2026-10-15 (Asia/Ho_Chi_Minh); entry tạo lúc 2026-10-15T20:23:45+07:00, hoàn thành lúc 2026-10-15T20:42:03+07:00.
+- Yêu cầu: API upload-intent/complete và ký URL xem media theo quyền (§10.2, §10.5).
+- Role: BACKEND, BA, SECURITY_PRIVACY, DBA.
+- Vấn đề / mục tiêu: Parent tải ảnh/video/âm thanh trực tiếp lên object storage có kiểm quota gói, và chỉ người có quyền xem mới nhận URL.
+- Quan sát: Schema đã có đủ bảng asset/reservation/usage/idempotency/outbox nên không cần migration. Chưa có worker nên asset dừng ở UPLOADED và chưa có biến thể để xem.
+- Phân tích / quyết định: Chặn tải lên khi vượt dung lượng gói (402), đúng quy tắc nghiệp vụ "vượt dung lượng gói: chặn tải ảnh/video mới, không xóa gì". Quota giữ chỗ cả 5 % dung sai để không vượt tổng. Chỉ phục vụ biến thể đã xử lý, không phục vụ bản gốc (có thể chứa GPS). Media của ký ức PRIVATE của bạn đời, thư niêm phong và ký ức trong thùng rác không được ký URL; trả 404 để không lộ sự tồn tại. Dedup chỉ dùng nội dung đã xác minh.
+- Tác động: API mới cho app thay mock upload; chưa đổi UI mobile. Dữ liệu: asset, reservation, family_usage, idempotency_records, outbox. Quyền riêng tư: URL ký ngắn hạn (PUT 15 phút, part/xem 1 giờ), không trả storage key.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo.
+- Kết quả / trạng thái: Đã triển khai và kiểm thử trên stack local (xem Session). Chưa đo hành vi người dùng.
+- Theo dõi: Khi có worker và app nối API, có thể đo tỉ lệ upload complete/intent, tỉ lệ FAILED theo lý do, số lần chạm quota (402) theo gói. Chưa thêm tracking.
+- Session: [BF-20261015-009](SESSIONS.md#bf-20261015-009).
+
+<a id="bf-20261015-010"></a>
+## BF-20261015-010 — Xử lý media nền và dọn upload mồ côi
+
+- Ngày làm: 2026-10-15 (Asia/Ho_Chi_Minh); entry tạo lúc 2026-10-15T20:51:13+07:00, hoàn thành lúc 2026-10-15T21:42:45+07:00.
+- Yêu cầu: Worker media (xác minh SHA-256, biến thể, READY), purge-orphans, reconcile-uploads; người dùng duyệt thư mục `workers/`.
+- Role: BACKEND, DEVOPS, DBA, SECURITY_PRIVACY.
+- Vấn đề / mục tiêu: Ảnh/video/âm thanh đã tải lên được xử lý thành bản xem được, bỏ metadata vị trí; upload bỏ dở không giữ quota mãi.
+- Quan sát: Trước task, asset dừng ở UPLOADED và không có bản xem; upload bỏ dở giữ quota mãi. Bucket media bật versioning nên ghi đè/xóa thường vẫn giữ bản thô (có GPS) 30 ngày.
+- Phân tích / quyết định: Mọi bản phục vụ người dùng không có metadata vị trí; bản thô bị xóa mọi version sau khi xử lý xong. Gói có quyền lợi giữ bản gốc (`media.keepOriginal`, đọc từ catalog, không theo tên gói) giữ nguyên pixel. Nội dung sai hash, hỏng hoặc vượt thời lượng gói bị đánh FAILED, không retry. Upload hết hạn/FAILED được dọn và hoàn quota; dọn asset chưa gắn ký ức tạm tắt để không xóa ảnh người dùng khi chưa có API tạo ký ức.
+- Tác động: Ảnh/video/âm thanh tải lên có thể chuyển READY và có URL xem (BF-20261015-009). Quyền riêng tư: GPS/EXIF bị loại khỏi mọi bản lưu trữ phục vụ. Vận hành: thêm container worker; Valkey giữ hàng đợi, PostgreSQL giữ lịch sử job.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo.
+- Kết quả / trạng thái: Đã triển khai và kiểm thử trên stack local (xem Session). Chưa đo hành vi người dùng.
+- Theo dõi: Khi app nối API có thể đo thời gian từ complete tới READY, tỉ lệ FAILED theo mã lỗi, số job retry/hết lượt, dung lượng hoàn trả từ purge. Chưa thêm tracking; cần monitoring/alert cho job FAILED và outbox tồn lâu.
+- Session: [BF-20261015-010](SESSIONS.md#bf-20261015-010).
+
+<a id="bf-20261015-011"></a>
+## BF-20261015-011 — Commit hạ tầng media/worker
+
+- Ngày làm: 2026-10-15 (Asia/Ho_Chi_Minh); entry tạo lúc 2026-10-15T21:45:26+07:00, dừng lúc 2026-10-15T21:46:26+07:00.
+- Yêu cầu: Commit thay đổi BF-20261015-006 → 010 trên branch mới.
+- Role: DEVOPS, QUALITY.
+- Vấn đề / mục tiêu: Lưu lại công việc đã kiểm thử thành lịch sử git để review/merge.
+- Quan sát: Thay đổi 006–010 phụ thuộc phần chưa commit của TS7 và BF-005.
+- Phân tích / quyết định: Người dùng tự commit; task commit được hủy.
+- Tác động: Không đổi hành vi sản phẩm.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo.
+- Kết quả / trạng thái: Đã hủy theo yêu cầu, không commit.
+- Theo dõi: Không.
+- Session: [BF-20261015-011](SESSIONS.md#bf-20261015-011).
+
+<a id="bf-20261015-012"></a>
+## BF-20261015-012 — Đăng nhập/onboarding thật và app thoát mock
+
+- Ngày làm: 2026-10-15 (Asia/Ho_Chi_Minh); entry tạo lúc 2026-10-15T21:30:00+07:00.
+- Yêu cầu: Tiếp tục tính năng backend và nối API với mobile.
+- Role: ARCHITECT, BACKEND, MOBILE, INTEGRATION, SECURITY_PRIVACY, BA, DATA_ANALYST.
+- Vấn đề / mục tiêu: Đang thực hiện.
+- Quan sát: Đang thực hiện.
+- Phân tích / quyết định: Đang thực hiện.
+- Tác động: Đang thực hiện.
+- Giả thuyết / đo lường: Đang thực hiện.
+- Kết quả / trạng thái: Đang thực hiện.
+- Theo dõi: Đang thực hiện.
+- Session: [BF-20261015-012](SESSIONS.md#bf-20261015-012).

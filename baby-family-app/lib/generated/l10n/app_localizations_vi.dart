@@ -526,7 +526,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get billingUpgrade => 'Nâng cấp gói';
 
   @override
-  String get billingExpired => '3 tháng dùng thử của nhà mình đã kết thúc';
+  String get billingExpired => 'Thời gian dùng thử của nhà mình đã kết thúc';
 
   @override
   String get billingExport => 'Tải xuống dữ liệu';
@@ -895,7 +895,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get authPrivate => 'Riêng tư';
 
   @override
-  String get authTrial => '3 tháng miễn phí';
+  String authTrial(int days) {
+    return '$days ngày miễn phí';
+  }
 
   @override
   String get authFamily => 'Cả nhà';
@@ -1065,8 +1067,9 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get onboardingInviteSubtitle =>
-      'Baby Family cần cả Papa và Mama. Khi bạn đời tham gia, nhà mình bắt đầu 3 tháng dùng thử miễn phí.';
+  String onboardingInviteSubtitle(int days) {
+    return 'Baby Family cần cả Papa và Mama. Khi bạn đời tham gia, nhà mình bắt đầu $days ngày dùng thử miễn phí.';
+  }
 
   @override
   String get onboardingInviteCode => 'Mã mời';
@@ -1093,8 +1096,9 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get onboardingWaitingSubtitle =>
-      'Khi bạn đời nhận lời mời, nhà mình sẽ được mở khoá và bắt đầu 3 tháng dùng thử miễn phí.';
+  String onboardingWaitingSubtitle(int days) {
+    return 'Khi bạn đời nhận lời mời, nhà mình sẽ được mở khoá và bắt đầu $days ngày dùng thử miễn phí.';
+  }
 
   @override
   String get onboardingResendInvite => 'Gửi lại lời mời';
@@ -1119,7 +1123,9 @@ class AppLocalizationsVi extends AppLocalizations {
       'Cùng nhau lưu giữ hành trình của con, chia sẻ việc chăm con và luôn hiểu nhau hơn.';
 
   @override
-  String get onboardingTrial => '3 tháng dùng thử miễn phí';
+  String onboardingTrial(int days) {
+    return '$days ngày dùng thử miễn phí';
+  }
 
   @override
   String get onboardingSetupChild => 'Thiết lập cho bé';
@@ -3161,8 +3167,8 @@ class AppLocalizationsVi extends AppLocalizations {
   String get onbChangeCover => 'Đổi ảnh bìa';
 
   @override
-  String onbInviteSubtitle(String callName) {
-    return 'Baby Family cần cả Papa và Mama. Khi $callName tham gia, nhà mình bắt đầu 3 tháng dùng thử miễn phí.';
+  String onbInviteSubtitle(String callName, int days) {
+    return 'Baby Family cần cả Papa và Mama. Khi $callName tham gia, nhà mình bắt đầu $days ngày dùng thử miễn phí.';
   }
 
   @override
@@ -3176,8 +3182,8 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String onbWaitingSubtitle(String callName) {
-    return 'Khi $callName nhận lời mời, nhà mình sẽ được mở khoá và bắt đầu 3 tháng dùng thử miễn phí.';
+  String onbWaitingSubtitle(String callName, int days) {
+    return 'Khi $callName nhận lời mời, nhà mình sẽ được mở khoá và bắt đầu $days ngày dùng thử miễn phí.';
   }
 
   @override
@@ -6582,8 +6588,9 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get invWaitingStepTrial =>
-      'Nhà mình bắt đầu 3 tháng dùng thử miễn phí';
+  String invWaitingStepTrial(int days) {
+    return 'Nhà mình bắt đầu $days ngày dùng thử miễn phí';
+  }
 
   @override
   String get invWaitingNotice => 'Bạn sẽ nhận thông báo “Chào mừng về nhà!”';

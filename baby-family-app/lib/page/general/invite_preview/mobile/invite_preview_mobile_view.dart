@@ -74,7 +74,11 @@ class InvitePreviewMobileView extends HookConsumerWidget {
       );
     }
     if (controller.state == InvitePreviewState.waitingConfirm) {
-      return _WaitingConfirm(invite: data.invite, onClose: close);
+      return _WaitingConfirm(
+        invite: data.invite,
+        trialDays: controller.trialDays,
+        onClose: close,
+      );
     }
     final invite = data.invite;
     final partner = controller.isPartner;

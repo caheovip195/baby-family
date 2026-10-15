@@ -4,7 +4,17 @@ Backend **Node.js + TypeScript + NestJS + PostgreSQL + Prisma**, tổ chức th�
 
 ## Phiên bản
 
-Đã xác minh ngày **11/10/2026**: Node **26.11.1** (Current), npm **11.20.0**, PostgreSQL **18.6**, NestJS **12.1.2**, Prisma CLI/Client/adapter-pg **7.10.0**, TypeScript **6.0.3**. Phiên bản và lockfile được pin cho local, CI và Docker. Prisma 8 đang RC nên bộ Prisma dùng cùng bản stable 7.10.0. [Node releases](https://nodejs.org/en/download), [PostgreSQL versioning](https://www.postgresql.org/support/versioning/), [Nest + Prisma](https://docs.nestjs.com/recipes/prisma).
+Các dependency nền xác minh ngày **11/10/2026**: Node **26.11.1** (Current), npm **11.20.0**, PostgreSQL **18.6**, NestJS **12.1.2**, Prisma CLI/Client/adapter-pg **7.10.0**. Phiên bản và lockfile được pin cho local, CI và Docker. Prisma 8 đang RC nên bộ Prisma dùng cùng bản stable 7.10.0. [Node releases](https://nodejs.org/en/download), [PostgreSQL versioning](https://www.postgresql.org/support/versioning/), [Nest + Prisma](https://docs.nestjs.com/recipes/prisma).
+
+Toolchain cập nhật **15/10/2026**: build/typecheck dùng **TypeScript 7.0.2 native**, alias `@typescript/native`; Jest, typed ESLint, generator AST và seed dùng Compiler API TS6 qua alias `typescript → @typescript/typescript6@6.0.2`. Đây là wrapper tương thích; phiên bản API thực nằm trong lockfile. [Hướng dẫn, nguồn chính thức và kiểm chứng](docs/typescript-7.md).
+
+```bash
+npx tsc --version            # Native 7.0.2
+npx tsc6 --version           # Compiler/API TS6 compatibility
+npm run typecheck           # Native TypeScript
+npm run build               # Emit native, giữ decorator metadata cho Nest
+npm run start:dev           # Native watch + restart Node
+```
 
 ## Chạy local
 
@@ -119,7 +129,7 @@ Prisma 7 đọc URL từ `prisma.config.ts`, dùng `@prisma/adapter-pg`, sinh cl
 
 [Chuẩn database bắt buộc](../.agents/skills/baby-family-team/references/database-standards.md): mọi bảng dự án có `created_at`, `updated_at`, `deleted_at`; soft delete mặc định và trigger `updated_at` cho mọi writer. Domain migration có ràng buộc DB; repository/generator/API cần kiểm tra riêng, không suy ra tuân thủ runtime chỉ từ schema. Xem [verification](../docs/database/verification.md) về phạm vi đã kiểm chứng.
 
-[Cron/job history và xử lý lỗi](docs/jobs.md) mô tả chuẩn lưu run/attempt vào PostgreSQL, retry, idempotency và recovery. Domain schema có bảng job; base chưa có scheduler/queue, worker hoặc service ghi lịch sử job đang chạy.
+[Cron/job history và xử lý lỗi](docs/jobs.md) mô tả chuẩn lưu run/attempt vào PostgreSQL, retry, idempotency và recovery. Worker nền (`npm run start:worker`, service Compose `worker`) chạy BullMQ trên Valkey: relay outbox, xử lý media, `purge-orphans`, `reconcile-uploads`, ghi `job_runs`/`job_attempts`; xem [Triển khai hiện có](docs/jobs.md#triển-khai-hiện-có-2026-10-15).
 
 Integration cần database riêng có tên kết thúc bằng `_test`. Với credential local mặc định:
 
@@ -140,12 +150,12 @@ docker compose up --build -d --wait
 docker compose logs -f api
 ```
 
-Compose backend chỉ chạy migrate → API, kết nối alias `baby-postgres` qua external network `baby-family-data` do stack DB tạo. Mỗi stack có vòng đời riêng nên backend không `depends_on` service PostgreSQL của stack khác; chạy DB healthy trước backend. Migration thất bại thì API không khởi động. Runtime dùng user `node`, filesystem read-only, bỏ dev tooling/Prisma CLI; Swagger mặc định tắt ở production.
+Compose backend chỉ chạy migrate → API, kết nối alias `baby-postgres` qua external network `baby-family-data` do stack DB tạo, và tham gia network `baby-family-storage` của [baby-storage](../baby-storage/README.md) (Valkey `baby-valkey`, MinIO `baby-minio`, Mailpit `baby-mailpit`). Hãy chạy cả hai stack trước backend. API dùng các dịch vụ này qua adapter (xem [Dịch vụ phụ trợ](docs/architecture.md#dịch-vụ-phụ-trợ-valkey-s3-smtp)); mỗi dịch vụ là tùy chọn: thiếu biến thì `/health/ready` báo `disabled` và tính năng cần nó trả 503. Mỗi stack có vòng đời riêng nên backend không `depends_on` service PostgreSQL của stack khác; chạy DB healthy trước backend. Migration thất bại thì API không khởi động. Runtime dùng user `node`, filesystem read-only, bỏ dev tooling/Prisma CLI; Swagger mặc định tắt ở production.
 
 `DATABASE_URL` dành cho chạy Node/Prisma trên host (`localhost:5433`); `DATABASE_DOCKER_URL` dành cho Compose (`baby-postgres:5432`). Khi đổi database/credential, đồng bộ hai URL với `POSTGRES_*` trong `baby-database/.env`; URL-encode password có ký tự đặc biệt. Compose backend yêu cầu khai báo Docker URL rõ ràng. Credential mẫu chỉ dành cho local; các biến khởi tạo PostgreSQL chỉ áp dụng khi tạo cluster mới.
 
 PostgreSQL 18 bind mount `baby-database/data` trên host vào `/var/lib/postgresql`, không lưu data bằng named volume của backend. Xóa/recreate container hoặc `compose down -v` không xóa thư mục host; vẫn cần giữ thư mục đó và [backup/restore](../baby-database/README.md). Không copy PGDATA đang chạy để làm backup nhất quán.
 
-Base có validation, CORS allowlist, Helmet, rate limit in-memory, pagination, Pino/request ID, error response thống nhất và health checks. `npm audit --omit=dev` không có finding; audit đầy đủ còn 5 high trong chuỗi Plop/braces development chưa có bản vá. [Dependency và vận hành](docs/architecture.md#dependency-và-vận-hành).
+Base có validation, CORS allowlist, Helmet, rate limit (lưu ở Valkey khi có `REDIS_URL`, in-memory nếu không), pagination, Pino/request ID, error response thống nhất và health checks. `npm audit --omit=dev` không có finding; audit đầy đủ còn 5 high trong chuỗi Plop/braces development chưa có bản vá. [Dependency và vận hành](docs/architecture.md#dependency-và-vận-hành).
 
 Tham khảo [Brocoders](https://github.com/brocoders/nestjs-boilerplate) (4,414 stars), [Notiz Prisma starter](https://github.com/notiz-dev/nestjs-prisma-starter) (2,540), [Express TypeScript boilerplate](https://github.com/w3tecch/express-typescript-boilerplate) (3,411) và [Prisma examples](https://github.com/prisma/prisma-examples) (6,648); stars quan sát ngày 11/10/2026. Áp dụng phân lớp, repository contracts, DI và generator trên bộ dependency hiện tại.

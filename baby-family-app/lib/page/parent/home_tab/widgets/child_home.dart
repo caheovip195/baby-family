@@ -89,7 +89,11 @@ class _ChildHome extends StatelessWidget {
         ),
       ],
       if (chapter != null)
-        _ChapterCard(controller: controller, child: child, chapter: chapter),
+        _HomeChapterCard(
+          controller: controller,
+          child: child,
+          chapter: chapter,
+        ),
       if (controller.milestones.isNotEmpty) ...[
         SectionHeader.medium(
           title: l10n.homeFirstsRecent,

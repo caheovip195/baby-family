@@ -4,7 +4,10 @@ part of '../mobile/onboarding_activated_mobile_view.dart';
 /// tiêu đề quà 17/800 `primary-700`, hạn 13 `text-secondary`, sau dùng thử 13
 /// `text-tertiary` (line-height 1.5).
 class _TrialCard extends StatelessWidget {
-  const _TrialCard({this.until, this.after});
+  const _TrialCard({required this.days, this.until, this.after});
+
+  /// Thời lượng grant dùng thử (ngày) — “7 ngày dùng thử miễn phí”.
+  final int days;
 
   final String? until;
   final String? after;
@@ -32,7 +35,7 @@ class _TrialCard extends StatelessWidget {
             const SizedBox(width: AppSpacing.s2),
             Expanded(
               child: Text(
-                context.l10n.onboardingTrial,
+                context.l10n.onboardingTrial(days),
                 style: AppTypography.adapt(
                   context,
                   AppTypography.title17.copyWith(color: kColorPrimary700A2402F),

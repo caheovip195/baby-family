@@ -212,6 +212,13 @@
       "digestAndReview": true
     }
   ],
+  "trialPolicy": {
+    "code": "trial-default",
+    "version": 2,
+    "durationSeconds": 604800,
+    "storageQuotaMb": 10240,
+    "relativeSlotsMax": 0
+  },
   "memoryDrafts": {
     "photo": {
       "body": "Lần đầu Hana bế em Haru, cả hai cười tít mắt",

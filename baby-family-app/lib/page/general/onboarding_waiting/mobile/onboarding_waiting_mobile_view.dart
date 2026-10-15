@@ -146,7 +146,7 @@ class OnboardingWaitingMobileView extends HookConsumerWidget {
         ),
         AppStepHeading(
           title: l10n.onboardingWaitingTitle(partner),
-          subtitle: l10n.onbWaitingSubtitle(partner),
+          subtitle: l10n.onbWaitingSubtitle(partner, controller.trialDays),
           center: true,
           titleSize: 24,
         ),

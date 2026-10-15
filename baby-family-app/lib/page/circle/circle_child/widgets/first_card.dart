@@ -3,8 +3,8 @@ part of '../mobile/circle_child_mobile_view.dart';
 /// Một lần đầu (Pencil “Bước đi đầu tiên”): rộng 110, đệm 12, bo 16, nền
 /// xoay vòng `accent-100` / `primary-50` / `secondary-100`; vòng trắng 40 với
 /// icon 22, tên 16/700, tuổi lúc đó 14 `text-secondary`.
-class _FirstCard extends StatelessWidget {
-  const _FirstCard({
+class _CircleFirstCard extends StatelessWidget {
+  const _CircleFirstCard({
     required this.memory,
     required this.age,
     required this.index,

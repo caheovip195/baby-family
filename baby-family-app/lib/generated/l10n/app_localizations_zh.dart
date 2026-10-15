@@ -512,7 +512,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get billingUpgrade => '升级方案';
 
   @override
-  String get billingExpired => '你的家庭3个月试用期已结束';
+  String get billingExpired => '你的家庭试用期已结束';
 
   @override
   String get billingExport => '下载数据';
@@ -869,7 +869,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get authPrivate => '私密';
 
   @override
-  String get authTrial => '免费3个月';
+  String authTrial(int days) {
+    return '免费$days天';
+  }
 
   @override
   String get authFamily => '全家';
@@ -1030,8 +1032,9 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get onboardingInviteSubtitle =>
-      'Baby Family 需要 Papa 和 Mama 一起加入。伴侣加入后，家庭即可开始3个月免费试用。';
+  String onboardingInviteSubtitle(int days) {
+    return 'Baby Family 需要 Papa 和 Mama 一起加入。伴侣加入后，家庭即可开始$days天免费试用。';
+  }
 
   @override
   String get onboardingInviteCode => '邀请码';
@@ -1057,7 +1060,9 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get onboardingWaitingSubtitle => '伴侣接受邀请后，家庭功能将开启，并开始3个月免费试用。';
+  String onboardingWaitingSubtitle(int days) {
+    return '伴侣接受邀请后，家庭功能将开启，并开始$days天免费试用。';
+  }
 
   @override
   String get onboardingResendInvite => '重新发送邀请';
@@ -1081,7 +1086,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get onboardingActivatedSubtitle => '一起记录孩子的成长、分担育儿，也更懂彼此。';
 
   @override
-  String get onboardingTrial => '3个月免费试用';
+  String onboardingTrial(int days) {
+    return '$days天免费试用';
+  }
 
   @override
   String get onboardingSetupChild => '设置宝宝资料';
@@ -3088,8 +3095,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get onbChangeCover => '更换封面';
 
   @override
-  String onbInviteSubtitle(String callName) {
-    return 'Baby Family 需要 Papa 和 Mama 一起加入。$callName 加入后，全家开始 3 个月免费试用。';
+  String onbInviteSubtitle(String callName, int days) {
+    return 'Baby Family 需要 Papa 和 Mama 一起加入。$callName 加入后，全家开始 $days 天免费试用。';
   }
 
   @override
@@ -3103,8 +3110,8 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String onbWaitingSubtitle(String callName) {
-    return '$callName 接受邀请后，家庭将解锁并开始 3 个月免费试用。';
+  String onbWaitingSubtitle(String callName, int days) {
+    return '$callName 接受邀请后，家庭将解锁并开始 $days 天免费试用。';
   }
 
   @override
@@ -6459,7 +6466,9 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get invWaitingStepTrial => '我们家开始 3 个月免费试用';
+  String invWaitingStepTrial(int days) {
+    return '我们家开始 $days 天免费试用';
+  }
 
   @override
   String get invWaitingNotice => '你会收到“欢迎回家！”的通知';

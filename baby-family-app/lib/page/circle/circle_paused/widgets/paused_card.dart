@@ -80,7 +80,7 @@ class _PausedCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.s4),
           Container(
             padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.cardInset,
+              horizontal: AppSpacing.s3,
               vertical: AppSpacing.s2,
             ),
             decoration: BoxDecoration(
@@ -95,7 +95,6 @@ class _PausedCard extends StatelessWidget {
                 Flexible(
                   child: Text(
                     l10n.cirPausedSafe,
-                    textAlign: TextAlign.center,
                     style: AppTypography.adapt(
                       context,
                       AppTypography.title16.copyWith(

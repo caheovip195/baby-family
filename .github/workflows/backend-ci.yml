@@ -5,11 +5,13 @@ on:
     paths:
       - baby-backend/**
       - baby-database/**
+      - baby-storage/**
       - .github/workflows/backend-ci.yml
   pull_request:
     paths:
       - baby-backend/**
       - baby-database/**
+      - baby-storage/**
       - .github/workflows/backend-ci.yml
   workflow_dispatch:
 
@@ -79,6 +81,8 @@ jobs:
         run: npm run typecheck
       - name: Build
         run: npm run build
+      - name: Test the native compiled application
+        run: npm run test:compiled
       - name: Unit tests
         run: npm test
       - name: HTTP tests
@@ -91,5 +95,6 @@ jobs:
         run: |
           docker compose config --quiet
           docker compose --project-directory ../baby-database --file ../baby-database/compose.yaml --env-file ../baby-database/.env.example config --quiet
+          docker compose --project-directory ../baby-storage --file ../baby-storage/compose.yaml --env-file ../baby-storage/.env.example config --quiet
       - name: Build release and migration images
         run: docker compose build api migrate

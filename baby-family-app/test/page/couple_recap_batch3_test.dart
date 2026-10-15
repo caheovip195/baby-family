@@ -20,10 +20,7 @@ void main() {
       );
       expect(find.text('Không gian này cần đủ hai người'), findsOne);
       expect(find.text('Chỉ dành cho Papa & Mama'), findsOne);
-      expect(
-        find.text('Nhà Lan đang ở chế độ chỉ xem & tải về'),
-        findsOne,
-      );
+      expect(find.text('Nhà Lan đang ở chế độ chỉ xem & tải về'), findsOne);
       expect(find.text('Mời bạn đời tham gia'), findsOne);
       await saveDesignShot(tester, 'us_00');
     });

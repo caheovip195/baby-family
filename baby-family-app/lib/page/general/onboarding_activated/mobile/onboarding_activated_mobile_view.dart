@@ -68,6 +68,7 @@ class OnboardingActivatedMobileView extends HookConsumerWidget {
           ),
         ),
         _TrialCard(
+          days: controller.trialDays,
           until: endsAt == null
               ? null
               : l10n.onbTrialUntil(

@@ -28,6 +28,10 @@ class OnboardingWaitingController extends BaseNotifier {
   Family? family;
   InviteInfo? invite;
 
+  /// Thời lượng dùng thử (ngày) theo trial policy của catalog; giá trị mặc
+  /// định tới khi tải xong (BF-20261013-005).
+  int trialDays = kValueDefaultTrialDuration.inDays;
+
   DateTime get now => ref.read(appClockProvider).now();
 
   String get partnerCallName {
@@ -52,15 +56,18 @@ class OnboardingWaitingController extends BaseNotifier {
   }
 
   Future<void> load() async {
-    final (currentFamily, partnerInvite) = await (
-      ref.read(familyServiceProvider).currentFamily(),
+    final familyService = ref.read(familyServiceProvider);
+    final (currentFamily, partnerInvite, duration) = await (
+      familyService.currentFamily(),
       sessionService.partnerInvite(),
+      familyService.trialDuration(),
     ).wait;
     if (isDisposed) {
       return;
     }
     family = currentFamily;
     invite = partnerInvite;
+    trialDays = duration.inDays;
     notifyListeners();
   }
 

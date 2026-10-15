@@ -680,9 +680,9 @@
   "@billingUpgrade": {
     "description": "SUB — Nâng cấp gói"
   },
-  "billingExpired": "3 tháng dùng thử của nhà mình đã kết thúc",
+  "billingExpired": "Thời gian dùng thử của nhà mình đã kết thúc",
   "@billingExpired": {
-    "description": "SUB — Gói của gia đình đã hết hạn"
+    "description": "SUB-07 — tiêu đề hết hạn dùng thử (không ghi cứng thời lượng)"
   },
   "billingExport": "Tải xuống dữ liệu",
   "@billingExport": {
@@ -1155,9 +1155,14 @@
   "@authPrivate": {
     "description": "AUTH — Riêng tư"
   },
-  "authTrial": "3 tháng miễn phí",
+  "authTrial": "{days} ngày miễn phí",
   "@authTrial": {
-    "description": "AUTH — 3 tháng miễn phí"
+    "description": "AUTH-01 — chip dùng thử; {days} = thời lượng trial policy (mặc định 7)",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
   },
   "authFamily": "Cả nhà",
   "@authFamily": {
@@ -1371,9 +1376,14 @@
       }
     }
   },
-  "onboardingInviteSubtitle": "Baby Family cần cả Papa và Mama. Khi bạn đời tham gia, nhà mình bắt đầu 3 tháng dùng thử miễn phí.",
+  "onboardingInviteSubtitle": "Baby Family cần cả Papa và Mama. Khi bạn đời tham gia, nhà mình bắt đầu {days} ngày dùng thử miễn phí.",
   "@onboardingInviteSubtitle": {
-    "description": "ONB — Baby Family cần cả Papa và Mama. Khi bạn đời tham gia, nhà mình bắt đầu 3 tháng dùng thử miễn phí."
+    "description": "ONB — dòng phụ mời bạn đời (bản cũ); {days} = thời lượng trial policy",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
   },
   "onboardingInviteCode": "Mã mời",
   "@onboardingInviteCode": {
@@ -1408,9 +1418,14 @@
       }
     }
   },
-  "onboardingWaitingSubtitle": "Khi bạn đời nhận lời mời, nhà mình sẽ được mở khoá và bắt đầu 3 tháng dùng thử miễn phí.",
+  "onboardingWaitingSubtitle": "Khi bạn đời nhận lời mời, nhà mình sẽ được mở khoá và bắt đầu {days} ngày dùng thử miễn phí.",
   "@onboardingWaitingSubtitle": {
-    "description": "ONB — Khi bạn đời nhận lời mời, nhà mình sẽ được mở khoá và bắt đầu 3 tháng dùng thử miễn phí."
+    "description": "ONB — dòng phụ chờ bạn đời (bản cũ); {days} = thời lượng trial policy",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
   },
   "onboardingResendInvite": "Gửi lại lời mời",
   "@onboardingResendInvite": {
@@ -1440,9 +1455,14 @@
   "@onboardingActivatedSubtitle": {
     "description": "ONB — Cùng nhau lưu giữ hành trình của con, chia sẻ việc chăm con và luôn hiểu nhau hơn."
   },
-  "onboardingTrial": "3 tháng dùng thử miễn phí",
+  "onboardingTrial": "{days} ngày dùng thử miễn phí",
   "@onboardingTrial": {
-    "description": "ONB — 3 tháng dùng thử miễn phí"
+    "description": "ONB-ACT — tiêu đề thẻ dùng thử; {days} = thời lượng đã cấp",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
   },
   "onboardingSetupChild": "Thiết lập cho bé",
   "@onboardingSetupChild": {
@@ -4446,12 +4466,15 @@
   "@onbChangeCover": {
     "description": "ONB-06 — a11y nút đổi ảnh bìa"
   },
-  "onbInviteSubtitle": "Baby Family cần cả Papa và Mama. Khi {callName} tham gia, nhà mình bắt đầu 3 tháng dùng thử miễn phí.",
+  "onbInviteSubtitle": "Baby Family cần cả Papa và Mama. Khi {callName} tham gia, nhà mình bắt đầu {days} ngày dùng thử miễn phí.",
   "@onbInviteSubtitle": {
-    "description": "ONB-07 — dòng phụ",
+    "description": "ONB-07 — dòng phụ; {days} = thời lượng trial policy",
     "placeholders": {
       "callName": {
         "type": "String"
+      },
+      "days": {
+        "type": "int"
       }
     }
   },
@@ -4476,12 +4499,15 @@
       }
     }
   },
-  "onbWaitingSubtitle": "Khi {callName} nhận lời mời, nhà mình sẽ được mở khoá và bắt đầu 3 tháng dùng thử miễn phí.",
+  "onbWaitingSubtitle": "Khi {callName} nhận lời mời, nhà mình sẽ được mở khoá và bắt đầu {days} ngày dùng thử miễn phí.",
   "@onbWaitingSubtitle": {
-    "description": "ONB-WAIT — dòng phụ",
+    "description": "ONB-WAIT — dòng phụ; {days} = thời lượng trial policy",
     "placeholders": {
       "callName": {
         "type": "String"
+      },
+      "days": {
+        "type": "int"
       }
     }
   },
@@ -9709,9 +9735,14 @@
       }
     }
   },
-  "invWaitingStepTrial": "Nhà mình bắt đầu 3 tháng dùng thử miễn phí",
+  "invWaitingStepTrial": "Nhà mình bắt đầu {days} ngày dùng thử miễn phí",
   "@invWaitingStepTrial": {
-    "description": "INV-04 step"
+    "description": "INV-04 step; {days} = thời lượng trial policy",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
   },
   "invWaitingNotice": "Bạn sẽ nhận thông báo “Chào mừng về nhà!”",
   "@invWaitingNotice": {

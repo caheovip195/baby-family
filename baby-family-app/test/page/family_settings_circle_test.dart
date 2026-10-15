@@ -122,7 +122,7 @@ void main() {
       await pumpRoute(tester, const FamilyRoute(), seed: DemoSeed.trial);
       expect(find.text('Nhà Lan'), findsOneWidget);
       expect(find.text('Dùng thử miễn phí'), findsOneWidget);
-      expect(find.text('Còn 90 ngày · hết hạn 05/01/2027'), findsOneWidget);
+      expect(find.text('Còn 7 ngày · hết hạn 14/10/2026'), findsOneWidget);
       expect(find.text('3,2 GB / 10 GB'), findsOneWidget);
       expect(find.text('Mama (bạn)'), findsOneWidget);
       expect(find.text('Thai 24 tuần · dự sinh 24/01/2027'), findsOneWidget);
@@ -270,7 +270,7 @@ void main() {
         seed: DemoSeed.trial,
       );
       await _tap(tester, find.text('Gói & thanh toán'));
-      expect(find.text('Dùng thử còn 90 ngày'), findsOneWidget);
+      expect(find.text('Dùng thử còn 7 ngày'), findsOneWidget);
       await _tap(tester, find.text('House'));
       expect(find.text('Nâng cấp House · 399.000đ'), findsOneWidget);
       await _tap(tester, find.byTooltip('Đóng'));

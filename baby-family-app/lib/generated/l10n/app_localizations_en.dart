@@ -545,7 +545,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get billingUpgrade => 'Upgrade plan';
 
   @override
-  String get billingExpired => 'Your family’s 3-month trial has ended';
+  String get billingExpired => 'Your family’s free trial has ended';
 
   @override
   String get billingExport => 'Download data';
@@ -919,7 +919,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authPrivate => 'Private';
 
   @override
-  String get authTrial => '3 months free';
+  String authTrial(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days free',
+      one: '1 day free',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get authFamily => 'Whole family';
@@ -1090,8 +1098,15 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get onboardingInviteSubtitle =>
-      'Baby Family needs Papa and Mama. When your partner joins, your family starts a free 3-month trial.';
+  String onboardingInviteSubtitle(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days-day',
+      one: '1-day',
+    );
+    return 'Baby Family needs Papa and Mama. When your partner joins, your family starts a $_temp0 free trial.';
+  }
 
   @override
   String get onboardingInviteCode => 'Invite code';
@@ -1117,8 +1132,15 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get onboardingWaitingSubtitle =>
-      'When your partner accepts, your family home unlocks with a free 3-month trial.';
+  String onboardingWaitingSubtitle(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days-day',
+      one: '1-day',
+    );
+    return 'When your partner accepts, your family home unlocks with a $_temp0 free trial.';
+  }
 
   @override
   String get onboardingResendInvite => 'Resend invitation';
@@ -1143,7 +1165,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'Capture your child’s journey, share care and understand one another.';
 
   @override
-  String get onboardingTrial => '3 months free trial';
+  String onboardingTrial(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days-day free trial',
+      one: '1-day free trial',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get onboardingSetupChild => 'Set up your child';
@@ -3289,8 +3319,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onbChangeCover => 'Change cover';
 
   @override
-  String onbInviteSubtitle(String callName) {
-    return 'Baby Family needs both Papa and Mama. When $callName joins, your family starts a 3-month free trial.';
+  String onbInviteSubtitle(String callName, int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days-day',
+      one: '1-day',
+    );
+    return 'Baby Family needs both Papa and Mama. When $callName joins, your family starts a $_temp0 free trial.';
   }
 
   @override
@@ -3304,8 +3340,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String onbWaitingSubtitle(String callName) {
-    return 'When $callName accepts, your family is unlocked and the 3-month free trial begins.';
+  String onbWaitingSubtitle(String callName, int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days-day',
+      one: '1-day',
+    );
+    return 'When $callName accepts, your family is unlocked and the $_temp0 free trial begins.';
   }
 
   @override
@@ -6856,7 +6898,15 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get invWaitingStepTrial => 'Our family starts a free 3-month trial';
+  String invWaitingStepTrial(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days-day',
+      one: '1-day',
+    );
+    return 'Our family starts a $_temp0 free trial';
+  }
 
   @override
   String get invWaitingNotice => 'You’ll get a “Welcome home!” notification';

@@ -15,7 +15,7 @@ abstract class ISessionRepository extends IBaseRepository {
 
   void clearSession();
 
-  /// `session.json`: otp, partnerInviteCode, relativeInviteCode, trialDays…
+  /// `session.json`: otp, partnerInviteCode, relativeInviteCode, samples…
   JsonMap config();
 
   JsonMap? user(String? id);

@@ -361,18 +361,22 @@ class MockStore extends ChangeNotifier {
       ..['relativeSlotsUsed'] = slotsUsed
       ..['relativeSlotsMax'] = slotsMax;
     if (state == PlanState.trial) {
-      // Trial seeds match the fresh flow: 3 months from “today” (FAM-01
-      // `XwXfH` “Còn 90 ngày · hết hạn 05/01/2027”, SUB-01, ONB-ACT).
-      final today = clock.today;
+      // Trial seeds match the fresh flow: granted “now” for the catalog trial
+      // policy duration (7 days → ends 14/10/2026; FAM-01 `XwXfH`, SUB-01
+      // `OUXZg`, ONB-ACT `zKXgc`).
+      final policy =
+          (_meta['catalog'] as Map<String, dynamic>)['trialPolicy'] as Map?;
+      final seconds = policy?['durationSeconds'] as int?;
+      final startedAt = clock.now();
       plan
-        ..['startedAt'] = today.toIso8601String()
-        ..['endsAt'] = DateTime(
-          today.year,
-          today.month,
-          today.day + kValueTrialDays,
-          23,
-          59,
-        ).toIso8601String();
+        ..['startedAt'] = startedAt.toIso8601String()
+        ..['endsAt'] = startedAt
+            .add(
+              seconds == null
+                  ? kValueDefaultTrialDuration
+                  : Duration(seconds: seconds),
+            )
+            .toIso8601String();
     }
   }
 

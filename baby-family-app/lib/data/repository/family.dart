@@ -26,6 +26,10 @@ abstract class IFamilyRepository extends IBaseRepository {
   /// `catalog.plans` (giá đã dịch).
   List<JsonMap> planOffers();
 
+  /// `catalog.trialPolicy`: trial policy có phiên bản (code, version,
+  /// durationSeconds, storageQuotaMb, relativeSlotsMax) — BF-20261013-005.
+  JsonMap trialPolicy();
+
   /// Cấu hình chung của bản mock (`session.json`: lượt AI, khoá ứng dụng…).
   JsonMap config();
 
