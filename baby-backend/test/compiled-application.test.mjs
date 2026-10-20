@@ -33,6 +33,12 @@ test('native-built Nest application retains DI, JWT guards, DTO metadata and ser
   const { Test } = require('@nestjs/testing');
   const { AppModule } = require('../dist/app.module.js');
   const { configureApp } = require('../dist/bootstrap.js');
+  const {
+    PROFILE_IMAGE_SERVICE,
+  } = require('../dist/interfaces/services/profile-image-service.interface.js');
+  const {
+    NO_PROFILE_IMAGES,
+  } = require('../dist/services/no-profile-images.js');
   const { PrismaService } = require('../dist/database/prisma.service.js');
   const { User } = require('../dist/models/user.model.js');
   const {
@@ -44,6 +50,12 @@ test('native-built Nest application retains DI, JWT guards, DTO metadata and ser
   const {
     USER_REPOSITORY,
   } = require('../dist/interfaces/repositories/user-repository.interface.js');
+  const {
+    ACCOUNT_REPOSITORY,
+  } = require('../dist/interfaces/repositories/account-repository.interface.js');
+  const {
+    AccountOverview,
+  } = require('../dist/models/account-overview.model.js');
   const {
     CHILD_REPOSITORY,
   } = require('../dist/interfaces/repositories/child-repository.interface.js');
@@ -84,8 +96,23 @@ test('native-built Nest application retains DI, JWT guards, DTO metadata and ser
       },
       update: async (_scope, _key, input) => new User({ ...user, ...input }),
     })
+    .overrideProvider(ACCOUNT_REPOSITORY)
+    .useValue({
+      findOverview: async (id) => {
+        userScope = { scope: { privileged: true }, key: { id } };
+        return new AccountOverview({
+          user,
+          parentMemberships: [],
+          grantedDocuments: [],
+          awaitingApproval: [],
+        });
+      },
+    })
     .overrideProvider(APPLICATION_ACCESS_SERVICE)
     .useValue({ requireParent: async () => undefined })
+    // No storage/DB here: AUTH-04 image URLs resolve to null.
+    .overrideProvider(PROFILE_IMAGE_SERVICE)
+    .useValue(NO_PROFILE_IMAGES)
     .overrideProvider(CHILD_REPOSITORY)
     .useValue({
       list: async (scope) => {
@@ -118,8 +145,10 @@ test('native-built Nest application retains DI, JWT guards, DTO metadata and ser
       .get('/api/v1/me')
       .auth(token, { type: 'bearer' })
       .expect(200);
-    assert.equal(me.body.id, userId);
-    assert.equal(me.body.tokenVersion, undefined);
+    // Spec §11.1 envelope: success payloads are wrapped in `data`.
+    assert.equal(me.body.data.id, userId);
+    assert.equal(me.body.data.tokenVersion, undefined);
+    assert.equal(me.body.data.profileCompleted, false);
     assert.deepEqual(userScope, {
       scope: { privileged: true },
       key: { id: userId },
@@ -129,7 +158,17 @@ test('native-built Nest application retains DI, JWT guards, DTO metadata and ser
       .auth(token, { type: 'bearer' })
       .send({ displayName: '  Native  ' })
       .expect(200);
-    assert.equal(patched.body.displayName, 'Native');
+    assert.equal(patched.body.data.displayName, 'Native');
+    // Token issuance is wired but fails closed without a signing key/pepper.
+    const refresh = await request(server)
+      .post('/api/v1/auth/refresh')
+      .send({ refreshToken: 'x'.repeat(43) })
+      .expect(503);
+    assert.equal(refresh.body.error.code, 'SERVICE_UNAVAILABLE');
+    await request(server)
+      .post('/api/v1/invites/accept')
+      .send({ code: 'K7Q29MXA' })
+      .expect(401);
     await request(server)
       .patch('/api/v1/me')
       .auth(token, { type: 'bearer' })

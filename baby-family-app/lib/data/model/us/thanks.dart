@@ -18,6 +18,9 @@ abstract class Thanks with _$Thanks {
     @JsonKey(name: 'createdAt') required DateTime createdAt,
     @JsonKey(name: 'postedToFamily') @Default(false) bool postedToFamily,
 
+    /// Người gửi đề nghị đăng thành khoảnh khắc gia đình, chờ bạn đời duyệt.
+    @JsonKey(name: 'shareRequested') @Default(false) bool shareRequested,
+
     /// Icon Lucide của thẻ trên bức tường cảm ơn (US-06).
     @JsonKey(name: 'icon') String? icon,
 

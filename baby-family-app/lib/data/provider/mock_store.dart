@@ -7,8 +7,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Đồng hồ của tầng dữ liệu. Mock: bắt đầu 07/10/2026 20:25 (Pencil).
 /// Test override bằng `AppClock.fixed(..., frozen: true)`.
+/// Chạy với server thật (`BABY_FAMILY_API_URL`): dùng giờ hệ thống để hạn
+/// lời mời/dùng thử khớp với server.
 final appClockProvider = Provider<AppClock>(
-  (ref) => AppClock.fixed(kValueDemoStartTime),
+  (ref) => kValueUseRemoteSession
+      ? AppClock.system()
+      : AppClock.fixed(kValueDemoStartTime),
 );
 
 /// Nguồn dữ liệu mock duy nhất (seed theo `BABY_FAMILY_DEMO`). Test override

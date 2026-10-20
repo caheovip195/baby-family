@@ -10,6 +10,7 @@ export const MEDIA_REPOSITORY = Symbol('MEDIA_REPOSITORY');
 
 export interface ReserveUploadInput {
   familyId: string;
+  allowSharedCopy?: boolean;
   uploaderUserId: string;
   idempotencyKey: string;
   /** SHA-256 of the canonical request; a reused key with another hash is rejected. */
@@ -24,6 +25,8 @@ export interface ReserveUploadInput {
   durationMs: number | null;
   storageBucket: string;
   storageKey: (assetId: string) => string;
+  /** Owner-only asset (JOURNAL); the DB requires it to equal the uploader. */
+  privateOwnerUserId?: string | null;
   /** Bytes held until completion: the largest size `complete` will accept. */
   reservedBytes: bigint;
   /** Plan storage quota; checked against used + reserved under a row lock. */
@@ -66,7 +69,11 @@ export type ProcessingCommit = 'COMPLETED' | 'NOT_PROCESSING' | 'LEASE_LOST';
  * Purge rules (spec §10.2): expired uploads, FAILED assets past retention, and
  * never-attached MEMORY uploads (opt-in).
  */
-export type PurgeRule = 'EXPIRED_UPLOAD' | 'FAILED' | 'UNATTACHED';
+/**
+ * `DETACHED`: a memory asset that was attached but every memory/perspective using
+ * it is gone (purged trash, spec §10.7) — retired without waiting.
+ */
+export type PurgeRule = 'EXPIRED_UPLOAD' | 'FAILED' | 'UNATTACHED' | 'DETACHED';
 
 /** Plan version in effect for a family (raw catalog JSON, parsed by services). */
 export interface EffectivePlanData {
@@ -100,6 +107,13 @@ export interface IMediaRepository {
    * media of memories/perspectives visible to that Parent; sealed letters excluded.
    */
   findViewableByParent(
+    familyId: string,
+    userId: string,
+    assetIds: readonly string[],
+  ): Promise<MediaAssetView[]>;
+
+  hasContributeChild(familyId: string, userId: string): Promise<boolean>;
+  findViewableByCircle(
     familyId: string,
     userId: string,
     assetIds: readonly string[],

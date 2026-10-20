@@ -13,7 +13,7 @@ class _RecapCollage extends StatelessWidget {
     const small = Radius.circular(AppRadius.xs);
     Widget photo(String asset, BorderRadius radius) => ClipRRect(
       borderRadius: radius,
-      child: Image.asset(asset, fit: BoxFit.cover),
+      child: Image(image: mediaImageProvider(asset), fit: BoxFit.cover),
     );
     final side = assets.skip(1).take(3).toList();
     return SizedBox(

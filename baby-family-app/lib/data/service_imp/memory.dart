@@ -1,3 +1,4 @@
+import 'package:baby_family/data/dto/memory_grid_photo.dart';
 import 'package:baby_family/data/dto/memory_search_result.dart';
 import 'package:baby_family/data/model/memory/album.dart';
 import 'package:baby_family/data/model/memory/bump_photo.dart';
@@ -47,7 +48,10 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
     final first = perspectives.firstOrNull;
     return Memory.fromJson({
       ...row,
-      'commentCount': _repository.comments(id).length,
+      // Ký ức đồng bộ từ server giữ số bình luận server (bình luận ở trên server).
+      'commentCount': row['remoteStatus'] != null
+          ? row['commentCount'] ?? 0
+          : _repository.comments(id).length,
       'perspectiveCount': perspectives.length,
       'perspectiveAuthorId': first?['authorId'],
       'perspectivePreview': first?['body'],
@@ -60,6 +64,10 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
 
   static DateTime _at(JsonMap row) =>
       DateTime.parse(row['occurredAt'] as String);
+
+  /// Dữ liệu trên máy không thay đổi ngoài tác động của người dùng.
+  @override
+  Duration? refreshDelay() => null;
 
   @override
   Future<List<Memory>> memories({
@@ -85,6 +93,46 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
     await ready();
     final row = _repository.memory(id) ?? _batchMemory(id);
     return row == null ? null : _toMemory(row);
+  }
+
+  @override
+  Future<List<Memory>> timeline({String? childId}) =>
+      memories(childId: childId);
+
+  @override
+  Future<List<MemoryGridPhoto>> photos({String? childId}) async => [
+    for (final memory in await memories(childId: childId))
+      for (final asset in memory.mediaAssets)
+        MemoryGridPhoto(asset: asset, memory: memory),
+  ];
+
+  @override
+  Future<Memory> updateMemory(
+    String memoryId, {
+    String? title,
+    String? body,
+    List<String>? childIds,
+    DateTime? occurredAt,
+    MemoryVisibility? visibility,
+    bool? commentsEnabled,
+    List<String>? mediaAssets,
+  }) async {
+    await ready();
+    String? blank(String value) => value.trim().isEmpty ? null : value.trim();
+    _repository.updateMemory(memoryId, {
+      if (title != null) 'title': blank(title),
+      if (body != null) 'body': blank(body),
+      'childIds': ?childIds,
+      if (occurredAt != null) 'occurredAt': occurredAt.toIso8601String(),
+      if (visibility != null) 'visibility': visibility.name,
+      'commentsEnabled': ?commentsEnabled,
+      'mediaAssets': ?mediaAssets,
+    });
+    final row = _repository.memory(memoryId);
+    if (row == null) {
+      throw StateError('Memory $memoryId not found');
+    }
+    return _toMemory(row);
   }
 
   /// Ký ức chỉ có trong dữ liệu MEM-15/16, REC-02 (kết quả tìm kiếm, năm
@@ -117,6 +165,7 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
     int? voiceDurationSec,
     DateTime? sealedUntil,
     String? missionId,
+    bool deferUpload = false,
   }) async {
     await ready();
     if (kind == MemoryKind.monthlyPhoto && monthIndex != null) {
@@ -166,6 +215,9 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
   }
 
   @override
+  Future<List<String>> downloadUrls(String memoryId) async => const [];
+
+  @override
   Future<void> toggleFavorite(String memoryId) async {
     final current = await memory(memoryId);
     if (current != null) {
@@ -179,11 +231,23 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
     if (current == null) {
       return;
     }
+    final reactions = {...current.reactions};
+    final previous = current.myReaction;
+    if (previous != null) {
+      final left = (reactions[previous] ?? 1) - 1;
+      if (left > 0) {
+        reactions[previous] = left;
+      } else {
+        reactions.remove(previous);
+      }
+    }
+    final next = previous == emoji ? null : emoji;
+    if (next != null) {
+      reactions[next] = (reactions[next] ?? 0) + 1;
+    }
     _repository.updateMemory(memoryId, {
-      'reactions': {
-        ...current.reactions,
-        emoji: (current.reactions[emoji] ?? 0) + 1,
-      },
+      'reactions': reactions,
+      'myReaction': next,
     });
   }
 
@@ -646,6 +710,21 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
   }
 
   @override
+  Future<Memory?> refreshMemory(String id) => memory(id);
+
+  @override
+  Future<void> retryUpload(String memoryId) async {}
+
+  @override
+  Future<void> cancelUpload(String memoryId) async {
+    await ready();
+    _repository.removeMemory(memoryId);
+  }
+
+  @override
+  Future<int?> videoDurationSec(String path) async => null;
+
+  @override
   Future<List<String>> searchRecents() async {
     await ready();
     return _repository.searchRecents();
@@ -867,6 +946,7 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
   @override
   Future<ReportReceipt> submitReport({
     required String targetId,
+    ReportTarget target = ReportTarget.memory,
     required String reasonCode,
     String? note,
     bool hideForMe = false,

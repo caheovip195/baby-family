@@ -6,6 +6,7 @@ import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/extension/date_time.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
+import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_back_title_bar.dart';

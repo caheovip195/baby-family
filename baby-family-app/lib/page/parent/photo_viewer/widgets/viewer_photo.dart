@@ -24,8 +24,8 @@ class _ViewerPhoto extends HookWidget {
         onInteractionEnd: (_) =>
             onZoomChanged(transform.value.getMaxScaleOnAxis() > 1.01),
         child: SizedBox.expand(
-          child: Image.asset(
-            asset,
+          child: Image(
+            image: mediaImageProvider(asset),
             fit: BoxFit.cover,
             semanticLabel: context.l10n.memPhotoViewerTitle,
           ),

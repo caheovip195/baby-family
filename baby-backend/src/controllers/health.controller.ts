@@ -16,9 +16,11 @@ import { CACHE_REPOSITORY } from '../interfaces/repositories/cache-repository.in
 import type { ICacheRepository } from '../interfaces/repositories/cache-repository.interface';
 import { OBJECT_STORAGE_SERVICE } from '../interfaces/services/object-storage-service.interface';
 import type { IObjectStorageService } from '../interfaces/services/object-storage-service.interface';
+import { RawResponse } from '../common/http/response-envelope.interceptor';
 
 @ApiTags('Health')
 @SkipThrottle()
+@RawResponse()
 @Controller('health')
 export class HealthController {
   constructor(

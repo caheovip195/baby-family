@@ -39,8 +39,8 @@ class _UltrasoundCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(AppRadius.tile),
                 child: photo == null
                     ? const SizedBox.square(dimension: 96)
-                    : Image.asset(
-                        photo,
+                    : Image(
+                        image: mediaImageProvider(photo),
                         width: 96,
                         height: 96,
                         fit: BoxFit.cover,

@@ -1,3 +1,4 @@
+import 'package:baby_family/data/dto/family_deletion_info.dart';
 import 'package:baby_family/data/model/settings/ai_settings.dart';
 import 'package:baby_family/data/model/settings/blocked_person.dart';
 import 'package:baby_family/data/model/settings/data_export_info.dart';
@@ -8,12 +9,14 @@ import 'package:baby_family/data/model/settings/notification_settings.dart';
 import 'package:baby_family/data/model/settings/privacy_settings.dart';
 import 'package:baby_family/data/model/settings/profile_settings.dart';
 import 'package:baby_family/data/model/settings/security_settings.dart';
+import 'package:baby_family/data/model/settings/support_ticket.dart';
 import 'package:baby_family/data/repository/child.dart';
 import 'package:baby_family/data/repository/family.dart';
 import 'package:baby_family/data/repository/settings.dart';
 import 'package:baby_family/data/service/settings.dart';
 import 'package:baby_family/data/service_imp/mock_service.dart';
 import 'package:baby_family/utils/constants/enum.dart';
+import 'package:baby_family/utils/constants/values.dart';
 
 class SettingsServiceImp extends MockServiceImp implements ISettingsService {
   SettingsServiceImp(
@@ -143,6 +146,9 @@ class SettingsServiceImp extends MockServiceImp implements ISettingsService {
   }
 
   @override
+  Future<String?> exportDownloadUrl(DataExportKind kind) async => null;
+
+  @override
   Future<void> clearCache() async {
     final info = await dataExport();
     _repository.saveSection('dataExport', info.copyWith(cacheMb: 0).toJson());
@@ -177,7 +183,14 @@ class SettingsServiceImp extends MockServiceImp implements ISettingsService {
   }
 
   @override
-  Future<void> deleteAccount() => sessionRepository.reseed(DemoSeed.fresh);
+  Future<void> requestReauthOtp() async {}
+
+  @override
+  Future<void> verifyReauth(String code) async {}
+
+  @override
+  Future<void> deleteAccount({bool keepMemories = true}) =>
+      sessionRepository.reseed(DemoSeed.fresh);
 
   @override
   Future<HelpInfo> help() async {
@@ -255,4 +268,89 @@ class SettingsServiceImp extends MockServiceImp implements ISettingsService {
     _repository.saveSectionList('blocked', blocked);
     _setBlockedCount(blocked.length);
   }
+
+  // ------------------------------------------------ xoá gia đình (mock)
+
+  FamilyDeletionInfo _deletion() {
+    final row = _repository.section('familyDeletion');
+    final status = FamilyDeletionStatus.values.asNameMap()[row['status']];
+    return FamilyDeletionInfo(
+      status: status ?? FamilyDeletionStatus.none,
+      requestedByMe: row['requestedBy'] == myUserId,
+      scheduledFor: DateTime.tryParse(row['scheduledFor'] as String? ?? ''),
+    );
+  }
+
+  @override
+  Future<FamilyDeletionInfo> familyDeletion() async {
+    await ready();
+    return _deletion();
+  }
+
+  /// Bản mẫu: Bố/Mẹ còn lại đồng ý ở máy của họ → đang chờ.
+  @override
+  Future<FamilyDeletionInfo> requestFamilyDeletion() async {
+    await ready();
+    _repository.saveSection('familyDeletion', {
+      'status': FamilyDeletionStatus.awaitingPartner.name,
+      'requestedBy': myUserId,
+    });
+    return _deletion();
+  }
+
+  @override
+  Future<FamilyDeletionInfo> confirmFamilyDeletion() async {
+    await ready();
+    _repository.saveSection('familyDeletion', {
+      ..._repository.section('familyDeletion'),
+      'status': FamilyDeletionStatus.scheduled.name,
+      'scheduledFor': today.add(const Duration(days: 30)).toIso8601String(),
+    });
+    return _deletion();
+  }
+
+  @override
+  Future<FamilyDeletionInfo> cancelFamilyDeletion() async {
+    await ready();
+    _repository.saveSection('familyDeletion', const {});
+    return _deletion();
+  }
+
+  // ------------------------------------------------ đổi số điện thoại (mock)
+
+  @override
+  Future<void> requestPhoneChange(String phone) async {}
+
+  @override
+  Future<void> confirmPhoneChange(String phone, String code) async {
+    await ready();
+    sessionRepository.patchSession({'phone': phone});
+  }
+
+  /// Bản trên máy: yêu cầu chỉ giữ trong phiên (chưa có server).
+  final _supportTickets = <SupportTicket>[];
+
+  @override
+  Future<List<String>> supportCategories() async => kValueSupportCategories;
+
+  @override
+  Future<SupportTicket> sendSupportRequest({
+    required String category,
+    required String subject,
+    required String body,
+  }) async {
+    final createdAt = DateTime.now();
+    final ticket = SupportTicket(
+      id: '${createdAt.microsecondsSinceEpoch}',
+      code: 'HT-${createdAt.millisecondsSinceEpoch % 1000000}',
+      status: kValueSupportStatusOpen,
+      createdAt: createdAt,
+    );
+    _supportTickets.insert(0, ticket);
+    return ticket;
+  }
+
+  @override
+  Future<List<SupportTicket>> supportTickets() async =>
+      List.unmodifiable(_supportTickets);
 }

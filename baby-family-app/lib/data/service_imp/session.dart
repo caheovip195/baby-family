@@ -260,7 +260,7 @@ class SessionServiceImp extends MockServiceImp implements ISessionService {
   }
 
   @override
-  Future<InviteInfo?> partnerInvite() async {
+  Future<InviteInfo?> partnerInvite({bool? requireApproval}) async {
     await ready();
     // Bỏ qua lời mời mẫu INV-02/03/04 (`mock: true`) cùng gia đình — FAM-02
     // (seed partnerLeft) phải lấy lời mời bạn đời mới R4TB2HWN.
@@ -274,8 +274,12 @@ class SessionServiceImp extends MockServiceImp implements ISessionService {
     return invite == null ? null : _inviteInfo(invite);
   }
 
+  /// Bản mock: lời mời bị thu hồi qua `IFamilyService.revokeInvite`.
   @override
-  Future<void> markPartnerInviteSent() async {
+  Future<void> revokePartnerInvite() async {}
+
+  @override
+  Future<void> markPartnerInviteSent({bool? requireApproval}) async {
     final invite = await partnerInvite();
     if (invite != null) {
       _familyRepository.updateInvite(invite.id, {
@@ -318,6 +322,143 @@ class SessionServiceImp extends MockServiceImp implements ISessionService {
   /// BR-054: đủ Papa + Mama → cấp dùng thử theo trial policy hiện hành của
   /// catalog; expiry tính một lần (`startedAt + durationSeconds`), không làm
   /// tròn cuối ngày.
+  /// Bản server: ghi đúng giai đoạn quyền lợi server trả về (dùng thử với hạn
+  /// thật, hoặc hết hạn) thay cho dùng thử mô phỏng của [_activate].
+  void applyServerPlan({required PlanState state, DateTime? endsAt}) {
+    final family = _familyRepository.family(familyId);
+    if (family == null) {
+      return;
+    }
+    final plan = Map<String, dynamic>.from(
+      (family['plan'] as Map?) ?? const <String, dynamic>{},
+    );
+    _familyRepository.updateFamily(familyId, {
+      'plan': {
+        ...plan,
+        'state': state.name,
+        'endsAt': endsAt?.toIso8601String() ?? plan['endsAt'],
+      },
+    });
+  }
+
+  /// Bản server: gia đình `PARTNER_LEFT` (US-00) — bạn đời đã rời; người còn
+  /// lại xem & tải về, mời bạn đời mới (FAM-02). Bỏ bạn đời khỏi bản phản chiếu.
+  void applyServerPartnerLeft({DateTime? at}) {
+    final family = _familyRepository.family(familyId);
+    if (family == null) {
+      return;
+    }
+    if (family['partnerLeftAt'] == null) {
+      _familyRepository.updateFamily(familyId, {
+        'partnerLeftAt': (at ?? now).toIso8601String(),
+      });
+    }
+    // Như seed `partnerLeft`: bạn đời không còn trong danh sách thành viên.
+    for (final member in [..._familyRepository.members(familyId)]) {
+      if (member['id'] != myMemberId &&
+          member['role'] != FamilyRole.relative.name) {
+        _familyRepository.removeMember(member['id'] as String);
+      }
+    }
+  }
+
+  /// Bản server (BF-20261019-005): phản chiếu tư cách người thân từ
+  /// `GET /v1/me/circles`. [familyName] null → chưa vào gia đình nào hoặc
+  /// đang chờ Bố/Mẹ duyệt (CIR-WAIT); [paused] → CIR-05. Trả id gia đình trên
+  /// máy (để thêm bé được cấp quyền).
+  String? applyServerCircle({
+    String? familyName,
+    bool paused = false,
+    List<String>? grantedChildIds,
+    Map<String, RelativePermission>? childPermissions,
+    bool allowDownload = false,
+  }) {
+    final memberId = myMemberId;
+    final mine = _familyRepository.member(memberId);
+    if (familyName == null) {
+      if (mine != null && mine['role'] == FamilyRole.relative.name) {
+        _familyRepository.removeMember(memberId!);
+      }
+      sessionRepository.patchSession({
+        'familyId': null,
+        'memberId': null,
+        'role': FamilyRole.relative.name,
+      });
+      return null;
+    }
+    var localFamilyId = sessionRepository.session()['familyId'] as String?;
+    if (localFamilyId == null ||
+        _familyRepository.family(localFamilyId) == null) {
+      localFamilyId =
+          _familyRepository.createFamily({
+                'name': familyName,
+                'coverIndex': 0,
+                'createdAt': now.toIso8601String(),
+                'setupCompleted': true,
+              })['id']
+              as String;
+    } else {
+      _familyRepository.updateFamily(localFamilyId, {'name': familyName});
+    }
+    final permissions = childPermissions ?? const {};
+    final fields = <String, dynamic>{
+      'paused': paused,
+      'allowDownload': allowDownload,
+      // CIR-05: gói tạm dừng thì server không trả danh sách bé — giữ bản cũ.
+      'grantedChildIds': ?grantedChildIds,
+      if (childPermissions != null)
+        'childPermissions': {
+          for (final entry in permissions.entries) entry.key: entry.value.name,
+        },
+      if (childPermissions != null)
+        'canComment': permissions.values.any(
+          (value) => value != RelativePermission.view,
+        ),
+      if (childPermissions != null)
+        'canPost': permissions.values.contains(RelativePermission.contribute),
+    };
+    String id;
+    if (mine != null &&
+        mine['role'] == FamilyRole.relative.name &&
+        mine['familyId'] == localFamilyId) {
+      id = memberId!;
+      _familyRepository.updateMember(id, fields);
+    } else {
+      final user = sessionRepository.user(myUserId);
+      id =
+          _familyRepository.addMember({
+                'familyId': localFamilyId,
+                'userId': myUserId,
+                'role': FamilyRole.relative.name,
+                'status': MemberStatus.active.name,
+                'displayName': user?['displayName'] ?? '',
+                'callName':
+                    sessionRepository.session()['callName'] ??
+                    user?['displayName'] ??
+                    '',
+                'joinedAt': now.toIso8601String(),
+                'grantedChildIds': const <String>[],
+                ...fields,
+              })['id']
+              as String;
+    }
+    sessionRepository.patchSession({
+      'familyId': localFamilyId,
+      'memberId': id,
+      'role': FamilyRole.relative.name,
+    });
+    return localFamilyId;
+  }
+
+  /// AUTH-04 bản server: ảnh đại diện của tôi (URL ký) cho thành viên trên máy.
+  void applyServerAvatar(String? url) {
+    final memberId = myMemberId;
+    if (url == null || memberId == null) {
+      return;
+    }
+    _familyRepository.updateMember(memberId, {'avatarAsset': url});
+  }
+
   void _activate(String familyId) {
     final policy = _familyRepository.trialPolicy();
     final seconds = policy['durationSeconds'] as int?;
@@ -542,6 +683,27 @@ class SessionServiceImp extends MockServiceImp implements ISessionService {
     await ready();
     sessionRepository.patchSession({'pendingInvite': null});
   }
+
+  @override
+  bool get usesServer => false;
+
+  @override
+  Future<PartnerJoinStatus> checkPartnerStatus() async {
+    await ready();
+    return current.state == SessionState.waitingPartner
+        ? PartnerJoinStatus.waiting
+        : PartnerJoinStatus.joined;
+  }
+
+  @override
+  String? get pendingPartnerCallName => null;
+
+  @override
+  Future<PartnerJoinStatus> decidePartner({required bool approve}) =>
+      checkPartnerStatus();
+
+  @override
+  bool get awaitingPartnerApproval => false;
 
   @override
   Future<void> signOut() => reseed(DemoSeed.fresh);

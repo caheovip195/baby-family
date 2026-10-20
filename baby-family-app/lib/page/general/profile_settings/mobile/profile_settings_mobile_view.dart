@@ -4,9 +4,12 @@ import 'package:baby_family/data/model/settings/sign_in_method.dart';
 import 'package:baby_family/page/general/profile_settings/profile_settings_controller.dart';
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/enum.dart';
+import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
+import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:baby_family/utils/helper/theme.dart';
+import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
 import 'package:baby_family/utils/widget/app_caps_label.dart';
 import 'package:baby_family/utils/widget/app_grouped_list.dart';
@@ -19,6 +22,7 @@ import 'package:baby_family/utils/widget/base_scaffold.dart';
 import 'package:baby_family/utils/widget/error_state.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
 
 part '../widgets/profile_avatar.dart';
@@ -84,8 +88,11 @@ class ProfileSettingsMobileView extends HookConsumerWidget {
         gap,
         _ProfileAvatar(
           callName: profile.callName,
+          asset: profile.avatarAsset,
           isMother: controller.role != FamilyRole.father,
-          onChange: () => showComingSoonSnackBar(context),
+          onChange: kValueUseRemoteSession
+              ? () => _pickAvatar(controller)
+              : () => showComingSoonSnackBar(context),
         ),
         gap,
         AppTextField(
@@ -109,7 +116,15 @@ class ProfileSettingsMobileView extends HookConsumerWidget {
             for (final method in controller.methods)
               _SignInRow(
                 method: method,
-                onToggle: () => controller.toggleLink(method.method),
+                // Bản server: số điện thoại → màn đổi số (OTP số cũ + số mới).
+                linkedAction:
+                    kValueUseRemoteSession && method.method == AuthMethod.phone
+                    ? l10n.setChangePhone
+                    : null,
+                onToggle:
+                    kValueUseRemoteSession && method.method == AuthMethod.phone
+                    ? () => context.router.push(const ChangePhoneRoute())
+                    : () => controller.toggleLink(method.method),
               ),
           ],
         ),
@@ -141,5 +156,18 @@ class ProfileSettingsMobileView extends HookConsumerWidget {
         ),
       ],
     );
+  }
+}
+
+/// AUTH-04: chọn một ảnh (photo picker hệ thống), thu nhỏ như ảnh ký ức.
+Future<void> _pickAvatar(ProfileSettingsController controller) async {
+  final picked = await ImagePicker().pickImage(
+    source: ImageSource.gallery,
+    maxWidth: kValueUploadImageMaxSide,
+    maxHeight: kValueUploadImageMaxSide,
+    imageQuality: kValueUploadImageQuality,
+  );
+  if (picked != null) {
+    controller.setAvatar(picked.path);
   }
 }

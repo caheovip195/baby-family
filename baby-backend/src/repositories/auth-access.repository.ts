@@ -19,23 +19,50 @@ export class AuthAccessRepository implements IAuthAccessRepository {
   ): Promise<AuthSessionState | null> {
     return this.prisma.$transaction(
       async (tx) => {
-        const row = await tx.userSession.findFirst({
-          where: {
-            id: sessionId,
-            userId,
-            deletedAt: null,
-            revokedAt: null,
-            replacedBy: null,
-            expiresAt: { gt: now },
-            absoluteExpiresAt: { gt: now },
-            user: { status: 'ACTIVE', deletedAt: null },
-          },
-          select: {
-            id: true,
-            userId: true,
-            user: { select: { tokenVersion: true } },
-          },
+        const where = {
+          id: sessionId,
+          userId,
+          deletedAt: null,
+          revokedAt: null,
+          replacedBy: null,
+          expiresAt: { gt: now },
+          absoluteExpiresAt: { gt: now },
+        };
+        const select = {
+          id: true,
+          userId: true,
+          user: { select: { tokenVersion: true } },
+        } as const;
+        let row = await tx.userSession.findFirst({
+          where: { ...where, user: { status: 'ACTIVE', deletedAt: null } },
+          select,
         });
+        // Keep ordinary active-session verification independent of deletion recovery.
+        if (!row) {
+          const pending = await tx.userSession.findFirst({
+            where: {
+              ...where,
+              user: { status: 'DELETION_PENDING', deletedAt: null },
+            },
+            select: {
+              ...select,
+              user: { select: { tokenVersion: true, status: true } },
+            },
+          });
+          if (pending?.user.status !== 'DELETION_PENDING') return null;
+          const grace = await tx.deletionRequest.findFirst({
+            where: {
+              userId,
+              deletedAt: null,
+              status: 'SCHEDULED',
+              executeAfter: { gt: now },
+            },
+            select: { id: true },
+          });
+          if (!grace) return null;
+          row = pending;
+        }
+
         return row
           ? new AuthSessionState({
               sessionId: row.id,

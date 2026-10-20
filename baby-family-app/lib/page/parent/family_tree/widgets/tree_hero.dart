@@ -13,8 +13,8 @@ class _TreeHero extends StatelessWidget {
     final l10n = context.l10n;
     return Column(
       children: [
-        Image.asset(
-          Assets.images.zajmr.path,
+        Image(
+          image: mediaImageProvider(Assets.images.zajmr.path),
           width: 240,
           height: 240,
           excludeFromSemantics: true,

@@ -1,3 +1,9 @@
+import { MilestoneSeedRepository } from '../src/repositories/milestone-seed.repository';
+import { MemoryPromptSeedRepository } from '../src/repositories/memory-prompt-seed.repository';
+import { PregnancyContentSeedRepository } from '../src/repositories/pregnancy-content-seed.repository';
+import { MissionBoardCatalogSeedRepository } from '../src/repositories/mission-board-catalog-seed.repository';
+import { NotificationTemplateSeedRepository } from '../src/repositories/notification-template-seed.repository';
+import { CareBadgeSeedRepository } from '../src/repositories/care-badge-seed.repository';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
@@ -160,6 +166,25 @@ async function main(): Promise<void> {
   });
   try {
     await new CatalogSeeder(new CatalogSeedRepository(prisma)).run();
+    await new MilestoneSeedRepository(prisma).seedFromFile();
+    await new MemoryPromptSeedRepository(prisma).seedFromFile(
+      join(__dirname, 'seeds/memory-prompts.json'),
+    );
+    await new PregnancyContentSeedRepository(prisma).seedFromFile(
+      join(__dirname, 'seeds/pregnancy-weeks.json'),
+    );
+    await new PregnancyContentSeedRepository(prisma).seedFromFile(
+      join(__dirname, 'seeds/prep-defaults.json'),
+    );
+    await new MissionBoardCatalogSeedRepository(prisma).seedFromFile(
+      join(__dirname, 'seeds/missions.json'),
+    );
+    await new NotificationTemplateSeedRepository(prisma).seedFromFile(
+      join(__dirname, 'seeds/notification-templates.json'),
+    );
+    await new CareBadgeSeedRepository(prisma).seedFromFile(
+      join(__dirname, 'seeds/badges.json'),
+    );
   } finally {
     await prisma.$disconnect();
   }

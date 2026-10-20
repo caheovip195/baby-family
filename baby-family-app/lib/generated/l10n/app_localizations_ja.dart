@@ -609,6 +609,26 @@ class AppLocalizationsJa extends AppLocalizations {
   String get memoriesAddMedia => '写真を追加';
 
   @override
+  String memUploadProgress(int done, int total) {
+    return 'アップロード中 $done/$total…';
+  }
+
+  @override
+  String get memUploadFailed => 'アップロードが完了していません';
+
+  @override
+  String get memUploadRetry => '再試行';
+
+  @override
+  String get memUploadCancel => 'キャンセル';
+
+  @override
+  String get memoriesSetCover => 'カバーにする';
+
+  @override
+  String get memoriesRemoveMedia => 'この写真を外す';
+
+  @override
   String get memoriesAddPerspective => 'あなたの視点を追加';
 
   @override
@@ -3979,6 +3999,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get memPhotoViewerTitle => '写真を見る';
 
   @override
+  String get memVideoPlay => '動画を再生';
+
+  @override
+  String get memVideoPause => '動画を一時停止';
+
+  @override
   String get memSearchTitle => '検索';
 
   @override
@@ -3986,6 +4012,23 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get recapWeekTitle => 'わが家の一週間';
+
+  @override
+  String recapWeekHeadline(int moments, int firsts) {
+    String _temp0 = intl.Intl.pluralLogic(
+      moments,
+      locale: localeName,
+      other: '$momentsつの思い出',
+      zero: '穏やかな一週間',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      firsts,
+      locale: localeName,
+      other: ' · はじめて$firsts回',
+      zero: '',
+    );
+    return '$_temp0$_temp1';
+  }
 
   @override
   String get calendarTitle => 'カレンダー';
@@ -4411,6 +4454,32 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get careSeriesSection => '繰り返しタスク';
+
+  @override
+  String get careSeriesDaily => '毎日';
+
+  @override
+  String careSeriesPausedUntil(String date) {
+    return '$dateまで一時停止';
+  }
+
+  @override
+  String get careSeriesPauseWeek => '1週間一時停止';
+
+  @override
+  String get careSeriesEnd => '繰り返しを終了';
+
+  @override
+  String get careSeriesEndConfirm => '今日以降の未完了の回はボードから外れます。完了した回は残ります。';
+
+  @override
+  String get careSeriesPaused => '1週間一時停止しました';
+
+  @override
+  String get careSeriesEnded => '繰り返しを終了しました';
+
+  @override
   String famPlanPaidSubtitle(String price, String date) {
     return '$price · $date に更新';
   }
@@ -4653,6 +4722,50 @@ class AppLocalizationsJa extends AppLocalizations {
   String get famDeleteFamilyHint => '慎重な確認が必要 · 30日以内なら復元可';
 
   @override
+  String famDelBody(int days) {
+    return 'パパとママの両方の同意が必要です。同意後$days日間は取り消せます。親族はすぐに閲覧できなくなります。期限後、家族の思い出・写真・手紙・履歴はすべて削除されます。';
+  }
+
+  @override
+  String get famDelExportHint => '先にデータをダウンロードしてください：設定 → マイデータ。';
+
+  @override
+  String get famDelVerifyHint => '電話番号に届くコードで再認証してください。';
+
+  @override
+  String get famDelSendOtp => 'コードを送信';
+
+  @override
+  String get famDelOtpSent => 'コードを送信しました';
+
+  @override
+  String get famDelStart => '家族の削除をリクエスト';
+
+  @override
+  String get famDelAgree => '家族の削除に同意する';
+
+  @override
+  String get famDelWaitingPartner => 'パートナーの同意を待っています。いつでも取り消せます。';
+
+  @override
+  String get famDelPartnerAsked =>
+      'パートナーが家族の削除をリクエストしました。再認証して同意するか、取り消してください。';
+
+  @override
+  String famDelScheduled(String date) {
+    return '家族は$dateに削除されます。それまでは閲覧とダウンロードのみ可能です。';
+  }
+
+  @override
+  String get famDelCancel => '削除リクエストを取り消す';
+
+  @override
+  String get famDelCancelled => '削除リクエストを取り消しました';
+
+  @override
+  String get famDelRequested => '削除リクエストを更新しました';
+
+  @override
   String get setProfileChangeAvatar => 'プロフィール写真を変更';
 
   @override
@@ -4680,6 +4793,26 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get setUnlink => '連携解除';
+
+  @override
+  String get phoneChangeTitle => '電話番号を変更';
+
+  @override
+  String get phoneChangeReauthHint => 'まず、現在の番号に届くコードで再認証してください。';
+
+  @override
+  String get phoneChangeNewHint => '新しい電話番号を入力してください。確認コードを送信します。';
+
+  @override
+  String phoneChangeCodeSent(String phone) {
+    return '$phone にコードを送信しました';
+  }
+
+  @override
+  String get phoneChangeDone => '電話番号を変更しました。他の端末はログアウトされました。';
+
+  @override
+  String get setChangePhone => '変更';
 
   @override
   String get setLink => '連携';
@@ -5130,6 +5263,60 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get setSendRequestHint => '問題を説明し、必要ならスクリーンショットを添付';
+
+  @override
+  String get supportTitle => 'サポートに問い合わせ';
+
+  @override
+  String get supportHint => 'ここに入力した内容だけがサポートに送られます。パスワードやOTPは書かないでください。';
+
+  @override
+  String get supportCategoryLabel => '内容';
+
+  @override
+  String supportCategory(String category) {
+    String _temp0 = intl.Intl.selectLogic(category, {
+      'ACCOUNT': 'アカウント',
+      'INVITATION': '招待',
+      'MEDIA': '写真・動画',
+      'BILLING': 'プラン・お支払い',
+      'PRIVACY': 'プライバシー',
+      'other': 'その他',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get supportSubject => '件名';
+
+  @override
+  String get supportBody => '問題の内容';
+
+  @override
+  String get supportSend => '送信';
+
+  @override
+  String supportSent(String code) {
+    return 'お問い合わせ $code を送信しました';
+  }
+
+  @override
+  String get supportMine => '送信したお問い合わせ';
+
+  @override
+  String get supportEmpty => 'まだお問い合わせはありません。';
+
+  @override
+  String supportStatus(String status) {
+    String _temp0 = intl.Intl.selectLogic(status, {
+      'OPEN': '受付済み',
+      'IN_PROGRESS': '対応中',
+      'WAITING_USER': '返信待ち',
+      'RESOLVED': '解決済み',
+      'other': '終了',
+    });
+    return '$_temp0';
+  }
 
   @override
   String get setMyReports => '自分の報告';
@@ -5605,6 +5792,20 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get usThanksReact => 'ハートを送る';
+
+  @override
+  String usThanksShareAsk(String name) {
+    return '$nameさんがこの「ありがとう」を家族の思い出として共有したいそうです';
+  }
+
+  @override
+  String get usThanksShareApprove => '家族に共有';
+
+  @override
+  String get usThanksShareKeep => 'ふたりだけにする';
+
+  @override
+  String get usThanksShareFailed => '送信できませんでした。もう一度お試しください';
 
   @override
   String get usThanksWallEmpty => '今月のありがとうはまだありません';
@@ -8045,4 +8246,188 @@ class AppLocalizationsJa extends AppLocalizations {
   String memPendingNotify(String name, int count, String child) {
     return '$nameが$childの写真を$count枚投稿しました。承認をお待ちしています';
   }
+
+  @override
+  String get authProviderUnavailable =>
+      'このバージョンではApple/Googleでのログインはまだ使えません。電話番号をご利用ください。';
+
+  @override
+  String onboardingPartnerApproveTitle(String callName) {
+    return '$callNameさんが家族に参加したいそうです';
+  }
+
+  @override
+  String onboardingPartnerApproveBody(int days) {
+    return '本当にパートナーか確認してください。承認すると、$days日間の無料トライアルが始まります。';
+  }
+
+  @override
+  String get onboardingPartnerApprove => '承認する';
+
+  @override
+  String get onboardingPartnerReject => '違います';
+
+  @override
+  String get errorOtpInvalid => 'コードが正しくないか、期限切れです。もう一度お試しください。';
+
+  @override
+  String get errorRateLimited => '操作が早すぎます。少し待ってからもう一度お試しください。';
+
+  @override
+  String get errorPhoneNotSupported => 'この電話番号はまだサポートされていません。';
+
+  @override
+  String get errorInviteUnavailable => '招待の期限が切れたか、すでに使われています。もう一度送ってもらってください。';
+
+  @override
+  String get errorAlreadyInFamily => 'すでに別の家族の親になっているため参加できません。';
+
+  @override
+  String get errorServiceUnavailable => 'サーバーが混み合っています。数分後にもう一度お試しください。';
+
+  @override
+  String get memEditTitle => '思い出を編集';
+
+  @override
+  String get memEditSaved => '変更を保存しました';
+
+  @override
+  String get memEditAuthorOnlyHint => 'キャプションと日付は投稿者だけが変更できます。子どもと公開範囲は変更できます。';
+
+  @override
+  String get memEditMediaHint => '編集中はまだ写真を追加・削除できません。';
+
+  @override
+  String get errorVersionConflict => 'この思い出は別の場所で更新されました。確認してからもう一度保存してください。';
+
+  @override
+  String get errorMemoryNotEditable => '思い出のこの部分は変更できません。';
+
+  @override
+  String get errorRequestOpenLimit => '未完了のお願いが5件あります。1件終わってから送ってください。';
+
+  @override
+  String get errorRequestResendBlocked => 'このお願いには「今日は無理」と返事がありました。後でもう一度どうぞ。';
+
+  @override
+  String get errorRequestChanged => 'このお願いは更新されました。最新の状態を確認してください。';
+
+  @override
+  String get notiSomeone => '家族のメンバー';
+
+  @override
+  String notiMemoryPublished(String name) {
+    return '$nameさんが新しい思い出を追加しました';
+  }
+
+  @override
+  String notiCommentCreated(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '思い出に新しいコメントが$count件あります',
+      one: '$nameさんが思い出にコメントしました',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notiReactionChanged(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '思い出に新しいリアクションが$count件あります',
+      one: '$nameさんが思い出にリアクションしました',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notiRequestCreated(String name) {
+    return '$nameさんからお願いが届きました';
+  }
+
+  @override
+  String notiRequestAccepted(String name) {
+    return '$nameさんがお願いを引き受けました';
+  }
+
+  @override
+  String notiRequestDone(String name) {
+    return '$nameさんがお願いを終えました 💛';
+  }
+
+  @override
+  String notiRequestDeclined(String name) {
+    return '$nameさんは今日はお願いに応えられないそうです';
+  }
+
+  @override
+  String notiRequestAcknowledged(String name) {
+    return '$nameさんがお願いを確認しました';
+  }
+
+  @override
+  String notiCheckinShared(String name) {
+    return '$nameさんが今の気持ちを共有しました';
+  }
+
+  @override
+  String get notiAppreciationCreated => 'ありがとうが届きました ❤️';
+
+  @override
+  String get notiGeneric => '新しいお知らせがあります';
+
+  @override
+  String get heartsReasonMission => '家族のための小さなこと';
+
+  @override
+  String get heartsReasonRequest => 'パートナーのお願いを手伝った';
+
+  @override
+  String get heartsReasonOther => 'あなたのハート';
+
+  @override
+  String setDelOtpSent(String phone) {
+    return '$phone に確認コードを送信しました';
+  }
+
+  @override
+  String get errorReauthRequired => '確認の有効期限が切れました。もう一度確認してください。';
+
+  @override
+  String get errorExportActive => 'エクスポートを準備中です。完了までお待ちください。';
+
+  @override
+  String get errorEventDateInvalid => '予定の日付が正しくありません。もう一度確認してください。';
+
+  @override
+  String calendarChildBirthday(String name, int count) {
+    return '$nameの$count歳の誕生日';
+  }
+
+  @override
+  String calendarChildMonthiversary(String name, int count) {
+    return '$nameが生後$countか月';
+  }
+
+  @override
+  String notiEventReminder(String title) {
+    return '予定のリマインダー：$title';
+  }
+
+  @override
+  String get notiEventReminderPrivate => 'もうすぐ予定があります';
+
+  @override
+  String get notiBadgeEarned => '家族が新しいバッジを獲得しました 🏅';
+
+  @override
+  String get memCommentsAllow => 'コメントを許可';
+
+  @override
+  String get memCommentsAllowHint => 'オフでもリアクションはできます';
+
+  @override
+  String get memCommentsOff => 'この思い出のコメントはオフです';
 }

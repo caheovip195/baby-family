@@ -3,7 +3,7 @@ FLUTTER := $(FVM) flutter
 DART := $(FVM) dart
 
 .PHONY: setup get clean force runner l10n w format analyze test check \
-	stg-run mock-run pro-run stg-apk pro-apk pro-aab stg-ipa pro-ipa icon
+	stg-run mock-run local-run pro-run stg-apk pro-apk pro-aab stg-ipa pro-ipa icon
 
 ## Cài đúng Flutter của project (.fvmrc) và tải package
 setup:
@@ -53,6 +53,11 @@ stg-run:
 
 mock-run:
 	$(FLUTTER) run --debug -t lib/main_dev.dart --flavor staging --dart-define=BABY_FAMILY_DEMO=active
+
+# Backend local (baby-backend Compose/host). Android emulator: API_URL=http://10.0.2.2:3000/api
+API_URL ?= http://localhost:3000/api
+local-run:
+	$(FLUTTER) run --debug -t lib/main_dev.dart --flavor staging --dart-define=BABY_FAMILY_API_URL=$(API_URL)
 
 pro-run:
 	$(FLUTTER) run --debug -t lib/main_pro.dart --flavor product

@@ -120,8 +120,8 @@ class _JournalEntryCard extends StatelessWidget {
                 const SizedBox(width: AppSpacing.s3),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(AppRadius.tile),
-                  child: Image.asset(
-                    entry.photoAsset!,
+                  child: Image(
+                    image: mediaImageProvider(entry.photoAsset!),
                     width: 64,
                     height: 64,
                     fit: BoxFit.cover,

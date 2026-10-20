@@ -36,6 +36,41 @@ const environmentSchema = z.object({
   ),
   AUTH_JWT_ISSUER: z.string().min(1).default('baby-family'),
   AUTH_JWT_AUDIENCE: z.string().min(1).default('baby-family-app'),
+  // Token issuance (spec §5.1): ES256 PKCS#8 private key. Absent → sign-in endpoints fail closed (503).
+  AUTH_JWT_PRIVATE_KEY: optional(z.string().min(1)),
+  // HMAC pepper for phone/OTP/invite-code/identity hashes (spec §5.3, §6.5). Required to issue tokens.
+  AUTH_SECRET_PEPPER: optional(z.string().min(32)),
+  // AES-256-GCM root key (base64, 32 bytes) for Papa & Mama check-in notes (spec §7.16.1).
+  // Absent → creating/reading a note fails closed (503 CHECKIN_ENCRYPTION_UNAVAILABLE).
+  COUPLE_CHECKIN_ENCRYPTION_KEY: optional(
+    z.string().refine((value) => Buffer.from(value, 'base64').length === 32, {
+      message: 'must be 32 bytes encoded as base64',
+    }),
+  ),
+  // AES-256-GCM key (base64, 32 bytes) for support ticket content. Absent → support
+  // endpoints that store/read content fail closed (503 SUPPORT_ENCRYPTION_UNAVAILABLE).
+  SUPPORT_ENCRYPTION_KEY: optional(
+    z.string().refine((value) => Buffer.from(value, 'base64').length === 32, {
+      message: 'must be 32 bytes encoded as base64',
+    }),
+  ),
+  // OTP delivery: `mail` writes the code to a local mailbox (Mailpit) and is rejected in production.
+  AUTH_OTP_DELIVERY: z.enum(['disabled', 'mail']).default('disabled'),
+  AUTH_OTP_MAIL_TO: z.string().min(3).default('otp-inbox@babyfamily.local'),
+  // Explicit opt-out for the local Compose stack, which runs a production build.
+  AUTH_OTP_ALLOW_MAIL_IN_PRODUCTION: booleanFlag(false),
+  // Country calling codes accepted for OTP (anti SMS-pumping, spec §5.3), comma separated.
+  AUTH_OTP_ALLOWED_COUNTRY_CODES: z
+    .string()
+    .default('84')
+    .transform((value) =>
+      value
+        .split(',')
+        .map((code) => code.trim())
+        .filter(Boolean),
+    )
+    .pipe(z.array(z.string().regex(/^[1-9][0-9]{0,2}$/)).min(1)),
+  INVITE_LINK_BASE_URL: z.url().default('https://babyfamily.vn/i/'),
   CORS_ORIGINS: z
     .string()
     .default('http://localhost:3000')
@@ -84,6 +119,10 @@ const environmentSchema = z.object({
   SMTP_ALLOW_INSECURE: booleanFlag(false),
   SMTP_USER: optional(z.string().min(1)),
   SMTP_PASSWORD: optional(z.string().min(1)),
+  // Optional HTTP v1 push credentials. Absence selects a disabled provider.
+  FCM_PROJECT_ID: optional(z.string().regex(/^[a-z][a-z0-9-]{4,62}$/)),
+  FCM_SERVICE_ACCOUNT_JSON: optional(z.string().min(1)),
+  FCM_SERVICE_ACCOUNT_FILE: optional(z.string().min(1)),
   // Background worker (src/workers). Media tools must be on PATH or configured here.
   WORKER_ID: optional(z.string().min(1).max(100)),
   MEDIA_WORKER_CONCURRENCY: z.coerce.number().int().min(1).max(16).default(2),
@@ -125,6 +164,20 @@ function crossFieldIssues(env: ParsedEnvironment): string[] {
   ) {
     issues.push(
       'SMTP_SECURE/SMTP_REQUIRE_TLS: production SMTP must use TLS (or SMTP_ALLOW_INSECURE=true for a local sink)',
+    );
+  }
+  if (env.AUTH_JWT_PRIVATE_KEY && !env.AUTH_SECRET_PEPPER) {
+    issues.push(
+      'AUTH_SECRET_PEPPER: required when AUTH_JWT_PRIVATE_KEY is set',
+    );
+  }
+  if (
+    env.NODE_ENV === 'production' &&
+    env.AUTH_OTP_DELIVERY === 'mail' &&
+    !env.AUTH_OTP_ALLOW_MAIL_IN_PRODUCTION
+  ) {
+    issues.push(
+      'AUTH_OTP_DELIVERY: the local mail sink must not deliver OTP in production (AUTH_OTP_ALLOW_MAIL_IN_PRODUCTION=true only for the local stack)',
     );
   }
   return issues;

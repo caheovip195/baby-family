@@ -43,6 +43,7 @@ class _CaptionBox extends StatelessWidget {
           if (titleHint != null)
             TextField(
               controller: controller.title,
+              readOnly: !controller.canEditContent,
               style: AppTypography.adapt(context, AppTypography.title17),
               decoration: _decoration(
                 titleHint,
@@ -56,12 +57,13 @@ class _CaptionBox extends StatelessWidget {
             ),
           TextField(
             controller: controller.caption,
+            readOnly: !controller.canEditContent,
             minLines: long ? 6 : 2,
             maxLines: null,
             style: text,
             decoration: _decoration(hint, hintStyle),
           ),
-          if (kind == MemoryKind.photo) ...[
+          if (kind == MemoryKind.photo && !controller.isEditing) ...[
             const SizedBox(height: AppSpacing.itemGap),
             Container(
               padding: const EdgeInsets.symmetric(

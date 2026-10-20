@@ -1,6 +1,9 @@
 import 'package:baby_family/data/repository/base.dart';
 
 abstract class IMemoryRepository extends IBaseRepository {
+  /// Báo các màn đọc lại (dữ liệu server đổi mà kho trên máy không đổi).
+  void touch();
+
   List<JsonMap> memories(String familyId);
 
   JsonMap? memory(String id);
@@ -8,6 +11,9 @@ abstract class IMemoryRepository extends IBaseRepository {
   JsonMap addMemory(JsonMap memory);
 
   void updateMemory(String id, JsonMap patch);
+
+  /// Gỡ bản sao trên máy của ký ức không còn trên server (đã xoá/ẩn).
+  void removeMemory(String id);
 
   List<JsonMap> comments(String memoryId);
 

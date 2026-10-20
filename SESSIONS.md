@@ -464,13 +464,460 @@ Các mục 001–005 được **ghi bù ngày 2026-10-11** từ hội thoại hi
 <a id="bf-20261015-012"></a>
 ## BF-20261015-012 — Tiếp tục tính năng backend và nối API với mobile
 
-- Ngày làm: 2026-10-15 (Asia/Ho_Chi_Minh); entry tạo lúc 2026-10-15T21:30:00+07:00.
+- Ngày làm: 2026-10-15 → 2026-10-16 (Asia/Ho_Chi_Minh); entry tạo lúc 2026-10-15T21:30:00+07:00, hoàn thành khoảng 2026-10-16T05:00:00+07:00.
 - Yêu cầu: “Tiếp tục các tính năng tiếp theo ở cả backend và kết nối api với mobile đi.”
-- Liên quan: BF-20261015-003, BF-20261015-005 → 011.
-- Role: Chủ trì ORCHESTRATOR/ARCHITECT; BACKEND, MOBILE, INTEGRATION, SECURITY_PRIVACY, BA (gate onboarding/trial), TESTER/QUALITY; DATA_ANALYST impact note.
-- Trạng thái: Đang thực hiện.
-- Phân tích: (cập nhật khi xong)
-- Kết quả: (cập nhật khi xong)
-- Kiểm chứng: (cập nhật khi xong)
-- Còn lại: (cập nhật khi xong)
+- Liên quan: BF-20261015-003, BF-20261015-005 → 011; tiếp nối bởi BF-20261016-001.
+- Role: Chủ trì ORCHESTRATOR/ARCHITECT; BACKEND, MOBILE, INTEGRATION, SECURITY_PRIVACY, BA (BR-041/050…056, §6.5/§7.3), TESTER; QUALITY gồm tự review và review độc lập bằng Codex CLI (read-only); DATA_ANALYST impact note.
+- Trạng thái: Hoàn thành phạm vi đã chốt (đăng nhập + onboarding + kích hoạt/dùng thử, nối app).
+- Phân tích: Điểm chặn app là backend chưa phát token và chưa có luồng onboarding. Chọn OTP số điện thoại (Apple/Google cần credential Store), đúng §5/§6.5/§7.3/§11.3 và rate limit §21.3. App toàn mock nên dùng service server phản chiếu trạng thái vào kho cục bộ, bật bằng `BABY_FAMILY_API_URL`, để các màn khác không vỡ.
+- Kết quả:
+  - Backend: `AuthController` (`/auth/phone/otp|verify`, `/auth/refresh`, `/auth/logout`), `AuthTokenService` (ký ES256, HMAC pepper), `OtpSenderService` (Mailpit cho local), `AuthSessionService`/`AuthSessionRepository` (xoay vòng refresh, phát hiện dùng lại → thu hồi chuỗi có khoá từng dòng). `/me` mở rộng (vai trò onboarding, profileCompleted, families, awaitingApproval) + `PUT /me/onboarding-role`, `POST /me/devices`, `POST /me/consents` (`AccountRepository`). `FamilyOnboardingController` + `InviteController` + `OnboardingService`/`OnboardingRepository`: tạo/huỷ gia đình, lời mời bạn đời (7 ngày, 1 lần, 5/24h, mã/token chỉ lưu hash), resolve/accept/decline/approve/reject, kích hoạt trong một transaction (slot B, ACTIVE, couple space, trial 7 ngày từ `trial_policies` một lần mỗi người/identity, outbox), bootstrap. Envelope `{data}` toàn cục (§11.1). Env mới, compose, `.env.example`, `docs/api.md`.
+  - Mobile: `SessionRemoteServiceImp`, `IOnboardingRepository`, `IAuthRepository` mở rộng, 12 model `data/model/session/*`, endpoint `Api`, Retrofit, `BaseRespond`; ONB-WAIT poll 30 giây + hộp thoại xác nhận lần cuối; ONB-07 truyền lựa chọn xác nhận; INV-04 tại chỗ; báo lỗi theo `error.code` (`runWithErrorSnackBar`); 11 key l10n × 4 ngôn ngữ; `make local-run`.
+  - Sửa sau review Codex (6 điểm): khoá dòng khi thu hồi chuỗi phiên; chặn vượt 5 lần thử OTP song song; app lấy entitlement thật từ bootstrap (không tự cấp trial); áp dụng lời mời chờ ngay sau OTP với tài khoản đã có hồ sơ; giữ trial còn hạn khi mời bạn đời mới (PARTNER_LEFT); thống nhất thứ tự khoá family → invite.
+- Kiểm chứng: Backend `npm run check` EXIT=0 (unit 154/154, e2e 35/35, compiled, generator, migration guard); `npm run test:integration` 36/36 trên DB `baby_family_test` + Valkey + Mailpit (gồm `auth-onboarding.spec.ts` 3 kịch bản). App `make check` 687/687 (gồm `session_remote_test.dart` 8 test), `flutter analyze` sạch, build iOS simulator. End-to-end thật trên iPhone Air simulator + backend Docker: OTP qua Mailpit → AUTH-04 → ONB-03 → ONB-06 → ONB-07 (mã server) → ONB-WAIT → Parent B nhận qua API → hộp thoại xác nhận → ONB-ACT “đến hết 23/10/2026”; DB xác nhận ACTIVE, 2 Parent, couple space, TRIAL, 2 trial_consumptions, outbox FamilyCreated/PartnerLinked/TrialStarted; mở lại app khôi phục đúng trạng thái. Container api/worker build lại, `/health/ready` up.
+- Còn lại: Apple/Google sign-in; re-auth, `/me/sessions`; lời mời người thân (Circle); ONB-04/05 tạo bé/thai kỳ vẫn ghi mock (API children/pregnancies có sẵn); message lỗi backend chưa i18n; mất mạng khi mở app → về Welcome; kịch bản đồng thời (refresh song song, deadlock) mới sửa theo phân tích, chưa có test tải; chưa commit.
 - Product history: [BF-20261015-012](PRODUCT_ANALYTICS_HISTORY.md#bf-20261015-012).
+
+<a id="bf-20261016-001"></a>
+## BF-20261016-001 — Tự lập task tiếp, làm cả backend và app (không hỏi lại)
+
+- Ngày làm: 2026-10-16 (Asia/Ho_Chi_Minh); gửi lúc đang làm BF-20261015-012, hoàn thành khoảng 2026-10-16T05:00:00+07:00.
+- Yêu cầu: “Desgin đã có sẵn rùi tiếp tục với tự vạch ra task làm tiếp đi bao gồm cả backend và fontend, đừng hỏi lại.”
+- Liên quan: BF-20261015-012.
+- Role: Chủ trì ORCHESTRATOR/PM (tự lập kế hoạch); BACKEND, MOBILE, INTEGRATION, TESTER/QUALITY.
+- Trạng thái: Hoàn thành (thực hiện chung phạm vi BF-20261015-012, không dừng hỏi).
+- Phân tích: “Frontend” hiểu là app Flutter theo design `desgin/`; `baby-admin/` rỗng nên ngoài phạm vi. Kế hoạch tự lập: hoàn tất check backend → cấu hình khoá local → nối app (flavor/URL, repository, service, UI ONB-WAIT/INV-04, lỗi) → test → chạy thật simulator → review độc lập Codex → sửa → kiểm lại.
+- Kết quả: Xem BF-20261015-012. Đã dùng Codex CLI read-only cho review độc lập theo BF-20261015-007.
+- Kiểm chứng: Như BF-20261015-012.
+- Còn lại: Đợt sau đề xuất: nối ONB-04/05 + Bé/thai kỳ với API, Ký ức + upload media trên app, Apple/Google sign-in, lời mời người thân.
+- Product history: [BF-20261016-001](PRODUCT_ANALYTICS_HISTORY.md#bf-20261016-001).
+
+<a id="bf-20261016-002"></a>
+## BF-20261016-002 — Tích hợp đợt 2: Bé/Thai kỳ và Ký ức có ảnh qua API
+
+- Ngày làm: 2026-10-16T06:09:59+07:00 → 2026-10-16T06:56:02+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: (Giao từ session điều phối) Nối ONB-04/05 và màn Bé/Thai kỳ với `POST/PATCH /api/v1/families/:fid/children|pregnancies`, bootstrap.subjects là nguồn sự thật; backend thêm API tạo/xem ký ức theo §11.5/§6.3 (memory + subjects + assets một transaction, outbox) dùng upload media có sẵn; app nối MEM-04 và feed. Xong khi check/test đạt và chạy thật trên iOS simulator: tạo bé, đăng ký ức có ảnh, thấy ảnh trong feed.
+- Liên quan: BF-20261015-012, BF-20261016-001.
+- Role: Chủ trì ORCHESTRATOR/ARCHITECT; BACKEND, MOBILE, INTEGRATION, DBA (không đổi schema), SECURITY_PRIVACY, TESTER, QUALITY (tự review + review độc lập bằng Codex CLI read-only). Không dùng sub-agent.
+- Trạng thái: Hoàn thành phạm vi đã giao; còn việc tiếp theo ghi bên dưới.
+- Phân tích: Schema đã đủ bảng `memories/memory_children/memory_assets` và outbox nên không cần migration. Service `IMemoryService` sinh tự động là scaffolding (cấm sửa tay) → thêm bộ viết tay `MemoryContent*`. Ký ức có ảnh chưa xử lý xong phải ở `PROCESSING` và được worker xuất bản khi mọi asset `READY`; khoá hàng asset khi tạo để tuần tự với commit của worker. App vẫn là kho mock trên máy nên dùng cùng mô hình phản chiếu như SessionRemoteServiceImp; ảnh trong app trước đây chỉ là `Image.asset` nên cần một helper chung hiển thị URL ký/file/asset.
+- Kết quả:
+  - Backend: `POST /memories` (Idempotency-Key, kind MOMENT/DIARY/KEEPSAKE/QUOTE, kiểm bé/thai kỳ cùng family, ảnh của chính actor, `photosPerMemory`, FAMILY→PARENTS khi không có `circle.enabled`, `age_month` theo timezone family, outbox `memory.created`/`memory.published`), `GET /memories/:id`, `GET /families/:fid/feed` (cursor, bộ lọc Parent §6.3, URL ký qua `IMediaService.signViewUrls`); worker xuất bản ký ức trong transaction commit `READY`; `bootstrap.subjects` thêm name/nickname/gender/expectedCount/seqNo. File: `src/controllers/memory.controller.ts`, `src/services/memory-content.service.ts`, `src/repositories/memory-content.repository.ts`, `src/models/memory-view.model.ts`, `src/dto/memory/*`, `src/config/memory-policy.ts`, `media.repository.ts` (publishReadyMemories), `docs/api.md`.
+  - App: `ChildRemoteServiceImp`, `MemoryRemoteServiceImp`, `SessionRemoteServiceImp._mirrorSubjects`, repository `ISubjectRepository`/`IMediaRepository`/`IMemoryFeedRepository`, `StorageDio`, helper `mediaImageProvider`, MEM-04 dùng photo picker hệ thống, lỗi lưu hiện snackbar, tắt nháp mẫu ở chế độ server. Chi tiết ở `baby-family-app/SESSION.md`.
+  - Sửa sau review Codex: thư niêm phong chỉ trả id/kind/unlockAt/tác giả; replay key của ký ức đã vào thùng rác → 404, không tạo lại; app giữ Idempotency-Key khi bấm Lưu lại sau lỗi; bỏ kết quả feed nếu phiên/gia đình đổi trong lúc chờ.
+- Kiểm chứng: Backend `npm run check` EXIT=0 (unit 154/154, e2e 35/35, compiled, generator, migration guard); `npm run test:integration` 41/41 (gồm `memory-api.spec.ts` 5 kịch bản: xuất bản ngay + replay + 409 key, validation/quota, PROCESSING→worker→PUBLISHED + ẩn với bạn đời, cursor/lọc bé, replay ký ức đã xoá). App `make check` 694 pass (gồm `subject_memory_remote_test.dart` 6, `session_remote_test.dart` 9). Chạy thật iPhone Air simulator + backend Docker (api/worker build lại): tạo bé “May” ở CHD → DB `children` có bản ghi FEMALE/color 1; khởi động lại app vẫn thấy May (từ bootstrap); MEM-05 chọn ảnh qua photo picker → DB ký ức `PUBLISHED`/`PARENTS`, asset `READY` với `t320,m1080,l2048,orig`, outbox `media.asset_uploaded → memory.created → memory.published`; feed “Mới trong nhà” hiện ảnh; khởi động lại app → log API `/me`, `bootstrap`, một lần `feed`, ảnh vẫn hiện từ URL ký. Lần chạy simulator là bản trước 4 sửa sau review (đã có test), container đã build lại sau đó.
+- Còn lại: Review Codex chưa xử lý: (2) ký ức bị xoá/ẩn phía server không tự gỡ khỏi kho trên máy; (3) dedup SHA-256 trả asset của bạn đời → `MEMORY_ASSET_INVALID`; (6) GET ký ức/ký URL bị chặn khi `EXPIRED` (đặc tả cho đọc để tải về); (7) quota `memoryCount` chưa kiểm; (8) app chỉ đồng bộ trang feed đầu (50); (10) chưa poll ký ức `PROCESSING`/URL sắp hết hạn khi đứng yên màn hình. Ngoài ra: lưu trữ/xoá/sắp xếp bé chưa có API; ghi âm/thư/cột mốc/ảnh tháng/video chưa lên server; số liệu “Tuần này” và câu “Hồ sơ của  giữ nguyên” ở màn Thêm bé vẫn lấy từ dữ liệu mẫu; chưa commit.
+- Product history: [BF-20261016-002](PRODUCT_ANALYTICS_HISTORY.md#bf-20261016-002).
+
+<a id="bf-20261017-001"></a>
+## BF-20261017-001 — Xử lý 6 điểm review còn mở của BF-20261016-002
+
+- Ngày làm: 2026-10-17T00:49:54+07:00 (lần sửa file đầu tiên; trước đó đọc quy tắc/đặc tả/code) → 2026-10-17T01:02:49+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: (Giao từ session điều phối) Xử lý 6 điểm review Codex còn mở của BF-20261016-002: backend (1) dedup SHA-256 trả asset của bạn đời → `MEMORY_ASSET_INVALID`, (2) đọc ký ức/ký URL khi `EXPIRED` theo §6.5, (3) quota `memoryCount` nguyên tử; app (4) đồng bộ đủ trang feed, (5) gỡ ký ức đã xoá/ẩn phía server, (6) polling ký ức PROCESSING/URL sắp hết hạn có lifecycle. Xong khi `npm run check` + `npm run test:integration` + `make check` đạt, có test cho từng điểm, cập nhật `docs/api.md` và nhật ký. Không commit.
+- Liên quan: BF-20261016-002.
+- Role: Chủ trì ORCHESTRATOR; BACKEND, DBA (migration index), SECURITY_PRIVACY (ACL dedup, đọc khi hết hạn), MOBILE, TESTER, QUALITY (tự review — không có reviewer độc lập). Không dùng sub-agent.
+- Trạng thái: Hoàn thành.
+- Phân tích:
+  - (1) Index `uq_asset_dedup (family, purpose, private_owner, sha256)` buộc cả gia đình dùng chung một asset, nên chỉ đổi ACL ở `POST /memories` không đủ (ảnh trong ký ức riêng tư của bạn đời vẫn bị chặn) và dedup cũ còn cho phép "biết hash = lấy được asset" của người kia. Chọn: dedup theo người tải (migration DDL đổi index thêm `uploader_user_id`), chỉ dùng lại bản `READY` của Parent kia khi người tải đã xem được nó theo ACL §6.3; `POST /memories` nhận asset của mình hoặc asset `READY` của bạn đời mà actor đã thấy. Điều kiện ACL asset tách thành một fragment SQL dùng chung cho media và memory repository.
+  - (2) Thêm mode `download` trong `ApplicationAccessService`: giữ kiểm membership/family/license/BLOCKED, cho entitlement `TRIAL|PAID|EXPIRED` dù hết hạn. Chỉ `GET /memories/:id` + URL ký của nó dùng mode này (allowlist §6.5); feed/tạo/`POST /media/urls` vẫn 402.
+  - (3) `family_usage.memory_count` luôn được cộng trong transaction tạo ký ức (khoá hàng usage trước asset, cùng thứ tự với luồng media); chỉ chặn khi plan có `quotas.memoryCount`. Thiếu key = không giới hạn (catalog seed hiện không đặt key), sai kiểu = fail-closed.
+  - (4–6) App: trang đầu mỗi 10 giây; đủ mọi trang theo `nextCursor` (tối đa 200 trang, dừng nếu cursor lặp) mỗi 2 phút hoặc khi URL ký sắp hết hạn; chỉ đối soát (gỡ bản có `remoteStatus` không còn trên server) khi tải đủ trang, giữ ký ức chỉ có trên máy và ký ức vừa tạo trong lúc đồng bộ. `IMemoryService.refreshDelay()` + `memoriesProvider` hẹn `Timer` đọc lại (huỷ khi dispose); dừng khi không còn PROCESSING (tối đa 10 phút/ký ức) và chờ tới lúc URL sớm hết hạn nhất cần ký lại. Mốc thời gian đồng bộ chuyển sang `AppClock` để test được.
+- Kết quả:
+  - Backend: `src/repositories/parent-asset-visibility.sql.ts` (mới), `media.repository.ts` (dedup theo người tải + `findSharedCopy`, bỏ nhánh 409 `UPLOAD_IN_PROGRESS`), `memory-content.repository.ts` (`consumeMemoryQuota`, khoá asset cho phép bản dùng chung, context `sharedWithActor`), `memory-content.service.ts`, `application-access.service.ts` + interface (mode `download`), `media.service.ts`/interface (`signViewUrls(..., access)`), `models/memory-view.model.ts`, `config/memory-policy.ts`, `prisma/schema.prisma` + migration `20261017090000_asset_dedup_per_uploader` (chỉ DROP/CREATE INDEX), `docs/api.md`.
+  - App: `data/service_imp/memory_remote.dart`, `data/service/memory.dart` + `service_imp/memory.dart` (`refreshDelay`), `data/repository(_imp)/memory.dart` (`removeMemory`), `data/provider/memory.dart` (hẹn giờ có lifecycle), `utils/constants/values.dart` (`kValueRemoteFeedFullSyncInterval`, `kValueRemoteFeedMaxPages`, `kValueRemoteProcessingPollWindow`).
+  - Test: integration `memory-api.spec.ts` +3 (dùng lại bản của bạn đời đã thấy / không lộ bản riêng tư; đọc + URL ký khi EXPIRED, feed/tạo/`media/urls` vẫn chặn; quota với 2 request đồng thời chỉ 1 thắng, thiếu quota = không giới hạn), `media-api.spec.ts` sửa kịch bản dedup cũ (khẳng định hành vi lỗi) và multipart; unit `application-access.spec.ts` +1; app `subject_memory_remote_test.dart` +5 (phân trang, đối soát/gián đoạn, tạo trong lúc đồng bộ, `refreshDelay`, provider tự đọc lại rồi dừng).
+- Kiểm chứng: Backend `npm run check` EXIT=0 (migration guard 3 migration, unit 155/155, e2e 35/35, compiled/generator); `prisma migrate deploy` lên DB `baby_family_test`; `npm run test:integration` 44/44 (chạy lại sau format). App `make check` EXIT=0 (l10n, format, analyze sạch, 699 test pass). Chưa chạy lại trên simulator; DB dev `baby_family` và container api/worker chưa áp migration/build lại.
+- Còn lại: Áp migration `20261017090000_asset_dedup_per_uploader` cho DB dev rồi build lại api/worker trước khi chạy app thật; `memory_count` chưa trừ khi xoá (chưa có API xoá); `download-urls`/`media-grid` cho gói hết hạn chưa có; dedup cho `purpose=JOURNAL` (private owner) chưa được xử lý riêng (ngoài phạm vi). Cuối `SESSIONS.md` trước entry này có vài dòng lặp lại từ entry BF-20261016-002 (đã có sẵn, không sửa). Chưa commit.
+- Product history: [BF-20261017-001](PRODUCT_ANALYTICS_HISTORY.md#bf-20261017-001).
+
+<a id="bf-20261018-001"></a>
+## BF-20261018-001 — Checklist toàn bộ tính năng và tự bắt đầu làm task
+
+- Ngày làm: 2026-10-18T07:25:28+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Hãy liệt kê tất cả các tính năng cần làm vào 1 file document sau đó nếu làm được xong tính năng nào thì tick vào đã xong tính năng đó cho t. Tự start với các task cho tôi nha."
+- Liên quan: BF-20261017-001.
+- Role: Chủ trì ORCHESTRATOR/PM (lập checklist); BA (đối chiếu đặc tả §7, §9, §16), BACKEND, MOBILE, SECURITY_PRIVACY, TESTER, QUALITY (tự review, không reviewer độc lập). Không dùng sub-agent: mọi thay đổi chưa commit nên không chia worktree song song được.
+- Trạng thái: Hoàn thành (checklist + task đầu tiên: thùng rác ký ức). Kết thúc 2026-10-18T07:41:40+07:00.
+- Phân tích: Gần như mọi màn MVP đã có UI mock; phần “xong thật” = có API backend + app nối API + kiểm chứng. Checklist [docs/03_CHECKLIST_TINH_NANG.md](docs/03_CHECKLIST_TINH_NANG.md) liệt kê 159 dòng theo module đặc tả, mỗi dòng có trạng thái UI/BE/App và mã yêu cầu khi xong. Task đầu tiên chọn theo vòng lặp Ký ức: MEM-09 (sửa) chưa có màn trong app nên làm trước xoá → thùng rác → khôi phục/xoá vĩnh viễn. Bảng `memories` có CHECK `TRASHED/PURGED ⇔ deleted_at` (soft delete bắt đầu từ thùng rác) nên thùng rác đặt `deleted_at`; danh sách/khôi phục đọc riêng theo `status = TRASHED` và `purge_after`.
+- Kết quả:
+  - Checklist mới: `docs/03_CHECKLIST_TINH_NANG.md` (28/159 đã tick sau task này).
+  - Backend: `DELETE /memories/:id`, `GET /families/:fid/trash`, `POST /memories/:id/restore`, `DELETE /memories/:id/purge` (`memory.controller.ts`, `memory-content.service.ts`, `memory-content.repository.ts` + interface, DTO `memory-trash-query.dto.ts`, response thêm `trashedAt/trashedBy/purgeAfter`); job `memory.purge-trash` mỗi giờ (`MemoryMaintenanceService` mới + interface, `config/jobs.ts`, `maintenance.worker.ts`, `worker.module.ts`); luật `DETACHED` trong `media.repository.ts`/`media-maintenance.service.ts`; ACL ảnh thùng rác trong `parent-asset-visibility.sql.ts`; `memory_count` trừ khi xoá, kiểm/cộng lại khi khôi phục; `docs/api.md`.
+  - App: `MemoryRemoteServiceImp` (`moveToTrash`, `trash`, `restoreMemory`, `deleteForever` qua server; ký ức chỉ có trên máy giữ luồng cũ), `IMemoryFeedRepository` + imp, Retrofit `AppClient`, endpoint `Api`, `MemoryRecord` thêm `trashedAt/trashedBy/purgeAfter` (đã `make runner`).
+  - Test: integration `memory-api.spec.ts` +3 (xoá/idempotent/danh sách/khôi phục/outbox; không lộ hay xoá được ký ức riêng tư của bạn đời; xoá vĩnh viễn, hết hạn 30 ngày + job, retire asset); `media-api.spec.ts` đổi kỳ vọng: ảnh ký ức trong thùng rác vẫn ký được tới `purge_after` (trước đây test khẳng định 404); app `subject_memory_remote_test.dart` +1.
+- Kiểm chứng: Backend `npm run check` EXIT=0 (unit 155/155, e2e 35/35); `npm run test:integration` 47/47 hai lần liên tiếp. Một lần chạy trước đó có 2–3 fail ở `supporting-services` (Mailpit) và `auth-onboarding` khi tôi chạy chồng hai tiến trình test cùng lúc; chạy riêng và chạy lại đều đạt, không sửa gì ở hai bộ đó. App `make check` EXIT=0 (700 test). Chưa chạy trên simulator; container api/worker chưa build lại.
+- Còn lại: MEM-09 sửa ký ức (màn + `PATCH` If-Match) là task kế tiếp theo checklist; DB dev vẫn cần migration `20261017090000_asset_dedup_per_uploader` + build lại api/worker trước khi chạy app thật. Chưa commit.
+- Product history: [BF-20261018-001](PRODUCT_ANALYTICS_HISTORY.md#bf-20261018-001).
+
+<a id="bf-20261018-002"></a>
+## BF-20261018-002 — MEM-09 sửa ký ức (màn sửa + PATCH /memories/:id If-Match)
+
+- Ngày làm: 2026-10-18T07:49:33+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp task kế tiếp trong checklist: MEM-09 sửa ký ức (màn sửa + PATCH /memories/:id If-Match), xong thì tick checklist."
+- Liên quan: BF-20261018-001.
+- Role: Chủ trì ORCHESTRATOR; BACKEND, MOBILE, SECURITY_PRIVACY (quyền sửa §6.2), DESIGN (dùng lại form MEM-05), TESTER, QUALITY (tự review, không reviewer độc lập). Không dùng sub-agent.
+- Trạng thái: Hoàn thành. Kết thúc 2026-10-18T08:02:17+07:00.
+- Phân tích: App chưa có màn MEM-09; đặc tả “giống MEM-05, điền sẵn; trường không có quyền bị khoá” nên dùng lại composer MEM-05 với query `memoryId` thay vì màn mới. Quyền theo §6.2 `canEditMemory`: tác giả sửa mọi trường, Parent còn lại chỉ bé/người xem (không đặt “Chỉ mình tôi”). Khoá lạc quan bằng `If-Match: version` (tài liệu kỹ thuật); §13.3 “người lưu sau thắng ở từng trường” → app chỉ gửi trường đã đổi. `memory_children` có PK `(memory_id, child_id)` nên gắn lại bé = khôi phục hàng đã soft delete. Đổi ảnh khi sửa để task sau (backend chưa có, UI ẩn ô “+”).
+- Kết quả:
+  - Backend: `PATCH /memories/:id` (`memory.controller.ts`, decorator mới `common/http/if-match.decorator.ts`, `dto/memory/update-memory.dto.ts`, `MemoryContentService.update`, `MemoryContentRepository.update` + interface `UpdateMemoryCommand`); 428/400/412 `VERSION_CONFLICT`, 403 `MEMORY_FIELD_NOT_EDITABLE`, 422 `MEMORY_VISIBILITY_INVALID`; outbox `memory.updated`; `docs/api.md`.
+  - App: `IMemoryService.updateMemory` (mock + `MemoryRemoteServiceImp`: lưu `remoteVersion`, chỉ gửi trường đổi, 412 → tải bản mới vào kho rồi báo lỗi); Retrofit `updateMemory` (`If-Match`), `IMemoryFeedRepository.updateMemory`; composer chế độ sửa (`memoryId`, tiêu đề “Sửa ký ức”, khoá chú thích/ngày với người không phải tác giả + ghi chú, ẩn ô thêm ảnh/cột mốc/album/ghi âm khi sửa, không tạo nháp khi đóng); `showMemoryVisibilitySheet(options:)`; MEM-07 ⋯ “Sửa ký ức” (`canEdit`) rồi đọc lại chi tiết; `actionErrorMessage` cho `VERSION_CONFLICT`/`MEMORY_FIELD_NOT_EDITABLE`; 6 key l10n vi/en/ja/zh.
+  - Test: integration `memory-api.spec.ts` +2 (tác giả sửa + 428/400/412 + age_month + gắn lại bé + MEMORY_EMPTY/CHILD_NOT_IN_FAMILY + outbox; Parent còn lại chỉ đổi bé/người xem, không đặt PRIVATE, không thấy ký ức riêng tư); app `subject_memory_remote_test.dart` +1 (version, chỉ trường đổi, 412), `memories_circle_batch3_test.dart` +2 (tác giả sửa chú thích qua MEM-07 ⋯; người kia chỉ đổi bé, ô chú thích readOnly).
+- Kiểm chứng: Backend `npm run check` EXIT=0 (unit 155/155, e2e 35/35); `npm run test:integration` 49/49 (chạy tuần tự sau check). App `make runner` OK, `make check` EXIT=0 (703 test). Chưa chạy trên simulator; chưa build lại api/worker.
+- Còn lại: đổi ảnh khi sửa (dòng checklist mới), cảnh báo `dryRun` người thân mất quyền xem (khi có Circle); task kế tiếp theo checklist: bình luận + cảm xúc (MEM-10). Chưa commit.
+- Product history: [BF-20261018-002](PRODUCT_ANALYTICS_HISTORY.md#bf-20261018-002).
+
+<a id="bf-20261018-003"></a>
+## BF-20261018-003 — Bình luận + cảm xúc trên ký ức (MEM-10, §7.12)
+
+- Ngày làm: 2026-10-18T08:03:32+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp task kế tiếp trong checklist: bình luận + cảm xúc trên ký ức (MEM-10, §7.12), xong thì tick checklist."
+- Liên quan: BF-20261018-002.
+- Role: Chủ trì ORCHESTRATOR; BACKEND, MOBILE, SECURITY_PRIVACY (quyền xem §6.3, không lộ bình luận ký ức riêng tư), TESTER, QUALITY (tự review). Không dùng sub-agent cho phần này (US-02 giao Codex — xem BF-20261018-004).
+- Trạng thái: Hoàn thành. Kết thúc 2026-10-18T08:21:50+07:00.
+- Phân tích: Bảng `comments`/`reactions` đã có (không migration) nhưng không có trigger đếm → repository khoá hàng ký ức rồi cập nhật `comment_count`/`reaction_count` cùng transaction. Đặc tả 7.12: 5 cảm xúc, mỗi người 1 (đổi được); bình luận ≤ 1.000 ký tự, trả lời 1 cấp, sửa ≤ 15 phút, xoá của mình, Parent xoá mọi bình luận; tắt bình luận theo ký ức. App mock trước đây cộng dồn cảm xúc (sai đặc tả) → đổi sang 1 cảm xúc/người, chạm lại để bỏ.
+- Kết quả:
+  - Backend: `MemoryInteractionController` (`GET|POST /memories/:id/comments`, `PATCH|DELETE /comments/:id`, `PUT|DELETE /memories/:id/reaction`), `IMemoryInteractionService`/`MemoryInteractionService`, `IMemoryInteractionRepository`/`MemoryInteractionRepository`, DTO `create-comment`, `update-comment`, `set-reaction`, `comment-response`; response ký ức thêm `reactions` theo loại + `myReaction` (`MemoryView.reactionCounts/reactionOf`); `memory-policy.ts` thêm giới hạn bình luận; `docs/api.md`.
+  - App: model `CommentRecord`, `ReactionState`; `MemoryRecord` thêm `reactions/myReaction/commentsEnabled`; `Memory.myReaction`; Retrofit + `IMemoryFeedRepository` 6 hàm; `kValueReactionTypes` (emoji ↔ loại server); `MemoryRemoteServiceImp` react/comments/addComment/editComment/deleteComment qua server cho ký ức server; mock `react` 1 cảm xúc/người; số bình luận của ký ức server lấy từ server; MEM-07 tô cảm xúc theo `myReaction`.
+  - Test: integration `memory-api.spec.ts` +3 (luồng bình luận + 15 phút + Parent xoá kèm trả lời; ký ức tắt bình luận/riêng tư; cảm xúc 1/người với số đếm đúng); app `subject_memory_remote_test.dart` +2.
+- Kiểm chứng: Backend `npm run check` EXIT=0 (unit 155/155, e2e 35/35); `memory-api.spec.ts` 16/16. Full `test:integration` có 3 fail ở `auth-onboarding` do môi trường: `localhost` hiện phân giải `::1` còn Mailpit chỉ nghe `127.0.0.1` (nodemailer ECONNREFUSED ::1:1025); với `TEST_SMTP_HOST=127.0.0.1` hai bộ auth-onboarding + supporting-services 9/9. App `make check` EXIT=0 (705 test). Chưa chạy simulator.
+- Còn lại: công tắc tắt bình luận trên app; Idempotency-Key cho POST bình luận; báo cáo bình luận; thông báo gộp. Môi trường: nên đặt `SMTP_HOST=127.0.0.1` trong `.env` dev (chưa sửa vì là file của người dùng). Chưa commit.
+- Product history: [BF-20261018-003](PRODUCT_ANALYTICS_HISTORY.md#bf-20261018-003).
+
+<a id="bf-20261018-004"></a>
+## BF-20261018-004 — Giao thêm task song song cho Codex
+
+- Ngày làm: 2026-10-18 (Asia/Ho_Chi_Minh), gửi giữa lúc làm BF-20261018-003; ghi lúc 2026-10-18T08:21:50+07:00.
+- Yêu cầu: "Hiện tại t đang thấy bạn đang làm từng task một, tôi cần bạn giao thêm task cho với codex nữa cho nhanh đi, đừng ôm một mình như thế."
+- Liên quan: BF-20261018-003.
+- Role: Chủ trì ORCHESTRATOR (chia việc, brief, review); BACKEND do **Codex CLI** (`codex exec`, sandbox workspace-write) triển khai hai task; QUALITY + SECURITY_PRIVACY + TESTER do Claude review và chạy lại kiểm tra. Đây là agent độc lập thật (Codex), không phải sub-agent Claude.
+- Trạng thái: Hoàn thành (backend 2 task; phần app chưa làm). Kết thúc 2026-10-18T08:28:15+07:00.
+- Phân tích: Mọi thay đổi chưa commit nên không dùng được worktree; Codex chạy chung working tree với danh sách file được phép không trùng file Claude đang sửa, không ghi nhật ký/docs, chỉ chạy spec riêng của mình (chạy song song cả bộ integration từng gây fail giả). Chọn task backend độc lập, file mới: US-02 check-in cảm xúc, US-03/04 Lời nhờ. Lần chạy Codex thứ hai treo chờ stdin → chạy lại với `< /dev/null`.
+- Kết quả:
+  - US-02 (Codex): `couple-checkin.controller/service/repository` + interface, `dto/us/checkin.dto.ts`, `config/couple-policy.ts`, `models/couple-checkin-view.model.ts`, `test/integration/couple-checkin-api.spec.ts`, đăng ký trong `application.providers.ts`. Claude review rồi sửa: mood `UPSET_WITH_PARTNER` luôn không chia sẻ (§7.16.1, server ép) + test; khai báo `COUPLE_CHECKIN_ENCRYPTION_KEY` trong `config/environment.ts` (kiểm 32 byte), `.env.example`, `test/setup-env.ts`.
+  - US-03/04 (Codex): `couple-request.controller/service/repository` + interface, `dto/us/request.dto.ts`, `config/couple-request-policy.ts`, `models/couple-request-view.model.ts`, `models/couple-request-resend-blocked.model.ts`, `test/integration/couple-request-api.spec.ts`. Review: không Prisma trong service, Hearts chỉ trả cho người làm, outbox chỉ id/trạng thái, lời nhắn mã hoá.
+  - `docs/api.md` hai mục mới; checklist cập nhật BE ✅ cho US-02, US-03/04 (chưa tick vì app chưa nối).
+- Kiểm chứng: Codex tự chạy tsc/prettier/eslint + spec riêng (check-in 10/10, lời nhờ 36/36 — theo báo cáo Codex). Claude chạy lại: check-in spec 11/11 sau khi sửa; `npm run check` EXIT=0 (unit 155/155, e2e 35/35); `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` 99/99.
+- Còn lại: app nối US-02/03/04; “Tự mình làm”, khung yên tĩnh, job hết hạn lời nhờ, “Để mình lo”; khoá mã hoá chưa dùng DEK/`data_keys`, chưa xoay khoá; trần Hearts 75/ngày lặp trong policy lời nhờ. Chưa commit.
+- Product history: [BF-20261018-004](PRODUCT_ANALYTICS_HISTORY.md#bf-20261018-004).
+
+<a id="bf-20261018-005"></a>
+## BF-20261018-005 — Song song: Codex làm timeline + lưới ảnh (MEM-01/02), Claude nối app Papa & Mama (US-01…04)
+
+- Ngày làm: 2026-10-18T08:29:18+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Đợt tiếp: Codex làm backend timeline + lưới ảnh (MEM-01/02), còn bạn nối app Papa & Mama (US-01/02/03/04) với API vừa có. Xong thì tick checklist."
+- Liên quan: BF-20261018-004.
+- Role: Chủ trì ORCHESTRATOR; MOBILE (Claude, nối app Papa & Mama); BACKEND do **Codex CLI** (timeline + lưới ảnh, chạy nền song song, danh sách file riêng); QUALITY/SECURITY_PRIVACY/TESTER do Claude review và chạy lại toàn bộ kiểm tra.
+- Trạng thái: Hoàn thành phạm vi giao (app US-02/03/04; backend MEM-01/02). Kết thúc 2026-10-18T08:41:12+07:00.
+- Phân tích: App giữ kiến trúc phản chiếu như các remote service khác: `UsRemoteServiceImp` gọi server rồi ghi kết quả vào kho trên máy (id server, cờ `remote`), nên màn hiện có không phải sửa nhiều. Mã mood/nhu cầu app ↔ server ánh xạ theo `couple-policy.ts`; chia sẻ mặc định chỉ mood/năng lượng/nhu cầu (ghi chú không chia sẻ, §7.16.1). Lời nhờ của bản mẫu trên máy vẫn chạy luồng cũ; lời nhờ server chuyển trạng thái qua API, Hearts do server cộng. Check-in của bạn đời không chia sẻ mood thì không hiện (thẻ US-01 cần cảm xúc).
+- Kết quả:
+  - App: model `us/checkin_record`, `checkin_today`, `request_record`, `request_list`, `request_created`; envelope + Retrofit 5 hàm; `ICoupleRemoteRepository` + imp; `IUsRepository.removeCheckin`; `UsRemoteServiceImp` (coupleToday/requests đồng bộ ≤ 10 giây/lần, checkIn, sendRequest giữ Idempotency-Key khi gửi lại, seen/accept/decline/acknowledge/done/remind-me/cancel); provider chọn bản server khi có `BABY_FAMILY_API_URL`; US-03 hiện lỗi server theo mã (`REQUEST_OPEN_LIMIT`, `REQUEST_RESEND_BLOCKED`), US-04 bọc thao tác bằng `runWithErrorSnackBar`; 3 key l10n vi/en/ja/zh; test `test/data/couple_remote_test.dart` (4).
+  - Backend (Codex): `GET /families/:fid/timeline`, `GET /families/:fid/media-grid` trong `memory.controller.ts`, `memory-content.service/repository` + interface, `memory-view.model.ts`, `memory-policy.ts`, 4 DTO mới, `test/integration/memory-timeline-api.spec.ts`, `test/unit/memory-timeline.spec.ts`. Review: dùng chung bộ lọc §6.3, lưới ảnh loại nháp/thùng rác, mode `download` chỉ cho lưới ảnh. `docs/api.md` cập nhật.
+- Kiểm chứng: Backend `npm run check` EXIT=0 (unit 161/161, e2e 35/35; 3 test watcher Codex báo lỗi EMFILE trong sandbox của nó đều đạt ở máy thật); `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` 115/115. App `make check` EXIT=0 (709 test). Chưa chạy simulator.
+- Còn lại: app MEM-01/02 dùng API timeline/lưới ảnh; thẻ chương tháng/ảnh tháng/recap; US-01 câu hỏi hôm nay + cảm ơn (US-05/06) chưa có API; phản hồi nhanh check-in (👀/💬/🙋/🤗) chưa nối app. Chưa commit.
+- Product history: [BF-20261018-005](PRODUCT_ANALYTICS_HISTORY.md#bf-20261018-005).
+
+<a id="bf-20261018-006"></a>
+## BF-20261018-006 — Song song: Codex làm backend Nhiệm vụ hằng ngày, Claude nối app MEM-01/02
+
+- Ngày làm: 2026-10-18T08:42:08+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Đợt tiếp: Codex làm backend Nhiệm vụ hằng ngày (catalog + bày bảng + CARE-01…06 API), còn bạn nối app MEM-01/02 với API timeline/lưới ảnh. Xong thì tick checklist."
+- Liên quan: BF-20261018-005.
+- Role: Chủ trì ORCHESTRATOR; MOBILE (Claude, MEM-01/02); BACKEND do **Codex CLI** (Nhiệm vụ CARE-01…06, chạy nền song song, danh sách file riêng); QUALITY/SECURITY_PRIVACY/TESTER do Claude review và chạy lại toàn bộ kiểm tra.
+- Trạng thái: Hoàn thành phạm vi giao. Kết thúc 2026-10-18T08:56:29+07:00.
+- Phân tích: App vốn dựng timeline/lưới ảnh từ kho trên máy; giữ cách đó nhưng nguồn dữ liệu chế độ server là API: `timeline()` đồng bộ đủ trang theo ngày xảy ra vào kho rồi đọc kho (gồm ký ức chỉ có trên máy), `photos()` dùng ô ảnh `t320` đã ký của media-grid. Thẻ hệ thống của server bỏ qua vì app tự dựng chương tháng. Backend Nhiệm vụ do Codex: bày bảng khi mở bảng (chưa job sáng), Hearts dùng ledger chung với lời nhờ và trần chung `hearts-policy.ts` (sửa lặp từ BF-20261018-004).
+- Kết quả:
+  - App: `IMemoryService.timeline/photos` (mock + server), `MemoryGridPhoto` DTO, model `TimelineItemRecord`, `MediaGridItemRecord`, envelope + Retrofit `getTimeline/getMediaGrid`, `IMemoryFeedRepository.timeline/mediaGrid`, `memories_tab_controller.dart` dùng hai hàm mới; test `subject_memory_remote_test.dart` +1.
+  - Backend (Codex): `mission.controller.ts`, `mission-board.service/repository` + interface, `mission-board-catalog-seed.repository.ts`, `dto/mission/*`, `config/mission-policy.ts`, `config/hearts-policy.ts` (+ `couple-request-policy.ts` dùng chung), model `mission-board-balance/state/view`, `prisma/seeds/missions.json` + `prisma/seed.ts`, test `mission-board-api.spec.ts`, `mission-board-balance.spec.ts`; đăng ký DI. Review: không Prisma trong service, bạn đời không thấy Hearts, `myHeartsToday` chỉ tab của mình. `docs/api.md` thêm mục Nhiệm vụ.
+- Kiểm chứng: Codex báo unit cân bằng 15/15, integration mission + lời nhờ 53/53. Claude chạy lại: `npm run check` EXIT=0 (unit 176/176, e2e 35/35); `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` 132/132; app `make check` EXIT=0 (710 test). Chưa chạy simulator.
+- Còn lại: app CARE-01…06 nối API; job bày bảng sáng sớm; ảnh hoàn thành → ký ức; series, carry-over, CARE-08/12; catalog mới 30 mẫu (đặc tả cần ≥ 90 ngày nội dung); bộ lọc chip timeline dùng `filter` của server; thẻ chương/ảnh tháng từ server. Chưa commit.
+- Product history: [BF-20261018-006](PRODUCT_ANALYTICS_HISTORY.md#bf-20261018-006).
+
+<a id="bf-20261018-007"></a>
+## BF-20261018-007 — Song song: Codex làm backend Cảm ơn US-05/06 + Nhật ký riêng US-07, Claude nối app Nhiệm vụ CARE-01…06
+
+- Ngày làm: 2026-10-18T08:57:24+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Đợt tiếp: Codex làm backend Cảm ơn US-05/06 + Nhật ký riêng US-07, còn bạn nối app Nhiệm vụ CARE-01…06 với API vừa có. Xong thì tick checklist."
+- Liên quan: BF-20261018-006.
+- Role: Chủ trì ORCHESTRATOR; MOBILE (Claude, CARE-01…06); BACKEND do **Antigravity CLI** (`agy`, US-05/06/07 — Codex hết quota, xem BF-20261018-008); QUALITY/SECURITY_PRIVACY/TESTER do Claude review và chạy lại kiểm tra.
+- Trạng thái: Hoàn thành phạm vi giao. Kết thúc 2026-10-18T09:22:08+07:00.
+- Phân tích: App Nhiệm vụ chế độ server đọc thẳng server (không phản chiếu vào kho mock vì bảng mock sẽ lẫn dữ liệu mẫu): 3 tab board, nhớ các nhiệm vụ server đã đọc để thao tác sau đi đúng đường; sau thao tác gọi `ICareRepository.touch()` để màn đọc lại. Loại nhiệm vụ server nhiều hơn app → gộp về loại gần nhất. Hearts, cây, huy hiệu, lịch sử, lịch, cài đặt chưa có API đọc nên giữ trên máy.
+- Kết quả:
+  - App: `CareRemoteServiceImp`, `ICareRemoteRepository` + imp, 6 model `care/mission_*`, envelope + Retrofit 7 hàm, endpoint `Api.mission*`, `ICareRepository.touch()`, provider chọn bản server; test `test/data/care_remote_test.dart` (3).
+  - Backend (Antigravity): `couple-appreciation.controller/service/repository` + interface, `couple-journal.controller/service/repository` + interface, policy, model view, 2 spec integration, đăng ký DI. Review: không Prisma trong service; nhật ký 404 với bạn đời ở mọi route; nội dung mã hoá (scope người viết / couple). `docs/api.md` thêm mục.
+- Kiểm chứng: Antigravity báo tsc/prettier/eslint đạt, 2 spec 15/15. Claude chạy lại: `npm run check` EXIT=0 (unit 176/176, e2e 35/35); `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` 147/147; app `make check` EXIT=0 (713 test). Chưa chạy simulator.
+- Còn lại: app US-05/06/07; ký ức từ lời cảm ơn được duyệt; route đọc đoạn trích nhận được; app Hearts/cây/huy hiệu/lịch sử nhiệm vụ; “lưu khoảnh khắc” từ nhiệm vụ server. Chưa commit.
+- Product history: [BF-20261018-007](PRODUCT_ANALYTICS_HISTORY.md#bf-20261018-007).
+
+<a id="bf-20261018-008"></a>
+## BF-20261018-008 — Dùng thêm Antigravity; Codex hết quota
+
+- Ngày làm: 2026-10-18 (Asia/Ho_Chi_Minh), hai tin nhắn gửi giữa lúc làm BF-20261018-007; ghi lúc 2026-10-18T09:22:08+07:00.
+- Yêu cầu: "Dùng thêm antigravity nữa" và "codex hết quota rùi".
+- Liên quan: BF-20261018-007.
+- Role: ORCHESTRATOR, SECURITY_PRIVACY (quyền chạy lệnh của agent ngoài).
+- Trạng thái: Hoàn thành.
+- Phân tích: Giao cả US-05/06 và US-07 cho một lượt `agy` (tránh hai agent cùng sửa `application.providers.ts`). `--dangerously-skip-permissions` bị bộ phân loại an toàn chặn; chế độ `--mode accept-edits` headless tự từ chối lệnh shell. Đã hỏi người dùng, người dùng chọn **allowlist hẹp**.
+- Kết quả: Thêm vào `~/.gemini/antigravity-cli/settings.json` `permissions.allow`: `command(npx tsc)`, `command(npx prettier)`, `command(npx eslint)`, `command(npm run test:integration)`, `command(git status)`, `command(git diff)`, `command(ls)`, `command(rg)` (không có git ghi/xoá). Chạy `agy -p … --mode accept-edits --effort high` → hoàn thành backend US-05/06/07 (xem BF-20261018-007). Ghi memory cách gọi agy.
+- Kiểm chứng: như BF-20261018-007.
+- Còn lại: Codex dùng lại khi có quota; allowlist agy có thể thu hẹp/xoá theo ý người dùng.
+- Product history: [BF-20261018-008](PRODUCT_ANALYTICS_HISTORY.md#bf-20261018-008).
+
+<a id="bf-20261018-009"></a>
+## BF-20261018-009 — Song song: Antigravity làm backend Hearts/Cây gia đình/Huy hiệu/CARE-08, Claude nối app Cảm ơn US-05/06 + Nhật ký riêng US-07
+
+- Ngày làm: 2026-10-18T14:53:54+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Đợt tiếp: Antigravity làm backend Hearts/Cây gia đình/Huy hiệu (đọc Hearts của tôi, cây, badge, lịch sử nhiệm vụ CARE-08), còn bạn nối app Cảm ơn US-05/06 + Nhật ký riêng US-07. Xong thì tick checklist."
+- Liên quan: BF-20261018-008.
+- Role: Chủ trì ORCHESTRATOR; MOBILE (Claude, US-05/06/07); BACKEND do **Antigravity CLI** (Hearts/Cây/Huy hiệu/CARE-08, allowlist lệnh hẹp); QUALITY/SECURITY_PRIVACY/TESTER do Claude review.
+- Trạng thái: Hoàn thành. Kết thúc 2026-10-18T15:31:14+07:00.
+- Phân tích: Cảm ơn/nhật ký phản chiếu vào kho trên máy như check-in/lời nhờ. Server lưu một cảm xúc của người nhận nên app chỉ cho người nhận thả ❤️, chưa bỏ tim. App chưa có ô chọn đoạn trích → chia sẻ đúng nội dung trang (đã xem trước ở US-07, là chuỗi con hợp lệ). Ảnh nhật ký cần upload `JOURNAL` riêng tư → để task sau, ảnh chỉ giữ trên máy. 💛 trên việc bạn đời (CARE-01) dùng lời cảm ơn “nhanh” của server; board server chưa trả cờ đã cảm ơn nên app giữ cờ trong phiên.
+- Kết quả:
+  - App: `UsRemoteServiceImp` (sendThanks, thanks/thanksWall đồng bộ, toggleThanksHeart, journal, addJournalEntry, shareJournalExcerpt), `CareRemoteServiceImp.thankPartner`; model `us/appreciation_record`, `appreciation_wall`, `journal_entry_record`, `journal_list`; Retrofit 6 hàm; test `couple_remote_test.dart` +2, `care_remote_test.dart` +1.
+  - Backend (Antigravity): `care-progress.controller/service/repository` + interface, `config/care-progress-policy.ts`, `models/care-progress.model.ts`, `prisma/seeds/badges.json` + `care-badge-seed.repository.ts` + `prisma/seed.ts`, test `care-progress-api.spec.ts`, `care-progress.spec.ts`; đăng ký DI. Review: Hearts chỉ của người gọi (không route theo userId, `?userId=` 400), cây không có Hearts.
+- Kiểm chứng: Antigravity báo 2 spec 28/28. Claude: `npm run check` EXIT=0 (unit 203/203, e2e 35/35); `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` 175/175; app `make check` EXIT=0 (718 test). Chưa chạy simulator.
+- Còn lại: app CARE-08/09/10 + Hearts; ảnh nhật ký lên server; đăng lời cảm ơn thành khoảnh khắc gia đình; worker trao huy hiệu; cờ “đã cảm ơn” trên board server. Chưa commit.
+- Product history: [BF-20261018-009](PRODUCT_ANALYTICS_HISTORY.md#bf-20261018-009).
+
+<a id="bf-20261018-010"></a>
+## BF-20261018-010 — Giao thêm task cho Codex (đã có quota): backend Thông báo NOTI-01
+
+- Ngày làm: 2026-10-18 (Asia/Ho_Chi_Minh). Giờ bắt đầu ghi lúc mở entry đã mất: entry mở đầu bị xoá nhầm khi script của Claude cập nhật BF-20261018-009 (cắt phần sau entry); ghi lại đầy đủ lúc 2026-10-18T15:32:12+07:00, không đoán giờ gốc.
+- Yêu cầu: "Giao thêm task cho codex nữa đi codex đang rảnh kìa"
+- Liên quan: BF-20261018-009.
+- Role: Chủ trì ORCHESTRATOR; BACKEND do **Codex CLI** (NOTI-01, không sửa `application.providers.ts` để tránh đè Antigravity); QUALITY/SECURITY_PRIVACY/TESTER do Claude review, đăng ký DI và sửa test cũ.
+- Trạng thái: Hoàn thành. Kết thúc 2026-10-18T15:32:12+07:00.
+- Phân tích: Thông báo là consumer outbox đầu tiên ngoài media: job `dispatchNotification` qua queue riêng, chống trùng theo id sự kiện. Tên sự kiện đối chiếu với repository thật (`us.request.sent|accept|decline|done|acknowledge`, `us.checkin.shared`, `us.appreciation.created`). Nhóm nhạy cảm chỉ lưu id; Circle không nhận Papa & Mama.
+- Kết quả: Codex tạo `notification-inbox.controller`, `notification-inbox.service`, `notification-dispatch.service`, `notification-inbox.repository` + interface, `dto/notification/*`, `config/notification-policy.ts`, model, `workers/notification.worker.ts`, seed `notification-templates.json` + loader, test integration/unit; sửa `config/jobs.ts`, `workers/worker.module.ts`, `prisma/seed.ts`. Claude: đăng ký controller/provider trong `application.providers.ts`; sửa kỳ vọng `test/unit/job-runner.spec.ts` (claim mọi loại sự kiện trong `OUTBOX_ROUTES`); `docs/api.md`.
+- Kiểm chứng: Codex báo integration 17/17, unit thông báo 18/18. Claude: `npm run check` EXIT=0; integration 175/175 (gồm `notification-inbox-api.spec.ts`).
+- Còn lại: gửi push (APNs/FCM) + delivery attempts; purge sau 90 ngày; deepLink lời nhờ trỏ chi tiết (hiện `babyfamily://us`, app dùng `entityId`); worker chưa thử với Redis thật. Chưa commit.
+- Product history: [BF-20261018-010](PRODUCT_ANALYTICS_HISTORY.md#bf-20261018-010).
+
+<a id="bf-20261018-011"></a>
+## BF-20261018-011 — Làm tiếp: nối app hộp thông báo NOTI-01, hoàn tất đợt Antigravity/Codex
+
+- Ngày làm: 2026-10-18 (Asia/Ho_Chi_Minh). Giờ bắt đầu ghi lúc mở entry đã mất: entry mở đầu bị xoá nhầm khi script của Claude cập nhật BF-20261018-009 (cắt phần sau entry); ghi lại đầy đủ lúc 2026-10-18T15:32:12+07:00, không đoán giờ gốc.
+- Yêu cầu: "Làm tiếp đi"
+- Liên quan: BF-20261018-009, BF-20261018-010.
+- Role: Chủ trì ORCHESTRATOR; MOBILE (NOTI-01 app); QUALITY/TESTER.
+- Trạng thái: Hoàn thành. Kết thúc 2026-10-18T15:32:12+07:00.
+- Phân tích: Trong lúc chờ Antigravity, làm phần độc lập kế tiếp là app NOTI-01. Server trả `templateCode` + `params` → app dựng câu bằng l10n (Skill 10), mẫu lạ (server mới hơn app) → câu chung; route từ `deepLink`/`entityId`; tên người thao tác lấy từ thành viên trên máy.
+- Kết quả: `NotificationRemoteServiceImp`, `INotificationRemoteRepository` + imp, model `notification/notification_record`, `notification_page`, `notification_count`, Retrofit 3 hàm, `INotificationRepository.touch()`, provider chọn bản server, 12 key l10n vi/en/ja/zh; test `test/data/notification_remote_test.dart` (2). Sau khi Antigravity xong: đăng ký DI NOTI-01, chạy đủ kiểm tra, tick checklist (44/165).
+- Kiểm chứng: app `make check` EXIT=0 (718 test); backend như BF-20261018-009/010.
+- Còn lại: push + quyền thông báo (ONB-10); app CARE-08/09/10 + Hearts. Chưa commit.
+- Product history: [BF-20261018-011](PRODUCT_ANALYTICS_HISTORY.md#bf-20261018-011).
+
+<a id="bf-20261018-012"></a>
+## BF-20261018-012 — Song song: Codex làm Xoá tài khoản + Xuất dữ liệu, Antigravity làm Lịch & sự kiện, Claude nối app CARE-08/09/10 + Hearts
+
+- Ngày làm: 2026-10-18T16:02:47+07:00 → 2026-10-18T20:32+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Đợt tiếp: Codex làm backend Xoá tài khoản + Xuất dữ liệu (§7.25), Antigravity làm backend Lịch & sự kiện CARE-07/CAL-02, còn bạn nối app Hearts/Cây/Huy hiệu/Lịch sử CARE-08/09/10. Xong thì tick checklist."
+- Liên quan: BF-20261018-009 (backend Hearts/Cây/Huy hiệu), BF-20261018-011.
+- Role: ORCHESTRATOR; BACKEND (Codex CLI: xoá/xuất; Antigravity CLI: lịch); MOBILE (Claude); SECURITY/PRIVACY + QUALITY (Claude review); TESTER.
+- Phân tích tóm tắt: ba phần độc lập, mỗi agent một allowlist file riêng; agent không sửa `application.providers.ts`, Claude đăng ký DI. App đọc Hearts/Cây/Huy hiệu/Lịch sử từ API của BF-009 qua `CareRemoteServiceImp`.
+- Kết quả:
+  - App: `CareRemoteServiceImp` override `myHearts`/`tree`/`badges`/`missionHistory` (Hearts chỉ của tôi; lịch sử 30 ngày ME/PARTNER/TOGETHER, việc của bạn đời không có Hearts; huy hiệu theo locale); model + Retrofit + l10n 4 ngôn ngữ; số liệu cây theo tuần chưa có API → 0.
+  - Backend xoá tài khoản (Codex): `GET /me/deletion-preview`, `POST /me/deletion`, `POST /me/deletion/cancel`; chờ 30 ngày, thu hồi phiên, executor có checkpoint/fencing. Thiếu API phát hành reauth token.
+  - Backend xuất dữ liệu (Codex): `POST /exports`, `GET /exports/:id`; JSON + manifest media; PERSONAL chỉ dữ liệu riêng của người gọi, FAMILY chỉ Parent và không có dữ liệu riêng (Claude review).
+  - Backend lịch (Antigravity): `GET /families/:fid/calendar`, `POST/GET/PATCH/DELETE /events`; âm lịch, sinh nhật/tròn tháng; Circle không thấy `COUPLE`/nhiệm vụ. Claude sửa 2 lỗi thuật toán âm lịch (năm lệch 1, `b11` khi tháng ≥ 11) và fixture test (trigger phạm vi nhiệm vụ là deferred → transaction). Antigravity chạy ~4 giờ, Claude dừng sau khi đủ file và test xanh. Chưa gửi nhắc sự kiện.
+  - `docs/api.md` thêm 2 mục; checklist 47/165 (tick CARE-08, CARE-09, Hearts; CARE-10 giữ vì BE 🟡; lịch, xoá, xuất cập nhật trạng thái BE).
+- Bằng chứng kiểm tra: app `make check` EXIT=0 (719 test); backend `npm run check` EXIT=0 (unit 218, e2e 35); `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT=0 (19 suite, 208 test).
+- Việc còn lại: API reauth token; job gửi nhắc sự kiện; worker trao huy hiệu; app cho lịch/xoá tài khoản/xuất dữ liệu; số liệu cây theo tuần.
+- Trạng thái: Hoàn thành (phần còn lại ghi ở trên).
+
+<a id="bf-20261018-013"></a>
+## BF-20261018-013 — Song song: Codex làm API reauth token + job gửi nhắc sự kiện, Claude nối app Xoá tài khoản + Xuất dữ liệu và Lịch CARE-07/CAL-02
+
+- Ngày làm: 2026-10-18T20:47:41+07:00 → 2026-10-18T21:12+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Đợt tiếp: Codex làm API phát hành reauth token (sau OTP) + job gửi nhắc sự kiện, còn bạn nối app Xoá tài khoản + Xuất dữ liệu và Lịch CARE-07/CAL-02. Xong thì tick checklist."
+- Liên quan: BF-20261018-012.
+- Role: ORCHESTRATOR; BACKEND (Codex CLI); MOBILE (Claude); SECURITY/PRIVACY + QUALITY (Claude review); TESTER.
+- Phân tích tóm tắt: Codex làm backend theo allowlist, Claude làm app song song và đăng ký DI. Luồng xoá cần mã xác thực lại ngắn hạn gắn với phiên; nhắc sự kiện dùng hộp thư sẵn có.
+- Kết quả:
+  - Backend (Codex): `POST /auth/reauth/otp` + `/verify` (OTP chỉ tới số của chính người gọi, tách khỏi OTP đăng nhập, JWT `reauth+jwt` 300 giây gắn phiên); đăng nhập được trong thời gian chờ để huỷ xoá; queue `event-reminders` với job lập lịch (15 phút + outbox `event.changed`, 14 ngày tới) và job gửi (mỗi phút, kiểm lại quyền, không gửi trùng) vào hộp thư `NOTI_EVENT_REMINDER`.
+  - Claude sửa phía backend: đăng ký `ReauthController`; Codex đã ghi đè file sinh tự động `event-reminder.*` làm hỏng kiểm tra của bộ sinh code → chuyển code sang `event-reminder-schedule.*` (token/lớp riêng), khôi phục bản sinh tự động từ git; hộp thư trả đủ params an toàn + deep link `babyfamily://calendar/events/{id}` cho nhắc sự kiện; `docs/api.md` cập nhật.
+  - App (Claude): xuất dữ liệu và xoá tài khoản qua server (OTP xác thực lại → xoá → đăng xuất; nút xoá chỉ bật khi đã xác thực + tích xác nhận); lịch đọc/tạo qua server (âm lịch, mã nhắc ↔ phút, sự kiện riêng tư không mời Circle, nhiệm vụ bạn đời không Hearts, sinh nhật/tròn tháng); hiển thị thông báo nhắc sự kiện.
+  - Checklist 51/165: tick CARE-07, CAL-02, Xoá tài khoản, Xuất dữ liệu.
+- Bằng chứng kiểm tra: app `make check` EXIT=0 (analyze sạch, 722 test); backend `npm run check` EXIT=0 (gồm 2 bộ sinh `--check`, unit 224, e2e 35); `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT=0 (21 suite, 227 test).
+- Việc còn lại: gửi push; xác thực lại qua Apple/Google khi server có đăng nhập đó; người tham gia/nhắc cho bạn đời trên lịch (app chưa ánh xạ id người dùng server của bạn đời); lặp tuần/tháng; worker trao huy hiệu (CARE-10); chưa chạy worker BullMQ thật và simulator.
+- Trạng thái: Hoàn thành (phần còn lại ghi ở trên).
+
+<a id="bf-20261018-014"></a>
+## BF-20261018-014 — Song song: Codex làm gửi push + worker trao huy hiệu CARE-10, Claude nối app quyền thông báo/push ONB-10 và nhắc cho bạn đời trên lịch
+
+- Ngày làm: 2026-10-18T21:18:02+07:00 → 2026-10-18T21:38+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Đợt tiếp: Codex làm gửi push (NotificationDelivery, giờ yên tĩnh, trần 3/ngày) + worker trao huy hiệu CARE-10, còn bạn nối app quyền thông báo/push ONB-10 và nhắc cho bạn đời trên lịch. Xong thì tick checklist."
+- Liên quan: BF-20261018-013.
+- Role: ORCHESTRATOR; BACKEND (Codex CLI); MOBILE (Claude); SECURITY/PRIVACY + QUALITY (Claude review); TESTER.
+- Phân tích tóm tắt: app đã có `POST /me/devices` và Firebase nên ONB-10 chỉ cần lấy token phía app; id server của bạn đời có sẵn trong `bootstrap.parents`, không cần API mới. Brief cho Codex cấm sửa file sinh tự động (bài học BF-013).
+- Kết quả:
+  - Backend (Codex): queue `push` job `notification.deliver-push` (một dòng gửi mỗi thiết bị, kiểm lại quyền, giờ yên tĩnh, trần 3/ngày, nội dung nhạy cảm chung chung, xoá token hỏng, thử lại có backoff; FCM HTTP v1 hoặc bản log); queue `care` job `care.award-badges` (theo `mission.changed` + hằng ngày, ghi `family_badges` một lần, outbox `badge.earned`, thông báo Parent, huy hiệu theo Hearts chỉ báo cho chính người đó, Circle không nhận).
+  - Claude sửa backend: trần ngày khi xếp hàng trong hộp thư đếm theo thông báo thay vì theo dòng/thiết bị; hộp thư trả `badgeCode` + deep link `babyfamily://care/badges`; `docs/api.md` thêm mục.
+  - App (Claude): ONB-10 xin quyền FCM + đăng ký/gửi lại token, từ chối thì xoá token; lịch mời và nhắc bạn đời bằng id server; hiển thị thông báo huy hiệu.
+  - Checklist 53/165: tick ONB-10, CARE-10; dòng Push giữ chưa tick vì chưa thử FCM/APNs thật trên thiết bị.
+- Bằng chứng kiểm tra: app `make check` EXIT=0 (analyze sạch, 726 test); backend `npm run check` EXIT=0 (unit 247, e2e 35, 2 bộ sinh `--check`); `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT=0 (23 suite, 242 test). Codex báo 3 test watcher lỗi trong sandbox của nó; chạy lại ở máy thì qua.
+- Việc còn lại: thử push thật (cần cấu hình FCM + APNs); phát lại an toàn khi kết quả gửi không rõ; seed mẫu thông báo; số liệu cây theo tuần.
+- Trạng thái: Hoàn thành (phần còn lại ghi ở trên).
+
+<a id="bf-20261018-015"></a>
+## BF-20261018-015 — Các mục MVP kế tiếp: Codex làm phiên/thiết bị, đổi số điện thoại, ONB-08; Claude nối app avatar, INV-02/03, ONB-09, FAM-02 và app cho phần của Codex
+
+- Ngày làm: 2026-10-18T22:01:44+07:00 → 2026-10-18T22:18+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp các mục MVP còn trống kế tiếp trong checklist, chia việc cho Codex và bạn. Xong thì tick checklist."
+- Liên quan: BF-20261018-014.
+- Role: ORCHESTRATOR; BACKEND (Codex CLI); MOBILE (Claude); SECURITY/PRIVACY + QUALITY (Claude review); TESTER.
+- Phân tích tóm tắt: lấy các mục MVP chưa xong theo thứ tự checklist, bỏ qua CI/staging/monitoring (hạ tầng) và đăng nhập Apple/Google (cần cấu hình nhà cung cấp). Backend thiếu: phiên đăng nhập, đổi số, API cho `Family.settings`. Phía app: INV-02/03, ONB-09, FAM-02 đã có API.
+- Kết quả:
+  - Backend (Codex): `GET/DELETE /me/sessions`, `POST /me/sessions/revoke-others`; `POST /me/phone/otp` + `/verify` (cần xác thực lại, OTP tới số mới, thu hồi phiên khác); `GET/PATCH /families/:fid/settings` (whitelist có version, Circle chỉ đọc `showLunar`, outbox). Claude đăng ký DI, viết `docs/api.md`.
+  - App (Claude): thiết bị SET-07 từ server; cài đặt quyền riêng tư + tên gia đình qua server; phản chiếu `PARTNER_LEFT`; FAM-02 thu hồi lời mời bằng cách cấp mã mới; lỗi khi nhận lời mời chuyển đúng màn INV-02/03; ONB-09 xác nhận đã đi qua server.
+  - Không làm được trong đợt: avatar AUTH-04 (`PATCH /me` chưa nhận avatar, `users.avatar_asset_id` trỏ `user_assets`), màn đổi số điện thoại (thiết kế chưa có màn nhập số mới + OTP).
+  - Checklist 58/165: tick phiên/thiết bị, INV-02/03, ONB-08, ONB-09, FAM-02.
+- Bằng chứng kiểm tra: app `make check` EXIT=0 (analyze sạch, 733 test); backend `npm run check` EXIT=0 (unit 247, e2e 35, 2 bộ sinh `--check`); `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT=0 (25 suite, 257 test). Codex báo 2 test watcher lỗi trong sandbox của nó; ở máy thì qua.
+- Việc còn lại: backend avatar hồ sơ; màn đổi số (cần thiết kế); áp `defaultVisibility` khi tạo ký ức (sửa `memory-*`); chặn chỉ-đọc cho `PARTNER_LEFT` phía server; FAM-07 ảnh bìa/múi giờ.
+- Trạng thái: Hoàn thành (phần còn lại ghi ở trên).
+
+<a id="bf-20261019-001"></a>
+## BF-20261019-001 — Thai kỳ PREG-01…06 + hồ sơ bé: 2 Codex làm backend song song, Claude nối app
+
+- Ngày làm: 2026-10-19T07:32:17+07:00 → 2026-10-19T07:53+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp các mục MVP còn trống kế tiếp trong checklist (thai kỳ PREG-01…07, hồ sơ bé), chia việc cho Codex và bạn. Xong thì tick checklist."
+- Liên quan: BF-20261018-015.
+- Role: ORCHESTRATOR; BACKEND (2 phiên Codex CLI song song, file tách biệt); MOBILE (Claude); SECURITY/PRIVACY + QUALITY (Claude review); TESTER.
+- Phân tích tóm tắt: schema đã đủ (Pregnancy, PrepItem, BirthConversion*, Child, ký ức BUMP/ULTRASOUND, ops.content_items) nên không cần migration. Chia Codex A (hành trình tuần, ký ức thai kỳ theo loại, danh sách chuẩn bị + seed) và Codex B (chào đời, lưu trữ thai kỳ, hồ sơ bé). PREG-07 (1.1) và CHD-06 (1.2) để ngoài.
+- Kết quả:
+  - Codex A bị dừng giữa chừng vì máy chủ model quá tải; Claude nối lại đúng phiên (`codex exec resume`), Codex hoàn tất: `/journey`, `/memories?kind`, `/prep-items`, seed 78 mục tuần + 14 mục chuẩn bị vi/en.
+  - Codex B: `/birth` idempotent (sinh đôi, chuyển ký ức, kế thừa quyền), `/archive|restore` (`ENDED_PRIVATE` ẩn khỏi Circle), sắp xếp/lưu trữ/xoá bé (lưu trữ 7 ngày trước khi xoá), ảnh đại diện/ảnh bìa, `/profile-stats` theo quyền người gọi.
+  - Claude: đăng ký DI (controller mới đặt trước controller cũ để route không bị nuốt); nới điều kiện ảnh sang `UPLOADED|PROCESSING|READY` vì app gắn ảnh ngay sau khi tải; sửa test `care-progress` phụ thuộc ngày (hôm qua thuộc tuần trước khi hôm nay là thứ Hai, lỗi có từ BF-20261018-009); `docs/api.md`.
+  - App: thai kỳ (chuẩn bị, chào đời, lưu trữ, kích thước theo tuần, tuần thai của ảnh bụng/siêu âm) và hồ sơ bé (số đếm, sắp xếp, lưu trữ/xoá, tải ảnh đại diện/ảnh bìa) qua server.
+  - Checklist 67/165: tick PREG-01…06, CHD-01/03/05; ảnh bé giữ 🟡 vì máy khác chưa nhận URL ảnh.
+- Bằng chứng kiểm tra: app `make check` EXIT=0 (analyze sạch, 739 test); backend `npm run check` EXIT=0 (unit 257, e2e 35, 2 bộ sinh `--check`); `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT=0 (29 suite, 274 test).
+- Việc còn lại: URL ảnh bé/thai kỳ qua bootstrap; `?status=archived` trên route danh sách cũ; huỷ nhắc/việc của thai kỳ khi chào đời/lưu trữ; form chào đời nhiều bé trên app; chưa chạy seed trên DB dev và chưa chạy simulator.
+- Trạng thái: Hoàn thành (phần còn lại ghi ở trên).
+
+<a id="bf-20261019-002"></a>
+## BF-20261019-002 — Ký ức & album §6, nhật ký/thư/cột mốc §7: 2 Codex làm backend song song, Claude nối app
+
+- Ngày làm: 2026-10-19T08:22:55+07:00 → 2026-10-19T08:48+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp các mục MVP còn trống kế tiếp trong checklist (ký ức & album §6, nhật ký/thư/cột mốc §7), chia việc cho Codex và bạn. Xong thì tick checklist." Giữa chừng người dùng hỏi "Đã xong chưa nhỉ? Nếu xong rùi làm task tiếp theo cho tôi đi" — trả lời đang chạy, làm tiếp đến hết đợt.
+- Liên quan: BF-20261019-001.
+- Role: ORCHESTRATOR; BACKEND (2 phiên Codex CLI song song); MOBILE (Claude); SECURITY/PRIVACY + QUALITY (Claude review); TESTER.
+- Phân tích tóm tắt: schema có sẵn Album/AlbumMemory/Favorite/MemoryLetter/MilestoneTemplate/Milestone/MemoryPerspective/MemoryPromptTemplate. Codex A (không được sửa file `memory-*`): album, yêu thích, tải bản gốc, góc nhìn, gợi ý. Codex B (sở hữu `memory-*`): cột mốc, những lần đầu, thư + job mở thư, nháp, sửa ảnh.
+- Kết quả:
+  - Backend: Codex A 4 suite/21 test; Codex B 6 suite/47 test (gồm suite ký ức cũ). Claude đăng ký DI cho 6 controller mới, bổ sung 4 mẫu cột mốc mà app dùng vào seed (lần đầu thiếu `dateRule: null` làm `milestone-api` đỏ, đã sửa), viết `docs/api.md`.
+  - App: `MemoryLibraryRemoteServiceImp` (album, yêu thích, tải bản gốc, góc nhìn, gợi ý, cột mốc, đếm thư niêm phong); tạo ký ức cột mốc/thư lên server; nút "Tải về" ở màn xem ảnh mở bản gốc.
+  - Chưa nối app: nháp trên server (MEM-18) và sửa ảnh của ký ức (màn sửa chưa có chọn ảnh).
+  - Checklist 75/165: tick MEM-03, MEM-22, tải bản gốc, MEM-24, gợi ý ghi lại, MEM-14, MEM-11, MEM-12.
+- Bằng chứng kiểm tra: app `make check` EXIT=0 (analyze sạch, 743 test); backend `npm run check` EXIT=0 (unit 257, e2e 35); `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` lần cuối EXIT=0 (37 suite, 310 test). Lần chạy trước có 1 deadlock trong `push-delivery.spec.ts` (ca nhiều job nhận việc cùng lúc) khi cả bộ chạy nặng; chạy lại thì qua — cần theo dõi thứ tự khoá `users` trong worker push.
+- Việc còn lại: app nháp server + sửa ảnh; thông báo khi thư mở; deadlock tiềm ẩn của worker push; ghi âm cho góc nhìn; chưa chạy seed trên DB dev, chưa chạy simulator.
+- Trạng thái: Hoàn thành (phần còn lại ghi ở trên).
+
+<a id="bf-20261019-003"></a>
+## BF-20261019-003 — Đợt kế tiếp §8 bảng tin + §9 nhiệm vụ: Codex làm backend nhiệm vụ, Claude nối app
+
+- Ngày làm: 2026-10-19T08:48:32+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: tiếp theo câu "Nếu xong rùi làm task tiếp theo cho tôi đi" (cùng lượt với BF-20261019-002): làm nhóm MVP kế tiếp trong checklist, chia việc cho Codex và Claude, xong thì tick checklist.
+- Liên quan: BF-20261019-002.
+- Tiến độ (2026-10-19 ~09:10): xong phía app §8 — bật/tắt bình luận theo ký ức (màn sửa, ẩn ô bình luận; `commentsEnabled` gửi khi đổi) và lọc bảng tin theo bé/thai kỳ đọc bảng tin server của riêng bé; app `make check` EXIT=0 (745 test); checklist 77/165. Backend §9: Codex hết hạn mức sử dụng ngay đầu phiên (chưa sửa file nào, mở lại 12:34) → giao Antigravity cùng brief, đang chạy.
+- Tiến độ (~09:10): Antigravity dừng sau ~18 phút vì cần lệnh ngoài allowlist (headless tự từ chối); đã kịp mở rộng catalog nhiệm vụ 30 → 110 mẫu (vi/en, thai kỳ + bé) và thêm `repeatWindowDays`/`boardHour` vào policy — Claude kiểm tra `mission-board-api` + `care-progress-api` 28/28 qua. Phần còn lại §9 (bộ sinh tránh lặp, job sáng, CARE-06, lặp lại, CARE-12) hẹn Codex tự chạy lúc 12:36 khi hạn mức mở lại.
+- Tiến độ (2026-10-19, sau khi người dùng nói "Ok bạn làm đi" — chọn để Claude tự làm backend §9 thay vì chờ Codex): huỷ lịch hẹn Codex; Claude viết job `mission.prepare-boards` (queue `missions`, mỗi giờ, ≥ 5:00 giờ địa phương, `prepareBoard` khoá gia đình, không trùng), CARE-06 `POST /missions/:id/moment` (ký ức MOMENT qua `IMemoryContentService`, gắn `mission_completions.memory_id`), nhiệm vụ lặp lại `/mission-series` (rrule hằng ngày/theo thứ, tạm dừng, kết thúc; tạo mỗi ngày một nhiệm vụ SERIES khi bày/mở bảng), CARE-12 `/mission-settings` + `/mission-preferences`; nối `recentExclusionDays` với `repeatWindowDays`. Sự cố trong lúc làm: test job đầu tiên quét mọi gia đình ACTIVE của DB test và bày bảng cho 20 gia đình còn sót của spec khác (khoá ngoại lỗi khi dọn) → đã dọn 140 nhiệm vụ/20 bảng/20 mẫu tạm trong `baby_family_test` (DB dev không bị ảnh hưởng), test viết lại chỉ chạm gia đình của spec + unit test cho vòng lặp theo giờ. Sau khi macOS cập nhật, `python3` và git chỉ in "chưa đồng ý giấy phép Xcode" rồi thoát → các script Python không chạy mà không báo lỗi; đã phát hiện và làm lại bằng công cụ sửa file/node. Bằng chứng: backend `npm run check` EXIT=0 (unit 262, e2e 35); `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT=0 (37 suite, 314 test). Checklist 78/165 (tick job bày bảng sáng). Chưa làm: app CARE-06/CARE-12/lặp lại — Flutter/fvm không chạy được (cần git) tới khi người dùng chạy `sudo xcodebuild -license`.
+- Kết quả cuối (2026-10-19T13:17+07:00, sau khi người dùng chạy `sudo xcodebuild -license accept` và nhắn "bạn làm tiếp phần app CARE-06/CARE-12/nhiệm vụ lặp lại đi"): git/Python/Flutter chạy lại bình thường. App: CARE-06 lưu khoảnh khắc qua server (tải ảnh + Idempotency-Key), CARE-12 đọc/lưu cài đặt server (mức bảng cả nhà, tuỳ chọn của tôi, chỉ gửi phần đổi), việc tự gõ có "Lặp lại" tạo chuỗi trên server (hằng ngày/ngày thường/cuối tuần/chọn thứ). Checklist 80/165: tick CARE-06, CARE-12 (cùng job bày bảng sáng và §8 trước đó); nhiệm vụ lặp lại giữ 🟡 vì chưa có màn tạm dừng/dừng chuỗi.
+- Bằng chứng kiểm tra: app `make check` EXIT=0 (analyze sạch, 748 test); backend `npm run check` EXIT=0 (unit 262, e2e 35); `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT=0 (37 suite, 314 test).
+- Việc còn lại: màn quản lý chuỗi lặp (tạm dừng/dừng); chứng minh catalog đủ 90 ngày không trùng cho mọi độ tuổi; bộ đếm `active_series`; push "bảng hôm nay" theo `boardPushTime`; chưa chạy simulator.
+- Trạng thái: Hoàn thành (phần còn lại ghi ở trên).
+
+<a id="bf-20261019-004"></a>
+## BF-20261019-004 — Papa & Mama §11 + Family Circle §12: 2 Codex làm backend song song, Claude nối app
+
+- Ngày làm: 2026-10-19T13:22:50+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp các mục MVP còn trống kế tiếp trong checklist (Papa & Mama §11, Family Circle §12), chia việc cho Codex và bạn. Xong thì tick checklist."
+- Liên quan: BF-20261019-003.
+- Role: ORCHESTRATOR (chia việc, review, tích hợp), BACKEND (2 phiên Codex CLI song song: A — Circle mời/quản lý người thân; B — duyệt ảnh, ACL/CIR-05, US-15, lời cảm ơn → ký ức), MOBILE (Claude nối app), TESTER, QUALITY.
+- Phân tích: backend chia hai phạm vi file không chồng nhau; Claude đăng ký DI, bật tải ảnh JOURNAL riêng tư (`private_owner_user_id`, không dùng lại bản sao của người khác), sửa fixture album theo luật CIR-05 mới. App: `FamilyRemoteServiceImp` phản chiếu người thân/lời mời/quyền từ `/circle`, `/invites/circle`, `/circle-members/*`; `MemoryLibraryRemoteServiceImp` duyệt ảnh người thân qua `pending-review`/approve/reject; `UsRemoteServiceImp` tải ảnh nhật ký (JOURNAL), gửi đề nghị đăng lời cảm ơn, đọc/lưu `/me/us-settings`.
+- Kết quả: checklist tick FAM-01/03/04-06/05, MEM-19, US-15, ảnh nhật ký riêng (87/165); ACL, CIR-05, rời gia đình, CIR-* và lời cảm ơn → khoảnh khắc để 🟡/❌ đúng hiện trạng. `docs/api.md` có mục mới.
+- Bằng chứng: app `make check` EXIT 0 (analyze sạch, 753 test); backend `npm run check` EXIT 0 (unit 262, e2e 35); `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT 0 (41 suite, 353 pass, 1 todo). Chưa chạy simulator.
+- Còn lại: app của người thân (CIR-WAIT, CIR-01…06, CIR-05, rời gia đình); màn bạn đời duyệt đăng lời cảm ơn; Circle tải ảnh lên (media service còn chỉ cho Parent); ACL bé gắn lẫn ở milestone/profile-stats; định tuyến thông báo sự kiện duyệt ảnh; ảnh nhật ký riêng chưa có URL xem trong media view.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Còn lại”).
+
+## BF-20261019-005 — Circle tải ảnh, ACL bé gắn lẫn, thông báo duyệt ảnh (Codex) + app người thân CIR-*, màn duyệt lời cảm ơn (Claude)
+
+- Ngày làm: 2026-10-19T14:06:38+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Đợt tiếp: Codex cho Circle tải ảnh lên + ACL bé gắn lẫn + thông báo duyệt ảnh, còn bạn nối app người thân CIR-WAIT/CIR-01…06, CIR-05, rời gia đình và màn duyệt lời cảm ơn. Xong thì tick checklist."
+- Liên quan: BF-20261019-004.
+- Role: ORCHESTRATOR (chia việc, review, tích hợp), BACKEND (Codex CLI: Circle tải ảnh, ACL bé gắn lẫn, thông báo duyệt ảnh; Claude thêm quyền theo bé vào `/me/circles`), MOBILE (Claude), TESTER, QUALITY (tự review diff Codex — không có reviewer độc lập).
+- Phân tích: app người thân đã có UI mock; bản server phản chiếu tư cách người thân từ `/me/circles` vào phiên trên máy (chờ duyệt → CIR-WAIT, ACTIVE → CIR-01, PAUSED → CIR-05) rồi dùng lại logic hiển thị mock. `CircleRemoteServiceImp` đọc bảng tin qua memory service bản server (ẩn bài đang chờ duyệt), lời chúc/thả tim/đăng ảnh qua API ký ức, rời gia đình qua `/circle/leave`. `SessionRemoteServiceImp` xem trước/nhận lời mời CIRCLE. Bức tường cảm ơn có nút “Đăng cho cả nhà / Để riêng hai mình” cho người nhận (`share-respond`). Family service không gọi `/circle` khi là người thân.
+- Kết quả: checklist tick thêm 5 dòng (lời cảm ơn → khoảnh khắc, CIR-WAIT/CIR-01…06, ACL §6.3, CIR-05, rời gia đình) → 92/165. `docs/api.md` có mục BF-005.
+- Bằng chứng: app `make check` EXIT 0 (analyze sạch, 756 test; mới: 2 test người thân trong session_remote_test, 1 test duyệt lời cảm ơn); backend `npm run check` EXIT 0 (unit 267, e2e 35); `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT 0 (41 suite, 362 test). Codex báo thêm 72/72 test ở 7 spec liên quan. Chưa chạy simulator; chưa chạy seed catalog thông báo v4.
+- Còn lại: chạy seed `notification-templates.json` v4 khi triển khai; tuỳ chọn thông báo/bản tin người thân (CIR-06) và “gỡ nội dung khi rời” chưa có API; tên tác giả ký ức trên app người thân chưa có (không có danh sách Bố/Mẹ); CIR-05 giữa phiên chỉ chuyển màn khi trang chủ tải lại; dọn nhỏ backend: `requireContentAccess` optional, kind IMAGE/VIDEO viết cứng trong media service.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Còn lại”).
+
+## BF-20261019-006 — Cài đặt thông báo/AI, tìm kiếm, báo cáo/chặn (2 Codex) + app gói dịch vụ, hồ sơ, nháp và nối API mới (Claude)
+
+- Ngày làm: 2026-10-19T17:08:14+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp các mục MVP còn trống kế tiếp trong checklist, chia việc cho Codex và bạn. Xong thì tick checklist."
+- Liên quan: BF-20261019-005.
+- Role: ORCHESTRATOR, BACKEND, MOBILE, TESTER, QUALITY — tất cả do Claude làm (tự review, không có reviewer độc lập). Ban đầu giao 2 phiên Codex (A: cài đặt thông báo/AI; B: tìm kiếm/báo cáo/chặn) nhưng Codex hết quota ngay (không sửa file nào); Antigravity cho phần A dừng ngay vì allowlist lệnh headless (không tự sửa cấu hình agy). Người dùng yêu cầu bỏ chờ Codex B, Claude tự làm.
+- Phân tích: backend dùng schema có sẵn, không migration — `user_settings` (notification_prefs/quiet/hide preview/circle digest/ai), `memories.search_tsv` (unaccent + GIN, trigger có sẵn), `reports`/`report_hides`/`blocks`. Thêm `PreferenceSettingsController/Service/Repository` (+ policy v1), `SafetyController/Service/Repository` (+ policy v1), `viewerExclusions` áp cho feed/timeline/tìm kiếm/bình luận, route `/search`, `/on-this-day` trong memory controller. App: `FamilyRemoteServiceImp` đọc `/billing/plans` + `/families/:fid/billing` và phản chiếu gói/hạn/dung lượng/ân hạn vào gói trên máy; `SettingsRemoteServiceImp` PATCH /me (tên), cài đặt thông báo/AI (ánh xạ nhóm/mã), chặn theo userId; `MemoryRemoteServiceImp` nháp trên tài khoản (danh sách, xoá), tìm kiếm, ngày này năm xưa, báo cáo (thêm tham số `ReportTarget`). Màn người thân: chặn rồi gỡ qua Family service.
+- Kết quả: checklist tick thêm 9 dòng (cài đặt thông báo, MEM-15, MEM-16, RPT-01, RPT-02, catalog gói, SUB-03, PATCH /me, cài đặt AI) → 101/165; MEM-18 và SUB-06/07 cập nhật 🟡/App ✅. `docs/api.md` có mục BF-006.
+- Bằng chứng: app `make check` EXIT 0 (analyze sạch, 765 test; mới ở family_remote +2, settings_remote +4, subject_memory_remote +3); backend `npm run check` EXIT 0 (unit 267, e2e 35); `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT 0 (43 suite, 372 test; mới preference-settings-api 5, search-safety-api 5). Chưa chạy simulator.
+- Còn lại: job gom bản tin người thân (DIGEST) và thông báo ký ức cho Circle; moderation case/Admin xử lý báo cáo; ẩn cảm xúc người bị chặn, lưới ảnh/album chưa áp chặn; tiếp tục soạn nháp từ tài khoản; IAP/giá từ Store; `analysis_options` loại trừ thư mục test nên `flutter analyze` không bắt lỗi test (tests vẫn biên dịch khi chạy).
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Còn lại”).
+
+## BF-20261019-007 — Recap tuần + số liệu HOME-01, avatar hồ sơ + ảnh bé qua bootstrap (2 Codex) + app video/multipart, sửa ảnh ký ức, chi tiết từ server (Claude)
+
+- Ngày làm: 2026-10-19T18:39:45+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp các mục MVP còn trống kế tiếp trong checklist, chia việc cho Codex và bạn. Xong thì tick checklist."
+- Liên quan: BF-20261019-006.
+- Role: ORCHESTRATOR (chia việc, review, tích hợp DI/worker), BACKEND (2 phiên Codex CLI song song: A — recap tuần + số liệu HOME-01; B — avatar tài khoản AUTH-04 + URL ảnh hồ sơ/ảnh bé), MOBILE (Claude), TESTER, QUALITY (Claude tự review diff Codex; Codex báo có reviewer phụ đọc code).
+- Phân tích: Codex A thêm `WeeklyRecapController/Service/Repository`, job `recap.weekly-build` (queue `recaps`, worker riêng), `/home/week-stats`; Codex B thêm pipeline ảnh tài khoản (`ProfileImageController/Service/Repository`, dọn trong `media.purge-orphans`), `avatarUrl` ở /me, bootstrap, circle, overview. Claude đăng ký DI API + worker; sửa lỗi tích hợp: 4 service bắt buộc `PROFILE_IMAGE_SERVICE` làm vỡ các module test cũ → `@Optional()` + null object `NO_PROFILE_IMAGES` (ứng dụng/worker thật luôn bind service thật), cập nhật kỳ vọng test cho trường avatar mới, stub trong test bản build. App: video (`pickMultipleMedia`, đọc thời lượng bằng video_player, kiểm giới hạn gói, `durationMs`), multipart (PUT từng part + ETag), sửa ký ức đổi ảnh (`mediaAssetIds` song song khi mirror → add/remove/cover), `refreshMemory` cho chi tiết/xem ảnh/bình luận, recap tuần + “Tuần này” từ server, avatar hồ sơ (chọn ảnh, tải lên, `PATCH /me`), ảnh bé + avatar của tôi mirror qua bootstrap//me.
+- Kết quả: checklist tick 7 dòng (avatar AUTH-04, ảnh bé, MEM-07, đổi ảnh khi sửa, upload video, REC-02, HOME-01) → 108/165; multipart/MEM-06 để 🟡. `docs/api.md` mục BF-007 + 2 handoff của Codex trong `baby-backend/docs/handoffs/`.
+- Bằng chứng: app `make check` EXIT 0 (analyze sạch, 770 test; cập nhật 2 widget test theo hành vi mới); backend `npm run check` EXIT 0 (unit 267, e2e 35, test bản build); integration lần cuối EXIT 0 (47 suite, 392 test). Lần chạy toàn bộ trước đó `push-delivery.spec` lỗi 18 test nhưng chạy riêng đạt 18/18 và lần toàn bộ kế tiếp đạt — ghi nhận là chập chờn khi chạy chung, chưa tìm nguyên nhân. Codex A: 6 test spec recap; Codex B: 14 integration + 41 unit. Chưa chạy simulator; chưa thử BullMQ/Redis thật cho job recap.
+- Còn lại: hàng đợi tải nền MEM-06; chia sẻ/lưu recap lên server; recap tháng; tìm nguyên nhân `push-delivery` chập chờn khi chạy toàn bộ; ảnh đại diện Bố/Mẹ còn lại và người thân hiển thị từ `avatarUrl` (đã có trong API, app chưa dùng).
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Còn lại”).
+
+## BF-20261019-008 — Xoá gia đình + quyền riêng tư, ảnh tháng + chương tháng + Accept-Language (2 Codex) + app MEM-06, SW-01, hiển thị, FAM-07 (Claude)
+
+- Ngày làm: 2026-10-19T22:23:53+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp các mục MVP còn trống kế tiếp trong checklist, chia việc cho Codex và bạn. Xong thì tick checklist."
+- Liên quan: BF-20261019-007.
+- Role: ORCHESTRATOR (chia việc, review, tích hợp DI/worker/interceptor), BACKEND (2 phiên Codex CLI: A — xoá gia đình + privacy overview; B — ảnh tháng, thẻ chương/recap trên timeline, Accept-Language), MOBILE (Claude), TESTER, QUALITY (Claude tự review; Codex báo có reviewer phụ).
+- Phân tích: đăng ký `FamilyErasure/FamilyPrivacy/MonthlyPhotoSelection` controller, provider timeline/locale/notification text, worker `family.deletion-executor`, `RequestLocaleInterceptor`. Sửa tích hợp: lỗi 5xx của Nest giữ thông điệp vận hành gốc trong `error.details` (readiness e2e); `push-delivery.repository` đóng lần gửi bỏ dở bằng chọn hàng theo id `FOR UPDATE SKIP LOCKED` thay cho UPDATE nhiều hàng không thứ tự (nguy cơ deadlock giữa worker). App: MEM-06 tải nền (`create(deferUpload:)`, ký ức tạm có tiến độ, thử lại/huỷ, ký ức tạm sót sau khi mở lại → nháp); SW-01 bé không còn trong bootstrap → lưu trữ; SET-06 hiển thị lưu trên máy + `/me/settings` + áp khi mở app; SET-04 `/privacy-overview`; màn “Xoá gia đình” (OTP, chờ đồng ý, hẹn xoá, huỷ); ảnh tháng đọc/ghi server. FAM-07 (ảnh bìa, múi giờ IANA, ngôn ngữ nội dung) chưa làm vì cần backend.
+- Kết quả: checklist tick 7 dòng (SW-01, multipart/MEM-06, MEM-20/21, bảng quyền riêng tư, đồng bộ hiển thị, xoá gia đình, Accept-Language) → 115/165; thẻ timeline từ server App 🟡. `docs/api.md` mục BF-008 + 2 handoff Codex.
+- Bằng chứng: app `make check` EXIT 0 (analyze sạch, 774 test); backend `npm run check` EXIT 0 (unit 267, e2e 35, sau khi sửa filter). Integration: Codex A 15/15, Codex B 33/33 chạy riêng; toàn bộ 3 lần: lần 1 lỗi `media-api` (MinIO tạm không phản hồi) + `push-delivery` (deadlock), lần 2 chỉ `push-delivery`, lần 3 (sau sửa thứ tự khoá) `push-delivery` deadlock ở bước khoá `users` + `circle-content-acl` 500 một test. Chạy riêng: `push-delivery` 18/18, `media-api` + `push-delivery` 25/25, `circle-content-acl` 13/13. **Integration toàn bộ chưa xanh** — chập chờn khi chạy chung, chưa tìm ra nguyên nhân gốc.
+- Còn lại: điều tra deadlock/độc lập dữ liệu của `push-delivery.spec` khi chạy toàn bộ (đề xuất phiên riêng); app đọc thẻ chương/recap từ `/timeline`; FAM-07 ảnh bìa/múi giờ/ngôn ngữ nội dung; thông báo cho sự kiện xoá gia đình.
+- Trạng thái: Hoàn thành phần tính năng; kiểm thử integration toàn bộ còn lỗi chập chờn (xem “Bằng chứng”).
+
+<a id="bf-20261019-009"></a>
+## BF-20261019-009 — Điều tra và sửa deadlock chập chờn của push-delivery.spec khi chạy toàn bộ integration
+
+- Ngày làm: 2026-10-19T23:06:04+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: (phiên phụ do phiên BF-20261019-008 giao) tìm nguyên nhân gốc lỗi `40P01 deadlock detected` tại bước khoá `app.users` trong `PushDeliveryRepository.claim` khi chạy toàn bộ `npm run test:integration`, sửa ở repository/service (hoặc fixture/cleanup nếu do độc lập dữ liệu giữa spec), không commit; xong khi integration toàn bộ 2 lần liên tiếp EXIT 0 và `npm run check` EXIT 0.
+- Liên quan: BF-20261019-008.
+- Role: Chủ trì BACKEND; hỗ trợ DBA (thứ tự khoá PostgreSQL); review TESTER, QUALITY (góc nhìn do agent chính tự áp dụng, không có reviewer độc lập).
+- Trạng thái: Hoàn thành.
+- Phân tích: Test DB còn 313 delivery PUSH của 129 user do spec khác để lại; `push-delivery.spec` dùng `now=2030` nên `claim` (quét toàn cục `next_attempt_at<=now`) xử lý cả dữ liệu đó. Mỗi lần `claim` cũ quét tới 100 delivery trong **một** transaction và khoá user người nhận của từng delivery (thứ tự tuỳ ý, giữ tới cuối transaction) → hai claim song song của test “concurrent claims” khoá user chéo nhau → `40P01`; job bị ngắt để lại `job_runs` RUNNING → bước dọn lỗi `PENDING_WORK_RETENTION_FORBIDDEN`. Chạy riêng spec không có dữ liệu lạ nên luôn đạt. Lỗi thật cả ở production khi nhiều worker push cùng chạy và có nhiều người nhận.
+- Kết quả: `src/repositories/push-delivery.repository.ts`: `claim` tách thành transaction đóng lần gửi bỏ dở + vòng `claimNext` — mỗi transaction chỉ xét một delivery (fence lease, khoá delivery `SKIP LOCKED`, khoá một user), quyết định huỷ/dời/hết lượt commit ngay; interface/service không đổi. `test/integration/push-delivery.spec.ts`: đổi mốc thời gian sang 2020 (trước mọi dữ liệu thời gian thật của spec khác) để claim toàn cục chỉ thấy delivery của spec; `joinedAt` cố định 2019 cho Parent/Circle fixture, `birthDate` bé 2018. `docs/api.md` mục Push thêm ghi chú hành vi đồng thời.
+- Kiểm chứng: `npm run test:integration -- test/integration/push-delivery.spec.ts` 18/18; `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` toàn bộ 2 lần liên tiếp đều EXIT 0 (51 suite, 424 test mỗi lần); `npm run check` EXIT 0 (unit 267, e2e 35). Không có reviewer độc lập (agent chính tự review). Không commit.
+- Còn lại: Test DB vẫn giữ dữ liệu cũ của các spec khác (không xoá vì ngoài phạm vi); `claim` vẫn trả `null` khi hết ngân sách quét 100 delivery trong một lần (lần chạy sau tiếp tục) — giữ nguyên hành vi cũ.
+- Product history: [BF-20261019-009](PRODUCT_ANALYTICS_HISTORY.md#bf-20261019-009).
+
+## BF-20261019-009 — FAM-07/FAM-08, MEM-25 + PARTNER_LEFT (2 Codex) + app MEM-08 video, thẻ timeline server, giữ phiên khi mất mạng (Claude)
+
+- Ngày làm: 2026-10-19T23:06:23+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp các mục MVP còn trống kế tiếp trong checklist, chia việc cho Codex và bạn. Xong thì tick checklist."
+- Liên quan: BF-20261019-008.
+- Role: ORCHESTRATOR, BACKEND, MOBILE, TESTER, QUALITY — Claude làm toàn bộ (tự review). Đã giao 2 phiên Codex (A: FAM-07/FAM-08; B: MEM-25 + PARTNER_LEFT) nhưng Codex hết quota ngay (không sửa file nào, mở lại 23:40); theo cách người dùng chọn ở BF-006, Claude tự làm thay vì chờ và huỷ lịch hẹn chạy lại Codex. Song song có phiên [Sửa deadlock push-delivery] do người dùng khởi chạy, sửa `push-delivery.*` (đợt này không đụng các file đó).
+- Phân tích: backend — `GET /children/:id/today-story` (dùng ACL/loại trừ + `project` của feed, theo `occurred_local_date`), `activeChildren` cho xem trước lời mời bạn đời khi `PARTNER_LEFT` (rà US-00: các phần khác đã có), FAM-07 `contentLocale` + `coverAssetId`/`coverUrl` (cột có sẵn, ký URL qua `ProfileImageService.familyCover`). App — MEM-08 phát video (`_displayUrl` poster, `mediaVideos` v1080, `_ViewerVideo`), thẻ chương tháng dùng thẻ `CHAPTER` của `/timeline` (lưu `serverChapters` trên hàng bé), giữ phiên khi mất mạng (bản chụp `exportSnapshot/importSnapshot` + `IOfflineSnapshotRepository` mã hoá LocalStore, nạp khi mở app nguội mà server không phản hồi), MEM-25 `stories()` từ server, FAM-07 chọn ảnh bìa + đổi ngôn ngữ nội dung, xem trước lời mời bạn đời có tên bé. FAM-08 để lại (cần đồng bộ lại phiên theo gia đình được chọn).
+- Kết quả: checklist tick 4 dòng (PARTNER_LEFT, giữ phiên khi mất mạng, MEM-08, MEM-25) → 119/165; FAM-07 và thẻ timeline cập nhật 🟡. `docs/api.md` mục BF-009.
+- Bằng chứng: app `make check` EXIT 0 (analyze sạch, 778 test; mới: subject_memory_remote +3, session_remote (mất mạng nguội), family_remote +1); backend `npm run check` EXIT 0 (unit 270 gồm onboarding-partner-left 2 + FAM-07 1; e2e 35); `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT 0 (51 suite, 425 test — xanh toàn bộ sau bản sửa deadlock của phiên kia; search-safety-api thêm MEM-25). Chưa chạy simulator.
+- Còn lại: FAM-08 chuyển gia đình; múi giờ FAM-07 (danh mục IANA trên app); thẻ recap tuần trên dòng thời gian; ảnh bé trong xem trước lời mời bạn đời.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Còn lại”).
+
+## BF-20261019-010 — Support ticket + kiểm duyệt, allowlist khi hết hạn + SUB-06/07 (2 Codex) + app đổi số, ghi âm, chuỗi nhiệm vụ, nháp tài khoản (Claude)
+
+- Ngày làm: 2026-10-20T07:40:42+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp các mục MVP còn trống kế tiếp trong checklist, chia việc cho Codex và bạn. Xong thì tick checklist."
+- Liên quan: BF-20261019-009.
+- Role: ORCHESTRATOR (chia việc, tích hợp), BACKEND (Codex A: support ticket + gom ca kiểm duyệt; Codex B: allowlist §6.5 + nhắc gia hạn SUB-06/07; Claude: đăng ký DI/worker), MOBILE (Claude: đổi số, chuỗi nhiệm vụ, gửi yêu cầu hỗ trợ), TESTER, QUALITY (Claude rà handoff, sửa kỳ vọng test cũ). Codex A/B chạy song song đủ quota; báo cáo ở `baby-backend/docs/handoffs/BF-20261019-010-A.md`, `-B.md`.
+- Phân tích: Codex để lại composition root cho bên tích hợp → Claude đăng ký `SupportHelpdeskController`, provider support/moderation/subscription-reminder ở API và worker, lịch + nhánh `moderation.reconcile-sla` trong `MaintenanceQueueWorker`, `SubscriptionReminderQueueWorker`; thêm `SUPPORT_ENCRYPTION_KEY` (tuỳ chọn, base64 32 byte) vào `environment.ts`/`.env.example` (không sửa `.env`). API không có `JOB_RUNNER_SERVICE` nên `ModerationWorkflowService` nhận runner `@Optional` (chỉ worker chạy job). Allowlist §6.5 của B đổi có chủ đích hồ sơ gia đình sang mode `read` và cho BLOCKED tải dữ liệu → cập nhật 2 unit + 1 e2e cũ. App: màn đổi số (`/settings/phone`), mục “Chuỗi lặp lại” trong Cài đặt nhiệm vụ (`missionSeries/pauseSeries/endSeries`, ngày MO..SU → 1..7, quản lý chuỗi của tôi/Cùng nhau), màn gửi yêu cầu hỗ trợ (`/settings/help/request`, danh mục từ server, danh sách đã gửi; chỉ gửi nội dung người dùng nhập + id gia đình đang mở). Ghi âm (VOICE) và tiếp tục nháp từ tài khoản (MEM-18) không làm đợt này.
+- Kết quả: checklist tick 5 dòng (chuỗi nhiệm vụ, kiểm duyệt, SUB-06/07, allowlist §6.5, support ticket) → 124/165; dòng đổi số cập nhật App 🟡 (còn liên kết Apple/Google). `docs/api.md` mục BF-010.
+- Bằng chứng: app `make check` EXIT 0 (analyze sạch, 781 test; mới: care_remote CARE-03 series, settings_remote phone change + support). Backend `npm run check` EXIT 0 (unit 272, e2e 35, compiled); `npx eslint --max-warnings=0 src test` EXIT 0; `generate:services`/`generate:persistence --check` EXIT 0; `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT 0 (56 suite, 465 test). Chưa chạy Redis/BullMQ/FCM thật, chưa chạy simulator, chưa seed catalog template v5 vào DB.
+- Còn lại: seed catalog thông báo v5 (BILLING) theo quy trình riêng; đặt `SUPPORT_ENCRYPTION_KEY` khi triển khai; CSKH trả lời/route kiểm duyệt cần admin auth (Admin CMS); app xem/nhắn tiếp ticket, tải tệp SUPPORT; app đọc `statusBanner`; liên kết Apple/Google; ghi âm VOICE; MEM-18 nháp từ tài khoản; FAM-08, múi giờ FAM-07.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Còn lại”; tiêu đề nêu ghi âm/nháp tài khoản nhưng hai phần này chưa làm).

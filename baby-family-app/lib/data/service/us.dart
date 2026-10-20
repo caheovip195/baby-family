@@ -66,11 +66,14 @@ abstract class IUsService extends IBaseService {
   Future<void> setReminder(String id, DateTime at);
 
   /// US-05.
+  /// [proposeFamilyMoment]: đề nghị đăng thành khoảnh khắc gia đình (bạn đời
+  /// duyệt mới đăng).
   Future<Thanks> sendThanks({
     required String body,
     String? sticker,
     String? missionId,
     String? memoryId,
+    bool proposeFamilyMoment = false,
   });
 
   Future<List<Thanks>> thanks();
@@ -85,6 +88,10 @@ abstract class IUsService extends IBaseService {
 
   /// Thả / bỏ tim một lời cảm ơn.
   Future<void> toggleThanksHeart(String thanksId);
+
+  /// Người nhận duyệt ([approve]) / để riêng đề nghị đăng lời cảm ơn thành
+  /// khoảnh khắc gia đình; duyệt thì tạo ký ức cho cả nhà.
+  Future<void> respondThanksShare(String thanksId, {required bool approve});
 
   /// US-07: nhật ký riêng của tôi, mới nhất trước — không bao giờ của bạn đời.
   Future<List<JournalEntry>> journal();

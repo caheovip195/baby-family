@@ -14,7 +14,15 @@ mixin LocalStoreKey {
 
   /// Ngôn ngữ người dùng chọn (`AppLanguage.code`).
   static const String languageKey = 'language';
+  static const String displayKey = 'display';
+  static const String offlineSnapshotKey = 'offline_snapshot';
 
   /// Bé đang chọn ở Child Switcher, lưu theo từng gia đình.
   static const String selectedSubjectPrefix = 'selected_subject_';
+
+  /// Gia đình đã xong thiết lập ONB-ACT → ONB-09 trên máy này (`setupDone_{fid}`).
+  static const familySetupDonePrefix = 'setupDone_';
+
+  /// Lời mời bạn đời vừa tạo (mã/link chỉ trả một lần) — lưu mã hoá.
+  static const partnerInvitePrefix = 'partnerInvite_';
 }

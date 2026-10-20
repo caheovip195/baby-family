@@ -46,7 +46,7 @@ class _AlbumCover extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             if (asset != null)
-              Image.asset(asset, fit: BoxFit.cover)
+              Image(image: mediaImageProvider(asset), fit: BoxFit.cover)
             else
               ColoredBox(
                 color: AppColors.resolve(context, kColorSurfaceVariantF7F1EC),

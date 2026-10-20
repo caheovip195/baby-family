@@ -1,0 +1,1016 @@
+[
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W04",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 4,
+    "data": {
+      "emoji": "🌱",
+      "lengthCm": 0.1,
+      "label": "hạt nhỏ",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W04",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 4,
+    "data": {
+      "emoji": "🌱",
+      "lengthCm": 0.1,
+      "label": "a tiny seed",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W05",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 5,
+    "data": {
+      "emoji": "🌱",
+      "lengthCm": 0.6,
+      "label": "hạt nhỏ",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W05",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 5,
+    "data": {
+      "emoji": "🌱",
+      "lengthCm": 0.6,
+      "label": "a tiny seed",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W06",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 6,
+    "data": {
+      "emoji": "🌱",
+      "lengthCm": 1.1,
+      "label": "hạt nhỏ",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W06",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 6,
+    "data": {
+      "emoji": "🌱",
+      "lengthCm": 1.1,
+      "label": "a tiny seed",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W07",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 7,
+    "data": {
+      "emoji": "🌱",
+      "lengthCm": 1.5,
+      "label": "hạt nhỏ",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W07",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 7,
+    "data": {
+      "emoji": "🌱",
+      "lengthCm": 1.5,
+      "label": "a tiny seed",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W08",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 8,
+    "data": {
+      "emoji": "🫐",
+      "lengthCm": 2,
+      "label": "quả mâm xôi",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W08",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 8,
+    "data": {
+      "emoji": "🫐",
+      "lengthCm": 2,
+      "label": "a raspberry",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W09",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 9,
+    "data": {
+      "emoji": "🫐",
+      "lengthCm": 3.0,
+      "label": "quả mâm xôi",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W09",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 9,
+    "data": {
+      "emoji": "🫐",
+      "lengthCm": 3.0,
+      "label": "a raspberry",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W10",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 10,
+    "data": {
+      "emoji": "🫐",
+      "lengthCm": 4.0,
+      "label": "quả mâm xôi",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W10",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 10,
+    "data": {
+      "emoji": "🫐",
+      "lengthCm": 4.0,
+      "label": "a raspberry",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W11",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 11,
+    "data": {
+      "emoji": "🫐",
+      "lengthCm": 5.0,
+      "label": "quả mâm xôi",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W11",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 11,
+    "data": {
+      "emoji": "🫐",
+      "lengthCm": 5.0,
+      "label": "a raspberry",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W12",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 12,
+    "data": {
+      "emoji": "🍋",
+      "lengthCm": 6,
+      "label": "quả chanh",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W12",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 12,
+    "data": {
+      "emoji": "🍋",
+      "lengthCm": 6,
+      "label": "a lime",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W13",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 13,
+    "data": {
+      "emoji": "🍋",
+      "lengthCm": 7.5,
+      "label": "quả chanh",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W13",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 13,
+    "data": {
+      "emoji": "🍋",
+      "lengthCm": 7.5,
+      "label": "a lime",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W14",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 14,
+    "data": {
+      "emoji": "🍋",
+      "lengthCm": 9.0,
+      "label": "quả chanh",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W14",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 14,
+    "data": {
+      "emoji": "🍋",
+      "lengthCm": 9.0,
+      "label": "a lime",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W15",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 15,
+    "data": {
+      "emoji": "🍋",
+      "lengthCm": 10.5,
+      "label": "quả chanh",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W15",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 15,
+    "data": {
+      "emoji": "🍋",
+      "lengthCm": 10.5,
+      "label": "a lime",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W16",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 16,
+    "data": {
+      "emoji": "🥑",
+      "lengthCm": 12,
+      "label": "quả bơ",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W16",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 16,
+    "data": {
+      "emoji": "🥑",
+      "lengthCm": 12,
+      "label": "an avocado",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W17",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 17,
+    "data": {
+      "emoji": "🥑",
+      "lengthCm": 15.2,
+      "label": "quả bơ",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W17",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 17,
+    "data": {
+      "emoji": "🥑",
+      "lengthCm": 15.2,
+      "label": "an avocado",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W18",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 18,
+    "data": {
+      "emoji": "🥑",
+      "lengthCm": 18.5,
+      "label": "quả bơ",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W18",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 18,
+    "data": {
+      "emoji": "🥑",
+      "lengthCm": 18.5,
+      "label": "an avocado",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W19",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 19,
+    "data": {
+      "emoji": "🥑",
+      "lengthCm": 21.8,
+      "label": "quả bơ",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W19",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 19,
+    "data": {
+      "emoji": "🥑",
+      "lengthCm": 21.8,
+      "label": "an avocado",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W20",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 20,
+    "data": {
+      "emoji": "🍌",
+      "lengthCm": 25,
+      "label": "quả chuối",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W20",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 20,
+    "data": {
+      "emoji": "🍌",
+      "lengthCm": 25,
+      "label": "a banana",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W21",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 21,
+    "data": {
+      "emoji": "🍌",
+      "lengthCm": 26.2,
+      "label": "quả chuối",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W21",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 21,
+    "data": {
+      "emoji": "🍌",
+      "lengthCm": 26.2,
+      "label": "a banana",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W22",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 22,
+    "data": {
+      "emoji": "🍌",
+      "lengthCm": 27.5,
+      "label": "quả chuối",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W22",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 22,
+    "data": {
+      "emoji": "🍌",
+      "lengthCm": 27.5,
+      "label": "a banana",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W23",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 23,
+    "data": {
+      "emoji": "🍌",
+      "lengthCm": 28.8,
+      "label": "quả chuối",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W23",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 23,
+    "data": {
+      "emoji": "🍌",
+      "lengthCm": 28.8,
+      "label": "a banana",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W24",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 24,
+    "data": {
+      "emoji": "🌽",
+      "lengthCm": 30,
+      "label": "bắp ngô",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W24",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 24,
+    "data": {
+      "emoji": "🌽",
+      "lengthCm": 30,
+      "label": "an ear of corn",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W25",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 25,
+    "data": {
+      "emoji": "🌽",
+      "lengthCm": 31.8,
+      "label": "bắp ngô",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W25",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 25,
+    "data": {
+      "emoji": "🌽",
+      "lengthCm": 31.8,
+      "label": "an ear of corn",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W26",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 26,
+    "data": {
+      "emoji": "🌽",
+      "lengthCm": 33.5,
+      "label": "bắp ngô",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W26",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 26,
+    "data": {
+      "emoji": "🌽",
+      "lengthCm": 33.5,
+      "label": "an ear of corn",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W27",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 27,
+    "data": {
+      "emoji": "🌽",
+      "lengthCm": 35.2,
+      "label": "bắp ngô",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W27",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 27,
+    "data": {
+      "emoji": "🌽",
+      "lengthCm": 35.2,
+      "label": "an ear of corn",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W28",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 28,
+    "data": {
+      "emoji": "🍆",
+      "lengthCm": 37,
+      "label": "quả cà tím",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W28",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 28,
+    "data": {
+      "emoji": "🍆",
+      "lengthCm": 37,
+      "label": "an eggplant",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W29",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 29,
+    "data": {
+      "emoji": "🍆",
+      "lengthCm": 38.2,
+      "label": "quả cà tím",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W29",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 29,
+    "data": {
+      "emoji": "🍆",
+      "lengthCm": 38.2,
+      "label": "an eggplant",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W30",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 30,
+    "data": {
+      "emoji": "🍆",
+      "lengthCm": 39.5,
+      "label": "quả cà tím",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W30",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 30,
+    "data": {
+      "emoji": "🍆",
+      "lengthCm": 39.5,
+      "label": "an eggplant",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W31",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 31,
+    "data": {
+      "emoji": "🍆",
+      "lengthCm": 40.8,
+      "label": "quả cà tím",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W31",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 31,
+    "data": {
+      "emoji": "🍆",
+      "lengthCm": 40.8,
+      "label": "an eggplant",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W32",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 32,
+    "data": {
+      "emoji": "🥬",
+      "lengthCm": 42,
+      "label": "cây cải thảo",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W32",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 32,
+    "data": {
+      "emoji": "🥬",
+      "lengthCm": 42,
+      "label": "a napa cabbage",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W33",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 33,
+    "data": {
+      "emoji": "🥬",
+      "lengthCm": 43.2,
+      "label": "cây cải thảo",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W33",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 33,
+    "data": {
+      "emoji": "🥬",
+      "lengthCm": 43.2,
+      "label": "a napa cabbage",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W34",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 34,
+    "data": {
+      "emoji": "🥬",
+      "lengthCm": 44.5,
+      "label": "cây cải thảo",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W34",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 34,
+    "data": {
+      "emoji": "🥬",
+      "lengthCm": 44.5,
+      "label": "a napa cabbage",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W35",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 35,
+    "data": {
+      "emoji": "🥬",
+      "lengthCm": 45.8,
+      "label": "cây cải thảo",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W35",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 35,
+    "data": {
+      "emoji": "🥬",
+      "lengthCm": 45.8,
+      "label": "a napa cabbage",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W36",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 36,
+    "data": {
+      "emoji": "🍈",
+      "lengthCm": 47,
+      "label": "quả dưa lưới",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W36",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 36,
+    "data": {
+      "emoji": "🍈",
+      "lengthCm": 47,
+      "label": "a cantaloupe",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W37",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 37,
+    "data": {
+      "emoji": "🍈",
+      "lengthCm": 48.0,
+      "label": "quả dưa lưới",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W37",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 37,
+    "data": {
+      "emoji": "🍈",
+      "lengthCm": 48.0,
+      "label": "a cantaloupe",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W38",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 38,
+    "data": {
+      "emoji": "🍈",
+      "lengthCm": 49.0,
+      "label": "quả dưa lưới",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W38",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 38,
+    "data": {
+      "emoji": "🍈",
+      "lengthCm": 49.0,
+      "label": "a cantaloupe",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W39",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 39,
+    "data": {
+      "emoji": "🍈",
+      "lengthCm": 50.0,
+      "label": "quả dưa lưới",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W39",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 39,
+    "data": {
+      "emoji": "🍈",
+      "lengthCm": 50.0,
+      "label": "a cantaloupe",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W40",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 40,
+    "data": {
+      "emoji": "🍉",
+      "lengthCm": 51,
+      "label": "quả dưa hấu nhỏ",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W40",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 40,
+    "data": {
+      "emoji": "🍉",
+      "lengthCm": 51,
+      "label": "a small watermelon",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W41",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 41,
+    "data": {
+      "emoji": "🍉",
+      "lengthCm": 51,
+      "label": "quả dưa hấu nhỏ",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W41",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 41,
+    "data": {
+      "emoji": "🍉",
+      "lengthCm": 51,
+      "label": "a small watermelon",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W42",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 42,
+    "data": {
+      "emoji": "🍉",
+      "lengthCm": 51,
+      "label": "quả dưa hấu nhỏ",
+      "tip": "Cùng ghi lại một kỷ niệm nhỏ của tuần này. Kích thước chỉ mang tính minh hoạ."
+    }
+  },
+  {
+    "type": "PREGNANCY_WEEK",
+    "code": "W42",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 42,
+    "data": {
+      "emoji": "🍉",
+      "lengthCm": 51,
+      "label": "a small watermelon",
+      "tip": "Save a small memory of this week together. Sizes are illustrative."
+    }
+  }
+]

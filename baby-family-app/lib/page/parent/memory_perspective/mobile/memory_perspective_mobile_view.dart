@@ -4,6 +4,7 @@ import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/extension/date_time.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/extension/string.dart';
+import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:baby_family/utils/helper/memory_text.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/widget/app_action_top_bar.dart';
@@ -136,8 +137,8 @@ class MemoryPerspectiveMobileView extends HookConsumerWidget {
                                 borderRadius: BorderRadius.circular(
                                   AppRadius.tile,
                                 ),
-                                child: Image.asset(
-                                  asset,
+                                child: Image(
+                                  image: mediaImageProvider(asset),
                                   width: 72,
                                   height: 72,
                                   fit: BoxFit.cover,

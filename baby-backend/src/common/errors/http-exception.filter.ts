@@ -3,45 +3,60 @@ import {
   Catch,
   HttpException,
   HttpStatus,
+  Inject,
+  Optional,
 } from '@nestjs/common';
 import type { ExceptionFilter } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import type { Request } from 'express';
 import { PinoLogger } from 'nestjs-pino';
 import { DomainError } from './domain.error';
+import { REQUEST_LOCALE_SERVICE } from '../../interfaces/services/request-locale-service.interface';
+import type { IRequestLocaleService } from '../../interfaces/services/request-locale-service.interface';
+import { acceptLanguageLocale, REQUEST_LOCALE } from '../i18n/request-locale';
+import type { LocalizedRequest } from '../i18n/request-locale';
+import { localizedErrorMessage } from '../i18n/error-message-catalog';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
   constructor(
     private readonly adapterHost: HttpAdapterHost,
     private readonly logger: PinoLogger,
+    @Optional()
+    @Inject(REQUEST_LOCALE_SERVICE)
+    private readonly locales?: IRequestLocaleService,
   ) {}
 
-  catch(exception: unknown, host: ArgumentsHost): void {
+  async catch(exception: unknown, host: ArgumentsHost): Promise<void> {
     const context = host.switchToHttp();
-    const request = context.getRequest<Request & { id?: string }>();
+    const request = context.getRequest<
+      LocalizedRequest & Request & { id?: string }
+    >();
     let status: number = HttpStatus.INTERNAL_SERVER_ERROR;
     let code = 'INTERNAL_SERVER_ERROR';
-    let message = 'An unexpected error occurred.';
     let details: string[] | undefined;
     if (exception instanceof DomainError) {
       status = exception.statusCode;
       code = exception.code;
-      message = exception.message;
     } else if (exception instanceof HttpException) {
       status = exception.getStatus();
       code = HttpStatus[status] ?? 'HTTP_ERROR';
       const response = exception.getResponse();
-      if (typeof response === 'string') message = response;
-      else if ('message' in response) {
+      if (typeof response !== 'string' && 'message' in response) {
         if (Array.isArray(response.message)) {
           details = response.message.filter(
             (item: unknown): item is string => typeof item === 'string',
           );
-          message = 'Request validation failed.';
           code = 'VALIDATION_ERROR';
-        } else if (typeof response.message === 'string')
-          message = response.message;
+        } else if (
+          status >= 500 &&
+          typeof response.message === 'string' &&
+          response.message !== HttpStatus[status]
+        ) {
+          // Operational detail (e.g. readiness: which dependency is down) is
+          // kept untranslated; `message` is the localized catalog text.
+          details = [response.message];
+        }
       }
     }
     if (status >= 500)
@@ -49,6 +64,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
         { err: exception, requestId: request.id },
         'Request failed',
       );
+    const locale = this.locales
+      ? await this.locales.resolve(request)
+      : (request[REQUEST_LOCALE] ??
+        acceptLanguageLocale(request.headers['accept-language']) ??
+        'vi');
+    const message = localizedErrorMessage(code, status, locale);
     this.adapterHost.httpAdapter.reply(
       context.getResponse<unknown>(),
       {

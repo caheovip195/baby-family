@@ -4,20 +4,26 @@ import 'package:baby_family/page/parent/memory_composer/mobile/memory_composer_m
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-/// MEM-05
+/// MEM-05 (soạn mới) · MEM-09 (`memoryId` = sửa ký ức đó).
 @RoutePage()
 class MemoryComposerPage extends BaseHookWidget {
   const MemoryComposerPage({
     @QueryParam('kind') this.kind,
     @QueryParam('childId') this.childId,
+    @QueryParam('memoryId') this.memoryId,
     super.key,
   });
 
   final String? kind;
   final String? childId;
+  final String? memoryId;
 
   @override
   Widget buildWidget(BuildContext context, WidgetRef ref) {
-    return MemoryComposerMobileView(kind: kind, childId: childId);
+    return MemoryComposerMobileView(
+      kind: kind,
+      childId: childId,
+      memoryId: memoryId,
+    );
   }
 }

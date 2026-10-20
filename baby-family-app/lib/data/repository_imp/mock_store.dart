@@ -116,6 +116,43 @@ class MockStore extends ChangeNotifier {
     _applySeed();
   }
 
+  /// Bảng giữ lại khi mở app lúc mất mạng (bản server): phiên, gia đình, bé và
+  /// [offlineMemoryLimit] ký ức mới nhất.
+  static const offlineTables = [
+    'users',
+    'families',
+    'members',
+    'children',
+    'profiles',
+    'memories',
+  ];
+  static const offlineMemoryLimit = 300;
+
+  Map<String, dynamic> exportSnapshot() => {
+    'session': Map<String, dynamic>.of(_session),
+    'tables': {
+      for (final name in offlineTables)
+        name: name == 'memories'
+            ? table(name).take(offlineMemoryLimit).toList()
+            : table(name),
+    },
+  };
+
+  /// Thay các bảng [offlineTables] + phiên bằng bản đã lưu.
+  void importSnapshot(Map<String, dynamic> snapshot) {
+    final tables = Map<String, dynamic>.from(snapshot['tables'] as Map);
+    for (final name in offlineTables) {
+      _tables[name] = [
+        for (final row in (tables[name] as List?) ?? const [])
+          Map<String, dynamic>.from(row as Map),
+      ];
+    }
+    _session
+      ..clear()
+      ..addAll(Map<String, dynamic>.from(snapshot['session'] as Map));
+    commit();
+  }
+
   /// Bump revision so providers reload (call after every mutation).
   void commit() {
     _revision++;

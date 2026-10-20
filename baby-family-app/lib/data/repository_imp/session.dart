@@ -50,4 +50,11 @@ class SessionRepositoryImp extends MockRepositoryImp
   @override
   Future<void> reseed(DemoSeed seed, {String? actor}) =>
       store.reseed(seed, newActor: actor);
+
+  @override
+  JsonMap exportOfflineSnapshot() => store.exportSnapshot();
+
+  @override
+  void importOfflineSnapshot(JsonMap snapshot) =>
+      store.importSnapshot(snapshot);
 }

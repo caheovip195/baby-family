@@ -5,6 +5,7 @@ import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/extension/date_time.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
+import 'package:baby_family/utils/helper/external_launcher.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/widget/app_caps_label.dart';
 import 'package:baby_family/utils/widget/app_grouped_list.dart';
@@ -33,6 +34,27 @@ class MyDataMobileView extends HookConsumerWidget {
     final controller = ref.watch(myDataControllerProvider);
     final l10n = context.l10n;
     final info = controller.info;
+
+    /// Bản thật: lấy link tải mới (hết hạn ~15 phút) rồi mở trình duyệt; bản
+    /// mock chỉ báo đã bắt đầu tải.
+    Future<void> download(DataExportKind kind) async {
+      String? url;
+      final ok = await runWithErrorSnackBar(context, () async {
+        url = await controller.downloadUrl(kind);
+      });
+      if (!ok || !context.mounted) {
+        return;
+      }
+      final link = url;
+      if (link == null) {
+        showAppSnackBar(context, l10n.setDownloadStarted);
+        return;
+      }
+      if (!await launchExternalUrl(link) && context.mounted) {
+        showAppSnackBar(context, l10n.errorGeneric);
+      }
+    }
+
     Widget body;
     if (controller.hasError) {
       body = Center(child: ErrorState(onRetry: controller.load));
@@ -79,7 +101,10 @@ class MyDataMobileView extends HookConsumerWidget {
                 audience: l10n.setExportPersonalWho,
                 description: l10n.setExportPersonalDesc,
                 preparing: controller.isPreparing(DataExportKind.personal),
-                onExport: () => controller.startExport(DataExportKind.personal),
+                onExport: () => runWithErrorSnackBar(
+                  context,
+                  () => controller.startExport(DataExportKind.personal),
+                ),
               ),
               _ExportOption(
                 icon: LucideIcons.house,
@@ -89,7 +114,10 @@ class MyDataMobileView extends HookConsumerWidget {
                 audience: l10n.commonOnlyParents,
                 description: l10n.setExportFamilyDesc,
                 preparing: controller.isPreparing(DataExportKind.family),
-                onExport: () => controller.startExport(DataExportKind.family),
+                onExport: () => runWithErrorSnackBar(
+                  context,
+                  () => controller.startExport(DataExportKind.family),
+                ),
               ),
             ],
           ),
@@ -102,8 +130,7 @@ class MyDataMobileView extends HookConsumerWidget {
                 for (final job in jobs)
                   _ExportStatusRow(
                     job: job,
-                    onDownload: () =>
-                        showAppSnackBar(context, l10n.setDownloadStarted),
+                    onDownload: () => download(job.kind),
                   ),
               ],
             ),

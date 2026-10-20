@@ -52,7 +52,7 @@ class _FirstCard extends StatelessWidget {
             AspectRatio(
               aspectRatio: 1.3,
               child: asset != null
-                  ? Image.asset(asset, fit: BoxFit.cover)
+                  ? Image(image: mediaImageProvider(asset), fit: BoxFit.cover)
                   : Center(
                       child: Icon(
                         LucideIcons.star,

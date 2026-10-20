@@ -51,8 +51,8 @@ class _ProfileHeader extends StatelessWidget {
             height: _coverHeight + top,
             child: cover == null
                 ? ColoredBox(color: ChildAvatar.colorOf(child))
-                : Image.asset(
-                    cover,
+                : Image(
+                    image: mediaImageProvider(cover),
                     fit: BoxFit.cover,
                     errorBuilder: (_, _, _) =>
                         ColoredBox(color: ChildAvatar.colorOf(child)),

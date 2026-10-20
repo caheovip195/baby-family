@@ -38,8 +38,8 @@ class _CommentContext extends StatelessWidget {
             if (asset != null) ...[
               ClipRRect(
                 borderRadius: BorderRadius.circular(AppRadius.tile),
-                child: Image.asset(
-                  asset,
+                child: Image(
+                  image: mediaImageProvider(asset),
                   width: 48,
                   height: 48,
                   fit: BoxFit.cover,

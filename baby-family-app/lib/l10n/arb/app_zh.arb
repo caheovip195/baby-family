@@ -184,6 +184,12 @@
   "memoriesVisibility": "谁可以查看",
   "memoriesPrivacyHint": "保存前会移除照片中的 GPS 位置信息。",
   "memoriesAddMedia": "添加照片",
+  "memUploadProgress": "正在上传 {done}/{total}…",
+  "memUploadFailed": "上传未完成",
+  "memUploadRetry": "重试",
+  "memUploadCancel": "取消",
+  "memoriesSetCover": "设为封面",
+  "memoriesRemoveMedia": "移除这张照片",
   "memoriesAddPerspective": "添加你的视角",
   "memoriesTogether": "两人一起讲述",
   "memoriesCommentHint": "写评论…",
@@ -1687,9 +1693,12 @@
   "commonAgeWeeksDays": "{weeks}周{days}天",
   "memAlbumDetailTitle": "相册详情",
   "memPhotoViewerTitle": "查看照片",
+  "memVideoPlay": "播放视频",
+  "memVideoPause": "暂停视频",
   "memSearchTitle": "搜索",
   "memOnThisDayTitle": "那年今日",
   "recapWeekTitle": "我们家的一周",
+  "recapWeekHeadline": "{moments, plural, =0{平静的一周} other{{moments} 个瞬间}}{firsts, plural, =0{} other{ · {firsts} 个第一次}}",
   "calendarTitle": "日历",
   "calendarCreateEvent": "创建活动",
   "careHistoryTitle": "历史",
@@ -1783,6 +1792,14 @@
   "careSettingsDefaultReminder": "默认提醒",
   "careSettingsDefaultReminderHint": "用于你设定时间的任务",
   "careReminderShort": "{reminder, select, atTime{准时} before15{提前15分} before30{提前30分} before60{提前1小时} other{不提醒}}",
+  "careSeriesSection": "重复任务",
+  "careSeriesDaily": "每天",
+  "careSeriesPausedUntil": "暂停至 {date}",
+  "careSeriesPauseWeek": "暂停 1 周",
+  "careSeriesEnd": "停止重复",
+  "careSeriesEndConfirm": "从今天起未完成的任务将从任务板移除，已完成的仍会保留。",
+  "careSeriesPaused": "已暂停 1 周",
+  "careSeriesEnded": "已停止重复",
   "famPlanPaidSubtitle": "{price} · {date} 续订",
   "famManagePlan": "管理套餐",
   "famInviteRelativeCount": "邀请亲人（{used}/{max}）",
@@ -1846,6 +1863,19 @@
   "famSettingsContentLanguage": "建议内容语言",
   "famDeleteFamily": "删除家庭",
   "famDeleteFamilyHint": "需谨慎确认 · 30 天内可恢复",
+  "famDelBody": "需要爸爸和妈妈都同意。同意后家庭会再保留{days}天以便取消；亲友会立即失去查看权限。期满后全家的回忆、照片、信件和记录都会被删除。",
+  "famDelExportHint": "请先下载数据：设置 → 我的数据。",
+  "famDelVerifyHint": "使用发送到你手机的验证码重新验证。",
+  "famDelSendOtp": "发送验证码",
+  "famDelOtpSent": "验证码已发送",
+  "famDelStart": "申请删除家庭",
+  "famDelAgree": "同意删除家庭",
+  "famDelWaitingPartner": "正在等待伴侣同意删除家庭。你随时可以取消申请。",
+  "famDelPartnerAsked": "伴侣申请删除家庭。请重新验证以同意，或取消申请。",
+  "famDelScheduled": "家庭将于{date}被删除。在此之前全家只能查看和下载。",
+  "famDelCancel": "取消删除申请",
+  "famDelCancelled": "已取消删除申请",
+  "famDelRequested": "删除申请已更新",
   "setProfileChangeAvatar": "更换头像",
   "setProfileName": "你的名字",
   "setProfileCallName": "家庭中的称呼",
@@ -1855,6 +1885,12 @@
   "setSignInGoogle": "Google",
   "setNotLinked": "未关联",
   "setUnlink": "取消关联",
+  "phoneChangeTitle": "更换手机号",
+  "phoneChangeReauthHint": "请先使用发送到当前号码的验证码重新验证。",
+  "phoneChangeNewHint": "输入新手机号，我们会向它发送验证码。",
+  "phoneChangeCodeSent": "验证码已发送至 {phone}",
+  "phoneChangeDone": "手机号已更换，其他设备已退出登录。",
+  "setChangePhone": "更换",
   "setLink": "关联",
   "setSignInHint": "请至少保留一种登录方式，以免丢失账户。",
   "setTimezoneSection": "时区",
@@ -1983,6 +2019,17 @@
   "setSupportSection": "需要更多帮助",
   "setSendRequest": "提交支持请求",
   "setSendRequestHint": "描述问题，可附上截图",
+  "supportTitle": "联系客服",
+  "supportHint": "只有你在这里输入的内容会发送给客服。请勿填写密码或验证码。",
+  "supportCategoryLabel": "问题类型",
+  "supportCategory": "{category, select, ACCOUNT{账号} INVITATION{邀请} MEDIA{照片和视频} BILLING{套餐与付款} PRIVACY{隐私} other{其他}}",
+  "supportSubject": "标题",
+  "supportBody": "问题描述",
+  "supportSend": "提交",
+  "supportSent": "已提交请求 {code}",
+  "supportMine": "我的请求",
+  "supportEmpty": "你还没有提交过请求。",
+  "supportStatus": "{status, select, OPEN{已受理} IN_PROGRESS{处理中} WAITING_USER{等待你回复} RESOLVED{已解决} other{已关闭}}",
   "setMyReports": "我的反馈",
   "setReportsOpen": "{count} 条处理中",
   "setContactSection": "联系方式",
@@ -2107,6 +2154,10 @@
   "usThanksYou": "你",
   "usThanksSendCta": "发送感谢",
   "usThanksReact": "送爱心",
+  "usThanksShareAsk": "{name} 想把这条感谢分享为全家的时刻",
+  "usThanksShareApprove": "分享给全家",
+  "usThanksShareKeep": "只留给我们俩",
+  "usThanksShareFailed": "发送失败，请重试",
   "usThanksWallEmpty": "本月还没有感谢",
   "usJournalOnlyYou": "只有你能看到",
   "usJournalOnlyYouHint": "{callName}也看不到——除非你主动分享一段。",
@@ -2724,5 +2775,86 @@
   "careStatsPrivacy": "只有 Papa 和 Mama 能看到这些统计",
   "commonPrevWeek": "上一周",
   "commonNextWeek": "下一周",
-  "memPendingNotify": "{name}刚发布了{child}的 {count} 张照片——等待你审核"
+  "memPendingNotify": "{name}刚发布了{child}的 {count} 张照片——等待你审核",
+  "authProviderUnavailable": "此版本暂不支持 Apple/Google 登录，请使用手机号码。",
+  "onboardingPartnerApproveTitle": "{callName} 想加入你们的家",
+  "onboardingPartnerApproveBody": "请确认这确实是你的另一半。同意后，你们家可免费试用 {days} 天。",
+  "onboardingPartnerApprove": "同意",
+  "onboardingPartnerReject": "不是此人",
+  "errorOtpInvalid": "验证码不正确或已过期，请重试。",
+  "errorRateLimited": "操作太频繁，请稍后再试。",
+  "errorPhoneNotSupported": "暂不支持此手机号码。",
+  "errorInviteUnavailable": "邀请已过期或已被使用，请让对方重新发送。",
+  "errorAlreadyInFamily": "你已是另一个家庭的父/母，暂时无法加入。",
+  "errorServiceUnavailable": "服务器繁忙，请几分钟后再试。",
+  "memEditTitle": "编辑回忆",
+  "memEditSaved": "已保存更改",
+  "memEditAuthorOnlyHint": "只有发布者可以修改说明和日期。你仍可以修改孩子和可见范围。",
+  "memEditMediaHint": "编辑时暂时无法添加或删除照片。",
+  "errorVersionConflict": "这条回忆刚在别处被更新。请查看后再保存。",
+  "errorMemoryNotEditable": "你无法修改这条回忆的这一部分。",
+  "errorRequestOpenLimit": "你已有 5 个未完成的请求。等其中一个完成后再发送吧。",
+  "errorRequestResendBlocked": "这个请求刚被回复“今天不行”。稍后再试吧。",
+  "errorRequestChanged": "这个请求刚有变化。请查看最新状态。",
+  "notiSomeone": "一位家人",
+  "notiMemoryPublished": "{name} 刚添加了一条新回忆",
+  "notiCommentCreated": "{count, plural, =1{{name} 评论了一条回忆} other{一条回忆有 {count} 条新评论}}",
+  "notiReactionChanged": "{count, plural, =1{{name} 对一条回忆表达了心情} other{一条回忆有 {count} 个新心情}}",
+  "notiRequestCreated": "{name} 给你发了一个请求",
+  "notiRequestAccepted": "{name} 接受了你的请求",
+  "notiRequestDone": "{name} 完成了你的请求 💛",
+  "notiRequestDeclined": "{name} 今天没法完成这个请求",
+  "notiRequestAcknowledged": "{name} 看到了你的请求",
+  "notiCheckinShared": "{name} 分享了当前状态",
+  "notiAppreciationCreated": "你收到了一句感谢 ❤️",
+  "notiGeneric": "你有一条新动态",
+  "heartsReasonMission": "为家里做的一件小事",
+  "heartsReasonRequest": "帮伴侣完成了一个请求",
+  "heartsReasonOther": "你的 Hearts",
+  "setDelOtpSent": "验证码已发送至 {phone}",
+  "@setDelOtpSent": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "errorReauthRequired": "验证已过期，请重新验证。",
+  "errorExportActive": "仍有一份导出正在准备中，请等待完成。",
+  "errorEventDateInvalid": "活动日期无效，请再检查一下。",
+  "calendarChildBirthday": "{name}的{count}岁生日",
+  "@calendarChildBirthday": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarChildMonthiversary": "{name}满{count}个月",
+  "@calendarChildMonthiversary": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notiEventReminder": "日程提醒：{title}",
+  "@notiEventReminder": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notiEventReminderPrivate": "你有一个即将到来的安排",
+  "notiBadgeEarned": "你的家庭获得了一枚新徽章 🏅",
+  "memCommentsAllow": "允许评论",
+  "memCommentsAllowHint": "关闭后大家仍可点表情",
+  "memCommentsOff": "此回忆已关闭评论"
 }

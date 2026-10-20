@@ -95,6 +95,7 @@ class RelativeDetailController extends BaseNotifier {
         .read(memoryServiceProvider)
         .submitReport(
           targetId: memberId,
+          target: ReportTarget.member,
           reasonCode: request.reasonCode,
           note: request.note,
           hideForMe: request.hideForMe,
@@ -106,9 +107,13 @@ class RelativeDetailController extends BaseNotifier {
   }
 
   /// RPT-02 “Chặn” (+ tuỳ chọn gỡ khỏi gia đình, mục 7.24).
-  Future<void> block({required bool removeFromFamily}) => ref
-      .read(settingsServiceProvider)
-      .blockMember(memberId, removeFromFamily: removeFromFamily);
+  /// Gỡ khỏi gia đình đi qua Family service (bản server gỡ trên server).
+  Future<void> block({required bool removeFromFamily}) async {
+    await ref.read(settingsServiceProvider).blockMember(memberId);
+    if (removeFromFamily) {
+      await familyService.removeRelative(memberId);
+    }
+  }
 
   /// FAM-06: gỡ người thân (mock giữ ký ức họ đã đăng trong cả hai lựa chọn).
   Future<void> remove() async {

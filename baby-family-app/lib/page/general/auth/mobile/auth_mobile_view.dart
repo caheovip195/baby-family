@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/page/general/auth/auth_controller.dart';
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/router/session_route.dart';
@@ -123,8 +124,12 @@ class AuthMobileView extends HookConsumerWidget {
                       inverted: true,
                       isLoading: controller.isLoading,
                       onPressed: () async {
-                        await controller.signInApple();
-                        await afterSignIn();
+                        if (await runWithErrorSnackBar(
+                          context,
+                          controller.signInApple,
+                        )) {
+                          await afterSignIn();
+                        }
                       },
                     ),
                     const SizedBox(height: AppSpacing.s3),
@@ -134,8 +139,12 @@ class AuthMobileView extends HookConsumerWidget {
                       onPressed: controller.isLoading
                           ? null
                           : () async {
-                              await controller.signInGoogle();
-                              await afterSignIn();
+                              if (await runWithErrorSnackBar(
+                                context,
+                                controller.signInGoogle,
+                              )) {
+                                await afterSignIn();
+                              }
                             },
                     ),
                     const SizedBox(height: AppSpacing.s3),

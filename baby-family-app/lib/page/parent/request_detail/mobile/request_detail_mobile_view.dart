@@ -7,6 +7,7 @@ import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/extension/date_time.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/relative_time.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
@@ -143,8 +144,9 @@ class RequestDetailMobileView extends HookConsumerWidget {
           label: l10n.usRequestSendHug,
           isLoading: controller.isLoading,
           onPressed: () async {
-            await controller.acknowledge();
-            await router.maybePop();
+            if (await runWithErrorSnackBar(context, controller.acknowledge)) {
+              await router.maybePop();
+            }
           },
         ),
         AppButton.secondary(
@@ -152,8 +154,9 @@ class RequestDetailMobileView extends HookConsumerWidget {
           color: kColorUs7006A549F,
           borderColor: kColorUs5009B85D1,
           onPressed: () async {
-            await controller.acknowledge();
-            await router.maybePop();
+            if (await runWithErrorSnackBar(context, controller.acknowledge)) {
+              await router.maybePop();
+            }
           },
         ),
       ];
@@ -195,15 +198,16 @@ class RequestDetailMobileView extends HookConsumerWidget {
       AppButton.us(
         label: l10n.usRequestAccept,
         isLoading: controller.isLoading,
-        onPressed: controller.accept,
+        onPressed: () => runWithErrorSnackBar(context, controller.accept),
       ),
       AppButton.secondary(
         label: l10n.usRequestDecline,
         color: kColorUs7006A549F,
         borderColor: kColorUs5009B85D1,
         onPressed: () async {
-          await controller.decline();
-          await router.maybePop();
+          if (await runWithErrorSnackBar(context, controller.decline)) {
+            await router.maybePop();
+          }
         },
       ),
       Text(
@@ -264,8 +268,9 @@ class RequestDetailMobileView extends HookConsumerWidget {
           label: l10n.usRequestFinish,
           isLoading: controller.isLoading,
           onPressed: () async {
-            await controller.markDone();
-            await router.replace(ThanksComposeRoute());
+            if (await runWithErrorSnackBar(context, controller.markDone)) {
+              await router.replace(ThanksComposeRoute());
+            }
           },
         ),
       ];
@@ -278,8 +283,9 @@ class RequestDetailMobileView extends HookConsumerWidget {
           borderColor: kColorUs5009B85D1,
           isLoading: controller.isLoading,
           onPressed: () async {
-            await controller.cancel();
-            await router.maybePop();
+            if (await runWithErrorSnackBar(context, controller.cancel)) {
+              await router.maybePop();
+            }
           },
         ),
       ],
@@ -294,8 +300,9 @@ class RequestDetailMobileView extends HookConsumerWidget {
           label: l10n.usRequestDoMyself,
           isLoading: controller.isLoading,
           onPressed: () async {
-            await controller.cancel();
-            await router.maybePop();
+            if (await runWithErrorSnackBar(context, controller.cancel)) {
+              await router.maybePop();
+            }
           },
         ),
       ],
@@ -315,13 +322,19 @@ class RequestDetailMobileView extends HookConsumerWidget {
     if (picked == null) {
       return;
     }
-    await controller.setReminder(
-      DateTime(
-        current.year,
-        current.month,
-        current.day,
-        picked.hour,
-        picked.minute,
+    if (!context.mounted) {
+      return;
+    }
+    await runWithErrorSnackBar(
+      context,
+      () => controller.setReminder(
+        DateTime(
+          current.year,
+          current.month,
+          current.day,
+          picked.hour,
+          picked.minute,
+        ),
       ),
     );
   }

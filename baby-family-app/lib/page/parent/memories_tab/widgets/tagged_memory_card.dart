@@ -46,7 +46,10 @@ class _TaggedMemoryCard extends StatelessWidget {
                 clipBehavior: Clip.antiAlias,
                 child: photo == null
                     ? Icon(icon, size: 28, color: accent)
-                    : Image.asset(photo!, fit: BoxFit.cover),
+                    : Image(
+                        image: mediaImageProvider(photo!),
+                        fit: BoxFit.cover,
+                      ),
               ),
               const SizedBox(width: AppSpacing.s3),
               Expanded(

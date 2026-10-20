@@ -32,6 +32,12 @@ services:
       AUTH_JWT_PUBLIC_KEY: ${AUTH_JWT_PUBLIC_KEY:-}
       AUTH_JWT_ISSUER: ${AUTH_JWT_ISSUER:-baby-family}
       AUTH_JWT_AUDIENCE: ${AUTH_JWT_AUDIENCE:-baby-family-app}
+      AUTH_JWT_PRIVATE_KEY: ${AUTH_JWT_PRIVATE_KEY:-}
+      AUTH_SECRET_PEPPER: ${AUTH_SECRET_PEPPER:-}
+      AUTH_OTP_DELIVERY: ${AUTH_OTP_DELIVERY:-disabled}
+      AUTH_OTP_MAIL_TO: ${AUTH_OTP_MAIL_TO:-otp-inbox@babyfamily.local}
+      AUTH_OTP_ALLOW_MAIL_IN_PRODUCTION: ${AUTH_OTP_ALLOW_MAIL_IN_PRODUCTION:-false}
+      INVITE_LINK_BASE_URL: ${INVITE_LINK_BASE_URL:-https://babyfamily.vn/i/}
       # Supporting services from ../baby-storage (optional; empty disables the adapter).
       REDIS_URL: ${REDIS_DOCKER_URL:-}
       S3_ENDPOINT: ${S3_DOCKER_ENDPOINT:-http://baby-minio:9000}

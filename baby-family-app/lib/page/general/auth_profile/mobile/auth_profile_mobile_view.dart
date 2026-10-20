@@ -3,6 +3,7 @@ import 'package:baby_family/page/general/auth_profile/auth_profile_controller.da
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/router/session_route.dart';
@@ -42,8 +43,11 @@ class AuthProfileMobileView extends HookConsumerWidget {
           label: l10n.commonContinue,
           isLoading: controller.isLoading,
           onPressed: () async {
-            await controller.save(name.text);
-            if (!context.mounted) {
+            final saved = await runWithErrorSnackBar(
+              context,
+              () => controller.save(name.text),
+            );
+            if (!saved || !context.mounted) {
               return;
             }
             final session = controller.session;

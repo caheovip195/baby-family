@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/page/general/onboarding_family/onboarding_family_controller.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/person_name.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
@@ -48,8 +49,11 @@ class OnboardingFamilyMobileView extends HookConsumerWidget {
           label: l10n.onboardingCreateFamily,
           isLoading: controller.isLoading,
           onPressed: () async {
-            await controller.create(name.text);
-            if (context.mounted) {
+            final created = await runWithErrorSnackBar(
+              context,
+              () => controller.create(name.text),
+            );
+            if (created && context.mounted) {
               await context.router.push(const OnboardingInvitePartnerRoute());
             }
           },

@@ -5,6 +5,7 @@ import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
@@ -63,8 +64,11 @@ class OnboardingChildMobileView extends HookConsumerWidget {
           label: l10n.onboardingComplete,
           isLoading: controller.isLoading,
           onPressed: () async {
-            await controller.complete(name.text);
-            if (context.mounted) {
+            final saved = await runWithErrorSnackBar(
+              context,
+              () => controller.complete(name.text),
+            );
+            if (saved && context.mounted) {
               await context.router.push(const OnboardingPrivacyRoute());
             }
           },
@@ -171,7 +175,10 @@ class OnboardingChildMobileView extends HookConsumerWidget {
           ),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
-            onTap: () => controller.addAnother(name.text),
+            onTap: () => runWithErrorSnackBar(
+              context,
+              () => controller.addAnother(name.text),
+            ),
             child: ConstrainedBox(
               constraints: const BoxConstraints(minHeight: AppSpacing.s12),
               child: Row(

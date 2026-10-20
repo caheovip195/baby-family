@@ -25,7 +25,7 @@ class _ReactionBar extends StatelessWidget {
   }
 
   Widget _chip(BuildContext context, String emoji) {
-    final mine = controller.myReactions.contains(emoji);
+    final mine = controller.isMyReaction(emoji);
     final count = memory.reactions[emoji] ?? 0;
     return Material(
       color: AppColors.resolve(

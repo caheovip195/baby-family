@@ -120,8 +120,8 @@ class _MonthSection extends StatelessWidget {
     onTap: () => onOpen(memory),
     child: ClipRRect(
       borderRadius: BorderRadius.circular(radius),
-      child: Image.asset(
-        memory.mediaAssets.first,
+      child: Image(
+        image: mediaImageProvider(memory.mediaAssets.first),
         height: height,
         width: double.infinity,
         fit: BoxFit.cover,
@@ -180,8 +180,8 @@ class _MonthSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Image.asset(
-              memory.mediaAssets.first,
+            Image(
+              image: mediaImageProvider(memory.mediaAssets.first),
               height: 210,
               fit: BoxFit.cover,
             ),

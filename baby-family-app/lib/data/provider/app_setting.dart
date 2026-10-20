@@ -24,8 +24,8 @@ final appTextScaleProvider = NotifierProvider<AppTextScaleNotifier, double>(
 );
 
 /// SET-06 “Hiện ngày âm lịch” (mặc định bật theo thiết kế).
-final appLunarDateProvider = NotifierProvider<AppToggleNotifier, bool>(
-  () => AppToggleNotifier(initial: true),
+final appLunarDateProvider = NotifierProvider<AppLunarNotifier, bool>(
+  AppLunarNotifier.new,
 );
 
 /// SET-06 “Giảm hiệu ứng chuyển động” — RootApp bật `disableAnimations`.
@@ -44,18 +44,45 @@ class AppToggleNotifier extends Notifier<bool> {
   void change(bool value) => state = value;
 }
 
+/// Giá trị đầu đọc từ bản lưu trên máy; đổi → lưu + đồng bộ server (SET-06).
 class AppAppearanceNotifier extends Notifier<ThemeMode> {
   @override
-  ThemeMode build() => ThemeMode.system;
+  ThemeMode build() =>
+      ref.read(appSettingServiceProvider).currentDisplay().theme;
 
-  void change(ThemeMode mode) => state = mode;
+  void change(ThemeMode mode) {
+    state = mode;
+    ref.read(appSettingServiceProvider).changeDisplay(theme: mode);
+  }
+
+  /// Áp giá trị đã có (từ server) mà không đồng bộ ngược.
+  void apply(ThemeMode mode) => state = mode;
 }
 
 class AppTextScaleNotifier extends Notifier<double> {
   @override
-  double build() => 1;
+  double build() =>
+      ref.read(appSettingServiceProvider).currentDisplay().textScale;
 
-  void change(double scale) => state = scale.clamp(1, 2);
+  void change(double scale) {
+    state = scale.clamp(1, 2);
+    ref.read(appSettingServiceProvider).changeDisplay(textScale: state);
+  }
+
+  void apply(double scale) => state = scale.clamp(1, 2);
+}
+
+class AppLunarNotifier extends Notifier<bool> {
+  @override
+  bool build() =>
+      ref.read(appSettingServiceProvider).currentDisplay().showLunar;
+
+  void change(bool value) {
+    state = value;
+    ref.read(appSettingServiceProvider).changeDisplay(showLunar: value);
+  }
+
+  void apply(bool value) => state = value;
 }
 
 class AppLanguageNotifier extends Notifier<AppLanguage> {

@@ -7,7 +7,8 @@ class _MediaStrip extends StatelessWidget {
 
   final MemoryComposerController controller;
 
-  /// Ô “+” thêm ảnh/video (SUB-05 khi video vượt giới hạn gói).
+  /// Ô “+” thêm ảnh/video (SUB-05 khi video vượt giới hạn gói); null = ẩn ô
+  /// “+” (MEM-09: người không phải tác giả không đổi ảnh).
   final VoidCallback? onAdd;
 
   @override
@@ -28,41 +29,61 @@ class _MediaStrip extends StatelessWidget {
               itemBuilder: (context, index) => _photo(context, assets, index),
             ),
           ),
-          if (assets.isNotEmpty) const SizedBox(width: AppSpacing.s2),
-          Expanded(
-            child: Semantics(
-              button: true,
-              label: context.l10n.memoriesAddMedia,
-              excludeSemantics: true,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: onAdd,
-                child: Container(
-                  constraints: const BoxConstraints(minWidth: 38),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(AppRadius.sm),
-                    border: Border.all(
-                      color: AppColors.resolve(context, kColorBorderEADFD6),
+          if (assets.isNotEmpty && onAdd != null)
+            const SizedBox(width: AppSpacing.s2),
+          if (onAdd != null)
+            Expanded(
+              child: Semantics(
+                button: true,
+                label: context.l10n.memoriesAddMedia,
+                excludeSemantics: true,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: onAdd,
+                  child: Container(
+                    constraints: const BoxConstraints(minWidth: 38),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
+                      border: Border.all(
+                        color: AppColors.resolve(context, kColorBorderEADFD6),
+                      ),
                     ),
-                  ),
-                  child: Icon(
-                    LucideIcons.plus,
-                    size: 24,
-                    color: AppColors.resolve(
-                      context,
-                      kColorTextSecondary6B625B,
+                    child: Icon(
+                      LucideIcons.plus,
+                      size: 24,
+                      color: AppColors.resolve(
+                        context,
+                        kColorTextSecondary6B625B,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );
   }
 
   Widget _photo(BuildContext context, List<String> assets, int index) {
+    final asset = assets[index];
+    final l10n = context.l10n;
+    // Chạm ảnh không phải bìa → đặt làm bìa; nút ✕ bỏ ảnh.
+    return Semantics(
+      button: index > 0 && controller.canEditMedia,
+      label: index > 0 && controller.canEditMedia
+          ? l10n.memoriesSetCover
+          : null,
+      child: GestureDetector(
+        onTap: index > 0 && controller.canEditMedia
+            ? () => controller.makeCover(asset)
+            : null,
+        child: _tile(context, assets, index),
+      ),
+    );
+  }
+
+  Widget _tile(BuildContext context, List<String> assets, int index) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppRadius.sm),
       child: SizedBox(
@@ -71,7 +92,20 @@ class _MediaStrip extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(assets[index], fit: BoxFit.cover),
+            if (isLocalVideo(assets[index]))
+              ColoredBox(
+                color: AppColors.resolve(context, kColorTextPrimary2E2A27),
+                child: const Icon(
+                  LucideIcons.video,
+                  color: kColorWhiteAlpha80,
+                  size: 28,
+                ),
+              )
+            else
+              Image(
+                image: mediaImageProvider(assets[index]),
+                fit: BoxFit.cover,
+              ),
             if (index == 0)
               Positioned(
                 left: 6,
@@ -90,6 +124,32 @@ class _MediaStrip extends StatelessWidget {
                     style: AppTypography.tiny.copyWith(
                       fontWeight: FontWeight.w600,
                       color: kColorWhite,
+                    ),
+                  ),
+                ),
+              ),
+            if (controller.canRemoveMedia)
+              Positioned(
+                right: 4,
+                top: 4,
+                child: Semantics(
+                  button: true,
+                  label: context.l10n.memoriesRemoveMedia,
+                  excludeSemantics: true,
+                  child: GestureDetector(
+                    onTap: () => controller.removeMedia(assets[index]),
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      decoration: const BoxDecoration(
+                        color: kColorCoverScrim2E2A27Alpha70,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        LucideIcons.x,
+                        size: 14,
+                        color: kColorWhite,
+                      ),
                     ),
                   ),
                 ),

@@ -277,6 +277,7 @@ class UsServiceImp extends MockServiceImp implements IUsService {
     String? sticker,
     String? missionId,
     String? memoryId,
+    bool proposeFamilyMoment = false,
   }) async {
     await ready();
     return Thanks.fromJson(
@@ -289,8 +290,21 @@ class UsServiceImp extends MockServiceImp implements IUsService {
         'missionId': ?missionId,
         'memoryId': ?memoryId,
         'createdAt': now.toIso8601String(),
+        if (proposeFamilyMoment) 'shareRequested': true,
       }),
     );
+  }
+
+  @override
+  Future<void> respondThanksShare(
+    String thanksId, {
+    required bool approve,
+  }) async {
+    await ready();
+    _repository.updateThanks(thanksId, {
+      'shareRequested': false,
+      'postedToFamily': approve,
+    });
   }
 
   @override

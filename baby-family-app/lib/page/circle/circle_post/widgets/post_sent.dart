@@ -149,8 +149,8 @@ class _PostSent extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(
                                   AppRadius.tile,
                                 ),
-                                child: Image.asset(
-                                  thumb,
+                                child: Image(
+                                  image: mediaImageProvider(thumb),
                                   width: 64,
                                   height: 64,
                                   fit: BoxFit.cover,

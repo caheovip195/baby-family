@@ -7,6 +7,7 @@ import 'package:baby_family/utils/extension/date_time.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
+import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:baby_family/utils/helper/memory_text.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/widget/app_bottom_sheet.dart';
@@ -211,7 +212,10 @@ class DiaryEditorMobileView extends HookConsumerWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Image.asset(controller.photo!, fit: BoxFit.cover),
+                Image(
+                  image: mediaImageProvider(controller.photo!),
+                  fit: BoxFit.cover,
+                ),
                 Positioned(
                   top: AppSpacing.s2,
                   right: AppSpacing.s2,

@@ -1,5 +1,6 @@
 import 'package:baby_family/data/model/child/child.dart';
 import 'package:baby_family/utils/constants/colors.dart';
+import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
@@ -66,8 +67,8 @@ class ChildAvatar extends StatelessWidget {
                 color: kColorTextPrimary2E2A27,
               ),
             )
-          : Image.asset(
-              value.avatarAsset!,
+          : Image(
+              image: mediaImageProvider(value.avatarAsset!),
               width: size,
               height: size,
               fit: BoxFit.cover,

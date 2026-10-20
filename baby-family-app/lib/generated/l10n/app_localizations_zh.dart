@@ -605,6 +605,26 @@ class AppLocalizationsZh extends AppLocalizations {
   String get memoriesAddMedia => '添加照片';
 
   @override
+  String memUploadProgress(int done, int total) {
+    return '正在上传 $done/$total…';
+  }
+
+  @override
+  String get memUploadFailed => '上传未完成';
+
+  @override
+  String get memUploadRetry => '重试';
+
+  @override
+  String get memUploadCancel => '取消';
+
+  @override
+  String get memoriesSetCover => '设为封面';
+
+  @override
+  String get memoriesRemoveMedia => '移除这张照片';
+
+  @override
   String get memoriesAddPerspective => '添加你的视角';
 
   @override
@@ -3968,6 +3988,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get memPhotoViewerTitle => '查看照片';
 
   @override
+  String get memVideoPlay => '播放视频';
+
+  @override
+  String get memVideoPause => '暂停视频';
+
+  @override
   String get memSearchTitle => '搜索';
 
   @override
@@ -3975,6 +4001,23 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get recapWeekTitle => '我们家的一周';
+
+  @override
+  String recapWeekHeadline(int moments, int firsts) {
+    String _temp0 = intl.Intl.pluralLogic(
+      moments,
+      locale: localeName,
+      other: '$moments 个瞬间',
+      zero: '平静的一周',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      firsts,
+      locale: localeName,
+      other: ' · $firsts 个第一次',
+      zero: '',
+    );
+    return '$_temp0$_temp1';
+  }
 
   @override
   String get calendarTitle => '日历';
@@ -4398,6 +4441,32 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get careSeriesSection => '重复任务';
+
+  @override
+  String get careSeriesDaily => '每天';
+
+  @override
+  String careSeriesPausedUntil(String date) {
+    return '暂停至 $date';
+  }
+
+  @override
+  String get careSeriesPauseWeek => '暂停 1 周';
+
+  @override
+  String get careSeriesEnd => '停止重复';
+
+  @override
+  String get careSeriesEndConfirm => '从今天起未完成的任务将从任务板移除，已完成的仍会保留。';
+
+  @override
+  String get careSeriesPaused => '已暂停 1 周';
+
+  @override
+  String get careSeriesEnded => '已停止重复';
+
+  @override
   String famPlanPaidSubtitle(String price, String date) {
     return '$price · $date 续订';
   }
@@ -4640,6 +4709,49 @@ class AppLocalizationsZh extends AppLocalizations {
   String get famDeleteFamilyHint => '需谨慎确认 · 30 天内可恢复';
 
   @override
+  String famDelBody(int days) {
+    return '需要爸爸和妈妈都同意。同意后家庭会再保留$days天以便取消；亲友会立即失去查看权限。期满后全家的回忆、照片、信件和记录都会被删除。';
+  }
+
+  @override
+  String get famDelExportHint => '请先下载数据：设置 → 我的数据。';
+
+  @override
+  String get famDelVerifyHint => '使用发送到你手机的验证码重新验证。';
+
+  @override
+  String get famDelSendOtp => '发送验证码';
+
+  @override
+  String get famDelOtpSent => '验证码已发送';
+
+  @override
+  String get famDelStart => '申请删除家庭';
+
+  @override
+  String get famDelAgree => '同意删除家庭';
+
+  @override
+  String get famDelWaitingPartner => '正在等待伴侣同意删除家庭。你随时可以取消申请。';
+
+  @override
+  String get famDelPartnerAsked => '伴侣申请删除家庭。请重新验证以同意，或取消申请。';
+
+  @override
+  String famDelScheduled(String date) {
+    return '家庭将于$date被删除。在此之前全家只能查看和下载。';
+  }
+
+  @override
+  String get famDelCancel => '取消删除申请';
+
+  @override
+  String get famDelCancelled => '已取消删除申请';
+
+  @override
+  String get famDelRequested => '删除申请已更新';
+
+  @override
   String get setProfileChangeAvatar => '更换头像';
 
   @override
@@ -4667,6 +4779,26 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get setUnlink => '取消关联';
+
+  @override
+  String get phoneChangeTitle => '更换手机号';
+
+  @override
+  String get phoneChangeReauthHint => '请先使用发送到当前号码的验证码重新验证。';
+
+  @override
+  String get phoneChangeNewHint => '输入新手机号，我们会向它发送验证码。';
+
+  @override
+  String phoneChangeCodeSent(String phone) {
+    return '验证码已发送至 $phone';
+  }
+
+  @override
+  String get phoneChangeDone => '手机号已更换，其他设备已退出登录。';
+
+  @override
+  String get setChangePhone => '更换';
 
   @override
   String get setLink => '关联';
@@ -5113,6 +5245,60 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get setSendRequestHint => '描述问题，可附上截图';
+
+  @override
+  String get supportTitle => '联系客服';
+
+  @override
+  String get supportHint => '只有你在这里输入的内容会发送给客服。请勿填写密码或验证码。';
+
+  @override
+  String get supportCategoryLabel => '问题类型';
+
+  @override
+  String supportCategory(String category) {
+    String _temp0 = intl.Intl.selectLogic(category, {
+      'ACCOUNT': '账号',
+      'INVITATION': '邀请',
+      'MEDIA': '照片和视频',
+      'BILLING': '套餐与付款',
+      'PRIVACY': '隐私',
+      'other': '其他',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get supportSubject => '标题';
+
+  @override
+  String get supportBody => '问题描述';
+
+  @override
+  String get supportSend => '提交';
+
+  @override
+  String supportSent(String code) {
+    return '已提交请求 $code';
+  }
+
+  @override
+  String get supportMine => '我的请求';
+
+  @override
+  String get supportEmpty => '你还没有提交过请求。';
+
+  @override
+  String supportStatus(String status) {
+    String _temp0 = intl.Intl.selectLogic(status, {
+      'OPEN': '已受理',
+      'IN_PROGRESS': '处理中',
+      'WAITING_USER': '等待你回复',
+      'RESOLVED': '已解决',
+      'other': '已关闭',
+    });
+    return '$_temp0';
+  }
 
   @override
   String get setMyReports => '我的反馈';
@@ -5587,6 +5773,20 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get usThanksReact => '送爱心';
+
+  @override
+  String usThanksShareAsk(String name) {
+    return '$name 想把这条感谢分享为全家的时刻';
+  }
+
+  @override
+  String get usThanksShareApprove => '分享给全家';
+
+  @override
+  String get usThanksShareKeep => '只留给我们俩';
+
+  @override
+  String get usThanksShareFailed => '发送失败，请重试';
 
   @override
   String get usThanksWallEmpty => '本月还没有感谢';
@@ -8052,4 +8252,187 @@ class AppLocalizationsZh extends AppLocalizations {
   String memPendingNotify(String name, int count, String child) {
     return '$name刚发布了$child的 $count 张照片——等待你审核';
   }
+
+  @override
+  String get authProviderUnavailable => '此版本暂不支持 Apple/Google 登录，请使用手机号码。';
+
+  @override
+  String onboardingPartnerApproveTitle(String callName) {
+    return '$callName 想加入你们的家';
+  }
+
+  @override
+  String onboardingPartnerApproveBody(int days) {
+    return '请确认这确实是你的另一半。同意后，你们家可免费试用 $days 天。';
+  }
+
+  @override
+  String get onboardingPartnerApprove => '同意';
+
+  @override
+  String get onboardingPartnerReject => '不是此人';
+
+  @override
+  String get errorOtpInvalid => '验证码不正确或已过期，请重试。';
+
+  @override
+  String get errorRateLimited => '操作太频繁，请稍后再试。';
+
+  @override
+  String get errorPhoneNotSupported => '暂不支持此手机号码。';
+
+  @override
+  String get errorInviteUnavailable => '邀请已过期或已被使用，请让对方重新发送。';
+
+  @override
+  String get errorAlreadyInFamily => '你已是另一个家庭的父/母，暂时无法加入。';
+
+  @override
+  String get errorServiceUnavailable => '服务器繁忙，请几分钟后再试。';
+
+  @override
+  String get memEditTitle => '编辑回忆';
+
+  @override
+  String get memEditSaved => '已保存更改';
+
+  @override
+  String get memEditAuthorOnlyHint => '只有发布者可以修改说明和日期。你仍可以修改孩子和可见范围。';
+
+  @override
+  String get memEditMediaHint => '编辑时暂时无法添加或删除照片。';
+
+  @override
+  String get errorVersionConflict => '这条回忆刚在别处被更新。请查看后再保存。';
+
+  @override
+  String get errorMemoryNotEditable => '你无法修改这条回忆的这一部分。';
+
+  @override
+  String get errorRequestOpenLimit => '你已有 5 个未完成的请求。等其中一个完成后再发送吧。';
+
+  @override
+  String get errorRequestResendBlocked => '这个请求刚被回复“今天不行”。稍后再试吧。';
+
+  @override
+  String get errorRequestChanged => '这个请求刚有变化。请查看最新状态。';
+
+  @override
+  String get notiSomeone => '一位家人';
+
+  @override
+  String notiMemoryPublished(String name) {
+    return '$name 刚添加了一条新回忆';
+  }
+
+  @override
+  String notiCommentCreated(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '一条回忆有 $count 条新评论',
+      one: '$name 评论了一条回忆',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notiReactionChanged(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '一条回忆有 $count 个新心情',
+      one: '$name 对一条回忆表达了心情',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notiRequestCreated(String name) {
+    return '$name 给你发了一个请求';
+  }
+
+  @override
+  String notiRequestAccepted(String name) {
+    return '$name 接受了你的请求';
+  }
+
+  @override
+  String notiRequestDone(String name) {
+    return '$name 完成了你的请求 💛';
+  }
+
+  @override
+  String notiRequestDeclined(String name) {
+    return '$name 今天没法完成这个请求';
+  }
+
+  @override
+  String notiRequestAcknowledged(String name) {
+    return '$name 看到了你的请求';
+  }
+
+  @override
+  String notiCheckinShared(String name) {
+    return '$name 分享了当前状态';
+  }
+
+  @override
+  String get notiAppreciationCreated => '你收到了一句感谢 ❤️';
+
+  @override
+  String get notiGeneric => '你有一条新动态';
+
+  @override
+  String get heartsReasonMission => '为家里做的一件小事';
+
+  @override
+  String get heartsReasonRequest => '帮伴侣完成了一个请求';
+
+  @override
+  String get heartsReasonOther => '你的 Hearts';
+
+  @override
+  String setDelOtpSent(String phone) {
+    return '验证码已发送至 $phone';
+  }
+
+  @override
+  String get errorReauthRequired => '验证已过期，请重新验证。';
+
+  @override
+  String get errorExportActive => '仍有一份导出正在准备中，请等待完成。';
+
+  @override
+  String get errorEventDateInvalid => '活动日期无效，请再检查一下。';
+
+  @override
+  String calendarChildBirthday(String name, int count) {
+    return '$name的$count岁生日';
+  }
+
+  @override
+  String calendarChildMonthiversary(String name, int count) {
+    return '$name满$count个月';
+  }
+
+  @override
+  String notiEventReminder(String title) {
+    return '日程提醒：$title';
+  }
+
+  @override
+  String get notiEventReminderPrivate => '你有一个即将到来的安排';
+
+  @override
+  String get notiBadgeEarned => '你的家庭获得了一枚新徽章 🏅';
+
+  @override
+  String get memCommentsAllow => '允许评论';
+
+  @override
+  String get memCommentsAllowHint => '关闭后大家仍可点表情';
+
+  @override
+  String get memCommentsOff => '此回忆已关闭评论';
 }

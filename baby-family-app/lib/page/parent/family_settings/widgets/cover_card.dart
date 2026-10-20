@@ -29,7 +29,7 @@ class _CoverCard extends StatelessWidget {
             if (asset == null)
               AppFamilyCover(name: name, height: _height)
             else
-              Image.asset(asset, fit: BoxFit.cover),
+              Image(image: mediaImageProvider(asset), fit: BoxFit.cover),
             Positioned(
               left: AppSpacing.s3,
               bottom: AppSpacing.s4,

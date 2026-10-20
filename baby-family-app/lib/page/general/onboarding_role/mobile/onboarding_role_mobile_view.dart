@@ -4,6 +4,7 @@ import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
@@ -34,8 +35,11 @@ class OnboardingRoleMobileView extends HookConsumerWidget {
           label: l10n.commonContinue,
           isLoading: controller.isLoading,
           onPressed: () async {
-            await controller.submit();
-            if (!context.mounted) {
+            final saved = await runWithErrorSnackBar(
+              context,
+              controller.submit,
+            );
+            if (!saved || !context.mounted) {
               return;
             }
             if (controller.role == FamilyRole.relative) {

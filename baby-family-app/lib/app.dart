@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/data/provider/app_setting.dart';
+import 'package:baby_family/data/provider/push.dart';
 import 'package:baby_family/generated/l10n/app_localizations.dart';
 import 'package:baby_family/page/application_base.dart';
 import 'package:baby_family/utils/helper/broadcast_manager.dart';
@@ -21,6 +24,8 @@ class RootApp extends BaseHookWidget {
       // Phiên bị server chấm dứt (401): dọn các việc gắn với phiên ở đây.
       final sessionExpiredSubscription = BroadcastManager().sessionExpiredStream
           .listen((_) {});
+      // ONB-10: đã cho phép thông báo từ trước → gửi lại push token (có thể đổi).
+      unawaited(ref.read(pushServiceProvider).syncIfAuthorized());
       return () {
         sessionExpiredSubscription.cancel();
         BroadcastManager().close();

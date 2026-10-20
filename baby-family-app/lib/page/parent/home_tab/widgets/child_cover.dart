@@ -44,8 +44,8 @@ class _ChildCover extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           if (cover != null)
-            Image.asset(
-              cover,
+            Image(
+              image: mediaImageProvider(cover),
               fit: BoxFit.cover,
               errorBuilder: (_, _, _) => const SizedBox.shrink(),
             ),

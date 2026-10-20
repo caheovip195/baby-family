@@ -641,6 +641,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get memoriesAddMedia => 'Add photos';
 
   @override
+  String memUploadProgress(int done, int total) {
+    return 'Uploading $done/$total…';
+  }
+
+  @override
+  String get memUploadFailed => 'Upload didn\'t finish';
+
+  @override
+  String get memUploadRetry => 'Try again';
+
+  @override
+  String get memUploadCancel => 'Cancel';
+
+  @override
+  String get memoriesSetCover => 'Set as cover';
+
+  @override
+  String get memoriesRemoveMedia => 'Remove this photo';
+
+  @override
   String get memoriesAddPerspective => 'Add your perspective';
 
   @override
@@ -4290,6 +4310,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get memPhotoViewerTitle => 'Photo viewer';
 
   @override
+  String get memVideoPlay => 'Play video';
+
+  @override
+  String get memVideoPause => 'Pause video';
+
+  @override
   String get memSearchTitle => 'Search';
 
   @override
@@ -4297,6 +4323,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recapWeekTitle => 'Our family\'s week';
+
+  @override
+  String recapWeekHeadline(int moments, int firsts) {
+    String _temp0 = intl.Intl.pluralLogic(
+      moments,
+      locale: localeName,
+      other: '$moments moments',
+      one: '1 moment',
+      zero: 'A quiet week',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      firsts,
+      locale: localeName,
+      other: ' · $firsts firsts',
+      one: ' · 1 first',
+      zero: '',
+    );
+    return '$_temp0$_temp1';
+  }
 
   @override
   String get calendarTitle => 'Calendar';
@@ -4727,6 +4772,33 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get careSeriesSection => 'Repeating tasks';
+
+  @override
+  String get careSeriesDaily => 'Every day';
+
+  @override
+  String careSeriesPausedUntil(String date) {
+    return 'Paused until $date';
+  }
+
+  @override
+  String get careSeriesPauseWeek => 'Pause for 1 week';
+
+  @override
+  String get careSeriesEnd => 'Stop repeating';
+
+  @override
+  String get careSeriesEndConfirm =>
+      'Upcoming undone tasks from today will be removed. Completed ones are kept.';
+
+  @override
+  String get careSeriesPaused => 'Paused for 1 week';
+
+  @override
+  String get careSeriesEnded => 'Stopped repeating';
+
+  @override
   String famPlanPaidSubtitle(String price, String date) {
     return '$price · renews $date';
   }
@@ -4979,6 +5051,52 @@ class AppLocalizationsEn extends AppLocalizations {
       'Needs careful confirmation · 30 days to restore';
 
   @override
+  String famDelBody(int days) {
+    return 'Both Papa and Mama must agree. After that the family is kept $days more days so you can cancel; relatives lose access right away. Then all memories, photos, letters and history are deleted.';
+  }
+
+  @override
+  String get famDelExportHint =>
+      'Download your data first: Settings → My data.';
+
+  @override
+  String get famDelVerifyHint => 'Verify again with a code sent to your phone.';
+
+  @override
+  String get famDelSendOtp => 'Send code';
+
+  @override
+  String get famDelOtpSent => 'Code sent';
+
+  @override
+  String get famDelStart => 'Request family deletion';
+
+  @override
+  String get famDelAgree => 'Agree to delete the family';
+
+  @override
+  String get famDelWaitingPartner =>
+      'Waiting for your partner to agree. You can cancel the request at any time.';
+
+  @override
+  String get famDelPartnerAsked =>
+      'Your partner asked to delete the family. Verify to agree, or cancel the request.';
+
+  @override
+  String famDelScheduled(String date) {
+    return 'The family will be deleted on $date. Until then everyone can only view and download.';
+  }
+
+  @override
+  String get famDelCancel => 'Cancel deletion request';
+
+  @override
+  String get famDelCancelled => 'Deletion request cancelled';
+
+  @override
+  String get famDelRequested => 'Deletion request updated';
+
+  @override
   String get setProfileChangeAvatar => 'Change photo';
 
   @override
@@ -5006,6 +5124,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get setUnlink => 'Unlink';
+
+  @override
+  String get phoneChangeTitle => 'Change phone number';
+
+  @override
+  String get phoneChangeReauthHint =>
+      'First, verify again with a code sent to your current number.';
+
+  @override
+  String get phoneChangeNewHint =>
+      'Enter your new phone number. We\'ll send a code to it.';
+
+  @override
+  String phoneChangeCodeSent(String phone) {
+    return 'Code sent to $phone';
+  }
+
+  @override
+  String get phoneChangeDone =>
+      'Your phone number has changed. Other devices were signed out.';
+
+  @override
+  String get setChangePhone => 'Change';
 
   @override
   String get setLink => 'Link';
@@ -5478,6 +5619,61 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get setSendRequestHint =>
       'Describe the issue, add a screenshot if you like';
+
+  @override
+  String get supportTitle => 'Contact support';
+
+  @override
+  String get supportHint =>
+      'Only what you type here is sent to our support team. Never include passwords or OTP codes.';
+
+  @override
+  String get supportCategoryLabel => 'Topic';
+
+  @override
+  String supportCategory(String category) {
+    String _temp0 = intl.Intl.selectLogic(category, {
+      'ACCOUNT': 'Account',
+      'INVITATION': 'Invitations',
+      'MEDIA': 'Photos & videos',
+      'BILLING': 'Plans & billing',
+      'PRIVACY': 'Privacy',
+      'other': 'Other',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get supportSubject => 'Subject';
+
+  @override
+  String get supportBody => 'Describe the problem';
+
+  @override
+  String get supportSend => 'Send request';
+
+  @override
+  String supportSent(String code) {
+    return 'Request $code sent';
+  }
+
+  @override
+  String get supportMine => 'Your requests';
+
+  @override
+  String get supportEmpty => 'You haven\'t sent any requests yet.';
+
+  @override
+  String supportStatus(String status) {
+    String _temp0 = intl.Intl.selectLogic(status, {
+      'OPEN': 'Received',
+      'IN_PROGRESS': 'In progress',
+      'WAITING_USER': 'Waiting for you',
+      'RESOLVED': 'Resolved',
+      'other': 'Closed',
+    });
+    return '$_temp0';
+  }
 
   @override
   String get setMyReports => 'My reports';
@@ -5980,6 +6176,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get usThanksReact => 'Add a heart';
+
+  @override
+  String usThanksShareAsk(String name) {
+    return '$name would like to share this thank-you as a family moment';
+  }
+
+  @override
+  String get usThanksShareApprove => 'Share with family';
+
+  @override
+  String get usThanksShareKeep => 'Keep it between us';
+
+  @override
+  String get usThanksShareFailed => 'Couldn\'t send, please try again';
 
   @override
   String get usThanksWallEmpty => 'No thank-yous this month yet';
@@ -8561,4 +8771,216 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$name posted $_temp0 of $child — waiting for your review';
   }
+
+  @override
+  String get authProviderUnavailable =>
+      'Apple/Google sign-in is not available in this build yet. Please use your phone number.';
+
+  @override
+  String onboardingPartnerApproveTitle(String callName) {
+    return '$callName wants to join your family';
+  }
+
+  @override
+  String onboardingPartnerApproveBody(int days) {
+    return 'Make sure this is really your partner. Once you agree, your family gets a free $days-day trial.';
+  }
+
+  @override
+  String get onboardingPartnerApprove => 'Agree';
+
+  @override
+  String get onboardingPartnerReject => 'Not them';
+
+  @override
+  String get errorOtpInvalid =>
+      'The code is incorrect or has expired. Please try again.';
+
+  @override
+  String get errorRateLimited =>
+      'That was a bit fast. Please wait a moment and try again.';
+
+  @override
+  String get errorPhoneNotSupported =>
+      'This phone number is not supported yet.';
+
+  @override
+  String get errorInviteUnavailable =>
+      'This invite has expired or was already used. Ask the sender for a new one.';
+
+  @override
+  String get errorAlreadyInFamily =>
+      'You are already a parent in another family, so you cannot join this one.';
+
+  @override
+  String get errorServiceUnavailable =>
+      'The server is busy. Please try again in a few minutes.';
+
+  @override
+  String get memEditTitle => 'Edit memory';
+
+  @override
+  String get memEditSaved => 'Changes saved';
+
+  @override
+  String get memEditAuthorOnlyHint =>
+      'Only the author can change the caption and date. You can still change the children and who can see it.';
+
+  @override
+  String get memEditMediaHint =>
+      'Photos can’t be added or removed while editing yet.';
+
+  @override
+  String get errorVersionConflict =>
+      'This memory was just updated elsewhere. Please review and save again.';
+
+  @override
+  String get errorMemoryNotEditable =>
+      'You can’t change this part of the memory.';
+
+  @override
+  String get errorRequestOpenLimit =>
+      'You already have 5 open requests. Wait until one is done before sending another.';
+
+  @override
+  String get errorRequestResendBlocked =>
+      'This request was just answered “Not today”. Try again later.';
+
+  @override
+  String get errorRequestChanged =>
+      'This request just changed. Please check its new status.';
+
+  @override
+  String get notiSomeone => 'A family member';
+
+  @override
+  String notiMemoryPublished(String name) {
+    return '$name just added a new memory';
+  }
+
+  @override
+  String notiCommentCreated(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count new comments on a memory',
+      one: '$name commented on a memory',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notiReactionChanged(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count new reactions on a memory',
+      one: '$name reacted to a memory',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notiRequestCreated(String name) {
+    return '$name sent you a request';
+  }
+
+  @override
+  String notiRequestAccepted(String name) {
+    return '$name accepted your request';
+  }
+
+  @override
+  String notiRequestDone(String name) {
+    return '$name finished your request 💛';
+  }
+
+  @override
+  String notiRequestDeclined(String name) {
+    return '$name can’t do the request today';
+  }
+
+  @override
+  String notiRequestAcknowledged(String name) {
+    return '$name saw your request';
+  }
+
+  @override
+  String notiCheckinShared(String name) {
+    return '$name shared how they feel';
+  }
+
+  @override
+  String get notiAppreciationCreated => 'You received a thank-you ❤️';
+
+  @override
+  String get notiGeneric => 'You have a new update';
+
+  @override
+  String get heartsReasonMission => 'A little task for the family';
+
+  @override
+  String get heartsReasonRequest => 'Helped with a request';
+
+  @override
+  String get heartsReasonOther => 'Your Hearts';
+
+  @override
+  String setDelOtpSent(String phone) {
+    return 'We sent a verification code to $phone';
+  }
+
+  @override
+  String get errorReauthRequired =>
+      'Your verification has expired. Please verify again.';
+
+  @override
+  String get errorExportActive =>
+      'An export is still being prepared. Please wait for it to finish.';
+
+  @override
+  String get errorEventDateInvalid =>
+      'The event date is not valid. Please check it again.';
+
+  @override
+  String calendarChildBirthday(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count years',
+      one: '1 year',
+    );
+    return '$name\'s birthday ($_temp0)';
+  }
+
+  @override
+  String calendarChildMonthiversary(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'months',
+      one: 'month',
+    );
+    return '$name turns $count $_temp0';
+  }
+
+  @override
+  String notiEventReminder(String title) {
+    return 'Reminder: $title';
+  }
+
+  @override
+  String get notiEventReminderPrivate => 'You have an upcoming plan';
+
+  @override
+  String get notiBadgeEarned => 'Your family just earned a new badge 🏅';
+
+  @override
+  String get memCommentsAllow => 'Allow comments';
+
+  @override
+  String get memCommentsAllowHint => 'When off, everyone can still react';
+
+  @override
+  String get memCommentsOff => 'Comments are turned off for this memory';
 }

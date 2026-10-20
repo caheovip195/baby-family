@@ -18,6 +18,66 @@ const kValueDemoEnabled = bool.fromEnvironment(
   defaultValue: true,
 );
 
+/// Base URL API ghi đè (ví dụ backend local `http://localhost:3000/api`). Có giá
+/// trị → app gọi API thật cho đăng nhập/onboarding (BF-20261015-012); rỗng → dùng
+/// endpoint của flavor và dữ liệu mock.
+const kValueApiUrlOverride = String.fromEnvironment('BABY_FAMILY_API_URL');
+
+/// Đăng nhập, hồ sơ, vai trò, gia đình và lời mời đi qua server thật.
+const kValueUseRemoteSession = kValueApiUrlOverride != '';
+
+/// Khoá phụ trong bản ghi phiên trên máy (chế độ server): id gia đình và id
+/// người dùng phía server — khác id của kho dữ liệu trên máy.
+const kValueSessionKeyServerFamilyId = 'remoteFamilyId';
+const kValueSessionKeyServerUserId = 'remoteUserId';
+
+/// Id người dùng server của bạn đời (Parent còn lại, từ bootstrap) — để mời và
+/// nhắc bạn đời trên lịch (BF-20261018-014).
+const kValueSessionKeyServerPartnerUserId = 'remotePartnerUserId';
+
+/// Feed ký ức hỏi lại server tối đa mỗi 10 giây (tránh gọi lặp khi nhiều
+/// provider cùng đọc); URL ảnh ký sẵn được làm mới trước khi hết hạn 5 phút.
+const kValueRemoteFeedRefreshInterval = Duration(seconds: 10);
+
+/// SW-01: bé/thai kỳ đang có trong bootstrap của server (khoá trên hàng bé).
+const kValueChildKeyServerSubject = 'serverSubject';
+
+/// Thẻ chương tháng của server theo tháng tuổi (`{monthIndex: {coverUrl,
+/// memoryCount, firstsCount}}`) trên hàng bé.
+const kValueChildKeyServerChapters = 'serverChapters';
+
+/// REC-02: số ký ức nổi bật / ảnh lớn của recap tuần từ server.
+const kValueRecapHighlightMax = 6;
+const kValueRecapHeroMax = 4;
+
+/// MEM-15: server chỉ tìm khi có ít nhất chừng này ký tự.
+const kValueSearchMinLength = 2;
+const kValueSignedUrlRefreshMargin = Duration(minutes: 5);
+
+/// Số ký ức lấy mỗi lần đồng bộ feed (giới hạn của server là 50).
+const kValueRemoteFeedPageSize = 50;
+
+/// Đồng bộ đủ mọi trang feed (theo `nextCursor`) và gỡ ký ức đã bị xoá/ẩn phía
+/// server tối đa mỗi 2 phút; giữa hai lần chỉ hỏi trang đầu. Giới hạn số trang
+/// một lần đồng bộ để không lặp vô hạn khi cursor lỗi (BF-20261017-001).
+const kValueRemoteFeedFullSyncInterval = Duration(minutes: 2);
+const kValueRemoteFeedMaxPages = 200;
+
+/// Ký ức đang xử lý ảnh được hỏi lại (mỗi [kValueRemoteFeedRefreshInterval])
+/// khi màn còn mở, tối đa 10 phút kể từ lúc thấy trạng thái PROCESSING.
+const kValueRemoteProcessingPollWindow = Duration(minutes: 10);
+
+/// Ảnh tải lên được thu nhỏ cạnh dài tối đa 2048 px, JPEG chất lượng 88
+/// (tài liệu kỹ thuật 10.3: client nén, chuyển HEIC → JPEG).
+const kValueUploadImageMaxSide = 2048.0;
+const kValueUploadImageQuality = 88;
+
+/// Phiên bản Điều khoản/Chính sách ghi nhận ở AUTH-04 (`POST /me/consents`).
+const kValueLegalDocumentVersion = '2026-10';
+
+/// ONB-WAIT hỏi server trạng thái bạn đời mỗi 30 giây (tài liệu kỹ thuật 23.1).
+const kValuePartnerStatusPollInterval = Duration(seconds: 30);
+
 /// AUTH-03 — OTP length and resend/expiry limits (technical spec 4.3).
 /// Mã quốc gia mặc định ở AUTH-02 (tài liệu nghiệp vụ 9.1).
 const kValueDefaultDialCode = '+84';
@@ -144,6 +204,16 @@ const kValueThanksStickers = ['💛', '🤗', '🌷', '☕', '🙏'];
 /// CIR-01 “Thả tim”: reaction trái tim gửi lên ký ức.
 const kValueHeartReaction = '❤️';
 
+/// Năm cảm xúc của ký ức (đặc tả 7.12: Thương, Đáng yêu, Buồn cười, Xúc động,
+/// Giỏi quá) ↔ loại server (`reaction_type`). Mỗi người 1 cảm xúc/ký ức.
+const kValueReactionTypes = {
+  '❤️': 'LOVE',
+  '😍': 'CUTE',
+  '😂': 'HAHA',
+  '🥹': 'TOUCHED',
+  '👏': 'CLAP',
+};
+
 /// MEM-10: biểu tượng cảm xúc chèn nhanh vào bình luận.
 const kValueCommentEmoji = ['❤️', '🥹', '😍', '😂', '👏', '🥰'];
 
@@ -169,3 +239,15 @@ const kValueBridgeDraftMaxLength = 500;
 /// US-08: số bước của giai đoạn riêng tư (cảm xúc → chủ đề → nhu cầu + nháp →
 /// làm gì với nội dung → xem trước & gửi; mục 7.17.1).
 const kValueBridgeWizardSteps = 5;
+
+/// Hỗ trợ khách hàng: danh mục mặc định khi chưa nối server (server là nguồn
+/// chính — `GET /v1/support/categories`).
+const kValueSupportCategories = [
+  'ACCOUNT',
+  'INVITATION',
+  'MEDIA',
+  'BILLING',
+  'PRIVACY',
+  'OTHER',
+];
+const kValueSupportStatusOpen = 'OPEN';

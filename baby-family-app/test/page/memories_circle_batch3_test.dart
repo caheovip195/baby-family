@@ -9,6 +9,7 @@ import 'package:baby_family/data/provider/settings.dart';
 import 'package:baby_family/page/parent/child_archive/child_archive_controller.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/router/app_router.dart';
+import 'package:baby_family/utils/widget/app_action_top_bar.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
 import 'package:baby_family/utils/widget/switch_family_sheet.dart';
 import 'package:flutter/material.dart';
@@ -201,6 +202,56 @@ void main() {
       expect(find.text('4 KÝ ỨC'), findsOneWidget);
     });
 
+    testWidgets('MEM-07 ⋯ edit → MEM-09: the author changes the caption', (
+      tester,
+    ) async {
+      final router = await pumpRoute(
+        tester,
+        MemoryDetailRoute(memoryId: 'm-hana-holds-haru'),
+      );
+      await _tap(tester, find.bySemanticsLabel('Thêm thao tác'));
+      await _tap(tester, find.text('Sửa ký ức'));
+      expect(router.topRoute.name, MemoryComposerRoute.name);
+      expect(find.text('Sửa ký ức'), findsOneWidget);
+      expect(find.textContaining('Lần đầu Hana bế em Haru'), findsOneWidget);
+      // MEM-09 (BF-20261019-007): the author can add/remove photos.
+      expect(find.bySemanticsLabel('Thêm ảnh'), findsOneWidget);
+      await tester.enterText(find.byType(TextField).first, 'Hai chị em');
+      await _tap(tester, find.text('Lưu'));
+      expect(router.topRoute.name, MemoryDetailRoute.name);
+      final memory = await _container(
+        tester,
+      ).read(memoryServiceProvider).memory('m-hana-holds-haru');
+      expect(memory?.body, 'Hai chị em');
+      expect(find.text('Đã lưu thay đổi'), findsOneWidget);
+    });
+
+    testWidgets('MEM-09: the other parent only re-tags children', (
+      tester,
+    ) async {
+      final router = await pumpRoute(
+        tester,
+        MemoryDetailRoute(memoryId: 'm-hana-holds-haru'),
+        actor: 'papa',
+      );
+      await _tap(tester, find.bySemanticsLabel('Thêm thao tác'));
+      await _tap(tester, find.text('Sửa ký ức'));
+      expect(
+        find.textContaining('Chỉ người đăng sửa được chú thích'),
+        findsOneWidget,
+      );
+      final caption = tester.widget<TextField>(find.byType(TextField).first);
+      expect(caption.readOnly, isTrue);
+      await _tap(tester, find.text('Hana'));
+      await _tap(tester, find.text('Lưu'));
+      expect(router.topRoute.name, MemoryDetailRoute.name);
+      final memory = await _container(
+        tester,
+      ).read(memoryServiceProvider).memory('m-hana-holds-haru');
+      expect(memory?.childIds, ['haru']);
+      expect(memory?.body, startsWith('Lần đầu Hana bế em Haru'));
+    });
+
     testWidgets('MEM-07 ⋯ report opens RPT-01 and shows the receipt', (
       tester,
     ) async {
@@ -238,7 +289,14 @@ void main() {
       await pumpRoute(tester, MemoryComposerRoute(childId: 'haru'));
       await tester.enterText(find.byType(TextField).first, 'Haru tập hát');
       await tester.pumpAndSettle();
-      await _tap(tester, find.byIcon(LucideIcons.x));
+      // The top bar ✕ (photo tiles have their own ✕ to remove a photo).
+      await _tap(
+        tester,
+        find.descendant(
+          of: find.byType(AppActionTopBar),
+          matching: find.byIcon(LucideIcons.x),
+        ),
+      );
       expect(find.text('Đã lưu vào Nháp'), findsOneWidget);
       final drafts = await _container(
         tester,

@@ -23,4 +23,9 @@ abstract class ISessionRepository extends IBaseRepository {
   JsonMap upsertUser(JsonMap user);
 
   Future<void> reseed(DemoSeed seed, {String? actor});
+
+  /// Bản chụp phiên + dữ liệu đã đồng bộ (mở app lúc mất mạng).
+  JsonMap exportOfflineSnapshot();
+
+  void importOfflineSnapshot(JsonMap snapshot);
 }

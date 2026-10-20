@@ -63,7 +63,9 @@ class OnboardingInvitePartnerController extends BaseNotifier {
 
   /// Đánh dấu đã gửi và trả về link mời.
   Future<String> markSent() async {
-    await sessionService.markPartnerInviteSent();
+    await sessionService.markPartnerInviteSent(
+      requireApproval: requireApproval,
+    );
     final value = await sessionService.partnerInvite();
     if (!isDisposed && value != null) {
       invite = value;

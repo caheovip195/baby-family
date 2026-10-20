@@ -127,8 +127,8 @@ class _PerspectiveBlock extends StatelessWidget {
                     for (final asset in perspective.mediaAssets)
                       ClipRRect(
                         borderRadius: BorderRadius.circular(AppRadius.sm),
-                        child: Image.asset(
-                          asset,
+                        child: Image(
+                          image: mediaImageProvider(asset),
                           width: 72,
                           height: 72,
                           fit: BoxFit.cover,

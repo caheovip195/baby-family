@@ -311,12 +311,22 @@ describe('Application API + PostgreSQL + real ES256/session verification', () =>
       .set('X-User-Id', userIds[2]!)
       .set('X-Role', 'SUPER_ADMIN')
       .expect(200);
-    expect(response.body).toMatchObject({ id: actorId });
-    expect(Object.keys(response.body as object).sort()).toEqual([
+    const me = (response.body as { data: object }).data;
+    expect(me).toMatchObject({ id: actorId });
+    // Profile + onboarding progress only; never token/session/status internals.
+    expect(Object.keys(me).sort()).toEqual([
+      // AUTH-04 (BF-20261019-007): avatar id + short-lived signed URL.
+      'avatarAssetId',
+      'avatarUrl',
+      'avatarUrlExpiresAt',
+      'awaitingApproval',
       'createdAt',
       'displayName',
+      'families',
       'id',
       'locale',
+      'onboardingRole',
+      'profileCompleted',
       'timezone',
       'updatedAt',
     ]);
@@ -429,7 +439,7 @@ describe('Application API + PostgreSQL + real ES256/session verification', () =>
       .get('/api/v1/billing/plans')
       .set('Authorization', `Bearer ${await token()}`)
       .expect(200);
-    const body = response.body as {
+    const body = (response.body as { data: unknown }).data as {
       plans: {
         code: string;
         version: number;
@@ -458,7 +468,7 @@ describe('Application API + PostgreSQL + real ES256/session verification', () =>
       .set('Authorization', authorization)
       .send({ name: 'Synthetic child', birthDate: '2025-01-01', colorIndex: 1 })
       .expect(201);
-    const child = created.body as { id: string };
+    const child = (created.body as { data: { id: string } }).data;
     const page = await request(app.getHttpServer())
       .get(`/api/v1/families/${familyId}/children`)
       .set('Authorization', authorization)
@@ -476,7 +486,7 @@ describe('Application API + PostgreSQL + real ES256/session verification', () =>
       .get(`/api/v1/families/${familyId}/billing`)
       .set('Authorization', authorization)
       .expect(200);
-    expect(billing.body).toMatchObject({
+    expect((billing.body as { data: unknown }).data).toMatchObject({
       accessPhase: 'PAID',
       entitlementVersion: '9007199254740993',
       usage: { storageBytes: '9007199254740993', reservedStorageBytes: '10' },
@@ -496,7 +506,7 @@ describe('Application API + PostgreSQL + real ES256/session verification', () =>
       .get(`/api/v1/families/${familyId}/billing`)
       .set('Authorization', authorization)
       .expect(200);
-    expect(response.body).toMatchObject({
+    expect((response.body as { data: unknown }).data).toMatchObject({
       accessPhase: 'EXPIRED',
       plan: { code: planCode },
     });
@@ -536,7 +546,8 @@ describe('Application API + PostgreSQL + real ES256/session verification', () =>
     );
     expect(responses.map((response) => response.status)).toEqual([201, 201]);
     const pregnancies = responses.map(
-      (response) => response.body as { id: string; seqNo: number },
+      (response) =>
+        (response.body as { data: { id: string; seqNo: number } }).data,
     );
     expect(
       pregnancies.map((pregnancy) => pregnancy.seqNo).sort((a, b) => a - b),

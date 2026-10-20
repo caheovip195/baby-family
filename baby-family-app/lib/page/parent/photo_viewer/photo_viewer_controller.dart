@@ -10,6 +10,7 @@ import 'package:baby_family/data/service/child.dart';
 import 'package:baby_family/data/service/family.dart';
 import 'package:baby_family/data/service/memory.dart';
 import 'package:baby_family/page/application_base.dart';
+import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:hooks_riverpod/legacy.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -41,6 +42,16 @@ class PhotoViewerController extends BaseNotifier {
 
   List<String> get assets => memory?.mediaAssets ?? const [];
 
+  /// Nguồn phát nếu ảnh thứ [index] là video (URL server hoặc file vừa chọn).
+  String? videoAt(int index) {
+    final videos = memory?.mediaVideos ?? const <String?>[];
+    if (index < videos.length && videos[index] != null) {
+      return videos[index];
+    }
+    final asset = index < assets.length ? assets[index] : null;
+    return asset != null && isLocalVideo(asset) ? asset : null;
+  }
+
   /// Bé trong ký ức (theo thứ tự ký ức).
   List<Child> get memoryChildren => [
     for (final id in memory?.childIds ?? const <String>[])
@@ -54,7 +65,7 @@ class PhotoViewerController extends BaseNotifier {
     hasError = false;
     try {
       final (value, kids, people) = await (
-        memoryService.memory(memoryId),
+        memoryService.refreshMemory(memoryId),
         childService.children(),
         familyService.members(),
       ).wait;
@@ -72,6 +83,15 @@ class PhotoViewerController extends BaseNotifier {
     }
     loaded = true;
     notifyListeners();
+  }
+
+  /// MEM-08 “Tải về”: link bản gốc của ảnh đang xem (null ở bản mock).
+  Future<String?> originalUrl() async {
+    final urls = await memoryService.downloadUrls(memoryId);
+    if (urls.isEmpty) {
+      return null;
+    }
+    return urls[page.clamp(0, urls.length - 1)];
   }
 
   /// Trang mở đầu theo `?index=` (kẹp trong số ảnh).

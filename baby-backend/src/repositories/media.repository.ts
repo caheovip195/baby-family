@@ -21,6 +21,8 @@ import { Asset } from '../models/asset.model';
 import { AssetVariant } from '../models/asset-variant.model';
 import type { JobLease } from '../models/job-lease.model';
 import { MediaAssetView, MediaUpload } from '../models/media-upload.model';
+import { memoryContentScope } from './memory-content-visibility';
+import { parentSharedAssetSql } from './parent-asset-visibility.sql';
 
 type Transaction = Prisma.TransactionClient;
 type AssetWithReservation = AssetRow & {
@@ -167,18 +169,6 @@ export class MediaRepository implements IMediaRepository {
     assetIds: readonly string[],
   ): Promise<MediaAssetView[]> {
     if (assetIds.length === 0) return [];
-    // Mirrors the Parent memory filter of spec §6.3. Sealed letters (unlock_at in the
-    // future, viewer is not the author) never expose their media.
-    const visibleMemory = Prisma.sql`
-      m.deleted_at IS NULL
-      AND (
-        (m.status = 'PUBLISHED' AND m.visibility IN ('PARENTS', 'FAMILY'))
-        OR m.status = 'PENDING_REVIEW'
-        OR (m.author_user_id = ${userId}::uuid
-            AND m.status IN ('PUBLISHED', 'PROCESSING', 'DRAFT'))
-      )
-      AND NOT (m.kind = 'LETTER' AND m.unlock_at > now()
-               AND m.author_user_id <> ${userId}::uuid)`;
     const visible = await this.prisma.$queryRaw<{ id: string }[]>`
       SELECT a.id
       FROM app.assets a
@@ -195,28 +185,47 @@ export class MediaRepository implements IMediaRepository {
                             WHERE pa.asset_id = a.id AND pa.deleted_at IS NULL)
             AND NOT EXISTS (SELECT 1 FROM app.memory_perspectives p
                             WHERE p.audio_asset_id = a.id AND p.deleted_at IS NULL))
-          OR a.purpose IN ('AVATAR', 'COVER')
-          OR EXISTS (
-            SELECT 1 FROM app.memory_assets ma
-            JOIN app.memories m ON m.id = ma.memory_id AND m.family_id = ma.family_id
-            WHERE ma.asset_id = a.id AND ma.family_id = a.family_id
-              AND ma.deleted_at IS NULL AND ${visibleMemory})
-          OR EXISTS (
-            SELECT 1 FROM app.memory_perspectives p
-            JOIN app.memories m ON m.id = p.memory_id AND m.family_id = p.family_id
-            LEFT JOIN app.memory_perspective_assets pa
-              ON pa.perspective_id = p.id AND pa.family_id = p.family_id
-              AND pa.asset_id = a.id AND pa.deleted_at IS NULL
-            WHERE p.family_id = a.family_id AND p.deleted_at IS NULL
-              AND p.status = 'ACTIVE'
-              AND (pa.asset_id IS NOT NULL OR p.audio_asset_id = a.id)
-              AND ${visibleMemory})
+          OR ${parentSharedAssetSql(userId)}
         )`;
     if (visible.length === 0) return [];
     const rows = await this.prisma.asset.findMany({
       where: { id: { in: visible.map((row) => row.id) } },
       include: { assetVariants: { where: { deletedAt: null } } },
     });
+    return rows.map(
+      (row) =>
+        new MediaAssetView(mapAsset(row), row.assetVariants.map(mapVariant)),
+    );
+  }
+
+  async hasContributeChild(familyId: string, userId: string): Promise<boolean> {
+    const scope = await memoryContentScope(this.prisma, familyId, userId);
+    return scope.contributeChildIds.length > 0;
+  }
+
+  async findViewableByCircle(
+    familyId: string,
+    userId: string,
+    assetIds: readonly string[],
+  ): Promise<MediaAssetView[]> {
+    const scope = await memoryContentScope(this.prisma, familyId, userId, true);
+    const rows = await this.prisma.asset.findMany({
+      where: {
+        id: { in: [...assetIds] },
+        familyId,
+        deletedAt: null,
+        privateOwnerUserId: null,
+        memoryAssets: {
+          some: { familyId, deletedAt: null, memory: scope.where },
+        },
+      },
+      include: {
+        assetVariants: {
+          where: { deletedAt: null, variantCode: { not: 'orig' } },
+        },
+      },
+    });
+    // Originals are issued only by the memory download flow, which checks allowDownload.
     return rows.map(
       (row) =>
         new MediaAssetView(mapAsset(row), row.assetVariants.map(mapVariant)),
@@ -312,6 +321,7 @@ export class MediaRepository implements IMediaRepository {
         SET storage_bytes = GREATEST(storage_bytes + ${delta}, 0),
             version = version + 1
         WHERE family_id = ${familyId}::uuid`;
+      await this.publishReadyMemories(tx, assetId, familyId);
       return 'COMPLETED';
     }, TRANSACTION_OPTIONS);
   }
@@ -484,6 +494,57 @@ export class MediaRepository implements IMediaRepository {
   }
 
   /** Locks the job run row and checks the attempt still owns it (fencing). */
+  /**
+   * PROCESSING memories using this asset become PUBLISHED once every attached
+   * asset is READY (spec §11.5 → status flow), with `memory.published` outbox.
+   * Memory creation locks its asset rows, so a memory committed before this
+   * transaction is visible here and one committed after sees the READY asset.
+   */
+  private async publishReadyMemories(
+    tx: Transaction,
+    assetId: string,
+    familyId: string,
+  ): Promise<void> {
+    const published = await tx.$queryRaw<
+      {
+        id: string;
+        author_user_id: string;
+        kind: string;
+        visibility: string;
+      }[]
+    >`
+      UPDATE app.memories m
+      SET status = 'PUBLISHED', published_at = now(), version = m.version + 1
+      WHERE m.family_id = ${familyId}::uuid
+        AND m.status = 'PROCESSING'
+        AND m.deleted_at IS NULL
+        AND EXISTS (SELECT 1 FROM app.memory_assets ma
+                    WHERE ma.memory_id = m.id AND ma.asset_id = ${assetId}::uuid
+                      AND ma.deleted_at IS NULL)
+        AND NOT EXISTS (SELECT 1 FROM app.memory_assets ma
+                        JOIN app.assets a ON a.id = ma.asset_id
+                        WHERE ma.memory_id = m.id AND ma.deleted_at IS NULL
+                          AND a.deleted_at IS NULL AND a.status <> 'READY')
+      RETURNING m.id, m.author_user_id, m.kind::text AS kind,
+                m.visibility::text AS visibility`;
+    for (const memory of published)
+      await tx.outboxEvent.create({
+        data: {
+          eventType: 'memory.published',
+          aggregateId: memory.id,
+          familyId,
+          payload: {
+            memoryId: memory.id,
+            familyId,
+            authorUserId: memory.author_user_id,
+            kind: memory.kind,
+            status: 'PUBLISHED',
+            visibility: memory.visibility,
+          },
+        },
+      });
+  }
+
   private async ownsLease(tx: Transaction, lease: JobLease): Promise<boolean> {
     const rows = await tx.$queryRaw<{ id: string }[]>`
       SELECT id FROM ops.job_runs
@@ -510,16 +571,32 @@ export class MediaRepository implements IMediaRepository {
 
     const usage = await this.lockUsage(tx, input.familyId);
     let reservedBytes = usage.reservedStorageBytes;
+    // Dedup is per uploader (uq_asset_dedup). Another Parent's copy is reused only
+    // when it is verified (READY) and already visible to this uploader; knowing a
+    // hash must never grant access to private or unshared content (spec §6.3).
     const existing = await tx.asset.findFirst({
       where: {
         familyId: input.familyId,
         purpose: input.purpose,
-        privateOwnerUserId: null,
+        privateOwnerUserId: input.privateOwnerUserId ?? null,
+        uploaderUserId: input.uploaderUserId,
         sha256: Buffer.from(input.sha256),
         deletedAt: null,
       },
       include: { storageReservation: { where: { deletedAt: null } } },
     });
+    // Private assets are never reused from someone else's copy.
+    if (
+      !existing &&
+      !input.privateOwnerUserId &&
+      input.allowSharedCopy !== false
+    ) {
+      const shared = await this.findSharedCopy(tx, input);
+      if (shared) {
+        await this.remember(tx, input, shared.id, true);
+        return { outcome: 'duplicate', asset: mapAsset(shared) };
+      }
+    }
     if (existing) {
       const upload = mapUpload(existing);
       if (STORED_STATUSES.has(existing.status)) {
@@ -541,12 +618,6 @@ export class MediaRepository implements IMediaRepository {
         existing.status === 'PENDING_UPLOAD' &&
         !upload.isExpired(new Date())
       ) {
-        if (existing.uploaderUserId !== input.uploaderUserId)
-          throw new DomainError(
-            'The same file is being uploaded by another parent.',
-            'UPLOAD_IN_PROGRESS',
-            409,
-          );
         await this.remember(tx, input, existing.id, false);
         return { outcome: 'replayed', upload };
       }
@@ -582,6 +653,7 @@ export class MediaRepository implements IMediaRepository {
         id,
         familyId: input.familyId,
         uploaderUserId: input.uploaderUserId,
+        privateOwnerUserId: input.privateOwnerUserId ?? null,
         kind: input.kind,
         purpose: input.purpose,
         storageBucket: input.storageBucket,
@@ -614,6 +686,26 @@ export class MediaRepository implements IMediaRepository {
       outcome: 'created',
       upload: mapUpload({ ...asset, storageReservation: [reservation] }),
     };
+  }
+
+  /** Verified copy of the same content uploaded by another Parent and visible to the uploader. */
+  private async findSharedCopy(
+    tx: Transaction,
+    input: ReserveUploadInput,
+  ): Promise<AssetRow | null> {
+    const [row] = await tx.$queryRaw<{ id: string }[]>`
+      SELECT a.id FROM app.assets a
+      WHERE a.family_id = ${input.familyId}::uuid
+        AND a.purpose = ${input.purpose}
+        AND a.private_owner_user_id IS NULL
+        AND a.uploader_user_id <> ${input.uploaderUserId}::uuid
+        AND a.sha256 = ${Buffer.from(input.sha256)}
+        AND a.status = 'READY'
+        AND a.deleted_at IS NULL
+        AND ${parentSharedAssetSql(input.uploaderUserId)}
+      ORDER BY a.created_at
+      LIMIT 1`;
+    return row ? tx.asset.findUnique({ where: { id: row.id } }) : null;
   }
 
   /** Same actor + key: the original outcome, or 409 when the request differs. */
@@ -735,6 +827,16 @@ function purgePredicate(rule: PurgeRule, cutoff: Date): Prisma.Sql {
           AND a.created_at <= ${cutoff}::timestamptz - interval '24 hours'))`;
   if (rule === 'FAILED')
     return Prisma.sql`a.status = 'FAILED' AND a.updated_at <= ${cutoff}`;
+  if (rule === 'DETACHED')
+    return Prisma.sql`a.purpose = 'MEMORY' AND a.status IN ('UPLOADED', 'READY')
+    AND a.updated_at <= ${cutoff}
+    AND EXISTS (SELECT 1 FROM app.memory_assets x WHERE x.asset_id = a.id)
+    AND NOT EXISTS (SELECT 1 FROM app.memory_assets x
+                    WHERE x.asset_id = a.id AND x.deleted_at IS NULL)
+    AND NOT EXISTS (SELECT 1 FROM app.memory_perspective_assets x
+                    WHERE x.asset_id = a.id AND x.deleted_at IS NULL)
+    AND NOT EXISTS (SELECT 1 FROM app.memory_perspectives x
+                    WHERE x.audio_asset_id = a.id AND x.deleted_at IS NULL)`;
   return Prisma.sql`a.purpose = 'MEMORY' AND a.status IN ('UPLOADED', 'READY')
     AND a.created_at <= ${cutoff}
     AND NOT EXISTS (SELECT 1 FROM app.memory_assets x WHERE x.asset_id = a.id)

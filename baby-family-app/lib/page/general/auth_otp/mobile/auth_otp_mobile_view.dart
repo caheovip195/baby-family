@@ -5,6 +5,7 @@ import 'package:baby_family/page/general/auth_otp/auth_otp_controller.dart';
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/session_route.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
@@ -46,7 +47,9 @@ class AuthOtpMobileView extends HookConsumerWidget {
     }, [restart.value]);
     final l10n = context.l10n;
     Future<void> resend() async {
-      await controller.resend();
+      if (!await runWithErrorSnackBar(context, controller.resend)) {
+        return;
+      }
       restart.value++;
       if (context.mounted) {
         ScaffoldMessenger.of(
@@ -56,8 +59,11 @@ class AuthOtpMobileView extends HookConsumerWidget {
     }
 
     Future<void> verify() async {
-      await controller.verify(code.text);
-      if (context.mounted) {
+      final verified = await runWithErrorSnackBar(
+        context,
+        () => controller.verify(code.text),
+      );
+      if (verified && context.mounted) {
         await context.router.push(routeForSession(controller.session));
       }
     }

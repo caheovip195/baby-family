@@ -6,6 +6,7 @@ import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/extension/date_time.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
+import 'package:baby_family/utils/helper/server_error_message.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
@@ -265,7 +266,11 @@ class RequestComposeMobileView extends HookConsumerWidget {
       return;
     }
     if (request == null) {
-      showAppSnackBar(context, context.l10n.errorGeneric);
+      final error = controller.sendError;
+      showAppSnackBar(
+        context,
+        error == null ? context.l10n.errorGeneric : actionErrorMessage(error),
+      );
       return;
     }
     await context.router.replace(RequestDetailRoute(requestId: request.id));

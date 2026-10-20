@@ -30,4 +30,30 @@ describe('environment validation', () => {
       expect(String(error)).not.toContain('super-secret');
     }
   });
+  it('requires a pepper with a signing key and keeps the OTP mail sink out of production', () => {
+    expect(() =>
+      validateEnvironment({ ...valid, AUTH_JWT_PRIVATE_KEY: 'pem' }),
+    ).toThrow('AUTH_SECRET_PEPPER');
+    expect(() =>
+      validateEnvironment({ ...valid, AUTH_SECRET_PEPPER: 'too-short' }),
+    ).toThrow('AUTH_SECRET_PEPPER');
+    expect(() =>
+      validateEnvironment({
+        ...valid,
+        NODE_ENV: 'production',
+        AUTH_OTP_DELIVERY: 'mail',
+      }),
+    ).toThrow('AUTH_OTP_DELIVERY');
+    const local = validateEnvironment({
+      ...valid,
+      NODE_ENV: 'production',
+      AUTH_OTP_DELIVERY: 'mail',
+      AUTH_OTP_ALLOW_MAIL_IN_PRODUCTION: 'true',
+    });
+    expect(local.AUTH_OTP_DELIVERY).toBe('mail');
+    expect(validateEnvironment(valid).AUTH_OTP_DELIVERY).toBe('disabled');
+    expect(validateEnvironment(valid).AUTH_OTP_ALLOWED_COUNTRY_CODES).toEqual([
+      '84',
+    ]);
+  });
 });

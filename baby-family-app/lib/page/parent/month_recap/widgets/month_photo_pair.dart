@@ -37,8 +37,8 @@ class _MonthPhotoPair extends StatelessWidget {
                   onTap: onOpen,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(AppRadius.lg),
-                    child: Image.asset(
-                      previousAsset!,
+                    child: Image(
+                      image: mediaImageProvider(previousAsset!),
                       height: 150,
                       width: 120,
                       fit: BoxFit.cover,
@@ -83,8 +83,8 @@ class _MonthPhotoPair extends StatelessWidget {
                             color: strong,
                           ),
                         )
-                      : Image.asset(
-                          currentAsset!,
+                      : Image(
+                          image: mediaImageProvider(currentAsset!),
                           fit: BoxFit.cover,
                           semanticLabel: currentLabel,
                         ),

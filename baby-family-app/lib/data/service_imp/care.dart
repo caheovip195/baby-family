@@ -1,6 +1,7 @@
 import 'package:baby_family/data/dto/care_board.dart';
 import 'package:baby_family/data/dto/mission_completion.dart';
 import 'package:baby_family/data/dto/mission_draft.dart';
+import 'package:baby_family/data/dto/mission_series_info.dart';
 import 'package:baby_family/data/model/care/calendar_event.dart';
 import 'package:baby_family/data/model/care/care_stats.dart';
 import 'package:baby_family/data/model/care/family_badge.dart';
@@ -178,6 +179,7 @@ class CareServiceImp extends MockServiceImp implements ICareService {
     DateTime? date,
     String? dueTime,
     MissionRepeat repeat = MissionRepeat.none,
+    List<int> repeatDays = const [],
     MissionReminder reminder = MissionReminder.none,
     String? icon,
   }) async {
@@ -584,4 +586,15 @@ class CareServiceImp extends MockServiceImp implements ICareService {
     final row = _repository.careStats();
     return row.isEmpty ? null : CareStats.fromJson(row);
   }
+
+  // ------------------------------------------------ CARE-03 chuỗi (mock)
+
+  @override
+  Future<List<MissionSeriesInfo>> missionSeries() async => const [];
+
+  @override
+  Future<void> pauseSeries(String seriesId, {int days = 7}) async {}
+
+  @override
+  Future<void> endSeries(String seriesId) async {}
 }

@@ -1,13 +1,18 @@
+import 'package:baby_family/data/dto/mission_series_info.dart';
 import 'package:baby_family/page/parent/mission_settings/mission_settings_controller.dart';
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/lucide_icon.dart';
+import 'package:baby_family/utils/helper/server_error_message.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/widget/app_bottom_sheet.dart';
+import 'package:baby_family/utils/widget/app_button.dart';
 import 'package:baby_family/utils/widget/app_caps_label.dart';
 import 'package:baby_family/utils/widget/app_card.dart';
+import 'package:baby_family/utils/widget/app_dialog.dart';
 import 'package:baby_family/utils/widget/app_radio_mark.dart';
 import 'package:baby_family/utils/widget/app_setting_row.dart';
 import 'package:baby_family/utils/widget/app_switch.dart';
@@ -17,6 +22,7 @@ import 'package:baby_family/utils/widget/error_state.dart';
 import 'package:baby_family/utils/widget/loading_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
 
 part '../widgets/level_card.dart';
@@ -109,6 +115,91 @@ class MissionSettingsMobileView extends HookConsumerWidget {
       );
       if (picked != null) {
         await controller.setDefaultReminder(picked);
+      }
+    }
+
+    String seriesSubtitle(MissionSeriesInfo item) {
+      // 2024-01-01 là thứ Hai: tên thứ ngắn theo ngôn ngữ đang dùng.
+      final weekday = DateFormat.E(context.localeName);
+      final days = item.weekdays.isEmpty
+          ? l10n.careSeriesDaily
+          : [
+              for (final day in item.weekdays)
+                weekday.format(DateTime(2024, 1, day)),
+            ].join(', ');
+      final time = item.scheduledTime == null ? '' : ' · ${item.scheduledTime}';
+      final paused = item.pausedUntil == null
+          ? ''
+          : ' · ${l10n.careSeriesPausedUntil(DateFormat('dd/MM', context.localeName).format(item.pausedUntil!))}';
+      return '$days$time$paused';
+    }
+
+    Future<void> manageSeries(MissionSeriesInfo item) async {
+      final action = await showAppBottomSheet<bool>(
+        context,
+        builder: (sheetContext) => AppBottomSheet(
+          title: item.title,
+          gap: 0,
+          children: [
+            for (final (end, label) in [
+              (false, l10n.careSeriesPauseWeek),
+              (true, l10n.careSeriesEnd),
+            ])
+              InkWell(
+                onTap: () => Navigator.of(sheetContext).pop(end),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.s3),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      label,
+                      style: AppTypography.adapt(context, AppTypography.body),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      );
+      if (action == null || !context.mounted) {
+        return;
+      }
+      if (action) {
+        final confirmed = await AppDialog.show<bool>(
+          context: context,
+          title: l10n.careSeriesEnd,
+          content: l10n.careSeriesEndConfirm,
+          actions: [
+            AppButton.secondary(
+              label: l10n.commonCancel,
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
+            AppButton(
+              label: l10n.careSeriesEnd,
+              onPressed: () => Navigator.of(context).pop(true),
+            ),
+          ],
+        );
+        if (confirmed != true || !context.mounted) {
+          return;
+        }
+      }
+      try {
+        if (action) {
+          await controller.endSeries(item.id);
+        } else {
+          await controller.pauseSeriesWeek(item.id);
+        }
+        if (context.mounted) {
+          showAppSnackBar(
+            context,
+            action ? l10n.careSeriesEnded : l10n.careSeriesPaused,
+          );
+        }
+      } on Object catch (error) {
+        if (context.mounted) {
+          showAppSnackBar(context, actionErrorMessage(error));
+        }
       }
     }
 
@@ -270,6 +361,39 @@ class MissionSettingsMobileView extends HookConsumerWidget {
               ],
             ),
           ),
+          if (controller.series.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.cardInset),
+            AppCapsLabel(l10n.careSeriesSection),
+            const SizedBox(height: AppSpacing.cardInset),
+            AppCard(
+              padding: EdgeInsets.zero,
+              child: Column(
+                children: [
+                  for (final (index, item) in controller.series.indexed)
+                    AppSettingRow(
+                      icon: item.pausedUntil == null
+                          ? LucideIcons.repeat
+                          : LucideIcons.pause,
+                      title: item.title,
+                      subtitle: seriesSubtitle(item),
+                      padding: rowPadding,
+                      divider: index < controller.series.length - 1,
+                      onTap: item.canManage ? () => manageSeries(item) : null,
+                      trailing: item.canManage
+                          ? Icon(
+                              LucideIcons.chevronRight,
+                              size: 18,
+                              color: AppColors.resolve(
+                                context,
+                                kColorTextTertiary9C928A,
+                              ),
+                            )
+                          : null,
+                    ),
+                ],
+              ),
+            ),
+          ],
         ],
       );
     }

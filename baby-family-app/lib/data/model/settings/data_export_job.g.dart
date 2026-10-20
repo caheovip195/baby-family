@@ -20,6 +20,7 @@ _DataExportJob _$DataExportJobFromJson(Map<String, dynamic> json) =>
       expiresAt: json['expiresAt'] == null
           ? null
           : DateTime.parse(json['expiresAt'] as String),
+      exportId: json['exportId'] as String?,
     );
 
 Map<String, dynamic> _$DataExportJobToJson(_DataExportJob instance) =>
@@ -30,6 +31,7 @@ Map<String, dynamic> _$DataExportJobToJson(_DataExportJob instance) =>
       'startedAt': instance.startedAt?.toIso8601String(),
       'sizeMb': instance.sizeMb,
       'expiresAt': instance.expiresAt?.toIso8601String(),
+      'exportId': instance.exportId,
     };
 
 const _$DataExportKindEnumMap = {

@@ -15,12 +15,14 @@ export interface MediaKindPolicy {
 export interface MediaPurposePolicy {
   readonly kinds: readonly AssetKind[];
   readonly bucket: ObjectStorageBucket;
+  /** Only the uploader may ever see it (DB: JOURNAL ⇔ private_owner_user_id). */
+  readonly private?: boolean;
 }
 
 /**
  * Upload/view policy (spec §10). Plan-dependent limits live in the billing catalog
  * (`storageBytes`, `videoMaxSec`, `audioMaxSec`); this holds technical limits only.
- * Purposes not listed here (JOURNAL, RECAP, EXPORT) are not client-uploadable yet.
+ * Purposes not listed here (RECAP, EXPORT) are not client-uploadable.
  */
 export const MEDIA_POLICY = {
   kinds: {
@@ -43,6 +45,8 @@ export const MEDIA_POLICY = {
     MEMORY: { kinds: ['IMAGE', 'VIDEO', 'AUDIO'], bucket: 'media' },
     AVATAR: { kinds: ['IMAGE'], bucket: 'media' },
     COVER: { kinds: ['IMAGE'], bucket: 'media' },
+    // US-07 private journal photos (BF-20261019-004): separate bucket, owner only.
+    JOURNAL: { kinds: ['IMAGE'], bucket: 'userMedia', private: true },
   } satisfies Record<string, MediaPurposePolicy>,
   uploadUrlTtlSeconds: 15 * 60,
   partUrlTtlSeconds: 60 * 60,

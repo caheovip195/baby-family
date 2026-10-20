@@ -46,8 +46,8 @@ class _HeroCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (photo != null)
-              Image.asset(
-                photo,
+              Image(
+                image: mediaImageProvider(photo),
                 height: 240,
                 fit: BoxFit.cover,
                 semanticLabel: child.name,

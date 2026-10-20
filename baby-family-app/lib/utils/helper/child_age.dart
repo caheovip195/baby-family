@@ -45,6 +45,10 @@ DateTime _addMonths(DateTime value, int months) {
 }
 
 /// Tổng số tháng tròn.
+/// Ngày tròn [months] tháng tuổi (MEM-21: ảnh tháng phải rơi đúng tháng).
+DateTime monthAnniversary(DateTime birth, int months) =>
+    _addMonths(birth, months);
+
 int childAgeInMonths(DateTime birth, DateTime today) {
   final parts = childAgeParts(birth, today);
   return parts.years * 12 + parts.months;

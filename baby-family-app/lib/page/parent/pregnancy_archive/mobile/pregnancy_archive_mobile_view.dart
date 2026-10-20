@@ -3,6 +3,7 @@ import 'package:baby_family/gen/assets.gen.dart';
 import 'package:baby_family/page/parent/pregnancy_archive/pregnancy_archive_controller.dart';
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
@@ -53,8 +54,8 @@ class PregnancyArchiveMobileView extends HookConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Image.asset(
-                        Assets.images.pv5ec.path,
+                      Image(
+                        image: mediaImageProvider(Assets.images.pv5ec.path),
                         width: 120,
                         height: 120,
                         excludeFromSemantics: true,

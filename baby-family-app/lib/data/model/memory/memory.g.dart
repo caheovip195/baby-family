@@ -48,12 +48,14 @@ _Memory _$MemoryFromJson(Map<String, dynamic> json) => _Memory(
         (k, e) => MapEntry(k, (e as num).toInt()),
       ) ??
       const {},
+  myReaction: json['myReaction'] as String?,
   reactorNames:
       (json['reactorNames'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList() ??
       const [],
   commentCount: (json['commentCount'] as num?)?.toInt() ?? 0,
+  commentsEnabled: json['commentsEnabled'] as bool? ?? true,
   perspectiveCount: (json['perspectiveCount'] as num?)?.toInt() ?? 0,
   perspectiveAuthorId: json['perspectiveAuthorId'] as String?,
   perspectivePreview: json['perspectivePreview'] as String?,
@@ -64,6 +66,14 @@ _Memory _$MemoryFromJson(Map<String, dynamic> json) => _Memory(
       : DateTime.parse(json['deletedAt'] as String),
   deletedByUserId: json['deletedByUserId'] as String?,
   rejectReason: json['rejectReason'] as String?,
+  mediaVideos:
+      (json['mediaVideos'] as List<dynamic>?)
+          ?.map((e) => e as String?)
+          .toList() ??
+      const [],
+  uploadDone: (json['uploadDone'] as num?)?.toInt(),
+  uploadTotal: (json['uploadTotal'] as num?)?.toInt(),
+  uploadFailed: json['uploadFailed'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$MemoryToJson(_Memory instance) => <String, dynamic>{
@@ -90,8 +100,10 @@ Map<String, dynamic> _$MemoryToJson(_Memory instance) => <String, dynamic>{
   'sealedUntil': instance.sealedUntil?.toIso8601String(),
   'missionId': instance.missionId,
   'reactions': instance.reactions,
+  'myReaction': instance.myReaction,
   'reactorNames': instance.reactorNames,
   'commentCount': instance.commentCount,
+  'commentsEnabled': instance.commentsEnabled,
   'perspectiveCount': instance.perspectiveCount,
   'perspectiveAuthorId': instance.perspectiveAuthorId,
   'perspectivePreview': instance.perspectivePreview,
@@ -100,6 +112,10 @@ Map<String, dynamic> _$MemoryToJson(_Memory instance) => <String, dynamic>{
   'deletedAt': instance.deletedAt?.toIso8601String(),
   'deletedByUserId': instance.deletedByUserId,
   'rejectReason': instance.rejectReason,
+  'mediaVideos': instance.mediaVideos,
+  'uploadDone': instance.uploadDone,
+  'uploadTotal': instance.uploadTotal,
+  'uploadFailed': instance.uploadFailed,
 };
 
 const _$MemoryKindEnumMap = {

@@ -33,12 +33,32 @@ class LocalStore {
   /// `MaterialApp`). `null` = chưa chọn, đi theo ngôn ngữ thiết bị.
   String? get languageCode => _languageCode;
 
+  Map<String, dynamic>? _display;
+
+  /// SET-06 hiển thị (giao diện, cỡ chữ, âm lịch) đã lưu trên máy — đọc sẵn
+  /// lúc [init] để `MaterialApp` dựng đúng ngay từ khung đầu.
+  Map<String, dynamic>? get displayPrefs => _display;
+
   Future init() async {
     Hive.init(ApplicationDirectory().applicationDatabaseFolder);
     _encrypt = Encrypter(AES(await _loadKey(), mode: AESMode.gcm));
     final settingBox = await _getBox(boxName: LocalStoreKey.settingBoxName);
     final language = settingBox.get(LocalStoreKey.languageKey);
     _languageCode = language is String && language.isNotEmpty ? language : null;
+    final display = settingBox.get(LocalStoreKey.displayKey);
+    try {
+      _display = display is String
+          ? Map<String, dynamic>.from(jsonDecode(display) as Map)
+          : null;
+    } on FormatException {
+      _display = null;
+    }
+  }
+
+  Future saveDisplayPrefs(Map<String, dynamic> prefs) async {
+    final box = await _getBox(boxName: LocalStoreKey.settingBoxName);
+    await box.put(LocalStoreKey.displayKey, jsonEncode(prefs));
+    _display = prefs;
   }
 
   Future saveLanguageCode(String code) async {
@@ -121,6 +141,61 @@ class LocalStore {
     return value is String && value.isNotEmpty ? value : null;
   }
 
+  Future saveFamilySetupDone(String familyId) async {
+    final box = await _getBox(boxName: LocalStoreKey.settingBoxName);
+    await box.put('${LocalStoreKey.familySetupDonePrefix}$familyId', true);
+  }
+
+  Future<bool> isFamilySetupDone(String familyId) async {
+    final box = await _getBox(boxName: LocalStoreKey.settingBoxName);
+    return box.get('${LocalStoreKey.familySetupDonePrefix}$familyId') == true;
+  }
+
+  /// Mã/link lời mời bạn đời: server chỉ trả một lần khi tạo (BR-041).
+  Future savePartnerInvite(String familyId, Map<String, dynamic> invite) async {
+    final box = await _getBox(boxName: LocalStoreKey.settingBoxName);
+    await box.put(
+      '${LocalStoreKey.partnerInvitePrefix}$familyId',
+      encryptData(jsonEncode(invite)),
+    );
+  }
+
+  Future<Map<String, dynamic>?> getPartnerInvite(String familyId) async {
+    try {
+      final box = await _getBox(boxName: LocalStoreKey.settingBoxName);
+      final raw = box.get('${LocalStoreKey.partnerInvitePrefix}$familyId');
+      if (raw is! String || raw.isEmpty) {
+        return null;
+      }
+      return Map<String, dynamic>.from(jsonDecode(decryptData(raw)) as Map);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Bản chụp dữ liệu đã đồng bộ (mở app lúc mất mạng) — trong hộp auth nên
+  /// bị xoá cùng phiên khi đăng xuất.
+  Future saveOfflineSnapshot(Map<String, dynamic> snapshot) async {
+    final box = await _getBox(boxName: LocalStoreKey.authBoxName);
+    await box.put(
+      LocalStoreKey.offlineSnapshotKey,
+      encryptData(jsonEncode(snapshot)),
+    );
+  }
+
+  Future<Map<String, dynamic>?> getOfflineSnapshot() async {
+    try {
+      final box = await _getBox(boxName: LocalStoreKey.authBoxName);
+      final raw = box.get(LocalStoreKey.offlineSnapshotKey);
+      if (raw is! String || raw.isEmpty) {
+        return null;
+      }
+      return Map<String, dynamic>.from(jsonDecode(decryptData(raw)) as Map);
+    } catch (e) {
+      return null;
+    }
+  }
+
   /// Đăng xuất / xoá tài khoản: xoá toàn bộ dữ liệu người dùng trên máy.
   Future clearAll() async {
     final authBox = await _getBox(boxName: LocalStoreKey.authBoxName);
@@ -131,6 +206,10 @@ class LocalStore {
     await settingBox.clear();
     if (language != null) {
       await settingBox.put(LocalStoreKey.languageKey, language);
+    }
+    final display = _display;
+    if (display != null) {
+      await settingBox.put(LocalStoreKey.displayKey, jsonEncode(display));
     }
   }
 }

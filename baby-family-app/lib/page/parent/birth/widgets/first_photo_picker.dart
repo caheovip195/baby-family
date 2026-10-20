@@ -35,8 +35,8 @@ class _FirstPhotoPicker extends StatelessWidget {
                     size: 26,
                     color: AppColors.resolve(context, kColorPrimary600C2513F),
                   )
-                : Image.asset(
-                    photoAsset!,
+                : Image(
+                    image: mediaImageProvider(photoAsset!),
                     width: 84,
                     height: 84,
                     fit: BoxFit.cover,

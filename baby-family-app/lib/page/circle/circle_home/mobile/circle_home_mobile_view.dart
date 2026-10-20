@@ -7,9 +7,11 @@ import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
+import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:baby_family/utils/helper/relative_time.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
+import 'package:baby_family/utils/router/session_route.dart';
 import 'package:baby_family/utils/widget/app_bottom_sheet.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
 import 'package:baby_family/utils/widget/app_text_field.dart';
@@ -37,6 +39,18 @@ class CircleHomeMobileView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = ref.watch(circleHomeControllerProvider);
     final l10n = context.l10n;
+    final moved = controller.sessionMoved;
+    useEffect(() {
+      if (moved) {
+        // CIR-05 / đã rời gia đình: sang màn đúng trạng thái phiên.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (context.mounted) {
+            context.router.replaceAll([routeForSession(controller.session)]);
+          }
+        });
+      }
+      return null;
+    }, [moved]);
     final view = controller.view;
     final child = controller.selectedChild;
     final hero = controller.hero;
@@ -212,8 +226,8 @@ class CircleHomeMobileView extends HookConsumerWidget {
                                 borderRadius: BorderRadius.circular(
                                   AppRadius.lg,
                                 ),
-                                child: Image.asset(
-                                  photos[index].$2,
+                                child: Image(
+                                  image: mediaImageProvider(photos[index].$2),
                                   height: 108,
                                   fit: BoxFit.cover,
                                 ),

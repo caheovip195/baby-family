@@ -10,6 +10,12 @@ Future<bool> launchPhoneCall(String number) =>
 /// người bạn tin cậy”) — app không biết và không lưu người được liên hệ.
 Future<bool> launchMessages() => _launch(Uri(scheme: 'sms'));
 
+/// Mở link tải (SET-08 bản xuất dữ liệu) bằng trình duyệt của máy.
+Future<bool> launchExternalUrl(String url) {
+  final uri = Uri.tryParse(url);
+  return uri == null ? Future.value(false) : _launch(uri);
+}
+
 Future<bool> _launch(Uri uri) async {
   try {
     return await launchUrl(uri, mode: LaunchMode.externalApplication);

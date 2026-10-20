@@ -3,6 +3,7 @@ import 'package:baby_family/page/general/auth_phone/auth_phone_controller.dart';
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/phone_format.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
@@ -36,8 +37,11 @@ class AuthPhoneMobileView extends HookConsumerWidget {
     }, [controller.samplesLoaded]);
     final l10n = context.l10n;
     Future<void> send() async {
-      await controller.sendCode(phone.text);
-      if (context.mounted) {
+      final sent = await runWithErrorSnackBar(
+        context,
+        () => controller.sendCode(phone.text),
+      );
+      if (sent && context.mounted) {
         await context.router.push(const AuthOtpRoute());
       }
     }

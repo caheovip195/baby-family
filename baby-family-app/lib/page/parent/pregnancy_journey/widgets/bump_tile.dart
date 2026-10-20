@@ -36,8 +36,8 @@ class _BumpTile extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Image.asset(
-                  asset,
+                Image(
+                  image: mediaImageProvider(asset),
                   fit: BoxFit.cover,
                   errorBuilder: (_, _, _) => const SizedBox.shrink(),
                 ),

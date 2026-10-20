@@ -16,10 +16,12 @@ import 'package:baby_family/utils/widget/app_icon_badge.dart';
 import 'package:baby_family/utils/widget/app_info_note.dart';
 import 'package:baby_family/utils/widget/app_initial_avatar.dart';
 import 'package:baby_family/utils/widget/app_radio_mark.dart';
+import 'package:baby_family/utils/widget/app_text_field.dart';
 import 'package:baby_family/utils/widget/app_top_bar.dart';
 import 'package:baby_family/utils/widget/base_scaffold.dart';
 import 'package:baby_family/utils/widget/error_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
 
@@ -49,12 +51,20 @@ class DeleteAccountMobileView extends HookConsumerWidget {
     }
 
     Future<void> delete() async {
-      await controller.deleteAccount();
-      if (!context.mounted) {
+      final done = await runWithErrorSnackBar(
+        context,
+        controller.deleteAccount,
+      );
+      if (!done || !context.mounted) {
         return;
       }
       await context.router.replaceAll([routeForSession(controller.session)]);
     }
+
+    Future<void> sendOtp() => runWithErrorSnackBar(context, controller.sendOtp);
+
+    Future<void> verifyOtp() =>
+        runWithErrorSnackBar(context, controller.verifyOtp);
 
     Widget body;
     if (controller.hasError) {
@@ -77,6 +87,8 @@ class DeleteAccountMobileView extends HookConsumerWidget {
               controller: controller,
               info: info,
               onDelete: delete,
+              onSendOtp: sendOtp,
+              onVerifyOtp: verifyOtp,
             ),
           },
         ],

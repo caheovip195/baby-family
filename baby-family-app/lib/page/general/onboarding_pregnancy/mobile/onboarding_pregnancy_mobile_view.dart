@@ -3,6 +3,7 @@ import 'package:baby_family/page/general/onboarding_pregnancy/onboarding_pregnan
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
@@ -109,8 +110,11 @@ class OnboardingPregnancyMobileView extends HookConsumerWidget {
           label: l10n.commonContinue,
           isLoading: controller.isLoading,
           onPressed: () async {
-            await controller.submit(name.text);
-            if (!context.mounted) {
+            final saved = await runWithErrorSnackBar(
+              context,
+              () => controller.submit(name.text),
+            );
+            if (!saved || !context.mounted) {
               return;
             }
             await context.router.push(

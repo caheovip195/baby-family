@@ -1,0 +1,146 @@
+[
+  {
+    "code": "WARM_BEDTIME",
+    "titleI18n": {
+      "vi": "Giờ ngủ ấm áp",
+      "en": "Warm Bedtime"
+    },
+    "descI18n": {
+      "vi": "7 hoạt động giờ đi ngủ",
+      "en": "7 bedtime activities"
+    },
+    "icon": "moon",
+    "rule": {
+      "metric": "BEDTIME_MISSIONS",
+      "target": 7
+    },
+    "scope": "FAMILY",
+    "status": "ACTIVE"
+  },
+  {
+    "code": "BOOKWORM",
+    "titleI18n": {
+      "vi": "Nhà mọt sách",
+      "en": "Bookworm Family"
+    },
+    "descI18n": {
+      "vi": "10 lần đọc sách",
+      "en": "10 reading sessions"
+    },
+    "icon": "book-open",
+    "rule": {
+      "metric": "READING_MISSIONS",
+      "target": 10
+    },
+    "scope": "FAMILY",
+    "status": "ACTIVE"
+  },
+  {
+    "code": "OUTDOOR_FAMILY",
+    "titleI18n": {
+      "vi": "Gia đình ngoài trời",
+      "en": "Outdoor Family"
+    },
+    "descI18n": {
+      "vi": "5 lần ra ngoài cùng nhau",
+      "en": "5 outdoor outings together"
+    },
+    "icon": "trees",
+    "rule": {
+      "metric": "OUTDOOR_MISSIONS",
+      "target": 5
+    },
+    "scope": "FAMILY",
+    "status": "ACTIVE"
+  },
+  {
+    "code": "TEAM_WEEK",
+    "titleI18n": {
+      "vi": "Tuần đồng đội",
+      "en": "Teamwork Week"
+    },
+    "descI18n": {
+      "vi": "5 nhiệm vụ cùng nhau",
+      "en": "5 missions together"
+    },
+    "icon": "users",
+    "rule": {
+      "metric": "TOGETHER_MISSIONS",
+      "target": 5
+    },
+    "scope": "FAMILY",
+    "status": "ACTIVE"
+  },
+  {
+    "code": "MEMORY_KEEPER",
+    "titleI18n": {
+      "vi": "Người giữ ký ức",
+      "en": "Memory Keeper"
+    },
+    "descI18n": {
+      "vi": "30 ký ức",
+      "en": "30 memories"
+    },
+    "icon": "camera",
+    "rule": {
+      "metric": "MEMORIES_COUNT",
+      "target": 30
+    },
+    "scope": "FAMILY",
+    "status": "ACTIVE"
+  },
+  {
+    "code": "GRATITUDE_WEEK",
+    "titleI18n": {
+      "vi": "Tuần cảm ơn",
+      "en": "Gratitude Week"
+    },
+    "descI18n": {
+      "vi": "7 lời cảm ơn trong tuần",
+      "en": "7 appreciations"
+    },
+    "icon": "heart",
+    "rule": {
+      "metric": "APPRECIATIONS_COUNT",
+      "target": 7
+    },
+    "scope": "FAMILY",
+    "status": "ACTIVE"
+  },
+  {
+    "code": "ALWAYS_TOGETHER",
+    "titleI18n": {
+      "vi": "Luôn bên nhau",
+      "en": "Always Together"
+    },
+    "descI18n": {
+      "vi": "10 lời nhờ được hỗ trợ",
+      "en": "10 requests supported"
+    },
+    "icon": "heart-handshake",
+    "rule": {
+      "metric": "REQUESTS_DONE",
+      "target": 10
+    },
+    "scope": "FAMILY",
+    "status": "ACTIVE"
+  },
+  {
+    "code": "FIRST_MOMENTS",
+    "titleI18n": {
+      "vi": "Những lần đầu",
+      "en": "First Moments"
+    },
+    "descI18n": {
+      "vi": "10 cột mốc của một bé",
+      "en": "10 milestones recorded"
+    },
+    "icon": "star",
+    "rule": {
+      "metric": "MILESTONES_COUNT",
+      "target": 10
+    },
+    "scope": "FAMILY",
+    "status": "ACTIVE"
+  }
+]

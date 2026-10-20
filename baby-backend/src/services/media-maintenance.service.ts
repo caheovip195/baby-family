@@ -1,3 +1,4 @@
+import type { JobContext } from '../interfaces/services/job-runner-service.interface';
 import path from 'node:path';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -16,6 +17,10 @@ import type { IMediaMaintenanceService } from '../interfaces/services/media-main
 import { OBJECT_STORAGE_SERVICE } from '../interfaces/services/object-storage-service.interface';
 import type { IObjectStorageService } from '../interfaces/services/object-storage-service.interface';
 import type { Asset } from '../models/asset.model';
+import {
+  PROFILE_IMAGE_CLEANUP_SERVICE,
+  type IProfileImageCleanupService,
+} from '../interfaces/services/profile-image-cleanup-service.interface';
 
 /** Longer than any single processing run; the worker gave up after this. */
 const STALLED_PROCESSING_MS = 6 * 60 * 60 * 1000;
@@ -33,6 +38,8 @@ export class MediaMaintenanceService implements IMediaMaintenanceService {
     private readonly storage: IObjectStorageService,
     @Inject(JOB_QUEUE_SERVICE) private readonly queue: IJobQueueService,
     config: ConfigService<Environment, true>,
+    @Inject(PROFILE_IMAGE_CLEANUP_SERVICE)
+    private readonly profileImages: IProfileImageCleanupService,
   ) {
     const hours = config.get('MEDIA_PURGE_UNATTACHED_AFTER_HOURS', {
       infer: true,
@@ -40,7 +47,10 @@ export class MediaMaintenanceService implements IMediaMaintenanceService {
     this.unattachedAfterMs = hours ? hours * 60 * 60 * 1000 : null;
   }
 
-  async purgeOrphans(now: Date): Promise<Record<string, number>> {
+  async purgeOrphans(
+    now: Date,
+    context?: JobContext,
+  ): Promise<Record<string, number>> {
     const stats = {
       stalled: await this.media.failStaleProcessing(
         new Date(now.getTime() - STALLED_PROCESSING_MS),
@@ -50,6 +60,8 @@ export class MediaMaintenanceService implements IMediaMaintenanceService {
         'FAILED',
         new Date(now.getTime() - MEDIA_MAINTENANCE.failedRetentionMs),
       ),
+      // Memories purged from the trash leave their assets without any link.
+      detached: await this.retire('DETACHED', now),
       unattached:
         this.unattachedAfterMs === null
           ? 0
@@ -66,7 +78,7 @@ export class MediaMaintenanceService implements IMediaMaintenanceService {
     )) {
       if (await this.purgeObjects(asset)) stats.objectsPurged++;
     }
-    return stats;
+    return { ...stats, ...(await this.profileImages.purge(now, context)) };
   }
 
   async reconcileUploads(now: Date): Promise<Record<string, number>> {

@@ -1206,6 +1206,42 @@ abstract class AppLocalizations {
   /// **'Thêm ảnh'**
   String get memoriesAddMedia;
 
+  /// MEM-06: tiến độ tải nền
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải {done}/{total} ảnh…'**
+  String memUploadProgress(int done, int total);
+
+  /// MEM-06: tải lên lỗi
+  ///
+  /// In vi, this message translates to:
+  /// **'Tải lên chưa xong'**
+  String get memUploadFailed;
+
+  /// MEM-06: thử lại tải lên
+  ///
+  /// In vi, this message translates to:
+  /// **'Thử lại'**
+  String get memUploadRetry;
+
+  /// MEM-06: huỷ tải lên
+  ///
+  /// In vi, this message translates to:
+  /// **'Huỷ'**
+  String get memUploadCancel;
+
+  /// MEM-05/09: chạm ảnh để đặt làm bìa
+  ///
+  /// In vi, this message translates to:
+  /// **'Đặt làm ảnh bìa'**
+  String get memoriesSetCover;
+
+  /// MEM-05/09: nút bỏ ảnh khỏi ký ức
+  ///
+  /// In vi, this message translates to:
+  /// **'Bỏ ảnh này'**
+  String get memoriesRemoveMedia;
+
   /// MEM — Thêm góc nhìn của bạn
   ///
   /// In vi, this message translates to:
@@ -6330,6 +6366,18 @@ abstract class AppLocalizations {
   /// **'Xem ảnh'**
   String get memPhotoViewerTitle;
 
+  /// MEM-08 phát video
+  ///
+  /// In vi, this message translates to:
+  /// **'Phát video'**
+  String get memVideoPlay;
+
+  /// MEM-08 tạm dừng video
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạm dừng video'**
+  String get memVideoPause;
+
   /// MEM-15
   ///
   /// In vi, this message translates to:
@@ -6347,6 +6395,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Tuần của nhà mình'**
   String get recapWeekTitle;
+
+  /// REC-02: tiêu đề recap tuần từ server
+  ///
+  /// In vi, this message translates to:
+  /// **'{moments, plural, =0{Một tuần bình yên} other{{moments} khoảnh khắc}}{firsts, plural, =0{} other{ · {firsts} lần đầu}}'**
+  String recapWeekHeadline(int moments, int firsts);
 
   /// CARE-07
   ///
@@ -6906,6 +6960,54 @@ abstract class AppLocalizations {
   /// **'{reminder, select, atTime{Đúng giờ} before15{Trước 15′} before30{Trước 30′} before60{Trước 1 giờ} other{Không nhắc}}'**
   String careReminderShort(String reminder);
 
+  /// CARE-03 chuỗi lặp lại (mục 7.13.6)
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuỗi lặp lại'**
+  String get careSeriesSection;
+
+  /// CARE-03 chuỗi lặp lại (mục 7.13.6)
+  ///
+  /// In vi, this message translates to:
+  /// **'Hằng ngày'**
+  String get careSeriesDaily;
+
+  /// CARE-03 chuỗi lặp lại (mục 7.13.6)
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạm dừng tới {date}'**
+  String careSeriesPausedUntil(String date);
+
+  /// CARE-03 chuỗi lặp lại (mục 7.13.6)
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạm dừng 1 tuần'**
+  String get careSeriesPauseWeek;
+
+  /// CARE-03 chuỗi lặp lại (mục 7.13.6)
+  ///
+  /// In vi, this message translates to:
+  /// **'Dừng chuỗi'**
+  String get careSeriesEnd;
+
+  /// CARE-03 chuỗi lặp lại (mục 7.13.6)
+  ///
+  /// In vi, this message translates to:
+  /// **'Các lần chưa làm từ hôm nay sẽ được bỏ khỏi bảng. Việc đã làm vẫn được giữ.'**
+  String get careSeriesEndConfirm;
+
+  /// CARE-03 chuỗi lặp lại (mục 7.13.6)
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã tạm dừng chuỗi 1 tuần'**
+  String get careSeriesPaused;
+
+  /// CARE-03 chuỗi lặp lại (mục 7.13.6)
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã dừng chuỗi'**
+  String get careSeriesEnded;
+
   /// FAM-01 plan card subtitle (paid plan)
   ///
   /// In vi, this message translates to:
@@ -7284,6 +7386,84 @@ abstract class AppLocalizations {
   /// **'Cần xác nhận kỹ · có 30 ngày để khôi phục'**
   String get famDeleteFamilyHint;
 
+  /// FAM-07 xoá gia đình (BF-20261019-008)
+  ///
+  /// In vi, this message translates to:
+  /// **'Cần cả Bố và Mẹ đồng ý. Sau khi đồng ý, gia đình được giữ thêm {days} ngày để huỷ; người thân mất quyền xem ngay. Hết hạn, toàn bộ ký ức, ảnh, thư và lịch sử của cả nhà bị xoá.'**
+  String famDelBody(int days);
+
+  /// FAM-07 xoá gia đình (BF-20261019-008)
+  ///
+  /// In vi, this message translates to:
+  /// **'Nên tải dữ liệu về trước: Cài đặt → Dữ liệu của tôi.'**
+  String get famDelExportHint;
+
+  /// FAM-07 xoá gia đình (BF-20261019-008)
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác thực lại bằng mã gửi tới số điện thoại của bạn.'**
+  String get famDelVerifyHint;
+
+  /// FAM-07 xoá gia đình (BF-20261019-008)
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi mã xác thực'**
+  String get famDelSendOtp;
+
+  /// FAM-07 xoá gia đình (BF-20261019-008)
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi mã xác thực'**
+  String get famDelOtpSent;
+
+  /// FAM-07 xoá gia đình (BF-20261019-008)
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu xoá gia đình'**
+  String get famDelStart;
+
+  /// FAM-07 xoá gia đình (BF-20261019-008)
+  ///
+  /// In vi, this message translates to:
+  /// **'Đồng ý xoá gia đình'**
+  String get famDelAgree;
+
+  /// FAM-07 xoá gia đình (BF-20261019-008)
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang chờ bạn đời đồng ý xoá gia đình. Bạn có thể huỷ yêu cầu bất cứ lúc nào.'**
+  String get famDelWaitingPartner;
+
+  /// FAM-07 xoá gia đình (BF-20261019-008)
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đời đã yêu cầu xoá gia đình. Xác thực lại để đồng ý, hoặc huỷ yêu cầu.'**
+  String get famDelPartnerAsked;
+
+  /// FAM-07 xoá gia đình (BF-20261019-008)
+  ///
+  /// In vi, this message translates to:
+  /// **'Gia đình sẽ bị xoá vào {date}. Trong thời gian này cả nhà chỉ xem và tải về được.'**
+  String famDelScheduled(String date);
+
+  /// FAM-07 xoá gia đình (BF-20261019-008)
+  ///
+  /// In vi, this message translates to:
+  /// **'Huỷ yêu cầu xoá'**
+  String get famDelCancel;
+
+  /// FAM-07 xoá gia đình (BF-20261019-008)
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã huỷ yêu cầu xoá gia đình'**
+  String get famDelCancelled;
+
+  /// FAM-07 xoá gia đình (BF-20261019-008)
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã cập nhật yêu cầu xoá gia đình'**
+  String get famDelRequested;
+
   /// SET-02
   ///
   /// In vi, this message translates to:
@@ -7337,6 +7517,42 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Huỷ liên kết'**
   String get setUnlink;
+
+  /// Đổi số điện thoại (BF-20261019-010)
+  ///
+  /// In vi, this message translates to:
+  /// **'Đổi số điện thoại'**
+  String get phoneChangeTitle;
+
+  /// Đổi số điện thoại (BF-20261019-010)
+  ///
+  /// In vi, this message translates to:
+  /// **'Trước tiên, xác thực lại bằng mã gửi tới số hiện tại của bạn.'**
+  String get phoneChangeReauthHint;
+
+  /// Đổi số điện thoại (BF-20261019-010)
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập số điện thoại mới. Mã xác nhận sẽ gửi tới số này.'**
+  String get phoneChangeNewHint;
+
+  /// Đổi số điện thoại (BF-20261019-010)
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi mã tới {phone}'**
+  String phoneChangeCodeSent(String phone);
+
+  /// Đổi số điện thoại (BF-20261019-010)
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã đổi số điện thoại. Các thiết bị khác đã được đăng xuất.'**
+  String get phoneChangeDone;
+
+  /// Đổi số điện thoại (BF-20261019-010)
+  ///
+  /// In vi, this message translates to:
+  /// **'Đổi số'**
+  String get setChangePhone;
 
   /// SET-02
   ///
@@ -8106,6 +8322,72 @@ abstract class AppLocalizations {
   /// **'Mô tả vấn đề, kèm ảnh chụp màn hình nếu muốn'**
   String get setSendRequestHint;
 
+  /// SET-11 gửi yêu cầu hỗ trợ
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi yêu cầu hỗ trợ'**
+  String get supportTitle;
+
+  /// SET-11 gửi yêu cầu hỗ trợ
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ nội dung bạn tự nhập được gửi tới đội hỗ trợ. Đừng ghi mật khẩu hay mã OTP.'**
+  String get supportHint;
+
+  /// SET-11 gửi yêu cầu hỗ trợ
+  ///
+  /// In vi, this message translates to:
+  /// **'Vấn đề về'**
+  String get supportCategoryLabel;
+
+  /// SET-11 gửi yêu cầu hỗ trợ
+  ///
+  /// In vi, this message translates to:
+  /// **'{category, select, ACCOUNT{Tài khoản} INVITATION{Lời mời} MEDIA{Ảnh & video} BILLING{Gói & thanh toán} PRIVACY{Quyền riêng tư} other{Khác}}'**
+  String supportCategory(String category);
+
+  /// SET-11 gửi yêu cầu hỗ trợ
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiêu đề'**
+  String get supportSubject;
+
+  /// SET-11 gửi yêu cầu hỗ trợ
+  ///
+  /// In vi, this message translates to:
+  /// **'Mô tả vấn đề'**
+  String get supportBody;
+
+  /// SET-11 gửi yêu cầu hỗ trợ
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi yêu cầu'**
+  String get supportSend;
+
+  /// SET-11 gửi yêu cầu hỗ trợ
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi yêu cầu {code}'**
+  String supportSent(String code);
+
+  /// SET-11 gửi yêu cầu hỗ trợ
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu đã gửi'**
+  String get supportMine;
+
+  /// SET-11 gửi yêu cầu hỗ trợ
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn chưa gửi yêu cầu nào.'**
+  String get supportEmpty;
+
+  /// SET-11 gửi yêu cầu hỗ trợ
+  ///
+  /// In vi, this message translates to:
+  /// **'{status, select, OPEN{Đã tiếp nhận} IN_PROGRESS{Đang xử lý} WAITING_USER{Chờ bạn phản hồi} RESOLVED{Đã giải quyết} other{Đã đóng}}'**
+  String supportStatus(String status);
+
   /// SET-11
   ///
   /// In vi, this message translates to:
@@ -8849,6 +9131,30 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Thả tim'**
   String get usThanksReact;
+
+  /// Thẻ lời cảm ơn: bạn đời đề nghị đăng thành khoảnh khắc gia đình
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} muốn đăng lời cảm ơn này thành khoảnh khắc của cả nhà'**
+  String usThanksShareAsk(String name);
+
+  /// Nút duyệt đăng lời cảm ơn lên gia đình
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng cho cả nhà'**
+  String get usThanksShareApprove;
+
+  /// Nút giữ lời cảm ơn riêng hai bố mẹ
+  ///
+  /// In vi, this message translates to:
+  /// **'Để riêng hai mình'**
+  String get usThanksShareKeep;
+
+  /// Lỗi khi duyệt/để riêng đề nghị đăng lời cảm ơn
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa gửi được, thử lại nhé'**
+  String get usThanksShareFailed;
 
   /// US-06 trống
   ///
@@ -12557,6 +12863,288 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'{name} vừa đăng {count} ảnh của {child} — chờ bạn duyệt'**
   String memPendingNotify(String name, int count, String child);
+
+  /// AUTH-01: Apple/Google sign-in is not wired to the server yet (local API build).
+  ///
+  /// In vi, this message translates to:
+  /// **'Bản này chưa hỗ trợ đăng nhập bằng Apple/Google. Vui lòng dùng số điện thoại.'**
+  String get authProviderUnavailable;
+
+  /// ONB-WAIT final approval dialog title (business spec 7.3 step 6).
+  ///
+  /// In vi, this message translates to:
+  /// **'{callName} muốn tham gia nhà mình'**
+  String onboardingPartnerApproveTitle(String callName);
+
+  /// ONB-WAIT final approval dialog body.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hãy chắc chắn đây đúng là bạn đời của bạn. Sau khi đồng ý, nhà mình được dùng thử miễn phí {days} ngày.'**
+  String onboardingPartnerApproveBody(int days);
+
+  /// ONB-WAIT final approval: approve button.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đồng ý'**
+  String get onboardingPartnerApprove;
+
+  /// ONB-WAIT final approval: reject button (wrong person).
+  ///
+  /// In vi, this message translates to:
+  /// **'Không phải'**
+  String get onboardingPartnerReject;
+
+  /// AUTH-03: wrong/expired OTP (OTP_INVALID).
+  ///
+  /// In vi, this message translates to:
+  /// **'Mã chưa đúng hoặc đã hết hạn. Vui lòng thử lại.'**
+  String get errorOtpInvalid;
+
+  /// 429 RATE_LIMITED / INVITE_DAILY_LIMIT.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn thao tác hơi nhanh. Vui lòng đợi một chút rồi thử lại.'**
+  String get errorRateLimited;
+
+  /// AUTH-02: PHONE_NOT_SUPPORTED.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số điện thoại này chưa được hỗ trợ.'**
+  String get errorPhoneNotSupported;
+
+  /// INV-01: INVITE_EXPIRED / INVITE_ALREADY_USED.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời mời đã hết hạn hoặc đã được dùng. Nhờ người mời gửi lại nhé.'**
+  String get errorInviteUnavailable;
+
+  /// ALREADY_PARENT_OF_ANOTHER_FAMILY / PARENT_SLOTS_FULL.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đang là Bố/Mẹ của một gia đình khác nên chưa tham gia được.'**
+  String get errorAlreadyInFamily;
+
+  /// 503 SERVICE_UNAVAILABLE.
+  ///
+  /// In vi, this message translates to:
+  /// **'Máy chủ đang bận. Vui lòng thử lại sau ít phút.'**
+  String get errorServiceUnavailable;
+
+  /// MEM-09: tiêu đề màn sửa ký ức và mục trong menu ⋯ của MEM-07
+  ///
+  /// In vi, this message translates to:
+  /// **'Sửa ký ức'**
+  String get memEditTitle;
+
+  /// MEM-09: snackbar sau khi lưu thay đổi
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lưu thay đổi'**
+  String get memEditSaved;
+
+  /// MEM-09: Parent không phải tác giả — trường bị khoá (đặc tả 7.8.3)
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ người đăng sửa được chú thích và ngày. Bạn vẫn đổi được bé và người xem.'**
+  String get memEditAuthorOnlyHint;
+
+  /// MEM-09: băng ảnh khi sửa (chưa hỗ trợ đổi ảnh)
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa thêm hoặc bớt ảnh được khi sửa ký ức.'**
+  String get memEditMediaHint;
+
+  /// Lỗi 412 VERSION_CONFLICT khi sửa
+  ///
+  /// In vi, this message translates to:
+  /// **'Ký ức vừa được cập nhật ở nơi khác. Xem lại rồi lưu nhé.'**
+  String get errorVersionConflict;
+
+  /// Lỗi MEMORY_FIELD_NOT_EDITABLE / MEMORY_VISIBILITY_INVALID
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn không sửa được phần này của ký ức.'**
+  String get errorMemoryNotEditable;
+
+  /// US-03: 422 REQUEST_OPEN_LIMIT (BR-067)
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đang có 5 lời nhờ chưa xong. Chờ bớt một lời nhờ rồi gửi tiếp nhé.'**
+  String get errorRequestOpenLimit;
+
+  /// US-03: 422 REQUEST_RESEND_BLOCKED (12 giờ sau khi bị từ chối)
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời nhờ này vừa được trả lời “Hôm nay không được”. Thử lại sau nhé.'**
+  String get errorRequestResendBlocked;
+
+  /// US-04: 409 INVALID_REQUEST_TRANSITION / REQUEST_REMINDER_USED
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời nhờ vừa thay đổi. Xem lại trạng thái mới nhé.'**
+  String get errorRequestChanged;
+
+  /// NOTI-01: tên người thao tác khi không xác định được
+  ///
+  /// In vi, this message translates to:
+  /// **'Một thành viên'**
+  String get notiSomeone;
+
+  /// NOTI-01 NOTI_MEMORY_PUBLISHED
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} vừa thêm một ký ức mới'**
+  String notiMemoryPublished(String name);
+
+  /// NOTI-01 NOTI_COMMENT_CREATED (gộp 30 phút)
+  ///
+  /// In vi, this message translates to:
+  /// **'{count, plural, =1{{name} vừa bình luận một ký ức} other{Có {count} bình luận mới trên một ký ức}}'**
+  String notiCommentCreated(String name, int count);
+
+  /// NOTI-01 NOTI_REACTION_CHANGED (gộp 30 phút)
+  ///
+  /// In vi, this message translates to:
+  /// **'{count, plural, =1{{name} đã thả cảm xúc cho một ký ức} other{Có {count} cảm xúc mới trên một ký ức}}'**
+  String notiReactionChanged(String name, int count);
+
+  /// NOTI-01 NOTI_REQUEST_CREATED
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} vừa gửi cho bạn một lời nhờ'**
+  String notiRequestCreated(String name);
+
+  /// NOTI-01 NOTI_REQUEST_ACCEPTED
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} đã nhận lời nhờ của bạn'**
+  String notiRequestAccepted(String name);
+
+  /// NOTI-01 NOTI_REQUEST_DONE
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} đã làm xong lời nhờ 💛'**
+  String notiRequestDone(String name);
+
+  /// NOTI-01 NOTI_REQUEST_DECLINED (giọng trung tính, BR-067)
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} báo hôm nay chưa làm được lời nhờ'**
+  String notiRequestDeclined(String name);
+
+  /// NOTI-01 NOTI_REQUEST_ACKNOWLEDGED
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} đã xem lời nhờ của bạn'**
+  String notiRequestAcknowledged(String name);
+
+  /// NOTI-01 NOTI_CHECKIN_SHARED (nhạy cảm, không hiện cảm xúc)
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} vừa chia sẻ trạng thái'**
+  String notiCheckinShared(String name);
+
+  /// NOTI-01 NOTI_APPRECIATION_CREATED
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn nhận được một lời cảm ơn ❤️'**
+  String get notiAppreciationCreated;
+
+  /// NOTI-01: mẫu chưa biết (server mới hơn app)
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có một cập nhật mới'**
+  String get notiGeneric;
+
+  /// CARE: dòng Hearts khi server không có tiêu đề (nhiệm vụ)
+  ///
+  /// In vi, this message translates to:
+  /// **'Một việc nhỏ cho gia đình'**
+  String get heartsReasonMission;
+
+  /// CARE: dòng Hearts từ lời nhờ (REQUEST_DONE)
+  ///
+  /// In vi, this message translates to:
+  /// **'Giúp bạn đời một lời nhờ'**
+  String get heartsReasonRequest;
+
+  /// CARE: dòng Hearts khác
+  ///
+  /// In vi, this message translates to:
+  /// **'Hearts của bạn'**
+  String get heartsReasonOther;
+
+  /// SET-09c: đã gửi OTP xác thực lại
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi mã xác thực tới {phone}'**
+  String setDelOtpSent(String phone);
+
+  /// Lỗi REAUTH_REQUIRED
+  ///
+  /// In vi, this message translates to:
+  /// **'Phiên xác thực đã hết hạn. Bạn xác thực lại giúp mình nhé.'**
+  String get errorReauthRequired;
+
+  /// Lỗi EXPORT_ALREADY_ACTIVE
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang có một bản xuất chưa xong. Bạn đợi bản đó xong nhé.'**
+  String get errorExportActive;
+
+  /// Lỗi EVENT_DATE_INVALID / EVENT_LUNAR_DATE_INVALID
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngày của sự kiện chưa hợp lệ. Bạn kiểm tra lại nhé.'**
+  String get errorEventDateInvalid;
+
+  /// CARE-07: sinh nhật của bé (server tính)
+  ///
+  /// In vi, this message translates to:
+  /// **'Sinh nhật {count} tuổi của {name}'**
+  String calendarChildBirthday(String name, int count);
+
+  /// CARE-07: tròn tháng của bé (server tính)
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} tròn {count} tháng'**
+  String calendarChildMonthiversary(String name, int count);
+
+  /// NOTI_EVENT_REMINDER (CAL-02)
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhắc lịch: {title}'**
+  String notiEventReminder(String title);
+
+  /// NOTI_EVENT_REMINDER của sự kiện riêng tư (không có tiêu đề)
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có một lịch hẹn sắp tới'**
+  String get notiEventReminderPrivate;
+
+  /// NOTI_BADGE_EARNED (CARE-10)
+  ///
+  /// In vi, this message translates to:
+  /// **'Gia đình vừa nhận một huy hiệu mới 🏅'**
+  String get notiBadgeEarned;
+
+  /// MEM-07/09 bật/tắt bình luận theo ký ức
+  ///
+  /// In vi, this message translates to:
+  /// **'Cho phép bình luận'**
+  String get memCommentsAllow;
+
+  /// MEM-07/09 bật/tắt bình luận theo ký ức
+  ///
+  /// In vi, this message translates to:
+  /// **'Tắt thì mọi người vẫn thả cảm xúc được'**
+  String get memCommentsAllowHint;
+
+  /// MEM-07/09 bật/tắt bình luận theo ký ức
+  ///
+  /// In vi, this message translates to:
+  /// **'Bình luận đã tắt cho ký ức này'**
+  String get memCommentsOff;
 }
 
 class _AppLocalizationsDelegate

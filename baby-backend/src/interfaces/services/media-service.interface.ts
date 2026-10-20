@@ -10,8 +10,10 @@ import type {
   UploadStatusResponseDto,
 } from '../../dto/media/media-response.dto';
 import type { UploadPartsDto } from '../../dto/media/upload-parts.dto';
+import type { FamilyAccessMode } from './application-access-service.interface';
 
 export const MEDIA_SERVICE = Symbol('MEDIA_SERVICE');
+export type MediaViewAccess = Extract<FamilyAccessMode, 'read' | 'download'>;
 
 /** Media upload (spec §10.2) and signed view URLs (spec §10.5). */
 export interface IMediaService {
@@ -34,8 +36,10 @@ export interface IMediaService {
     actor: AuthPrincipal,
     assetId: string,
   ): Promise<MediaAssetResponseDto>;
+  /** `access` = `download` keeps signing after the subscription expired (spec §6.5). */
   signViewUrls(
     actor: AuthPrincipal,
     input: MediaUrlsDto,
+    access?: MediaViewAccess,
   ): Promise<MediaUrlsResponseDto>;
 }

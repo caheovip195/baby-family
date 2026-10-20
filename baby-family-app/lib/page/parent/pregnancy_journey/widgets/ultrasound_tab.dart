@@ -56,8 +56,8 @@ class _UltrasoundTab extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             if (asset != null)
-              Image.asset(
-                asset,
+              Image(
+                image: mediaImageProvider(asset),
                 fit: BoxFit.cover,
                 errorBuilder: (_, _, _) => const SizedBox.shrink(),
               ),

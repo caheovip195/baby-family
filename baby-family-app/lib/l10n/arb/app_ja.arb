@@ -184,6 +184,12 @@
   "memoriesVisibility": "見られる人",
   "memoriesPrivacyHint": "保存前に写真の GPS 位置情報を削除します。",
   "memoriesAddMedia": "写真を追加",
+  "memUploadProgress": "アップロード中 {done}/{total}…",
+  "memUploadFailed": "アップロードが完了していません",
+  "memUploadRetry": "再試行",
+  "memUploadCancel": "キャンセル",
+  "memoriesSetCover": "カバーにする",
+  "memoriesRemoveMedia": "この写真を外す",
   "memoriesAddPerspective": "あなたの視点を追加",
   "memoriesTogether": "二人でつづる",
   "memoriesCommentHint": "コメントを書く…",
@@ -1687,9 +1693,12 @@
   "commonAgeWeeksDays": "{weeks}週{days}日",
   "memAlbumDetailTitle": "アルバムの詳細",
   "memPhotoViewerTitle": "写真を見る",
+  "memVideoPlay": "動画を再生",
+  "memVideoPause": "動画を一時停止",
   "memSearchTitle": "検索",
   "memOnThisDayTitle": "あの日の思い出",
   "recapWeekTitle": "わが家の一週間",
+  "recapWeekHeadline": "{moments, plural, =0{穏やかな一週間} other{{moments}つの思い出}}{firsts, plural, =0{} other{ · はじめて{firsts}回}}",
   "calendarTitle": "カレンダー",
   "calendarCreateEvent": "予定を作成",
   "careHistoryTitle": "履歴",
@@ -1783,6 +1792,14 @@
   "careSettingsDefaultReminder": "標準のリマインダー",
   "careSettingsDefaultReminderHint": "時間を決めたタスク用",
   "careReminderShort": "{reminder, select, atTime{時間ちょうど} before15{15分前} before30{30分前} before60{1時間前} other{なし}}",
+  "careSeriesSection": "繰り返しタスク",
+  "careSeriesDaily": "毎日",
+  "careSeriesPausedUntil": "{date}まで一時停止",
+  "careSeriesPauseWeek": "1週間一時停止",
+  "careSeriesEnd": "繰り返しを終了",
+  "careSeriesEndConfirm": "今日以降の未完了の回はボードから外れます。完了した回は残ります。",
+  "careSeriesPaused": "1週間一時停止しました",
+  "careSeriesEnded": "繰り返しを終了しました",
   "famPlanPaidSubtitle": "{price} · {date} に更新",
   "famManagePlan": "プランを管理",
   "famInviteRelativeCount": "家族を招待（{used}/{max}）",
@@ -1846,6 +1863,19 @@
   "famSettingsContentLanguage": "提案コンテンツの言語",
   "famDeleteFamily": "家族を削除",
   "famDeleteFamilyHint": "慎重な確認が必要 · 30日以内なら復元可",
+  "famDelBody": "パパとママの両方の同意が必要です。同意後{days}日間は取り消せます。親族はすぐに閲覧できなくなります。期限後、家族の思い出・写真・手紙・履歴はすべて削除されます。",
+  "famDelExportHint": "先にデータをダウンロードしてください：設定 → マイデータ。",
+  "famDelVerifyHint": "電話番号に届くコードで再認証してください。",
+  "famDelSendOtp": "コードを送信",
+  "famDelOtpSent": "コードを送信しました",
+  "famDelStart": "家族の削除をリクエスト",
+  "famDelAgree": "家族の削除に同意する",
+  "famDelWaitingPartner": "パートナーの同意を待っています。いつでも取り消せます。",
+  "famDelPartnerAsked": "パートナーが家族の削除をリクエストしました。再認証して同意するか、取り消してください。",
+  "famDelScheduled": "家族は{date}に削除されます。それまでは閲覧とダウンロードのみ可能です。",
+  "famDelCancel": "削除リクエストを取り消す",
+  "famDelCancelled": "削除リクエストを取り消しました",
+  "famDelRequested": "削除リクエストを更新しました",
   "setProfileChangeAvatar": "プロフィール写真を変更",
   "setProfileName": "あなたの名前",
   "setProfileCallName": "家族での呼び名",
@@ -1855,6 +1885,12 @@
   "setSignInGoogle": "Google",
   "setNotLinked": "未連携",
   "setUnlink": "連携解除",
+  "phoneChangeTitle": "電話番号を変更",
+  "phoneChangeReauthHint": "まず、現在の番号に届くコードで再認証してください。",
+  "phoneChangeNewHint": "新しい電話番号を入力してください。確認コードを送信します。",
+  "phoneChangeCodeSent": "{phone} にコードを送信しました",
+  "phoneChangeDone": "電話番号を変更しました。他の端末はログアウトされました。",
+  "setChangePhone": "変更",
   "setLink": "連携",
   "setSignInHint": "アカウントを失わないよう、ログイン方法を最低1つ残してください。",
   "setTimezoneSection": "タイムゾーン",
@@ -1983,6 +2019,17 @@
   "setSupportSection": "さらにサポートが必要なとき",
   "setSendRequest": "サポートを依頼",
   "setSendRequestHint": "問題を説明し、必要ならスクリーンショットを添付",
+  "supportTitle": "サポートに問い合わせ",
+  "supportHint": "ここに入力した内容だけがサポートに送られます。パスワードやOTPは書かないでください。",
+  "supportCategoryLabel": "内容",
+  "supportCategory": "{category, select, ACCOUNT{アカウント} INVITATION{招待} MEDIA{写真・動画} BILLING{プラン・お支払い} PRIVACY{プライバシー} other{その他}}",
+  "supportSubject": "件名",
+  "supportBody": "問題の内容",
+  "supportSend": "送信",
+  "supportSent": "お問い合わせ {code} を送信しました",
+  "supportMine": "送信したお問い合わせ",
+  "supportEmpty": "まだお問い合わせはありません。",
+  "supportStatus": "{status, select, OPEN{受付済み} IN_PROGRESS{対応中} WAITING_USER{返信待ち} RESOLVED{解決済み} other{終了}}",
   "setMyReports": "自分の報告",
   "setReportsOpen": "{count} 件対応中",
   "setContactSection": "お問い合わせ",
@@ -2107,6 +2154,10 @@
   "usThanksYou": "あなた",
   "usThanksSendCta": "ありがとうを送る",
   "usThanksReact": "ハートを送る",
+  "usThanksShareAsk": "{name}さんがこの「ありがとう」を家族の思い出として共有したいそうです",
+  "usThanksShareApprove": "家族に共有",
+  "usThanksShareKeep": "ふたりだけにする",
+  "usThanksShareFailed": "送信できませんでした。もう一度お試しください",
   "usThanksWallEmpty": "今月のありがとうはまだありません",
   "usJournalOnlyYou": "あなただけが読めます",
   "usJournalOnlyYouHint": "{callName}にも見えません。あなたが一部を共有した場合を除きます。",
@@ -2724,5 +2775,86 @@
   "careStatsPrivacy": "この統計は Papa & Mama だけが見られます",
   "commonPrevWeek": "前の週",
   "commonNextWeek": "次の週",
-  "memPendingNotify": "{name}が{child}の写真を{count}枚投稿しました。承認をお待ちしています"
+  "memPendingNotify": "{name}が{child}の写真を{count}枚投稿しました。承認をお待ちしています",
+  "authProviderUnavailable": "このバージョンではApple/Googleでのログインはまだ使えません。電話番号をご利用ください。",
+  "onboardingPartnerApproveTitle": "{callName}さんが家族に参加したいそうです",
+  "onboardingPartnerApproveBody": "本当にパートナーか確認してください。承認すると、{days}日間の無料トライアルが始まります。",
+  "onboardingPartnerApprove": "承認する",
+  "onboardingPartnerReject": "違います",
+  "errorOtpInvalid": "コードが正しくないか、期限切れです。もう一度お試しください。",
+  "errorRateLimited": "操作が早すぎます。少し待ってからもう一度お試しください。",
+  "errorPhoneNotSupported": "この電話番号はまだサポートされていません。",
+  "errorInviteUnavailable": "招待の期限が切れたか、すでに使われています。もう一度送ってもらってください。",
+  "errorAlreadyInFamily": "すでに別の家族の親になっているため参加できません。",
+  "errorServiceUnavailable": "サーバーが混み合っています。数分後にもう一度お試しください。",
+  "memEditTitle": "思い出を編集",
+  "memEditSaved": "変更を保存しました",
+  "memEditAuthorOnlyHint": "キャプションと日付は投稿者だけが変更できます。子どもと公開範囲は変更できます。",
+  "memEditMediaHint": "編集中はまだ写真を追加・削除できません。",
+  "errorVersionConflict": "この思い出は別の場所で更新されました。確認してからもう一度保存してください。",
+  "errorMemoryNotEditable": "思い出のこの部分は変更できません。",
+  "errorRequestOpenLimit": "未完了のお願いが5件あります。1件終わってから送ってください。",
+  "errorRequestResendBlocked": "このお願いには「今日は無理」と返事がありました。後でもう一度どうぞ。",
+  "errorRequestChanged": "このお願いは更新されました。最新の状態を確認してください。",
+  "notiSomeone": "家族のメンバー",
+  "notiMemoryPublished": "{name}さんが新しい思い出を追加しました",
+  "notiCommentCreated": "{count, plural, =1{{name}さんが思い出にコメントしました} other{思い出に新しいコメントが{count}件あります}}",
+  "notiReactionChanged": "{count, plural, =1{{name}さんが思い出にリアクションしました} other{思い出に新しいリアクションが{count}件あります}}",
+  "notiRequestCreated": "{name}さんからお願いが届きました",
+  "notiRequestAccepted": "{name}さんがお願いを引き受けました",
+  "notiRequestDone": "{name}さんがお願いを終えました 💛",
+  "notiRequestDeclined": "{name}さんは今日はお願いに応えられないそうです",
+  "notiRequestAcknowledged": "{name}さんがお願いを確認しました",
+  "notiCheckinShared": "{name}さんが今の気持ちを共有しました",
+  "notiAppreciationCreated": "ありがとうが届きました ❤️",
+  "notiGeneric": "新しいお知らせがあります",
+  "heartsReasonMission": "家族のための小さなこと",
+  "heartsReasonRequest": "パートナーのお願いを手伝った",
+  "heartsReasonOther": "あなたのハート",
+  "setDelOtpSent": "{phone} に確認コードを送信しました",
+  "@setDelOtpSent": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "errorReauthRequired": "確認の有効期限が切れました。もう一度確認してください。",
+  "errorExportActive": "エクスポートを準備中です。完了までお待ちください。",
+  "errorEventDateInvalid": "予定の日付が正しくありません。もう一度確認してください。",
+  "calendarChildBirthday": "{name}の{count}歳の誕生日",
+  "@calendarChildBirthday": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarChildMonthiversary": "{name}が生後{count}か月",
+  "@calendarChildMonthiversary": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notiEventReminder": "予定のリマインダー：{title}",
+  "@notiEventReminder": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notiEventReminderPrivate": "もうすぐ予定があります",
+  "notiBadgeEarned": "家族が新しいバッジを獲得しました 🏅",
+  "memCommentsAllow": "コメントを許可",
+  "memCommentsAllowHint": "オフでもリアクションはできます",
+  "memCommentsOff": "この思い出のコメントはオフです"
 }

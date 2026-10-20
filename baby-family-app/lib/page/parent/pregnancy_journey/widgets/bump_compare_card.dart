@@ -20,8 +20,8 @@ class _BumpCompareCard extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               if (item.asset != null)
-                Image.asset(
-                  item.asset!,
+                Image(
+                  image: mediaImageProvider(item.asset!),
                   fit: BoxFit.cover,
                   errorBuilder: (_, _, _) => const SizedBox.shrink(),
                 ),

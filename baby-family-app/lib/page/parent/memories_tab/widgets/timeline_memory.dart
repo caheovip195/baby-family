@@ -21,6 +21,17 @@ class _TimelineMemory extends StatelessWidget {
     );
     final photo = memory.mediaAssets.firstOrNull;
     final caption = memory.title ?? memory.body ?? '';
+    if (memory.uploadTotal case final total?) {
+      return UploadingMemoryCard(
+        caption: caption,
+        photo: photo,
+        done: memory.uploadDone ?? 0,
+        total: total,
+        failed: memory.uploadFailed,
+        onRetry: () => controller.retryUpload(memory.id),
+        onCancel: () => controller.cancelUpload(memory.id),
+      );
+    }
     switch (memory.kind) {
       case MemoryKind.voice:
         return VoiceCard(

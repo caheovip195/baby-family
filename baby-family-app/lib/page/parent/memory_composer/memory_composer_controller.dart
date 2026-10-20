@@ -1,3 +1,4 @@
+import 'package:baby_family/data/dto/result.dart';
 import 'package:baby_family/data/model/child/child.dart';
 import 'package:baby_family/data/model/family/family.dart';
 import 'package:baby_family/data/model/family/member.dart';
@@ -16,8 +17,9 @@ import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/legacy.dart';
 
 /// MEM-05 Soạn ký ức (+ MEM-13 nhật ký, MEM-14 thư, cột mốc, ghi âm, kỷ vật,
-/// ảnh tháng từ MEM-21). Không chặn lưu (giai đoạn UI): thiếu bé → gắn
-/// “Cả nhà”.
+/// ảnh tháng từ MEM-21) và MEM-09 Sửa ký ức (cùng form, điền sẵn; người không
+/// phải tác giả chỉ đổi bé và người xem — đặc tả 7.8.3). Không chặn lưu (giai
+/// đoạn UI): thiếu bé → gắn “Cả nhà”.
 final memoryComposerControllerProvider =
     ChangeNotifierProvider.autoDispose<MemoryComposerController>(
       MemoryComposerController.new,
@@ -42,11 +44,25 @@ class MemoryComposerController extends BaseNotifier {
   bool familyMoment = false;
   late DateTime occurredAt = today;
   MemoryVisibility visibility = MemoryVisibility.family;
+
+  /// MEM-09: tác giả bật/tắt bình luận của ký ức.
+  bool commentsEnabled = true;
   String? milestoneCode;
   String? milestoneTitle;
   DateTime? sealedUntil;
   int? voiceDurationSec;
   int? monthIndex;
+
+  /// Lỗi của lần lưu gần nhất (server từ chối, mất mạng…) để màn báo lại.
+  Exception? saveError;
+
+  /// MEM-09: ký ức đang sửa (null = soạn mới).
+  Memory? editing;
+
+  bool get isEditing => editing != null;
+
+  /// MEM-09: chỉ tác giả sửa chú thích, tiêu đề và ngày.
+  bool canEditContent = true;
 
   DateTime get today => childService.today;
 
@@ -66,7 +82,14 @@ class MemoryComposerController extends BaseNotifier {
     _ => false,
   };
 
-  Future<void> init(String? kindName, String? childId) async {
+  Future<void> init(
+    String? kindName,
+    String? childId, {
+    String? memoryId,
+  }) async {
+    if (memoryId != null) {
+      return _initEdit(memoryId);
+    }
     kind = MemoryKind.fromName(kindName) ?? MemoryKind.photo;
     final (loadedChildren, loadedMembers, draft) = await (
       childService.children(),
@@ -110,9 +133,43 @@ class MemoryComposerController extends BaseNotifier {
     notifyListeners();
   }
 
+  /// MEM-09: điền sẵn từ ký ức; thai kỳ chỉ hiện khi ký ức gắn thai kỳ đó.
+  Future<void> _initEdit(String memoryId) async {
+    final (memory, loadedChildren, loadedMembers, me) = await (
+      memoryService.memory(memoryId),
+      childService.children(),
+      familyService.members(),
+      familyService.me(),
+    ).wait;
+    if (isDisposed) {
+      return;
+    }
+    if (memory != null) {
+      editing = memory;
+      kind = memory.kind;
+      canEditContent = memory.authorId == me?.userId;
+      caption.text = memory.body ?? '';
+      title.text = memory.title ?? '';
+      mediaAssets = [...memory.mediaAssets];
+      childIds.addAll(memory.childIds);
+      familyMoment = memory.childIds.isEmpty;
+      occurredAt = memory.occurredAt;
+      visibility = memory.visibility;
+      commentsEnabled = memory.commentsEnabled;
+    }
+    children = loadedChildren
+        .where((child) => !child.isPregnancy || childIds.contains(child.id))
+        .toList();
+    members = loadedMembers;
+    loaded = true;
+    notifyListeners();
+  }
+
   /// Đang soạn dở: có chữ / ảnh / ghi âm (ảnh tháng tự điền ảnh nên bỏ qua).
+  /// Khi sửa, đóng không lưu thì bỏ thay đổi (không tạo nháp).
   bool get hasContent =>
       loaded &&
+      !isEditing &&
       kind != MemoryKind.monthlyPhoto &&
       (caption.text.trim().isNotEmpty ||
           title.text.trim().isNotEmpty ||
@@ -152,8 +209,24 @@ class MemoryComposerController extends BaseNotifier {
     notifyListeners();
   }
 
+  /// “Chỉ mình tôi” chỉ dành cho tác giả (MEM-09).
+  List<MemoryVisibility> get visibilityOptions => canEditContent
+      ? MemoryVisibility.values
+      : [
+          for (final value in MemoryVisibility.values)
+            if (value != MemoryVisibility.onlyMe) value,
+        ];
+
   void setVisibility(MemoryVisibility value) {
+    if (!visibilityOptions.contains(value)) {
+      return;
+    }
     visibility = value;
+    notifyListeners();
+  }
+
+  void setCommentsEnabled(bool value) {
+    commentsEnabled = value;
     notifyListeners();
   }
 
@@ -188,8 +261,60 @@ class MemoryComposerController extends BaseNotifier {
     return (maxMinutes: offer?.videoMinutes ?? 0, plan: plan);
   }
 
+  /// MEM-04: ảnh chọn từ photo picker hệ thống (đường dẫn file trên máy).
+  /// Video đã chọn dài hơn giới hạn của gói thì bỏ ra; trả số phút (làm tròn
+  /// lên) của video dài nhất bị bỏ để hiện SUB-05.
+  Future<({List<String> accepted, int? tooLongMinutes})> screenPicked(
+    List<String> paths,
+  ) async {
+    final limit = await videoLimit();
+    final accepted = <String>[];
+    int? tooLong;
+    for (final path in paths) {
+      final seconds = await memoryService.videoDurationSec(path);
+      if (seconds != null && seconds > limit.maxMinutes * 60) {
+        final minutes = (seconds / 60).ceil();
+        tooLong = tooLong == null || minutes > tooLong ? minutes : tooLong;
+        continue;
+      }
+      accepted.add(path);
+    }
+    return (accepted: accepted, tooLongMinutes: tooLong);
+  }
+
+  void addMedia(List<String> paths) {
+    if (paths.isEmpty) {
+      return;
+    }
+    mediaAssets = [
+      ...mediaAssets,
+      ...paths.where((p) => !mediaAssets.contains(p)),
+    ];
+    notifyListeners();
+  }
+
+  /// MEM-09: tác giả đổi ảnh khi sửa (thêm/bớt, đổi bìa); ký ức có ảnh phải
+  /// còn ít nhất một ảnh.
+  bool get canEditMedia => !isEditing || canEditContent;
+
+  bool get canRemoveMedia =>
+      canEditMedia &&
+      (!isEditing || editing!.mediaAssets.isEmpty || mediaAssets.length > 1);
+
   void removeMedia(String asset) {
+    if (!canRemoveMedia) {
+      return;
+    }
     mediaAssets.remove(asset);
+    notifyListeners();
+  }
+
+  /// Ảnh đầu danh sách là bìa.
+  void makeCover(String asset) {
+    if (!canEditMedia || !mediaAssets.remove(asset)) {
+      return;
+    }
+    mediaAssets = [asset, ...mediaAssets];
     notifyListeners();
   }
 
@@ -198,8 +323,13 @@ class MemoryComposerController extends BaseNotifier {
       (firstChild ?? children.where((child) => !child.isPregnancy).firstOrNull)
           ?.id;
 
-  /// Lưu ký ức (pass-through: luôn thành công với dữ liệu mẫu).
+  /// Lưu ký ức (bản mock luôn thành công; chế độ server tải ảnh lên rồi tạo ký
+  /// ức — lỗi ghi vào [saveError]).
   Future<Memory?> save() async {
+    final original = editing;
+    if (original != null) {
+      return _saveEdit(original);
+    }
     final ids = childIds.isEmpty
         ? children.where((child) => !child.isPregnancy).map((c) => c.id)
         : childIds;
@@ -225,17 +355,76 @@ class MemoryComposerController extends BaseNotifier {
               milestoneTitle: milestoneTitle,
               voiceDurationSec: voiceDurationSec,
               sealedUntil: sealedUntil,
+              // MEM-06: ảnh/video tải nền, màn soạn đóng ngay.
+              deferUpload: true,
             ),
     );
     if (isDisposed) {
       return null;
     }
-    if (result.isFailure) {
+    if (result case Failure(:final error)) {
+      saveError = error;
       return null;
     }
+    saveError = null;
     await memoryService.clearDraft(kind);
     return result.dataOrThrow;
   }
+
+  /// MEM-09: chỉ gửi trường đã đổi (người lưu sau thắng ở từng trường — đặc tả
+  /// 13.3); người không phải tác giả không gửi chú thích/ngày.
+  Future<Memory?> _saveEdit(Memory original) async {
+    final text = caption.text.trim();
+    final heading = title.text.trim();
+    final ids = familyMoment
+        ? <String>[]
+        : childIds.isEmpty
+        ? children
+              .where((child) => !child.isPregnancy)
+              .map((c) => c.id)
+              .toList()
+        : childIds.toList();
+    final sameKids =
+        ids.length == original.childIds.length &&
+        ids.toSet().containsAll(original.childIds);
+    final result = await callFuture(
+      memoryService.updateMemory(
+        original.id,
+        title: canEditContent && heading != (original.title ?? '').trim()
+            ? heading
+            : null,
+        body: canEditContent && text != (original.body ?? '').trim()
+            ? text
+            : null,
+        childIds: sameKids ? null : ids,
+        occurredAt: canEditContent && occurredAt != original.occurredAt
+            ? occurredAt
+            : null,
+        visibility: visibility == original.visibility ? null : visibility,
+        commentsEnabled:
+            canEditContent && commentsEnabled != original.commentsEnabled
+            ? commentsEnabled
+            : null,
+        mediaAssets:
+            canEditMedia && !_sameList(mediaAssets, original.mediaAssets)
+            ? [...mediaAssets]
+            : null,
+      ),
+    );
+    if (isDisposed) {
+      return null;
+    }
+    if (result case Failure(:final error)) {
+      saveError = error;
+      return null;
+    }
+    saveError = null;
+    return result.dataOrThrow;
+  }
+
+  static bool _sameList(List<String> a, List<String> b) =>
+      a.length == b.length &&
+      [for (var i = 0; i < a.length; i++) a[i] == b[i]].every((same) => same);
 
   @override
   void dispose() {

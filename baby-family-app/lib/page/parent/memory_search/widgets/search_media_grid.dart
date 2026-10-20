@@ -53,7 +53,7 @@ class _SearchMediaGrid extends StatelessWidget {
               fit: StackFit.expand,
               children: [
                 if (asset != null)
-                  Image.asset(asset, fit: BoxFit.cover)
+                  Image(image: mediaImageProvider(asset), fit: BoxFit.cover)
                 else
                   ColoredBox(
                     color: AppColors.resolve(

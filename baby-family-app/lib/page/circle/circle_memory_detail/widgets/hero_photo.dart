@@ -25,7 +25,7 @@ class _HeroPhoto extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           if (image != null)
-            Image.asset(image, fit: BoxFit.cover)
+            Image(image: mediaImageProvider(image), fit: BoxFit.cover)
           else
             ColoredBox(
               color: AppColors.resolve(context, kColorSurfaceVariantF7F1EC),

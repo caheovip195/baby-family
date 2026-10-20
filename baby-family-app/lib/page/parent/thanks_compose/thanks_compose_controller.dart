@@ -50,6 +50,7 @@ class ThanksComposeController extends BaseNotifier {
           body: body,
           sticker: sticker,
           missionId: missionId,
+          proposeFamilyMoment: proposeFamilyMoment,
         ),
       );
       return true;

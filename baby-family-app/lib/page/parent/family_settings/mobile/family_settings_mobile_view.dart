@@ -1,11 +1,15 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/data/model/family/family_settings.dart';
 import 'package:baby_family/page/parent/family_settings/family_settings_controller.dart';
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/enum.dart';
+import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
+import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:baby_family/utils/helper/memory_text.dart';
 import 'package:baby_family/utils/helper/theme.dart';
+import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_caps_label.dart';
 import 'package:baby_family/utils/widget/app_family_cover.dart';
 import 'package:baby_family/utils/widget/app_grouped_list.dart';
@@ -17,6 +21,7 @@ import 'package:baby_family/utils/widget/error_state.dart';
 import 'package:baby_family/utils/widget/memory_visibility_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
 
 part '../widgets/cover_card.dart';
@@ -67,7 +72,9 @@ class FamilySettingsMobileView extends HookConsumerWidget {
           _CoverCard(
             name: settings.name,
             coverAsset: settings.coverAsset,
-            onChange: comingSoon,
+            onChange: kValueUseRemoteSession
+                ? () => _pickCover(controller)
+                : comingSoon,
           ),
           gap,
           AppTextField(
@@ -143,7 +150,12 @@ class FamilySettingsMobileView extends HookConsumerWidget {
                 value: AppLanguage.fromCode(
                   settings.contentLanguage,
                 )?.nativeName,
-                onTap: comingSoon,
+                // Nội dung server viết cho gia đình: vi | en.
+                onTap: () => controller.update(
+                  (s) => s.copyWith(
+                    contentLanguage: s.contentLanguage == 'vi' ? 'en' : 'vi',
+                  ),
+                ),
               ),
             ],
           ),
@@ -158,7 +170,7 @@ class FamilySettingsMobileView extends HookConsumerWidget {
                 titleColor: kColorErrorD14B4B,
                 titleWeight: FontWeight.w600,
                 subtitle: l10n.famDeleteFamilyHint,
-                onTap: comingSoon,
+                onTap: () => context.router.push(const FamilyDeletionRoute()),
               ),
             ],
           ),
@@ -166,5 +178,18 @@ class FamilySettingsMobileView extends HookConsumerWidget {
       );
     }
     return BaseScaffold(appBar: const AppTopBar(), body: body);
+  }
+}
+
+/// FAM-07: chọn ảnh bìa (photo picker hệ thống, thu nhỏ như ảnh ký ức).
+Future<void> _pickCover(FamilySettingsController controller) async {
+  final picked = await ImagePicker().pickImage(
+    source: ImageSource.gallery,
+    maxWidth: kValueUploadImageMaxSide,
+    maxHeight: kValueUploadImageMaxSide,
+    imageQuality: kValueUploadImageQuality,
+  );
+  if (picked != null) {
+    await controller.update((s) => s.copyWith(coverAsset: picked.path));
   }
 }

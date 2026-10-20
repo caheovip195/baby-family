@@ -9,6 +9,10 @@ abstract class ICareRepository extends IBaseRepository {
 
   void updateMission(String id, JsonMap patch);
 
+  /// Báo các màn đang đọc kho (qua `mockRevisionProvider`) đọc lại — dùng sau
+  /// thao tác nhiệm vụ trên server, khi kho trên máy không đổi.
+  void touch();
+
   List<JsonMap> templates();
 
   JsonMap? template(String? id);

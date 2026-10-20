@@ -7,17 +7,33 @@ import 'package:baby_family/data/provider/notification.dart';
 import 'package:baby_family/data/provider/session.dart';
 import 'package:baby_family/data/service/circle.dart';
 import 'package:baby_family/data/service_imp/circle.dart';
+import 'package:baby_family/data/service_imp/circle_remote.dart';
+import 'package:baby_family/utils/constants/values.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+/// Bản thật (`BABY_FAMILY_API_URL`): app của người thân qua server
+/// (BF-20261019-005).
 final circleServiceProvider = Provider<ICircleService>(
-  (ref) => CircleServiceImp(
-    ref.watch(sessionRepositoryProvider),
-    ref.watch(appClockProvider),
-    ref.watch(familyRepositoryProvider),
-    ref.watch(childRepositoryProvider),
-    ref.watch(memoryRepositoryProvider),
-    ref.watch(notificationRepositoryProvider),
-  ),
+  (ref) => kValueUseRemoteSession
+      ? CircleRemoteServiceImp(
+          ref.watch(sessionRepositoryProvider),
+          ref.watch(appClockProvider),
+          ref.watch(familyRepositoryProvider),
+          ref.watch(childRepositoryProvider),
+          ref.watch(memoryRepositoryProvider),
+          ref.watch(notificationRepositoryProvider),
+          ref.watch(memoryServiceProvider),
+          ref.watch(onboardingRepositoryProvider),
+          ref.watch(sessionServiceProvider),
+        )
+      : CircleServiceImp(
+          ref.watch(sessionRepositoryProvider),
+          ref.watch(appClockProvider),
+          ref.watch(familyRepositoryProvider),
+          ref.watch(childRepositoryProvider),
+          ref.watch(memoryRepositoryProvider),
+          ref.watch(notificationRepositoryProvider),
+        ),
 );
 
 /// CIR-01 — những gì người thân đang đăng nhập được thấy.

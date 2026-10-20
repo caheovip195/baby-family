@@ -5,6 +5,9 @@ abstract class IUsRepository extends IBaseRepository {
 
   JsonMap addCheckin(JsonMap checkin);
 
+  /// Gỡ bản sao check-in không còn hiệu lực/chia sẻ trên server.
+  void removeCheckin(String id);
+
   List<JsonMap> requests(String familyId);
 
   JsonMap? request(String id);

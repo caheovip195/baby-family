@@ -2,12 +2,11 @@ import 'package:baby_family/data/model/child/child.dart';
 import 'package:baby_family/data/model/family/member.dart';
 import 'package:baby_family/data/provider/child.dart';
 import 'package:baby_family/data/provider/family.dart';
+import 'package:baby_family/data/provider/push.dart';
 import 'package:baby_family/data/provider/session.dart';
 import 'package:baby_family/data/service/session.dart';
 import 'package:baby_family/page/application_base.dart';
-import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/legacy.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 /// ONB-10 — xin quyền thông báo (pre-permission) với 3 thông báo mẫu.
 final onboardingNotificationsControllerProvider =
@@ -42,14 +41,9 @@ class OnboardingNotificationsController extends BaseNotifier {
     notifyListeners();
   }
 
-  /// Hộp thoại hệ thống; lỗi nền tảng (giả lập/test) được bỏ qua.
+  /// Hộp thoại hệ thống rồi (bản thật) đăng ký push token với server; lỗi
+  /// nền tảng (giả lập/test) được bỏ qua trong service.
   Future<void> enable() async {
-    await whileLoading(() async {
-      try {
-        await Permission.notification.request();
-      } on Object catch (error) {
-        debugPrint('notification permission failed: $error');
-      }
-    });
+    await whileLoading(ref.read(pushServiceProvider).enable);
   }
 }

@@ -14,8 +14,8 @@ class _PendingPhotos extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget photo(String asset) => ClipRRect(
       borderRadius: BorderRadius.circular(AppRadius.md),
-      child: Image.asset(
-        asset,
+      child: Image(
+        image: mediaImageProvider(asset),
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,

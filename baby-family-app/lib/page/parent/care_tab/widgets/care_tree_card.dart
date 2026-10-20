@@ -29,8 +29,8 @@ class _CareTreeCard extends StatelessWidget {
           padding: const EdgeInsets.all(AppSpacing.cardInset),
           child: Row(
             children: [
-              Image.asset(
-                Assets.images.utV0f.path,
+              Image(
+                image: mediaImageProvider(Assets.images.utV0f.path),
                 width: 72,
                 height: 72,
                 excludeFromSemantics: true,

@@ -41,8 +41,8 @@ class _TimelineMemoryCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (photo != null)
-              Image.asset(
-                photo,
+              Image(
+                image: mediaImageProvider(photo),
                 height: 170,
                 fit: BoxFit.cover,
                 errorBuilder: (_, _, _) => const SizedBox(height: 170),

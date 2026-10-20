@@ -48,10 +48,14 @@ abstract class ISessionService extends IBaseService {
   Future<void> cancelFamily();
 
   /// ONB-07/ONB-WAIT: lời mời bạn đời của gia đình hiện tại.
-  Future<InviteInfo?> partnerInvite();
+  /// [requireApproval] khác lựa chọn của lời mời hiện có → tạo lời mời mới.
+  Future<InviteInfo?> partnerInvite({bool? requireApproval});
 
-  /// ONB-07: đánh dấu đã gửi lời mời.
-  Future<void> markPartnerInviteSent();
+  /// ONB-07: đánh dấu đã gửi lời mời (kèm lựa chọn “xác nhận lần cuối”).
+  Future<void> markPartnerInviteSent({bool? requireApproval});
+
+  /// FAM-02 “Thu hồi lời mời”: mã/link đang chia sẻ hết hiệu lực.
+  Future<void> revokePartnerInvite();
 
   /// ONB-WAIT (debug): “Giả lập: bạn đời đã tham gia” → activatedSetup,
   /// bắt đầu dùng thử theo trial policy (mặc định 7 ngày).
@@ -74,6 +78,24 @@ abstract class ISessionService extends IBaseService {
   Future<void> acceptInvite(String code, {String? callName});
 
   Future<void> declineInvite();
+
+  /// Đăng nhập/onboarding đi qua server thật (`BABY_FAMILY_API_URL`); false →
+  /// bản mock (có nút mô phỏng ở ONB-WAIT).
+  bool get usesServer;
+
+  /// ONB-WAIT: hỏi trạng thái bạn đời (poll 30 giây, tài liệu kỹ thuật 23.1).
+  /// Đã tham gia → dữ liệu trên máy chuyển sang `activatedSetup`.
+  Future<PartnerJoinStatus> checkPartnerStatus();
+
+  /// Tên gọi bạn đời đang chờ xác nhận lần cuối (khi [checkPartnerStatus] trả
+  /// `awaitingApproval`).
+  String? get pendingPartnerCallName;
+
+  /// 7.3 bước 6 — Bố/Mẹ xác nhận hoặc từ chối người vừa nhận lời mời.
+  Future<PartnerJoinStatus> decidePartner({required bool approve});
+
+  /// INV-04: lời mời đã nhận đang chờ người mời xác nhận.
+  bool get awaitingPartnerApproval;
 
   /// Đăng xuất: dữ liệu mẫu trở về seed `fresh`.
   Future<void> signOut();

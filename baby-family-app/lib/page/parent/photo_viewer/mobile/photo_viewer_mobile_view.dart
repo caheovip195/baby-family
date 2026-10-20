@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/page/parent/photo_viewer/photo_viewer_controller.dart';
 import 'package:baby_family/utils/constants/colors.dart';
@@ -5,6 +7,8 @@ import 'package:baby_family/utils/extension/date_time.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/extension/string.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
+import 'package:baby_family/utils/helper/external_launcher.dart';
+import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:baby_family/utils/helper/memory_text.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/widget/app_bottom_sheet.dart';
@@ -15,10 +19,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
+import 'package:video_player/video_player.dart';
 
 part '../widgets/viewer_action.dart';
 part '../widgets/viewer_dots.dart';
 part '../widgets/viewer_photo.dart';
+part '../widgets/viewer_video.dart';
 
 /// Kéo xuống quá ngưỡng này (hoặc vuốt nhanh) thì đóng MEM-08.
 const _dismissDistance = 120.0;
@@ -102,11 +108,18 @@ class PhotoViewerMobileView extends HookConsumerWidget {
                                       : null,
                                   itemCount: assets.length,
                                   onPageChanged: controller.setPage,
-                                  itemBuilder: (_, page) => _ViewerPhoto(
-                                    asset: assets[page],
-                                    onZoomChanged: (value) =>
-                                        zoomed.value = value,
-                                  ),
+                                  itemBuilder: (_, page) =>
+                                      switch (controller.videoAt(page)) {
+                                        final String video => _ViewerVideo(
+                                          source: video,
+                                          poster: assets[page],
+                                        ),
+                                        null => _ViewerPhoto(
+                                          asset: assets[page],
+                                          onZoomChanged: (value) =>
+                                              zoomed.value = value,
+                                        ),
+                                      },
                                 ),
                               ),
                             ),
@@ -253,6 +266,24 @@ class PhotoViewerMobileView extends HookConsumerWidget {
 
   Widget _actionBar(BuildContext context, PhotoViewerController controller) {
     final l10n = context.l10n;
+
+    /// Bản thật: mở link bản gốc (hết hạn sau vài phút); bản mock chỉ báo.
+    Future<void> download(BuildContext context) async {
+      String? url;
+      final ok = await runWithErrorSnackBar(context, () async {
+        url = await controller.originalUrl();
+      });
+      if (!ok || !context.mounted) {
+        return;
+      }
+      final link = url;
+      if (link == null) {
+        showAppSnackBar(context, l10n.memViewerDownloaded);
+      } else if (!await launchExternalUrl(link) && context.mounted) {
+        showAppSnackBar(context, l10n.errorGeneric);
+      }
+    }
+
     final bottom = MediaQuery.paddingOf(context).bottom;
     final favorite = controller.memory?.isFavorite ?? false;
     return Container(
@@ -272,7 +303,7 @@ class PhotoViewerMobileView extends HookConsumerWidget {
           _ViewerAction(
             icon: LucideIcons.download,
             label: l10n.memViewerDownload,
-            onTap: () => showAppSnackBar(context, l10n.memViewerDownloaded),
+            onTap: () => download(context),
           ),
           _ViewerAction(
             icon: LucideIcons.share2,

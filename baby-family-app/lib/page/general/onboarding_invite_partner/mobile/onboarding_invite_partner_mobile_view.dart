@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/page/general/onboarding_invite_partner/onboarding_invite_partner_controller.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/invite_code.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
@@ -41,8 +42,17 @@ class OnboardingInvitePartnerMobileView extends HookConsumerWidget {
           label: l10n.onboardingShareInvite,
           isLoading: controller.isLoading,
           onPressed: () async {
-            final link = await controller.markSent();
-            await controller.share(l10n.onbInviteShareMessage(code, link));
+            var link = '';
+            if (!await runWithErrorSnackBar(context, () async {
+              link = await controller.markSent();
+            })) {
+              return;
+            }
+            // Mã có thể đổi khi đổi lựa chọn “xác nhận lần cuối”.
+            final sharedCode = controller.invite?.code ?? code;
+            await controller.share(
+              l10n.onbInviteShareMessage(sharedCode, link),
+            );
             if (context.mounted) {
               toWaiting();
             }
@@ -51,7 +61,12 @@ class OnboardingInvitePartnerMobileView extends HookConsumerWidget {
         AppButton.secondary(
           label: l10n.onboardingCopyInvite,
           onPressed: () async {
-            final link = await controller.markSent();
+            var link = '';
+            if (!await runWithErrorSnackBar(context, () async {
+              link = await controller.markSent();
+            })) {
+              return;
+            }
             await Clipboard.setData(ClipboardData(text: link));
             if (context.mounted) {
               copied();

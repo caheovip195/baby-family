@@ -144,12 +144,16 @@ class RequestComposeController extends BaseNotifier {
     notifyListeners();
   }
 
+  /// Lỗi server của lần gửi gần nhất (giới hạn 5 lời nhờ, chặn gửi lại…).
+  Object? sendError;
+
   /// Gửi lời nhờ, trả về lời nhờ mới (→ US-04 người gửi) hoặc null khi lỗi.
   Future<CoupleRequest?> send({
     required String title,
     required String? message,
   }) async {
     toLoading();
+    sendError = null;
     try {
       return await usService.sendRequest(
         kind: isTask ? RequestKind.task : RequestKind.need,
@@ -169,6 +173,10 @@ class RequestComposeController extends BaseNotifier {
       // Mock: vượt giới hạn 5 lời nhờ (BR-067) → báo lỗi nhẹ, không gửi.
       // ignore: avoid_catching_errors
     } on StateError {
+      return null;
+    } on Exception catch (error) {
+      // Chế độ server: mã lỗi (BR-067…) hiển thị qua actionErrorMessage.
+      sendError = error;
       return null;
     } finally {
       toIdle();

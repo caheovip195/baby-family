@@ -35,7 +35,7 @@ class _AutoAlbumTile extends StatelessWidget {
         ? Stack(
             fit: StackFit.expand,
             children: [
-              Image.asset(asset, fit: BoxFit.cover),
+              Image(image: mediaImageProvider(asset), fit: BoxFit.cover),
               if (album.autoCode == 'videos')
                 const Center(
                   child: Icon(LucideIcons.play, size: 30, color: kColorWhite),

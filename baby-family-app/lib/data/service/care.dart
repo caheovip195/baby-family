@@ -1,6 +1,7 @@
 import 'package:baby_family/data/dto/care_board.dart';
 import 'package:baby_family/data/dto/mission_completion.dart';
 import 'package:baby_family/data/dto/mission_draft.dart';
+import 'package:baby_family/data/dto/mission_series_info.dart';
 import 'package:baby_family/data/model/care/calendar_event.dart';
 import 'package:baby_family/data/model/care/care_stats.dart';
 import 'package:baby_family/data/model/care/family_badge.dart';
@@ -16,6 +17,15 @@ import 'package:baby_family/utils/constants/enum.dart';
 
 /// Chăm con: bảng nhiệm vụ ngày, Hearts riêng tư, Cây gia đình (CARE-01…09).
 abstract class ICareService extends IBaseService {
+  /// CARE-03: chuỗi nhiệm vụ lặp lại đang chạy (bản mẫu: không có).
+  Future<List<MissionSeriesInfo>> missionSeries();
+
+  /// Tạm dừng chuỗi [days] ngày kể từ hôm nay.
+  Future<void> pauseSeries(String seriesId, {int days = 7});
+
+  /// Dừng chuỗi: nhiệm vụ chưa làm từ hôm nay bị gỡ, việc đã xong giữ lại.
+  Future<void> endSeries(String seriesId);
+
   /// Bảng nhiệm vụ của [date] (mặc định hôm nay), chia Của tôi / Của bạn đời /
   /// Cùng nhau. [childId] lọc theo bé đang chọn (nhiệm vụ không gắn bé luôn hiện).
   Future<CareBoard> board({DateTime? date, String? childId});
@@ -35,6 +45,9 @@ abstract class ICareService extends IBaseService {
     DateTime? date,
     String? dueTime,
     MissionRepeat repeat = MissionRepeat.none,
+
+    /// Thứ trong tuần khi [repeat] = `customDays` (1 = Thứ Hai … 7 = Chủ nhật).
+    List<int> repeatDays = const [],
     MissionReminder reminder = MissionReminder.none,
     String? icon,
   });

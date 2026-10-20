@@ -16,6 +16,7 @@ _Thanks _$ThanksFromJson(Map<String, dynamic> json) => _Thanks(
   memoryId: json['memoryId'] as String?,
   createdAt: DateTime.parse(json['createdAt'] as String),
   postedToFamily: json['postedToFamily'] as bool? ?? false,
+  shareRequested: json['shareRequested'] as bool? ?? false,
   icon: json['icon'] as String?,
   linkedTitle: json['linkedTitle'] as String?,
   reactedByUserIds:
@@ -35,6 +36,7 @@ Map<String, dynamic> _$ThanksToJson(_Thanks instance) => <String, dynamic>{
   'memoryId': instance.memoryId,
   'createdAt': instance.createdAt.toIso8601String(),
   'postedToFamily': instance.postedToFamily,
+  'shareRequested': instance.shareRequested,
   'icon': instance.icon,
   'linkedTitle': instance.linkedTitle,
   'reactedByUserIds': instance.reactedByUserIds,

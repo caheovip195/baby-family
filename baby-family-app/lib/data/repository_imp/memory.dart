@@ -4,6 +4,9 @@ import 'package:baby_family/data/repository_imp/mock_repository.dart';
 
 class MemoryRepositoryImp extends MockRepositoryImp
     implements IMemoryRepository {
+  @override
+  void touch() => store.commit();
+
   MemoryRepositoryImp(super.store);
 
   @override
@@ -19,6 +22,9 @@ class MemoryRepositoryImp extends MockRepositoryImp
   @override
   void updateMemory(String id, JsonMap patch) =>
       this.patch('memories', id, patch);
+
+  @override
+  void removeMemory(String id) => removeRow('memories', id);
 
   @override
   List<JsonMap> comments(String memoryId) =>

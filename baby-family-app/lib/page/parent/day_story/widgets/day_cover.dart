@@ -22,7 +22,7 @@ class _DayCover extends StatelessWidget {
                 color: AppColors.resolve(context, kColorPrimary50FFF4F1),
               )
             else
-              Image.asset(asset!, fit: BoxFit.cover),
+              Image(image: mediaImageProvider(asset!), fit: BoxFit.cover),
             Positioned(
               left: AppSpacing.s3,
               bottom: AppSpacing.s3,

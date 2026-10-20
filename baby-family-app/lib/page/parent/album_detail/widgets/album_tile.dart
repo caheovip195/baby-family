@@ -42,7 +42,7 @@ class _AlbumTile extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Image.asset(item.asset, fit: BoxFit.cover),
+              Image(image: mediaImageProvider(item.asset), fit: BoxFit.cover),
               if (item.isVideo)
                 Positioned(
                   right: AppSpacing.compact,

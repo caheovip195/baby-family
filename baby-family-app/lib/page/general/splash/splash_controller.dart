@@ -1,4 +1,5 @@
 import 'package:baby_family/data/model/session/app_session.dart';
+import 'package:baby_family/data/provider/app_setting.dart';
 import 'package:baby_family/data/provider/session.dart';
 import 'package:baby_family/page/application_base.dart';
 import 'package:hooks_riverpod/legacy.dart';
@@ -16,6 +17,15 @@ class SplashController extends BaseNotifier {
   Future<AppSession> restore() async {
     final delay = Future<void>.delayed(minimumDisplay);
     final session = await ref.read(sessionServiceProvider).restore();
+    // SET-06: hiển thị đặt trên máy khác.
+    final display = await ref
+        .read(appSettingServiceProvider)
+        .pullServerDisplay();
+    if (display != null && !isDisposed) {
+      ref.read(appAppearanceProvider.notifier).apply(display.theme);
+      ref.read(appTextScaleProvider.notifier).apply(display.textScale);
+      ref.read(appLunarDateProvider.notifier).apply(display.showLunar);
+    }
     await delay;
     return session;
   }

@@ -1,4 +1,5 @@
 import 'package:baby_family/utils/constants/colors.dart';
+import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:flutter/material.dart';
 
@@ -41,8 +42,8 @@ class MemoryGridTile extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               if (photo != null)
-                Image.asset(
-                  photo,
+                Image(
+                  image: mediaImageProvider(photo),
                   fit: BoxFit.cover,
                   errorBuilder: (_, _, _) => const SizedBox.shrink(),
                 )

@@ -34,8 +34,14 @@ abstract class Memory with _$Memory {
     @JsonKey(name: 'sealedUntil') DateTime? sealedUntil,
     @JsonKey(name: 'missionId') String? missionId,
     @JsonKey(name: 'reactions') @Default({}) Map<String, int> reactions,
+
+    /// Cảm xúc của người xem (mỗi người 1 cảm xúc/ký ức, đổi được — đặc tả 7.12).
+    @JsonKey(name: 'myReaction') String? myReaction,
     @JsonKey(name: 'reactorNames') @Default([]) List<String> reactorNames,
     @JsonKey(name: 'commentCount') @Default(0) int commentCount,
+
+    /// Tác giả có thể tắt bình luận cho từng ký ức (MEM-07).
+    @JsonKey(name: 'commentsEnabled') @Default(true) bool commentsEnabled,
     @JsonKey(name: 'perspectiveCount') @Default(0) int perspectiveCount,
     @JsonKey(name: 'perspectiveAuthorId') String? perspectiveAuthorId,
     @JsonKey(name: 'perspectivePreview') String? perspectivePreview,
@@ -48,6 +54,14 @@ abstract class Memory with _$Memory {
 
     /// MEM-19: lý do từ chối ảnh người thân đăng.
     @JsonKey(name: 'rejectReason') String? rejectReason,
+
+    /// MEM-06: ký ức đang tải nền (số ảnh/video đã tải / tổng); null khi
+    /// không còn tải. [uploadFailed] → “Tải lên chưa xong. Thử lại”.
+    /// MEM-08: URL phát video theo từng ảnh của [mediaAssets] (null = ảnh).
+    @JsonKey(name: 'mediaVideos') @Default([]) List<String?> mediaVideos,
+    @JsonKey(name: 'uploadDone') int? uploadDone,
+    @JsonKey(name: 'uploadTotal') int? uploadTotal,
+    @JsonKey(name: 'uploadFailed') @Default(false) bool uploadFailed,
   }) = _Memory;
 
   const Memory._();

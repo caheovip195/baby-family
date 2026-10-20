@@ -50,9 +50,6 @@ class MemoryDetailController extends BaseNotifier {
   Member? me;
   int page = 0;
 
-  /// Cảm xúc người xem vừa thả trong phiên (tô nổi bật).
-  final Set<String> myReactions = {};
-
   DateTime get today => childService.today;
   DateTime get now => ref.read(appClockProvider).now();
 
@@ -80,6 +77,11 @@ class MemoryDetailController extends BaseNotifier {
       myPerspective == null;
 
   /// Bố mẹ xoá được mọi ký ức (vào Thùng rác MEM-17); người thân chỉ của mình.
+  /// MEM-09: tác giả hoặc bố/mẹ (người không phải tác giả chỉ đổi bé, người
+  /// xem — đặc tả 7.8.3).
+  bool get canEdit =>
+      memory != null && ((me?.role.isParent ?? false) || isAuthor);
+
   bool get canDelete =>
       memory != null && ((me?.role.isParent ?? false) || isAuthor);
 
@@ -102,7 +104,7 @@ class MemoryDetailController extends BaseNotifier {
     hasError = false;
     try {
       final (value, views, notes, kids, members, current) = await (
-        memoryService.memory(memoryId),
+        memoryService.refreshMemory(memoryId),
         memoryService.perspectives(memoryId),
         memoryService.comments(memoryId),
         childService.children(),
@@ -136,10 +138,15 @@ class MemoryDetailController extends BaseNotifier {
     notifyListeners();
   }
 
+  /// Cảm xúc của người xem (tô nổi bật) — mỗi người 1, chạm lại để bỏ.
+  bool isMyReaction(String emoji) => memory?.myReaction == emoji;
+
   Future<void> react(String emoji) async {
-    myReactions.add(emoji);
-    notifyListeners();
     await memoryService.react(memoryId, emoji);
+    memory = await memoryService.memory(memoryId);
+    if (!isDisposed) {
+      notifyListeners();
+    }
   }
 
   Future<void> toggleFavorite() => memoryService.toggleFavorite(memoryId);

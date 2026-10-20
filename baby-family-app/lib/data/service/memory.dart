@@ -1,3 +1,4 @@
+import 'package:baby_family/data/dto/memory_grid_photo.dart';
 import 'package:baby_family/data/dto/memory_search_result.dart';
 import 'package:baby_family/data/model/memory/album.dart';
 import 'package:baby_family/data/model/memory/bump_photo.dart';
@@ -28,7 +29,34 @@ abstract class IMemoryService extends IBaseService {
   /// bị ẩn; trường `commentCount`, `perspective*` đã được điền.
   Future<List<Memory>> memories({String? childId, Set<MemoryKind>? kinds});
 
+  /// Bao lâu nữa nên đọc lại [memories] khi màn đứng yên (ký ức đang xử lý ảnh,
+  /// URL ảnh ký sắp hết hạn); null = không cần tự làm mới.
+  Duration? refreshDelay();
+
   Future<Memory?> memory(String id);
+
+  /// MEM-01: dòng thời gian của bé [childId] (null = cả nhà), theo **ngày xảy
+  /// ra** mới nhất trước (đặc tả 7.10). Chế độ server đọc
+  /// `GET /families/{fid}/timeline`.
+  Future<List<Memory>> timeline({String? childId});
+
+  /// MEM-02: mọi ảnh của các ký ức xem được, mới nhất trước. Chế độ server đọc
+  /// `GET /families/{fid}/media-grid` (ảnh thu nhỏ đã ký).
+  Future<List<MemoryGridPhoto>> photos({String? childId});
+
+  /// MEM-09 sửa ký ức (đặc tả 7.8.3). Tham số null = giữ nguyên; chuỗi rỗng xoá
+  /// tiêu đề/chú thích. Tác giả sửa mọi trường; bố/mẹ còn lại chỉ [childIds] và
+  /// [visibility] (không đặt “Chỉ mình tôi”) — server kiểm lại quyền.
+  Future<Memory> updateMemory(
+    String memoryId, {
+    String? title,
+    String? body,
+    List<String>? childIds,
+    DateTime? occurredAt,
+    MemoryVisibility? visibility,
+    bool? commentsEnabled,
+    List<String>? mediaAssets,
+  });
 
   /// MEM-05/23 (+ QC-01). `monthlyPhoto` thay ảnh tháng cũ cùng bé + tháng
   /// (ảnh cũ thành ký ức thường — BR-072).
@@ -50,11 +78,21 @@ abstract class IMemoryService extends IBaseService {
     int? voiceDurationSec,
     DateTime? sealedUntil,
     String? missionId,
+    bool deferUpload = false,
   });
+
+  /// MEM-06: thử lại / huỷ một ký ức đang tải nền (`create(deferUpload:)`).
+  Future<void> retryUpload(String memoryId);
+
+  Future<void> cancelUpload(String memoryId);
 
   Future<void> toggleFavorite(String memoryId);
 
-  /// Thả cảm xúc (emoji) — cộng vào `reactions`.
+  /// MEM-08 “Tải về”: link bản gốc ngắn hạn của ký ức (bản mock: rỗng).
+  Future<List<String>> downloadUrls(String memoryId);
+
+  /// Thả cảm xúc (emoji) — mỗi người 1 cảm xúc/ký ức (đặc tả 7.12): chọn cảm
+  /// xúc khác thì đổi, chạm lại cảm xúc đang chọn (`myReaction`) thì bỏ.
   Future<void> react(String memoryId, String emoji);
 
   Future<List<MemoryComment>> comments(String memoryId);
@@ -101,6 +139,14 @@ abstract class IMemoryService extends IBaseService {
 
   /// MEM-22 “Thư gửi con”: số thư còn niêm phong (chưa tới ngày mở).
   Future<int> sealedLetters();
+
+  /// MEM-07: như [memory] nhưng bản server đọc lại chi tiết mới nhất (màn
+  /// chi tiết/xem ảnh/bình luận gọi khi mở).
+  Future<Memory?> refreshMemory(String id);
+
+  /// Thời lượng (giây) của video vừa chọn trên máy; null với ảnh hoặc khi
+  /// không đọc được (bản mẫu luôn null).
+  Future<int?> videoDurationSec(String path);
 
   /// MEM-18 Nháp: bản nháp đang soạn của loại [kind] (MEM-05/23 điền sẵn);
   /// null khi chưa có hoặc đã lưu.
@@ -217,6 +263,7 @@ abstract class IMemoryService extends IBaseService {
   /// RPT-01 → RPT-01b.
   Future<ReportReceipt> submitReport({
     required String targetId,
+    ReportTarget target = ReportTarget.memory,
     required String reasonCode,
     String? note,
     bool hideForMe = false,

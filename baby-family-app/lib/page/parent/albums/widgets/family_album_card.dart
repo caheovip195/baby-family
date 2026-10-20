@@ -37,7 +37,7 @@ class _FamilyAlbumCard extends StatelessWidget {
               SizedBox(
                 height: 96,
                 child: asset != null
-                    ? Image.asset(asset, fit: BoxFit.cover)
+                    ? Image(image: mediaImageProvider(asset), fit: BoxFit.cover)
                     : ColoredBox(
                         color: AppColors.resolve(
                           context,

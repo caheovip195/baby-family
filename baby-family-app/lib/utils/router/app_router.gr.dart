@@ -550,6 +550,22 @@ class CareTabRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [ChangePhonePage]
+class ChangePhoneRoute extends PageRouteInfo<void> {
+  const ChangePhoneRoute({List<PageRouteInfo>? children})
+    : super(ChangePhoneRoute.name, initialChildren: children);
+
+  static const String name = 'ChangePhoneRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const ChangePhonePage();
+    },
+  );
+}
+
+/// generated route for
 /// [ChildAddPage]
 class ChildAddRoute extends PageRouteInfo<void> {
   const ChildAddRoute({List<PageRouteInfo>? children})
@@ -1182,6 +1198,22 @@ class ExpiredRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [FamilyDeletionPage]
+class FamilyDeletionRoute extends PageRouteInfo<void> {
+  const FamilyDeletionRoute({List<PageRouteInfo>? children})
+    : super(FamilyDeletionRoute.name, initialChildren: children);
+
+  static const String name = 'FamilyDeletionRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const FamilyDeletionPage();
+    },
+  );
+}
+
+/// generated route for
 /// [FamilyPage]
 class FamilyRoute extends PageRouteInfo<void> {
   const FamilyRoute({List<PageRouteInfo>? children})
@@ -1551,12 +1583,22 @@ class MemoryComposerRoute extends PageRouteInfo<MemoryComposerRouteArgs> {
   MemoryComposerRoute({
     String? kind,
     String? childId,
+    String? memoryId,
     Key? key,
     List<PageRouteInfo>? children,
   }) : super(
          MemoryComposerRoute.name,
-         args: MemoryComposerRouteArgs(kind: kind, childId: childId, key: key),
-         rawQueryParams: {'kind': kind, 'childId': childId},
+         args: MemoryComposerRouteArgs(
+           kind: kind,
+           childId: childId,
+           memoryId: memoryId,
+           key: key,
+         ),
+         rawQueryParams: {
+           'kind': kind,
+           'childId': childId,
+           'memoryId': memoryId,
+         },
          initialChildren: children,
        );
 
@@ -1570,11 +1612,13 @@ class MemoryComposerRoute extends PageRouteInfo<MemoryComposerRouteArgs> {
         orElse: () => MemoryComposerRouteArgs(
           kind: queryParams.optString('kind'),
           childId: queryParams.optString('childId'),
+          memoryId: queryParams.optString('memoryId'),
         ),
       );
       return MemoryComposerPage(
         kind: args.kind,
         childId: args.childId,
+        memoryId: args.memoryId,
         key: args.key,
       );
     },
@@ -1582,28 +1626,39 @@ class MemoryComposerRoute extends PageRouteInfo<MemoryComposerRouteArgs> {
 }
 
 class MemoryComposerRouteArgs {
-  const MemoryComposerRouteArgs({this.kind, this.childId, this.key});
+  const MemoryComposerRouteArgs({
+    this.kind,
+    this.childId,
+    this.memoryId,
+    this.key,
+  });
 
   final String? kind;
 
   final String? childId;
 
+  final String? memoryId;
+
   final Key? key;
 
   @override
   String toString() {
-    return 'MemoryComposerRouteArgs{kind: $kind, childId: $childId, key: $key}';
+    return 'MemoryComposerRouteArgs{kind: $kind, childId: $childId, memoryId: $memoryId, key: $key}';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! MemoryComposerRouteArgs) return false;
-    return kind == other.kind && childId == other.childId && key == other.key;
+    return kind == other.kind &&
+        childId == other.childId &&
+        memoryId == other.memoryId &&
+        key == other.key;
   }
 
   @override
-  int get hashCode => kind.hashCode ^ childId.hashCode ^ key.hashCode;
+  int get hashCode =>
+      kind.hashCode ^ childId.hashCode ^ memoryId.hashCode ^ key.hashCode;
 }
 
 /// generated route for
@@ -2985,6 +3040,22 @@ class SplashRoute extends PageRouteInfo<void> {
     name,
     builder: (data) {
       return const SplashPage();
+    },
+  );
+}
+
+/// generated route for
+/// [SupportRequestPage]
+class SupportRequestRoute extends PageRouteInfo<void> {
+  const SupportRequestRoute({List<PageRouteInfo>? children})
+    : super(SupportRequestRoute.name, initialChildren: children);
+
+  static const String name = 'SupportRequestRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const SupportRequestPage();
     },
   );
 }

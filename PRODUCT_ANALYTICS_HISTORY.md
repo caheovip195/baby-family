@@ -477,14 +477,439 @@ Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hi�
 <a id="bf-20261015-012"></a>
 ## BF-20261015-012 — Đăng nhập/onboarding thật và app thoát mock
 
-- Ngày làm: 2026-10-15 (Asia/Ho_Chi_Minh); entry tạo lúc 2026-10-15T21:30:00+07:00.
+- Ngày làm: 2026-10-15 → 2026-10-16 (Asia/Ho_Chi_Minh); hoàn thành khoảng 2026-10-16T05:00:00+07:00.
 - Yêu cầu: Tiếp tục tính năng backend và nối API với mobile.
 - Role: ARCHITECT, BACKEND, MOBILE, INTEGRATION, SECURITY_PRIVACY, BA, DATA_ANALYST.
-- Vấn đề / mục tiêu: Đang thực hiện.
-- Quan sát: Đang thực hiện.
-- Phân tích / quyết định: Đang thực hiện.
-- Tác động: Đang thực hiện.
-- Giả thuyết / đo lường: Đang thực hiện.
-- Kết quả / trạng thái: Đang thực hiện.
-- Theo dõi: Đang thực hiện.
+- Vấn đề / mục tiêu: Người dùng phải đăng nhập, tạo gia đình, mời bạn đời và kích hoạt dùng thử thật thay vì mock.
+- Quan sát: Trước đợt này backend không phát token, app gọi 3 endpoint không tồn tại; giờ luồng AUTH-01→ONB-ACT chạy với server local.
+- Phân tích / quyết định: OTP số điện thoại trước (Apple/Google cần credential). Server là nguồn sự thật cho phiên, vai trò, gia đình, lời mời và quyền lợi; app chỉ phản chiếu. Mặc định “xác nhận lần cuối” bật (§7.3). Trial cấp tự động một lần mỗi người/identity (BR-054), không phụ thuộc người mua.
+- Tác động: Đổi hành vi khi chạy với `BABY_FAMILY_API_URL`: đăng nhập/onboarding thật; bản mock giữ nguyên. API đổi sang envelope `{data}`. Không ghi số điện thoại thô vào cache/log (HMAC); mã mời chỉ lưu hash.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo. Khi có analytics (§27.3) nên đo: tỉ lệ hoàn tất OTP, % gửi lời mời bạn đời trong 7 ngày (mục tiêu ≥ 50%), % lời mời được chấp nhận trong 7 ngày (≥ 60%), tỉ lệ bị từ chối ở bước xác nhận lần cuối.
+- Kết quả / trạng thái: Đã triển khai và kiểm chứng local (xem Session).
+- Theo dõi: Apple/Google; Circle; ONB-04/05 lên server; i18n message lỗi; quyết định có cần sự kiện analytics cho funnel onboarding.
 - Session: [BF-20261015-012](SESSIONS.md#bf-20261015-012).
+
+<a id="bf-20261016-001"></a>
+## BF-20261016-001 — Tự lập lộ trình tích hợp backend ↔ app
+
+- Ngày làm: 2026-10-16 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Tự vạch task tiếp, làm cả backend và frontend, không hỏi lại.
+- Role: ORCHESTRATOR/PM, BACKEND, MOBILE, DATA_ANALYST.
+- Vấn đề / mục tiêu: Tiến tới app dùng dữ liệu thật theo thứ tự phụ thuộc mà không cần người dùng duyệt từng bước.
+- Quan sát: Đăng nhập/onboarding là phụ thuộc đầu tiên của mọi tính năng; các domain khác (ký ức, nhiệm vụ, Papa & Mama) cần family ACTIVE thật.
+- Phân tích / quyết định: Thứ tự đề xuất tiếp: ONB-04/05 + Bé/thai kỳ → Ký ức + upload → Nhiệm vụ/Hearts → Người thân → Papa & Mama → Store billing.
+- Tác động: Không đổi thêm hành vi ngoài BF-20261015-012.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo.
+- Kết quả / trạng thái: Hoàn thành đợt 1 (BF-20261015-012).
+- Theo dõi: Đợt 2 theo thứ tự trên.
+- Session: [BF-20261016-001](SESSIONS.md#bf-20261016-001).
+
+<a id="bf-20261016-002"></a>
+## BF-20261016-002 — Bé/Thai kỳ và Ký ức có ảnh dùng dữ liệu thật
+
+- Ngày làm: 2026-10-16T06:09:59+07:00 → 2026-10-16T06:56:02+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Tích hợp đợt 2: tạo/sửa bé, thai kỳ và đăng/xem ký ức có ảnh qua API.
+- Role: ARCHITECT, BACKEND, MOBILE, INTEGRATION, SECURITY_PRIVACY, QUALITY.
+- Vấn đề / mục tiêu: Sau onboarding thật, hồ sơ bé và ký ức (giá trị cốt lõi) vẫn ghi mock; cần lưu server để hai cha mẹ cùng thấy và không mất khi đổi máy.
+- Quan sát: Trước đợt này app không có photo picker và chỉ hiển thị ảnh mẫu trong app; backend có upload/worker nhưng chưa có API ký ức. Nay luồng tạo bé → chọn ảnh → đăng → feed chạy với server local.
+- Phân tích / quyết định: Server là nguồn sự thật cho bé/thai kỳ (`bootstrap.subjects`) và ký ức (feed). Ký ức có ảnh hiển thị ngay cho người đăng từ file trên máy, bạn đời chỉ thấy khi server xử lý xong (`PUBLISHED`) — tránh ảnh vỡ. Gói không có Circle lưu “Cả nhà” thành “Chỉ Papa & Mama” (§11.5 (4)); giới hạn số ảnh theo catalog gói. Chỉ mở các loại ký ức chưa cần workflow riêng (Ảnh, Nhật ký, Kỷ vật, Câu nói).
+- Tác động: Đổi hành vi khi chạy với `BABY_FAMILY_API_URL`: bé/thai kỳ và ký ức loại trên lưu server; bản mock không đổi. API mới `/memories`, `/families/:fid/feed`; outbox `memory.created`/`memory.published` (chưa có consumer). Quyền riêng tư: ảnh không qua API server, chỉ phát URL ký của biến thể đã bỏ metadata; ký ức người khác ẩn/không tồn tại đều 404; thư niêm phong không lộ metadata.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo. Khi có analytics (§27.3) nên đo: thời gian từ kích hoạt tới ký ức đầu tiên, % gia đình có ≥ 1 ký ức có ảnh trong 7 ngày dùng thử, tỉ lệ đăng lỗi/thử lại, thời gian `PROCESSING → PUBLISHED`.
+- Kết quả / trạng thái: Đã triển khai và kiểm chứng local (xem Session); chưa đo sản phẩm.
+- Theo dõi: Các điểm review còn mở (gỡ ký ức bị xoá, dedup ảnh giữa hai Parent, đọc khi EXPIRED, quota `memoryCount`, phân trang feed, tự làm mới khi đang xử lý); video/ghi âm/ảnh tháng; số liệu “Tuần này” còn là dữ liệu mẫu.
+- Session: [BF-20261016-002](SESSIONS.md#bf-20261016-002).
+
+<a id="bf-20261017-001"></a>
+## BF-20261017-001 — Ảnh trùng giữa hai Parent, đọc khi hết hạn, quota ký ức và đồng bộ feed
+
+- Ngày làm: 2026-10-17T00:49:54+07:00 → 2026-10-17T01:02:49+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Xử lý 6 điểm review còn mở của BF-20261016-002 (dedup ảnh giữa hai Parent, đọc ký ức khi gói hết hạn, quota `memoryCount`, phân trang feed app, gỡ ký ức đã xoá/ẩn, tự làm mới ký ức đang xử lý).
+- Role: BACKEND, DBA, SECURITY_PRIVACY, MOBILE, TESTER, QUALITY (tự review).
+- Vấn đề / mục tiêu: (a) Khi bố/mẹ chọn cùng một ảnh mà người kia đã tải, đăng ký ức thất bại (`MEMORY_ASSET_INVALID`); (b) gia đình hết gói không mở được ký ức để tải dữ liệu về (§6.5); (c) gói có giới hạn số ký ức chưa được thực thi; (d) app chỉ thấy 50 ký ức mới nhất, vẫn hiện ký ức đã bị xoá/ẩn, và ảnh đang xử lý không tự hiện khi đứng yên màn hình.
+- Quan sát: Index dedup cũ gom theo cả gia đình; dedup trả id asset của người kia kể cả khi nó nằm trong ký ức riêng tư hoặc chưa gắn ký ức (lộ tín hiệu "người kia có ảnh này"). Catalog seed hiện không có key `memoryCount`. App đồng bộ feed một trang, không có cơ chế xoá bản sao.
+- Phân tích / quyết định: Dedup theo người tải; chỉ dùng chung bản `READY` mà người tải đã được xem (ACL §6.3) — biết SHA-256 không cấp quyền xem. Đổi index là DDL (migration mới, không sửa migration cũ). Mode `download` chỉ mở `GET /memories/:id` + URL ký; các API nghiệp vụ khác vẫn 402. `memoryCount` thiếu = không giới hạn, có thì kiểm/cộng nguyên tử. App: đồng bộ đủ trang + đối soát định kỳ (2 phút), hỏi lại khi còn ký ức PROCESSING (tối đa 10 phút) và trước khi URL hết hạn; dừng khi không còn gì cần làm mới hoặc không còn màn nào xem.
+- Tác động: Đăng ảnh trùng giữa hai Parent không còn lỗi; ảnh trùng với nội dung riêng tư/chưa chia sẻ của người kia tốn thêm dung lượng (mỗi người một bản) — đánh đổi có chủ đích vì quyền riêng tư. Gia đình hết hạn xem được chi tiết ký ức và ảnh. Gói nào đặt `memoryCount` sẽ bị chặn 402 `QUOTA_MEMORY_COUNT_EXCEEDED`. App phản ánh đúng ký ức bị xoá/ẩn sau ≤ 2 phút, ảnh xử lý xong tự hiện sau ~10 giây; số request feed tăng theo số trang mỗi 2 phút. Bản mock không đổi hành vi.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo. Khi có analytics nên theo dõi: tỉ lệ lỗi `MEMORY_ASSET_INVALID`/`QUOTA_MEMORY_COUNT_EXCEEDED` khi đăng ký ức, tỉ lệ upload được dedup, số request feed/phiên và thời gian từ đăng tới khi ảnh hiện trên máy bạn đời.
+- Kết quả / trạng thái: Đã triển khai, kiểm chứng bằng test tự động (xem Session); chưa chạy trên simulator, chưa đo sản phẩm.
+- Theo dõi: Áp migration cho môi trường dev/staging; trừ `memory_count` khi có API xoá; `download-urls`/`media-grid` cho gói hết hạn; cân nhắc delta-sync/tombstone (`sync_tombstones`) thay cho quét đủ trang khi số ký ức lớn.
+- Session: [BF-20261017-001](SESSIONS.md#bf-20261017-001).
+
+<a id="bf-20261018-001"></a>
+## BF-20261018-001 — Checklist toàn bộ tính năng và tự bắt đầu làm task
+
+- Ngày làm: 2026-10-18T07:25:28+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Hãy liệt kê tất cả các tính năng cần làm vào 1 file document sau đó nếu làm được xong tính năng nào thì tick vào đã xong tính năng đó cho t. Tự start với các task cho tôi nha."
+- Liên quan: BF-20261017-001.
+- Role: PM/BA (phạm vi, ưu tiên theo §16.1), BACKEND, MOBILE, SECURITY_PRIVACY, TESTER, QUALITY.
+- Vấn đề / mục tiêu: Người dùng cần một nơi theo dõi toàn bộ tính năng và tiến độ thật (khác UI mock); bắt đầu lấp phần MVP còn thiếu theo vòng lặp Ký ức. Task đầu: xoá ký ức trên app chế độ server chỉ xoá trên máy, bạn đời vẫn thấy; không có thùng rác/khôi phục trên server.
+- Quan sát: 28/159 dòng checklist đã xong sau task (trước: 26). Thùng rác: đặc tả §7.8.3/MEM-17 (30 ngày, Parent thấy mọi ký ức bị xoá của gia đình), §6.2 `canDeleteMemory`.
+- Phân tích / quyết định: Checklist tick chỉ khi BE + App + kiểm chứng. Thùng rác theo đúng đối tượng xem §6.3 (không lộ ký ức riêng tư của bạn đời); ảnh thu nhỏ trong thùng rác vẫn ký được tới khi hết hạn (đổi quyết định cũ “thùng rác không phải view”); xoá trả lại 1 lượt quota `memoryCount`, khôi phục kiểm lại quota; xoá hẳn tự động mỗi giờ, asset không còn ký ức nào dùng được thu hồi dung lượng.
+- Tác động: Chế độ server: xoá ký ức có hiệu lực cho cả hai Parent, khôi phục được trong 30 ngày, xoá vĩnh viễn giải phóng dung lượng gói. API mới: 4 route thùng rác; outbox `memory.trashed/restored/purged`. Bản mock không đổi.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo. Gợi ý: tỉ lệ ký ức bị xoá, tỉ lệ khôi phục trong 30 ngày, dung lượng thu hồi từ xoá vĩnh viễn.
+- Kết quả / trạng thái: Đã triển khai + test tự động; chưa chạy trên simulator, chưa đo. Kết thúc 2026-10-18T07:41:40+07:00.
+- Theo dõi: Task kế tiếp MEM-09 sửa ký ức; cập nhật checklist sau mỗi task.
+- Session: [BF-20261018-001](SESSIONS.md#bf-20261018-001).
+
+<a id="bf-20261018-002"></a>
+## BF-20261018-002 — MEM-09 sửa ký ức (màn sửa + PATCH /memories/:id If-Match)
+
+- Ngày làm: 2026-10-18T07:49:33+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp task kế tiếp trong checklist: MEM-09 sửa ký ức (màn sửa + PATCH /memories/:id If-Match), xong thì tick checklist."
+- Liên quan: BF-20261018-001.
+- Role: BACKEND, MOBILE, SECURITY_PRIVACY, DESIGN, TESTER, QUALITY.
+- Vấn đề / mục tiêu: Người dùng không sửa được ký ức đã đăng (gõ sai chú thích, gắn nhầm bé, chọn sai người xem) — phải xoá và đăng lại.
+- Quan sát: Đặc tả §7.8.3, §6.2 `canEditMemory`, §13.3 (hai người sửa cùng lúc: người lưu sau thắng từng trường); trước task app không có màn MEM-09.
+- Phân tích / quyết định: Dùng lại form MEM-05; tác giả sửa nội dung + ngày + bé + người xem, bạn đời chỉ bé + người xem (không ẩn ký ức của người kia thành riêng tư); `If-Match` chống ghi đè mù, app chỉ gửi trường đã đổi để trường người kia vừa sửa không bị ghi đè. Chưa cho đổi ảnh khi sửa (cần luồng upload + quota riêng).
+- Tác động: Chế độ server và mock: MEM-07 ⋯ có “Sửa ký ức”. API mới `PATCH /memories/:id`; outbox `memory.updated`.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo. Gợi ý: số lần sửa/ký ức, tỉ lệ xoá-rồi-đăng-lại giảm, tỉ lệ lỗi 412.
+- Kết quả / trạng thái: Đã triển khai + test tự động; chưa chạy simulator, chưa đo. Kết thúc 2026-10-18T08:02:17+07:00.
+- Theo dõi: Đổi ảnh khi sửa; cảnh báo người thân mất quyền xem khi có Circle; task kế tiếp MEM-10.
+- Session: [BF-20261018-002](SESSIONS.md#bf-20261018-002).
+
+<a id="bf-20261018-003"></a>
+## BF-20261018-003 — Bình luận + cảm xúc trên ký ức (MEM-10, §7.12)
+
+- Ngày làm: 2026-10-18T08:03:32+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp task kế tiếp trong checklist: bình luận + cảm xúc trên ký ức (MEM-10, §7.12), xong thì tick checklist."
+- Liên quan: BF-20261018-002.
+- Role: BACKEND, MOBILE, SECURITY_PRIVACY, TESTER, QUALITY.
+- Vấn đề / mục tiêu: Ở chế độ server, bình luận và thả cảm xúc chỉ lưu trên máy — bạn đời không thấy; mock còn cho thả nhiều lần (sai đặc tả 7.12).
+- Quan sát: Đặc tả 7.12, MEM-10; tài liệu kỹ thuật bảng route MEM-07/10; schema có sẵn bảng.
+- Phân tích / quyết định: 1 cảm xúc/người (chạm lại để bỏ); trả lời của trả lời gắn vào bình luận gốc; Parent xoá được mọi bình luận, trả lời đi theo; quyền đọc/ghi = xem được ký ức.
+- Tác động: Chế độ server: bình luận/cảm xúc đồng bộ giữa hai Parent; mock: cảm xúc không còn cộng dồn. API mới 6 route; outbox `comment.*`, `reaction.changed`.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo. Gợi ý: % ký ức có ≥ 1 cảm xúc/bình luận của bạn đời trong 24 giờ (tín hiệu gắn kết).
+- Kết quả / trạng thái: Đã triển khai + test tự động; chưa đo. Kết thúc 2026-10-18T08:21:50+07:00.
+- Theo dõi: công tắc tắt bình luận trên app; thông báo gộp khi có consumer outbox.
+- Session: [BF-20261018-003](SESSIONS.md#bf-20261018-003).
+
+<a id="bf-20261018-004"></a>
+## BF-20261018-004 — Giao thêm task song song cho Codex
+
+- Ngày làm: 2026-10-18 (Asia/Ho_Chi_Minh), gửi giữa lúc làm BF-20261018-003; ghi lúc 2026-10-18T08:21:50+07:00.
+- Yêu cầu: "Hiện tại t đang thấy bạn đang làm từng task một, tôi cần bạn giao thêm task cho với codex nữa cho nhanh đi, đừng ôm một mình như thế."
+- Liên quan: BF-20261018-003.
+- Role: ORCHESTRATOR, BACKEND (Codex CLI), SECURITY_PRIVACY, QUALITY, TESTER.
+- Vấn đề / mục tiêu: Tăng tốc lấp checklist bằng cách chạy song song agent ngoài (Codex) cho các module độc lập.
+- Quan sát: Hai module Papa & Mama (check-in, lời nhờ) có đặc tả chi tiết và bảng riêng, không chạm module ký ức Claude đang làm.
+- Phân tích / quyết định: Riêng tư là ràng buộc chính của Papa & Mama (§6.4 bất biến 6, 7, 9): bạn đời chỉ thấy trường được chia sẻ, “Khó chịu với bạn đời” không bao giờ gửi đi, ghi chú/lời nhắn mã hoá, Hearts chỉ chủ sở hữu thấy, Circle không bao giờ thấy.
+- Tác động: Backend có API US-02 và US-03/04; app chưa dùng nên chưa đổi hành vi người dùng.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo. Khi có app: tỉ lệ check-in được chia sẻ, thời gian phản hồi lời nhờ, tỉ lệ DONE/DECLINED (không dùng để so sánh bố–mẹ, §1.3).
+- Kết quả / trạng thái: Backend xong + test; app chưa nối. Kết thúc 2026-10-18T08:28:15+07:00.
+- Theo dõi: App US-01…07; job hết hạn; DEK cho dữ liệu riêng tư.
+- Session: [BF-20261018-004](SESSIONS.md#bf-20261018-004).
+
+<a id="bf-20261018-005"></a>
+## BF-20261018-005 — Song song: Codex làm timeline + lưới ảnh (MEM-01/02), Claude nối app Papa & Mama (US-01…04)
+
+- Ngày làm: 2026-10-18T08:29:18+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Đợt tiếp: Codex làm backend timeline + lưới ảnh (MEM-01/02), còn bạn nối app Papa & Mama (US-01/02/03/04) với API vừa có. Xong thì tick checklist."
+- Liên quan: BF-20261018-004.
+- Role: ORCHESTRATOR, MOBILE, BACKEND (Codex CLI), SECURITY_PRIVACY, QUALITY, TESTER.
+- Vấn đề / mục tiêu: Papa & Mama trên app chế độ server vẫn chỉ lưu trên máy (bạn đời không nhận được check-in/lời nhờ); timeline/lưới ảnh chưa có API.
+- Quan sát: Đặc tả §7.16.1–7.16.2, §7.10; API US-02/03/04 đã có từ BF-20261018-003/004.
+- Phân tích / quyết định: Ghi chú check-in không chia sẻ mặc định; lời nhờ giữ Idempotency-Key khi gửi lại; lỗi giới hạn hiển thị bằng câu trung tính (không “phạt”). Timeline sắp theo ngày xảy ra, lưới ảnh vẫn mở khi hết gói để tải dữ liệu.
+- Tác động: Chế độ server: hai Parent thấy check-in đã chia sẻ và lời nhờ của nhau, Hearts lời nhờ do server ghi. Backend có API timeline/lưới ảnh (app chưa dùng). Bản mock không đổi.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo. Gợi ý: tỉ lệ check-in được chia sẻ, thời gian từ gửi đến nhận lời nhờ, tỉ lệ lời nhờ DONE (không so sánh bố–mẹ).
+- Kết quả / trạng thái: Đã triển khai + test tự động; chưa chạy simulator, chưa đo. Kết thúc 2026-10-18T08:41:12+07:00.
+- Theo dõi: app MEM-01/02; câu hỏi hôm nay, cảm ơn; phản hồi nhanh check-in.
+- Session: [BF-20261018-005](SESSIONS.md#bf-20261018-005).
+
+<a id="bf-20261018-006"></a>
+## BF-20261018-006 — Song song: Codex làm backend Nhiệm vụ hằng ngày, Claude nối app MEM-01/02
+
+- Ngày làm: 2026-10-18T08:42:08+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Đợt tiếp: Codex làm backend Nhiệm vụ hằng ngày (catalog + bày bảng + CARE-01…06 API), còn bạn nối app MEM-01/02 với API timeline/lưới ảnh. Xong thì tick checklist."
+- Liên quan: BF-20261018-005.
+- Role: ORCHESTRATOR, MOBILE, BACKEND (Codex CLI), SECURITY_PRIVACY, QUALITY, TESTER.
+- Vấn đề / mục tiêu: Timeline/lưới ảnh trên app chế độ server cần nguồn theo ngày xảy ra từ server; Nhiệm vụ hằng ngày (trụ cột thứ hai của vòng lặp MVP) chưa có backend.
+- Quan sát: Đặc tả §7.10, §7.13, §7.14.1; kỹ thuật §15.1–15.5; schema có sẵn bảng nhiệm vụ/Hearts với CHECK giới hạn định mức 2–4, đổi tối đa 3, việc tự thêm 2 Hearts.
+- Phân tích / quyết định: Bảng chia đều hai Parent, Hearts riêng tư (bạn đời không thấy), không có “làm hộ” (BR-024), trần Hearts/ngày là một cấu hình chung. Timeline theo ngày xảy ra, lưới ảnh dùng ảnh thu nhỏ để nhẹ.
+- Tác động: App chế độ server: MEM-01/02 lấy từ API. Backend có API Nhiệm vụ (app chưa dùng). Bản mock không đổi.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo. Gợi ý khi có app Nhiệm vụ: % ngày cả hai cùng có ít nhất 1 việc xong, tỉ lệ đổi nhiệm vụ, tỉ lệ hoàn tác (không xếp hạng bố–mẹ, §1.3).
+- Kết quả / trạng thái: Đã triển khai + test tự động; chưa chạy simulator, chưa đo. Kết thúc 2026-10-18T08:56:29+07:00.
+- Theo dõi: app CARE-01…06; job bày bảng; mở rộng catalog ≥ 90 ngày.
+- Session: [BF-20261018-006](SESSIONS.md#bf-20261018-006).
+
+<a id="bf-20261018-007"></a>
+## BF-20261018-007 — Song song: Codex làm backend Cảm ơn US-05/06 + Nhật ký riêng US-07, Claude nối app Nhiệm vụ CARE-01…06
+
+- Ngày làm: 2026-10-18T08:57:24+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Đợt tiếp: Codex làm backend Cảm ơn US-05/06 + Nhật ký riêng US-07, còn bạn nối app Nhiệm vụ CARE-01…06 với API vừa có. Xong thì tick checklist."
+- Liên quan: BF-20261018-006.
+- Role: ORCHESTRATOR, MOBILE, BACKEND (Antigravity CLI), SECURITY_PRIVACY, QUALITY, TESTER.
+- Vấn đề / mục tiêu: Nhiệm vụ trên app chế độ server cần chạy thật giữa hai Parent; Lời cảm ơn và Nhật ký riêng chưa có backend.
+- Quan sát: API Nhiệm vụ có từ BF-20261018-006; đặc tả §7.13, §7.16.3–7.16.4.
+- Phân tích / quyết định: Nhiệm vụ của bạn đời không lộ Hearts, không giao việc cho bạn đời (BR-020/024); nhật ký riêng chỉ người viết đọc, chia sẻ đúng đoạn đã xem trước; khoảnh khắc gia đình từ lời cảm ơn cần bạn đời đồng ý.
+- Tác động: App chế độ server: bảng nhiệm vụ do server bày và chia đều, hoàn thành/đổi/bỏ đồng bộ hai máy. Backend có API cảm ơn + nhật ký riêng (app chưa dùng). Bản mock không đổi.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo. Gợi ý: % ngày cả hai cùng có việc xong; số lời cảm ơn/tuần (không biến thành chỉ tiêu, §7.16.3 gợi ý tối đa 2–3 lần/tuần).
+- Kết quả / trạng thái: Đã triển khai + test tự động; chưa chạy simulator, chưa đo. Kết thúc 2026-10-18T09:22:08+07:00.
+- Theo dõi: app US-05/06/07; Hearts/cây gia đình; lưu khoảnh khắc từ nhiệm vụ.
+- Session: [BF-20261018-007](SESSIONS.md#bf-20261018-007).
+
+<a id="bf-20261018-008"></a>
+## BF-20261018-008 — Dùng thêm Antigravity; Codex hết quota
+
+- Ngày làm: 2026-10-18 (Asia/Ho_Chi_Minh), hai tin nhắn gửi giữa lúc làm BF-20261018-007; ghi lúc 2026-10-18T09:22:08+07:00.
+- Yêu cầu: "Dùng thêm antigravity nữa" và "codex hết quota rùi".
+- Liên quan: BF-20261018-007.
+- Role: ORCHESTRATOR.
+- Vấn đề / mục tiêu: Giữ tốc độ làm song song khi Codex hết quota.
+- Quan sát / quyết định: Dùng Antigravity với allowlist lệnh hẹp do người dùng chọn.
+- Tác động: Không đổi hành vi sản phẩm.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo.
+- Kết quả / trạng thái: Hoàn thành.
+- Theo dõi: Không.
+- Session: [BF-20261018-008](SESSIONS.md#bf-20261018-008).
+
+<a id="bf-20261018-009"></a>
+## BF-20261018-009 — Song song: Antigravity làm backend Hearts/Cây gia đình/Huy hiệu/CARE-08, Claude nối app Cảm ơn US-05/06 + Nhật ký riêng US-07
+
+- Ngày làm: 2026-10-18T14:53:54+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Đợt tiếp: Antigravity làm backend Hearts/Cây gia đình/Huy hiệu (đọc Hearts của tôi, cây, badge, lịch sử nhiệm vụ CARE-08), còn bạn nối app Cảm ơn US-05/06 + Nhật ký riêng US-07. Xong thì tick checklist."
+- Liên quan: BF-20261018-008.
+- Role: ORCHESTRATOR, MOBILE, BACKEND (Antigravity CLI), SECURITY_PRIVACY, QUALITY, TESTER.
+- Vấn đề / mục tiêu: Cảm ơn và nhật ký riêng trên app chế độ server chỉ lưu trên máy; Hearts/cây/huy hiệu/lịch sử chưa có API đọc.
+- Quan sát: Đặc tả §7.14, §7.16.3–7.16.4; bất biến §6.4 (Hearts riêng tư, nhật ký chỉ người viết).
+- Phân tích / quyết định: Hearts chỉ người gọi xem; cây gia đình chỉ cấp + %; nhật ký riêng không ai khác đọc; chia sẻ đúng đoạn đã xem trước.
+- Tác động: App chế độ server: lời cảm ơn hai chiều và nhật ký riêng lưu server; 💛 trên việc bạn đời gửi lời cảm ơn thật. Backend có API Hearts/cây/huy hiệu/lịch sử (app chưa dùng). Bản mock không đổi.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo. Gợi ý: số lời cảm ơn/tuần/cặp, % nhật ký có chia sẻ đoạn (không đọc nội dung).
+- Kết quả / trạng thái: Đã triển khai + test tự động; chưa chạy simulator, chưa đo. Kết thúc 2026-10-18T15:31:14+07:00.
+- Theo dõi: app CARE-08/09/10 + Hearts; ảnh nhật ký.
+- Session: [BF-20261018-009](SESSIONS.md#bf-20261018-009).
+
+<a id="bf-20261018-010"></a>
+## BF-20261018-010 — Giao thêm task cho Codex (đã có quota): backend Thông báo NOTI-01
+
+- Ngày làm: 2026-10-18 (Asia/Ho_Chi_Minh). Giờ bắt đầu ghi lúc mở entry đã mất: entry mở đầu bị xoá nhầm khi script của Claude cập nhật BF-20261018-009 (cắt phần sau entry); ghi lại đầy đủ lúc 2026-10-18T15:32:12+07:00, không đoán giờ gốc.
+- Yêu cầu: "Giao thêm task cho codex nữa đi codex đang rảnh kìa"
+- Liên quan: BF-20261018-009.
+- Role: ORCHESTRATOR, BACKEND (Codex CLI), SECURITY_PRIVACY, QUALITY.
+- Vấn đề / mục tiêu: Hai Parent không biết khi người kia bình luận, thả cảm xúc, gửi lời nhờ, chia sẻ trạng thái hay cảm ơn.
+- Quan sát: Đặc tả §7.21; kỹ thuật §13.
+- Phân tích / quyết định: Hộp thư trong app trước, push sau; nhóm nhạy cảm không lưu nội dung; gộp tương tác 30 phút; giờ yên tĩnh/trần 3/ngày chỉ ảnh hưởng push.
+- Tác động: Backend tạo thông báo trong app từ sự kiện thật; API hộp thư. Không đổi bản mock.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo. Gợi ý: tỉ lệ mở thông báo, thời gian từ lời nhờ đến lúc nhận.
+- Kết quả / trạng thái: Đã triển khai + test tự động. Kết thúc 2026-10-18T15:32:12+07:00.
+- Theo dõi: push; purge 90 ngày.
+- Session: [BF-20261018-010](SESSIONS.md#bf-20261018-010).
+
+<a id="bf-20261018-011"></a>
+## BF-20261018-011 — Làm tiếp: nối app hộp thông báo NOTI-01, hoàn tất đợt Antigravity/Codex
+
+- Ngày làm: 2026-10-18 (Asia/Ho_Chi_Minh). Giờ bắt đầu ghi lúc mở entry đã mất: entry mở đầu bị xoá nhầm khi script của Claude cập nhật BF-20261018-009 (cắt phần sau entry); ghi lại đầy đủ lúc 2026-10-18T15:32:12+07:00, không đoán giờ gốc.
+- Yêu cầu: "Làm tiếp đi"
+- Liên quan: BF-20261018-009, BF-20261018-010.
+- Role: ORCHESTRATOR, MOBILE, QUALITY, TESTER.
+- Vấn đề / mục tiêu: App hiển thị hộp thông báo thật thay cho dữ liệu mẫu ở chế độ server.
+- Quan sát: API NOTI-01 từ BF-20261018-010.
+- Phân tích / quyết định: Câu thông báo dựng ở app theo ngôn ngữ người dùng; nội dung nhạy cảm không có trên server nên câu chỉ nêu tên người gửi.
+- Tác động: Chế độ server: chuông/hộp thông báo dùng dữ liệu thật, đánh dấu đã đọc đồng bộ. Bản mock không đổi.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo.
+- Kết quả / trạng thái: Đã triển khai + test tự động; chưa chạy simulator. Kết thúc 2026-10-18T15:32:12+07:00.
+- Theo dõi: push.
+- Session: [BF-20261018-011](SESSIONS.md#bf-20261018-011).
+
+<a id="bf-20261018-012"></a>
+## BF-20261018-012 — Song song: Codex làm Xoá tài khoản + Xuất dữ liệu, Antigravity làm Lịch & sự kiện, Claude nối app CARE-08/09/10 + Hearts
+
+- Ngày làm: 2026-10-18T16:02:47+07:00 → 2026-10-18T20:32+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Đợt tiếp: Codex làm backend Xoá tài khoản + Xuất dữ liệu (§7.25), Antigravity làm backend Lịch & sự kiện CARE-07/CAL-02, còn bạn nối app Hearts/Cây/Huy hiệu/Lịch sử CARE-08/09/10. Xong thì tick checklist."
+- Liên quan: BF-20261018-009 (backend Hearts/Cây/Huy hiệu), BF-20261018-011.
+- Vấn đề/mục tiêu: hoàn thiện các tính năng bắt buộc của Store (xoá tài khoản, xuất dữ liệu), nền lịch gia đình, và hiển thị tiến độ chăm sóc (Hearts riêng, cây, huy hiệu, lịch sử) từ dữ liệu server.
+- Tác động sản phẩm/dữ liệu: người dùng xem Hearts của chính mình, cây và huy hiệu của gia đình từ server; backend có luồng xoá có thời gian chờ và xuất dữ liệu; lịch có âm lịch. Chưa đổi hành vi app cho lịch/xoá/xuất.
+- Quyết định và cơ sở: giữ bất biến riêng tư — Hearts chỉ cho người gọi; việc của bạn đời không có Hearts; export FAMILY không có nhật ký riêng/Hearts; Circle không thấy sự kiện `COUPLE` và nhiệm vụ. Không tick xoá tài khoản/CAL-02/CARE-10 vì backend chưa đủ (thiếu reauth token, job nhắc, worker huy hiệu).
+- Cách kiểm chứng/đo lường: test tự động (app 719, backend unit 218, e2e 35, integration 208) có ca riêng tư. Chưa có dữ liệu đo sử dụng.
+- Kết quả: checklist 47/165.
+- Việc cần theo dõi: API reauth token để mở luồng xoá tài khoản; job gửi nhắc sự kiện; worker trao huy hiệu; nối app lịch/xoá/xuất.
+- Trạng thái: Hoàn thành (phần còn lại ghi ở trên).
+
+<a id="bf-20261018-013"></a>
+## BF-20261018-013 — Song song: Codex làm API reauth token + job gửi nhắc sự kiện, Claude nối app Xoá tài khoản + Xuất dữ liệu và Lịch CARE-07/CAL-02
+
+- Ngày làm: 2026-10-18T20:47:41+07:00 → 2026-10-18T21:12+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Đợt tiếp: Codex làm API phát hành reauth token (sau OTP) + job gửi nhắc sự kiện, còn bạn nối app Xoá tài khoản + Xuất dữ liệu và Lịch CARE-07/CAL-02. Xong thì tick checklist."
+- Liên quan: BF-20261018-012.
+- Vấn đề/mục tiêu: hoàn tất yêu cầu bắt buộc của Store (xoá tài khoản ngay trong app) và xuất dữ liệu cho người dùng thật; lịch gia đình dùng dữ liệu server và có nhắc.
+- Tác động sản phẩm/dữ liệu: người dùng xoá được tài khoản sau khi xác thực lại bằng OTP (chờ 30 ngày, huỷ được), xuất dữ liệu cá nhân/gia đình và tải về; lịch hiển thị sự kiện, nhiệm vụ, sinh nhật/tròn tháng từ server; nhắc sự kiện xuất hiện trong hộp thư.
+- Quyết định và cơ sở: thao tác xoá chỉ chấp nhận mã xác thực lại ngắn hạn gắn phiên, không chấp nhận access token; client không chọn số nhận OTP; nhắc của sự kiện riêng tư không chứa tiêu đề và không bao giờ tới Circle; app nhắc cho chính người tạo vì chưa ánh xạ id server của bạn đời.
+- Cách kiểm chứng/đo lường: test tự động (app 722, backend unit 224, e2e 35, integration 227) có ca bảo mật/riêng tư. Chưa có dữ liệu đo sử dụng.
+- Kết quả: checklist 51/165.
+- Việc cần theo dõi: push; xác thực lại qua Apple/Google; nhắc cho bạn đời; theo dõi tỉ lệ huỷ xoá và tỉ lệ xuất dữ liệu thành công khi có dữ liệu thật.
+- Trạng thái: Hoàn thành (phần còn lại ghi ở trên).
+
+<a id="bf-20261018-014"></a>
+## BF-20261018-014 — Song song: Codex làm gửi push + worker trao huy hiệu CARE-10, Claude nối app quyền thông báo/push ONB-10 và nhắc cho bạn đời trên lịch
+
+- Ngày làm: 2026-10-18T21:18:02+07:00 → 2026-10-18T21:38+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Đợt tiếp: Codex làm gửi push (NotificationDelivery, giờ yên tĩnh, trần 3/ngày) + worker trao huy hiệu CARE-10, còn bạn nối app quyền thông báo/push ONB-10 và nhắc cho bạn đời trên lịch. Xong thì tick checklist."
+- Liên quan: BF-20261018-013.
+- Vấn đề/mục tiêu: người dùng nhận thông báo đẩy đúng lúc, không bị làm phiền (giờ yên tĩnh, tối đa 3/ngày) và không lộ nội dung riêng tư; gia đình được ghi nhận huy hiệu; lịch nhắc được cả hai bố mẹ.
+- Tác động sản phẩm/dữ liệu: thông báo trong app giờ có thể được đẩy tới thiết bị; huy hiệu được trao tự động và báo cho Parent; sự kiện lịch có người tham gia và nhắc cho bạn đời.
+- Quyết định và cơ sở: trần 3/ngày tính theo thông báo (nhiều máy không bị trừ nhiều lần); nhóm nhạy cảm chỉ gửi chữ chung chung; huy hiệu theo Hearts riêng chỉ báo cho người đó (BR-018); không tick Push vì chưa kiểm chứng trên thiết bị thật.
+- Cách kiểm chứng/đo lường: test tự động (app 726, backend unit 247, e2e 35, integration 242). Cần đo khi có dữ liệu thật: tỉ lệ cho phép thông báo ở ONB-10, tỉ lệ push bị dời/bị chặn bởi trần, tỉ lệ token hỏng.
+- Kết quả: checklist 53/165.
+- Việc cần theo dõi: thử FCM/APNs thật; theo dõi các chỉ số trên.
+- Trạng thái: Hoàn thành (phần còn lại ghi ở trên).
+
+<a id="bf-20261018-015"></a>
+## BF-20261018-015 — Các mục MVP kế tiếp: Codex làm phiên/thiết bị, đổi số điện thoại, ONB-08; Claude nối app avatar, INV-02/03, ONB-09, FAM-02 và app cho phần của Codex
+
+- Ngày làm: 2026-10-18T22:01:44+07:00 → 2026-10-18T22:18+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp các mục MVP còn trống kế tiếp trong checklist, chia việc cho Codex và bạn. Xong thì tick checklist."
+- Liên quan: BF-20261018-014.
+- Vấn đề/mục tiêu: người dùng tự quản lý thiết bị đăng nhập, gia đình đặt quyền riêng tư mặc định trên server, các luồng mời bạn đời/lời mời lỗi hoạt động đúng với dữ liệu thật.
+- Tác động sản phẩm/dữ liệu: danh sách thiết bị và đăng xuất từ xa là thật; cài đặt quyền riêng tư của gia đình đồng bộ giữa hai bố mẹ; gia đình có bạn đời đã rời vẫn dùng được và mời lại được.
+- Quyết định và cơ sở: Circle chỉ đọc `showLunar` (cài đặt là thông tin riêng của bố mẹ); đổi số bắt buộc xác thực lại và thu hồi phiên khác; thu hồi lời mời bằng cách cấp mã mới vì server tự vô hiệu mã cũ; không tick avatar/đổi số vì thiếu backend/thiết kế.
+- Cách kiểm chứng/đo lường: test tự động (app 733, backend unit 247, e2e 35, integration 257). Khi có dữ liệu thật: số lần đăng xuất thiết bị khác, tỉ lệ đổi `defaultVisibility`.
+- Kết quả: checklist 58/165.
+- Việc cần theo dõi: avatar, màn đổi số, áp quyền riêng tư mặc định khi tạo ký ức.
+- Trạng thái: Hoàn thành (phần còn lại ghi ở trên).
+
+<a id="bf-20261019-001"></a>
+## BF-20261019-001 — Thai kỳ PREG-01…06 + hồ sơ bé: 2 Codex làm backend song song, Claude nối app
+
+- Ngày làm: 2026-10-19T07:32:17+07:00 → 2026-10-19T07:53+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp các mục MVP còn trống kế tiếp trong checklist (thai kỳ PREG-01…07, hồ sơ bé), chia việc cho Codex và bạn. Xong thì tick checklist."
+- Liên quan: BF-20261018-015.
+- Vấn đề/mục tiêu: hành trình thai kỳ và hồ sơ bé dùng dữ liệu thật trên server, đồng bộ giữa hai bố mẹ.
+- Tác động sản phẩm/dữ liệu: tuần thai, kích thước thai, danh sách chuẩn bị, chuyển thai kỳ thành bé, lưu trữ thai kỳ, số đếm hồ sơ, sắp xếp/lưu trữ/xoá bé và ảnh bé đều qua server.
+- Quyết định và cơ sở: thai kỳ kết thúc buồn (`ENDED_PRIVATE`) ẩn ngay khỏi người thân và không gửi thông báo; xoá bé cần lưu trữ đủ 7 ngày và nhập lại tên để tránh xoá nhầm; nội dung theo tuần chỉ là thông tin tham khảo nhẹ nhàng, không phải lời khuyên y tế; "chỉ Papa & Mama" khi lưu trữ trên app ánh xạ `ENDED_PRIVATE`.
+- Cách kiểm chứng/đo lường: test tự động (app 739, backend unit 257, e2e 35, integration 274) có ca riêng tư cho Circle. Khi có dữ liệu thật: tỉ lệ hoàn thành danh sách chuẩn bị, thời gian từ ngày sinh tới khi chuyển thai kỳ thành bé.
+- Kết quả: checklist 67/165.
+- Việc cần theo dõi: URL ảnh bé cho máy khác; seed nội dung tuần trên môi trường dev/staging; rà nội dung tuần với chuyên môn trước khi phát hành.
+- Trạng thái: Hoàn thành (phần còn lại ghi ở trên).
+
+<a id="bf-20261019-002"></a>
+## BF-20261019-002 — Ký ức & album §6, nhật ký/thư/cột mốc §7: 2 Codex làm backend song song, Claude nối app
+
+- Ngày làm: 2026-10-19T08:22:55+07:00 → 2026-10-19T08:48+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp các mục MVP còn trống kế tiếp trong checklist (ký ức & album §6, nhật ký/thư/cột mốc §7), chia việc cho Codex và bạn. Xong thì tick checklist." Giữa chừng người dùng hỏi "Đã xong chưa nhỉ? Nếu xong rùi làm task tiếp theo cho tôi đi" — trả lời đang chạy, làm tiếp đến hết đợt.
+- Liên quan: BF-20261019-001.
+- Vấn đề/mục tiêu: các tính năng lưu giữ kỷ niệm (album, yêu thích, tải bản gốc, góc nhìn của bố/mẹ còn lại, gợi ý, cột mốc, thư gửi con) dùng dữ liệu thật và đồng bộ giữa các thiết bị.
+- Tác động sản phẩm/dữ liệu: album/yêu thích/cột mốc/thư lưu trên server; tải bản gốc thật; thư niêm phong chỉ tác giả đọc được tới ngày mở.
+- Quyết định và cơ sở: yêu thích là riêng từng người; album nhạy cảm và ký ức PARENTS/PRIVATE không bao giờ tới Circle; góc nhìn chỉ của Parent còn lại; link tải bản gốc ngắn hạn và có giới hạn tần suất; nhóm/tên cột mốc giữ theo catalog app để không đổi giao diện.
+- Cách kiểm chứng/đo lường: test tự động (app 743, backend unit 257, e2e 35, integration 310). Khi có dữ liệu thật: số album/người dùng, tỉ lệ ghi cột mốc theo gợi ý, số thư niêm phong.
+- Kết quả: checklist 75/165.
+- Việc cần theo dõi: nháp server, sửa ảnh trên app, thông báo khi thư mở, deadlock worker push.
+- Trạng thái: Hoàn thành (phần còn lại ghi ở trên).
+
+<a id="bf-20261019-003"></a>
+## BF-20261019-003 — Đợt kế tiếp §8 bảng tin + §9 nhiệm vụ: Codex làm backend nhiệm vụ, Claude nối app
+
+- Ngày làm: 2026-10-19T08:48:32+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: tiếp theo câu "Nếu xong rùi làm task tiếp theo cho tôi đi" (cùng lượt với BF-20261019-002): làm nhóm MVP kế tiếp trong checklist, chia việc cho Codex và Claude, xong thì tick checklist.
+- Liên quan: BF-20261019-002.
+- Tiến độ (2026-10-19 ~09:10): xong phía app §8 — bật/tắt bình luận theo ký ức (màn sửa, ẩn ô bình luận; `commentsEnabled` gửi khi đổi) và lọc bảng tin theo bé/thai kỳ đọc bảng tin server của riêng bé; app `make check` EXIT=0 (745 test); checklist 77/165. Backend §9: Codex hết hạn mức sử dụng ngay đầu phiên (chưa sửa file nào, mở lại 12:34) → giao Antigravity cùng brief, đang chạy.
+- Tiến độ (~09:10): Antigravity dừng sau ~18 phút vì cần lệnh ngoài allowlist (headless tự từ chối); đã kịp mở rộng catalog nhiệm vụ 30 → 110 mẫu (vi/en, thai kỳ + bé) và thêm `repeatWindowDays`/`boardHour` vào policy — Claude kiểm tra `mission-board-api` + `care-progress-api` 28/28 qua. Phần còn lại §9 (bộ sinh tránh lặp, job sáng, CARE-06, lặp lại, CARE-12) hẹn Codex tự chạy lúc 12:36 khi hạn mức mở lại.
+- Tiến độ (2026-10-19, sau khi người dùng nói "Ok bạn làm đi" — chọn để Claude tự làm backend §9 thay vì chờ Codex): huỷ lịch hẹn Codex; Claude viết job `mission.prepare-boards` (queue `missions`, mỗi giờ, ≥ 5:00 giờ địa phương, `prepareBoard` khoá gia đình, không trùng), CARE-06 `POST /missions/:id/moment` (ký ức MOMENT qua `IMemoryContentService`, gắn `mission_completions.memory_id`), nhiệm vụ lặp lại `/mission-series` (rrule hằng ngày/theo thứ, tạm dừng, kết thúc; tạo mỗi ngày một nhiệm vụ SERIES khi bày/mở bảng), CARE-12 `/mission-settings` + `/mission-preferences`; nối `recentExclusionDays` với `repeatWindowDays`. Sự cố trong lúc làm: test job đầu tiên quét mọi gia đình ACTIVE của DB test và bày bảng cho 20 gia đình còn sót của spec khác (khoá ngoại lỗi khi dọn) → đã dọn 140 nhiệm vụ/20 bảng/20 mẫu tạm trong `baby_family_test` (DB dev không bị ảnh hưởng), test viết lại chỉ chạm gia đình của spec + unit test cho vòng lặp theo giờ. Sau khi macOS cập nhật, `python3` và git chỉ in "chưa đồng ý giấy phép Xcode" rồi thoát → các script Python không chạy mà không báo lỗi; đã phát hiện và làm lại bằng công cụ sửa file/node. Bằng chứng: backend `npm run check` EXIT=0 (unit 262, e2e 35); `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT=0 (37 suite, 314 test). Checklist 78/165 (tick job bày bảng sáng). Chưa làm: app CARE-06/CARE-12/lặp lại — Flutter/fvm không chạy được (cần git) tới khi người dùng chạy `sudo xcodebuild -license`.
+- Kết quả cuối (2026-10-19T13:17+07:00, sau khi người dùng chạy `sudo xcodebuild -license accept` và nhắn "bạn làm tiếp phần app CARE-06/CARE-12/nhiệm vụ lặp lại đi"): git/Python/Flutter chạy lại bình thường. App: CARE-06 lưu khoảnh khắc qua server (tải ảnh + Idempotency-Key), CARE-12 đọc/lưu cài đặt server (mức bảng cả nhà, tuỳ chọn của tôi, chỉ gửi phần đổi), việc tự gõ có "Lặp lại" tạo chuỗi trên server (hằng ngày/ngày thường/cuối tuần/chọn thứ). Checklist 80/165: tick CARE-06, CARE-12 (cùng job bày bảng sáng và §8 trước đó); nhiệm vụ lặp lại giữ 🟡 vì chưa có màn tạm dừng/dừng chuỗi.
+- Bằng chứng kiểm tra: app `make check` EXIT=0 (analyze sạch, 748 test); backend `npm run check` EXIT=0 (unit 262, e2e 35); `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT=0 (37 suite, 314 test).
+- Việc còn lại: màn quản lý chuỗi lặp (tạm dừng/dừng); chứng minh catalog đủ 90 ngày không trùng cho mọi độ tuổi; bộ đếm `active_series`; push "bảng hôm nay" theo `boardPushTime`; chưa chạy simulator.
+- Trạng thái: Hoàn thành (phần còn lại ghi ở trên).
+
+<a id="bf-20261019-004"></a>
+## BF-20261019-004 — Papa & Mama §11 + Family Circle §12: 2 Codex làm backend song song, Claude nối app
+
+- Ngày làm: 2026-10-19T13:22:50+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp các mục MVP còn trống kế tiếp trong checklist (Papa & Mama §11, Family Circle §12), chia việc cho Codex và bạn. Xong thì tick checklist."
+- Liên quan: BF-20261019-003.
+- Vấn đề/mục tiêu: Papa/Mama mời và quản lý người thân theo từng bé thật trên server; duyệt ảnh người thân đăng; cài đặt và ảnh nhật ký riêng của Papa & Mama đồng bộ qua thiết bị.
+- Tác động sản phẩm/dữ liệu: lời mời CIRCLE có payload version 1, hạn 14 ngày, quyền VIEW/COMMENT/CONTRIBUTE + tải xuống theo từng bé; ký ức người thân có thể ở `PENDING_REVIEW`; gói hết hạn → Circle nhận 403 `CIRCLE_PAUSED`, Parent vẫn xem/tải; ảnh nhật ký là asset riêng của người tải.
+- Quyết định & cơ sở: quyền Circle đọc từ capability/feature `circle.enabled` của gói, không theo tên gói; lọc ACL trước phân trang để tránh lộ số lượng; giờ yên tĩnh/khoá nhật ký vẫn ở máy vì server chỉ có 4 trường US-15.
+- Cách kiểm chứng/đo lường: spec integration family-circle (12), memory-review, circle-content-acl, us-settings, media JOURNAL; test remote app. Chưa có dữ liệu đo thực tế; nên theo dõi tỉ lệ lời mời được chấp nhận, thời gian duyệt ảnh, số Circle bị tạm dừng.
+- Kết quả: 87/165 dòng checklist xong; toàn bộ check app/backend/integration đạt.
+- Theo dõi: app người thân (CIR-*), màn duyệt lời cảm ơn, Circle tải ảnh lên, ACL bé gắn lẫn, thông báo duyệt ảnh.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Theo dõi”).
+
+## BF-20261019-005 — Circle tải ảnh, ACL bé gắn lẫn, thông báo duyệt ảnh (Codex) + app người thân CIR-*, màn duyệt lời cảm ơn (Claude)
+
+- Ngày làm: 2026-10-19T14:06:38+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Đợt tiếp: Codex cho Circle tải ảnh lên + ACL bé gắn lẫn + thông báo duyệt ảnh, còn bạn nối app người thân CIR-WAIT/CIR-01…06, CIR-05, rời gia đình và màn duyệt lời cảm ơn. Xong thì tick checklist."
+- Liên quan: BF-20261019-004.
+- Vấn đề/mục tiêu: người thân (ông bà…) dùng app thật: nhận lời mời, chờ duyệt, xem ảnh các cháu được cấp quyền, gửi lời chúc/ảnh; Papa/Mama nhận thông báo duyệt ảnh; bạn đời quyết định đăng lời cảm ơn cho cả nhà.
+- Tác động sản phẩm/dữ liệu: người thân CONTRIBUTE tải được ảnh MEMORY (tính quota gia đình), ảnh vào hàng chờ duyệt; ACL áp cả media, cột mốc, thống kê hồ sơ; thông báo không lộ chú thích/tên bé/lý do từ chối; duyệt lời cảm ơn tạo ký ức PARENTS.
+- Quyết định & cơ sở: quyền của app người thân đọc từ server (`permission` theo từng bé) thay vì suy ra từ tên gói; trạng thái tạm dừng do server quyết (gói/capability), app không nêu lý do gói (CIR-05); tuỳ chọn thông báo người thân giữ trên máy vì chưa có API.
+- Cách kiểm chứng/đo lường: test integration media/ACL/memory-review/notification/family-circle; test app phiên người thân, Circle remote, duyệt lời cảm ơn. Chưa có dữ liệu thực tế; nên theo dõi tỉ lệ người thân chấp nhận lời mời, số ảnh người thân gửi/được duyệt, thời gian chờ duyệt, tỉ lệ lời cảm ơn được đăng.
+- Kết quả: 92/165 dòng checklist; mọi check app/backend/integration đạt.
+- Theo dõi: chạy seed thông báo v4; API tuỳ chọn thông báo người thân và gỡ nội dung khi rời; tên tác giả trên app người thân.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Theo dõi”).
+
+## BF-20261019-006 — Cài đặt thông báo/AI, tìm kiếm, báo cáo/chặn (2 Codex) + app gói dịch vụ, hồ sơ, nháp và nối API mới (Claude)
+
+- Ngày làm: 2026-10-19T17:08:14+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp các mục MVP còn trống kế tiếp trong checklist, chia việc cho Codex và bạn. Xong thì tick checklist."
+- Liên quan: BF-20261019-005.
+- Vấn đề/mục tiêu: các mục MVP còn trống về cài đặt cá nhân (thông báo, AI, hồ sơ), tìm kiếm/ngày này năm xưa, an toàn (báo cáo, chặn) và gói dịch vụ hiển thị theo server.
+- Tác động sản phẩm/dữ liệu: tắt nhóm thông báo/giờ yên tĩnh đồng bộ qua thiết bị và được pipeline gửi thông báo tôn trọng; tìm kiếm không phân biệt dấu, chỉ trả nội dung người xem được; báo cáo tạo bản ghi có mức ưu tiên/SLA (an toàn trẻ em 24 giờ), có thể ẩn ngay với người báo cáo; chặn ẩn ký ức/bình luận của người bị chặn với người chặn; banner gói/hạn/dung lượng theo quyền lợi server.
+- Quyết định & cơ sở: nhóm thông báo, tính năng AI, lý do báo cáo là catalog có version ở config (không rải hardcode); Bố/Mẹ không chặn nhau (rời gia đình là đường đúng); giá gói vẫn từ Store trên máy cho tới khi có IAP; nhóm thông báo app chưa có trên server giữ trên máy.
+- Cách kiểm chứng/đo lường: spec integration preference-settings-api, search-safety-api (ACL Parent/Circle, bỏ dấu, idempotent báo cáo, chặn ẩn bình luận); test remote app. Chưa có dữ liệu thực tế; nên theo dõi tỉ lệ tìm kiếm có kết quả, số báo cáo theo lý do và thời gian xử lý so với SLA, số lượt chặn, tỉ lệ tắt từng nhóm thông báo.
+- Kết quả: 101/165 dòng checklist; mọi check app/backend/integration đạt.
+- Theo dõi: job bản tin người thân, quy trình moderation/Admin, IAP, nháp tiếp tục soạn.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Theo dõi”).
+
+## BF-20261019-007 — Recap tuần + số liệu HOME-01, avatar hồ sơ + ảnh bé qua bootstrap (2 Codex) + app video/multipart, sửa ảnh ký ức, chi tiết từ server (Claude)
+
+- Ngày làm: 2026-10-19T18:39:45+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp các mục MVP còn trống kế tiếp trong checklist, chia việc cho Codex và bạn. Xong thì tick checklist."
+- Liên quan: BF-20261019-006.
+- Vấn đề/mục tiêu: bố mẹ thấy tổng kết tuần và số liệu “Tuần này” thật; ảnh đại diện/ảnh bé đồng bộ giữa hai máy; đăng được video; sửa ký ức đổi được ảnh; chi tiết ký ức luôn mới.
+- Tác động sản phẩm/dữ liệu: recap tuần tạo tự động (mặc định chỉ Papa & Mama xem), số lời cảm ơn chỉ ở phần riêng của bố mẹ; Circle chỉ thấy nội dung đúng quyền; video bị chặn trước khi tải nếu dài hơn giới hạn gói (đọc từ catalog server); ảnh đại diện tài khoản qua kho ảnh riêng (≤ 5 MiB, xử lý lại, bỏ metadata).
+- Quyết định & cơ sở: avatar tài khoản tách khỏi media gia đình vì cần trước khi có gia đình và FK `user_assets`; recap chưa chia sẻ tự động (bố mẹ xem trước theo đặc tả); null object cho test cũ thay vì sửa hàng loạt spec không liên quan.
+- Cách kiểm chứng/đo lường: spec weekly-recap-api, profile-avatar-api, profile-image-bootstrap, profile-image-cleanup; test remote app (video/multipart, đổi ảnh, recap, tuần này, avatar, mirror ảnh). Chưa có dữ liệu thực tế; nên theo dõi tỉ lệ mở recap tuần, tỉ lệ người đặt ảnh đại diện, số video bị chặn vì giới hạn gói, lỗi tải multipart.
+- Kết quả: 108/165 dòng checklist; mọi check đạt ở lần chạy cuối.
+- Theo dõi: MEM-06, chia sẻ recap, recap tháng, test push-delivery chập chờn.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Theo dõi”).
+
+## BF-20261019-008 — Xoá gia đình + quyền riêng tư, ảnh tháng + chương tháng + Accept-Language (2 Codex) + app MEM-06, SW-01, hiển thị, FAM-07 (Claude)
+
+- Ngày làm: 2026-10-19T22:23:53+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp các mục MVP còn trống kế tiếp trong checklist, chia việc cho Codex và bạn. Xong thì tick checklist."
+- Liên quan: BF-20261019-007.
+- Vấn đề/mục tiêu: gia đình tự xoá được dữ liệu có đồng thuận; bố mẹ xem tổng quan quyền riêng tư thật; ảnh tháng đồng bộ; lỗi hiển thị đúng ngôn ngữ; đăng ảnh/video không phải chờ; danh sách bé và cài đặt hiển thị đồng bộ giữa các máy.
+- Tác động sản phẩm/dữ liệu: xoá gia đình cần cả hai Parent + xác thực lại, 30 ngày chờ có thể huỷ, người thân mất quyền ngay khi hẹn xoá; ảnh tháng đặt lại đổi ảnh cũ thành ký ức thường (BR-072); thông điệp lỗi theo vi/en, mã lỗi giữ nguyên.
+- Quyết định & cơ sở: chỉ màn soạn ký ức dùng tải nền (các luồng cần id server ngay giữ đồng bộ); ký ức tạm mất việc tải chuyển thành nháp để không mất nội dung; FAM-07 để lại vì thiếu backend (ảnh bìa, ngôn ngữ nội dung).
+- Cách kiểm chứng/đo lường: spec family-erasure-api, family-privacy-api, monthly photo/timeline/locale (Codex), test remote app. Chưa có dữ liệu thực tế; nên theo dõi số yêu cầu xoá gia đình bị huỷ trong thời gian chờ, tỉ lệ tải nền thất bại/thử lại, tỉ lệ đặt ảnh tháng.
+- Kết quả: 115/165 dòng checklist; app/backend check đạt; integration toàn bộ còn chập chờn ở push-delivery.
+- Theo dõi: deadlock push-delivery, thẻ timeline server trên app, FAM-07.
+- Trạng thái: Hoàn thành phần tính năng; còn lỗi kiểm thử chập chờn.
+
+<a id="bf-20261019-009"></a>
+## BF-20261019-009 — Deadlock chập chờn khi nhiều worker push nhận việc đồng thời
+
+- Ngày làm: 2026-10-19T23:06:04+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: tìm và sửa nguyên nhân gốc deadlock trong `PushDeliveryRepository.claim` lộ ra khi chạy toàn bộ integration.
+- Role: BACKEND, DBA, TESTER, QUALITY.
+- Vấn đề / mục tiêu: worker push chạy song song không được deadlock (mất/trễ thông báo, job RUNNING bị kẹt); bộ integration toàn bộ phải ổn định.
+- Quan sát: deadlock xảy ra khi một transaction nhận việc khoá nhiều user theo thứ tự tuỳ ý; lộ ra trong test vì spec push xử lý cả 313 delivery còn sót của spec khác (đã đối chiếu trực tiếp trong DB test).
+- Phân tích / quyết định: mỗi transaction chỉ xét một delivery → mỗi worker giữ tối đa một khoá user, không thể tạo chu trình; giữ khoá user để trần 3 push/ngày vẫn đúng giữa các worker. Spec dùng mốc thời gian quá khứ để chỉ đụng dữ liệu của mình thay vì xoá dữ liệu spec khác.
+- Tác động: Không đổi hành vi sản phẩm hay API; vận hành: worker push song song không còn deadlock (tránh trễ thông báo, job RUNNING kẹt). Quyết định huỷ/dời từng delivery nay được ghi ngay thay vì cùng lúc với lần nhận việc cuối.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo.
+- Kết quả / trạng thái: Hoàn thành; integration toàn bộ 2 lần liên tiếp xanh, `npm run check` xanh. Chưa có dữ liệu production.
+- Theo dõi: theo dõi log lỗi `40P01`/`Push lease lost` và số job push TIMED_OUT khi chạy nhiều worker.
+- Session: [BF-20261019-009](SESSIONS.md#bf-20261019-009).
+
+## BF-20261019-009 — FAM-07/FAM-08, MEM-25 + PARTNER_LEFT (2 Codex) + app MEM-08 video, thẻ timeline server, giữ phiên khi mất mạng (Claude)
+
+- Ngày làm: 2026-10-19T23:06:23+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp các mục MVP còn trống kế tiếp trong checklist, chia việc cho Codex và bạn. Xong thì tick checklist."
+- Liên quan: BF-20261019-008.
+- Vấn đề/mục tiêu: xem video toàn màn hình, trình chiếu “Hôm nay của bé” bằng dữ liệu thật, mở app lúc mất mạng không bị đăng xuất, gia đình đổi ảnh bìa/ngôn ngữ nội dung, bạn đời mới thấy các bé khi được mời lại.
+- Tác động sản phẩm/dữ liệu: bản chụp trên máy (mã hoá, xoá khi đăng xuất) giữ tối đa 300 ký ức gần nhất; story “đã xem” chỉ lưu trên máy; ảnh bìa gia đình là asset COVER của gia đình (ký URL ngắn hạn).
+- Quyết định & cơ sở: không thêm migration (dùng cột có sẵn); FAM-08 hoãn vì cần thiết kế lại đồng bộ phiên nhiều gia đình; múi giờ chưa làm vì cần danh mục IANA có nhãn.
+- Cách kiểm chứng/đo lường: unit/integration backend + test remote app nêu ở SESSIONS. Chưa có dữ liệu thực tế; nên theo dõi tỉ lệ mở app khi mất mạng còn giữ phiên, lượt xem story hôm nay, tỉ lệ phát video thành công.
+- Kết quả: 119/165 dòng checklist; mọi check app/backend/integration toàn bộ đạt.
+- Theo dõi: FAM-08, múi giờ, thẻ recap trên dòng thời gian.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Theo dõi”).
+
+## BF-20261019-010 — Support ticket + kiểm duyệt, allowlist khi hết hạn + SUB-06/07 (2 Codex) + app đổi số, ghi âm, chuỗi nhiệm vụ, nháp tài khoản (Claude)
+
+- Ngày làm: 2026-10-20T07:40:42+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp các mục MVP còn trống kế tiếp trong checklist, chia việc cho Codex và bạn. Xong thì tick checklist."
+- Liên quan: BF-20261019-009.
+- Vấn đề/mục tiêu: người dùng liên hệ hỗ trợ ngay trong app (kể cả khi gói hết hạn); báo cáo vi phạm được gom thành ca có SLA; khi gói hết hạn chỉ còn đọc/tải/xuất dữ liệu đúng §6.5; nhắc trước khi hết thử/hết gói; Bố/Mẹ tự tạm dừng/dừng nhiệm vụ lặp lại; đổi số điện thoại đăng nhập.
+- Tác động sản phẩm/dữ liệu: nội dung ticket mã hoá, không kèm dữ liệu của bé; allowlist chặt hơn trước (một số màn trước đây đọc được khi hết hạn nay trả 402 — cố ý theo §6.5); thông báo BILLING không chứa tên bé/nội dung ký ức; tạm dừng chuỗi mặc định 7 ngày.
+- Quyết định & cơ sở: danh mục hỗ trợ, mốc nhắc, chính sách SLA là catalog/config có version (không fix cứng ở client); app đọc danh mục từ server; job kiểm duyệt chỉ chạy ở worker; chưa mở route kiểm duyệt vì chưa có admin auth.
+- Cách kiểm chứng/đo lường: test app/backend/integration nêu ở SESSIONS. Chưa có dữ liệu thật; nên theo dõi số ticket theo danh mục và thời gian phản hồi, tỉ lệ ca kiểm duyệt quá SLA, tỉ lệ gia hạn sau mỗi mốc nhắc, tỉ lệ chuỗi bị tạm dừng/dừng.
+- Kết quả: 124/165 dòng checklist; mọi check app/backend/integration toàn bộ đạt.
+- Theo dõi: seed template v5, khoá mã hoá support khi triển khai, admin trả lời ticket/xử lý ca, app đọc `statusBanner`, liên kết Apple/Google, ghi âm, MEM-18.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Theo dõi”).

@@ -7,18 +7,20 @@ import 'package:baby_family/utils/widget/app_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
 
-/// Sheet “Ai thấy” (mục 7.6) dùng ở MEM-05 và MEM-23: 3 lựa chọn Cả nhà /
-/// Chỉ Papa & Mama / Chỉ mình tôi. Trả về lựa chọn mới hoặc null khi đóng.
+/// Sheet “Ai thấy” (mục 7.6) dùng ở MEM-05, MEM-09 và MEM-23: 3 lựa chọn Cả nhà
+/// / Chỉ Papa & Mama / Chỉ mình tôi ([options] thu hẹp — MEM-09 khi không phải
+/// tác giả bỏ “Chỉ mình tôi”). Trả về lựa chọn mới hoặc null khi đóng.
 Future<MemoryVisibility?> showMemoryVisibilitySheet(
   BuildContext context, {
   required MemoryVisibility current,
+  Iterable<MemoryVisibility> options = MemoryVisibility.values,
 }) => showAppBottomSheet<MemoryVisibility>(
   context,
   builder: (context) => AppBottomSheet(
     title: context.l10n.memoriesVisibility,
     gap: AppSpacing.s2,
     children: [
-      for (final value in MemoryVisibility.values)
+      for (final value in options)
         _VisibilityOption(
           value: value,
           selected: value == current,

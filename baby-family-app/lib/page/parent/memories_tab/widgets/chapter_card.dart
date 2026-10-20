@@ -165,7 +165,7 @@ class _ChapterCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: asset == null
           ? Icon(LucideIcons.image, size: 20, color: strong)
-          : Image.asset(asset, fit: BoxFit.cover),
+          : Image(image: mediaImageProvider(asset), fit: BoxFit.cover),
     );
   }
 }

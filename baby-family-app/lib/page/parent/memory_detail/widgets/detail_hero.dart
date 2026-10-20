@@ -50,7 +50,10 @@ class _DetailHero extends StatelessWidget {
                   onTap: () => context.router.push(
                     PhotoViewerRoute(memoryId: memory.id, index: index),
                   ),
-                  child: Image.asset(assets[index], fit: BoxFit.cover),
+                  child: Image(
+                    image: mediaImageProvider(assets[index]),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               )
             else

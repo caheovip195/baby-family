@@ -15,6 +15,7 @@ import 'package:baby_family/page/general/auth_otp/auth_otp_page.dart';
 import 'package:baby_family/page/general/auth_phone/auth_phone_page.dart';
 import 'package:baby_family/page/general/auth_profile/auth_profile_page.dart';
 import 'package:baby_family/page/general/blocked_people/blocked_people_page.dart';
+import 'package:baby_family/page/general/change_phone/change_phone_page.dart';
 import 'package:baby_family/page/general/delete_account/delete_account_page.dart';
 import 'package:baby_family/page/general/display_settings/display_settings_page.dart';
 import 'package:baby_family/page/general/expired/expired_page.dart';
@@ -41,6 +42,7 @@ import 'package:baby_family/page/general/profile_settings/profile_settings_page.
 import 'package:baby_family/page/general/security_settings/security_settings_page.dart';
 import 'package:baby_family/page/general/settings/settings_page.dart';
 import 'package:baby_family/page/general/splash/splash_page.dart';
+import 'package:baby_family/page/general/support_request/support_request_page.dart';
 import 'package:baby_family/page/general/welcome/welcome_page.dart';
 import 'package:baby_family/page/parent/album_detail/album_detail_page.dart';
 import 'package:baby_family/page/parent/albums/albums_page.dart';
@@ -69,6 +71,7 @@ import 'package:baby_family/page/parent/diary_editor/diary_editor_page.dart';
 import 'package:baby_family/page/parent/drafts/drafts_page.dart';
 import 'package:baby_family/page/parent/event_create/event_create_page.dart';
 import 'package:baby_family/page/parent/family/family_page.dart';
+import 'package:baby_family/page/parent/family_deletion/family_deletion_page.dart';
 import 'package:baby_family/page/parent/family_plan/family_plan_page.dart';
 import 'package:baby_family/page/parent/family_settings/family_settings_page.dart';
 import 'package:baby_family/page/parent/family_tree/family_tree_page.dart';
@@ -466,6 +469,18 @@ class AppRouter extends RootStackRouter {
     AutoRouteCustom(
       page: BlockedPeopleRoute.page,
       path: '/settings/blocked',
+    ).route(),
+    AutoRouteCustom(
+      page: FamilyDeletionRoute.page,
+      path: '/family/deletion',
+    ).route(),
+    AutoRouteCustom(
+      page: ChangePhoneRoute.page,
+      path: '/settings/phone',
+    ).route(),
+    AutoRouteCustom(
+      page: SupportRequestRoute.page,
+      path: '/settings/help/request',
     ).route(),
   ];
 }

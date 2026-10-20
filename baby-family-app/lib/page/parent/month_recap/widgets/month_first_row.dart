@@ -39,7 +39,12 @@ class _MonthFirstRow extends StatelessWidget {
                     height: 44,
                     color: AppColors.resolve(context, kColorAccent100FDF1D6),
                   )
-                : Image.asset(asset!, width: 44, height: 44, fit: BoxFit.cover),
+                : Image(
+                    image: mediaImageProvider(asset!),
+                    width: 44,
+                    height: 44,
+                    fit: BoxFit.cover,
+                  ),
           ),
           const SizedBox(width: AppSpacing.s3),
           Expanded(

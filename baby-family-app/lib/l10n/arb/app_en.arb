@@ -184,6 +184,12 @@
   "memoriesVisibility": "Who can see",
   "memoriesPrivacyHint": "GPS location in photos is removed before saving.",
   "memoriesAddMedia": "Add photos",
+  "memUploadProgress": "Uploading {done}/{total}…",
+  "memUploadFailed": "Upload didn't finish",
+  "memUploadRetry": "Try again",
+  "memUploadCancel": "Cancel",
+  "memoriesSetCover": "Set as cover",
+  "memoriesRemoveMedia": "Remove this photo",
   "memoriesAddPerspective": "Add your perspective",
   "memoriesTogether": "Told together",
   "memoriesCommentHint": "Write a comment…",
@@ -1687,9 +1693,12 @@
   "commonAgeWeeksDays": "{weeks, plural, =1{1 week} other{{weeks} weeks}} {days, plural, =1{1 day} other{{days} days}}",
   "memAlbumDetailTitle": "Album details",
   "memPhotoViewerTitle": "Photo viewer",
+  "memVideoPlay": "Play video",
+  "memVideoPause": "Pause video",
   "memSearchTitle": "Search",
   "memOnThisDayTitle": "On this day",
   "recapWeekTitle": "Our family's week",
+  "recapWeekHeadline": "{moments, plural, =0{A quiet week} =1{1 moment} other{{moments} moments}}{firsts, plural, =0{} =1{ · 1 first} other{ · {firsts} firsts}}",
   "calendarTitle": "Calendar",
   "calendarCreateEvent": "New event",
   "careHistoryTitle": "History",
@@ -1783,6 +1792,14 @@
   "careSettingsDefaultReminder": "Default reminder",
   "careSettingsDefaultReminderHint": "For timed tasks you set",
   "careReminderShort": "{reminder, select, atTime{On time} before15{15′ before} before30{30′ before} before60{1 h before} other{None}}",
+  "careSeriesSection": "Repeating tasks",
+  "careSeriesDaily": "Every day",
+  "careSeriesPausedUntil": "Paused until {date}",
+  "careSeriesPauseWeek": "Pause for 1 week",
+  "careSeriesEnd": "Stop repeating",
+  "careSeriesEndConfirm": "Upcoming undone tasks from today will be removed. Completed ones are kept.",
+  "careSeriesPaused": "Paused for 1 week",
+  "careSeriesEnded": "Stopped repeating",
   "famPlanPaidSubtitle": "{price} · renews {date}",
   "famManagePlan": "Manage plan",
   "famInviteRelativeCount": "Invite a relative ({used}/{max})",
@@ -1846,6 +1863,19 @@
   "famSettingsContentLanguage": "Suggested content language",
   "famDeleteFamily": "Delete family",
   "famDeleteFamilyHint": "Needs careful confirmation · 30 days to restore",
+  "famDelBody": "Both Papa and Mama must agree. After that the family is kept {days} more days so you can cancel; relatives lose access right away. Then all memories, photos, letters and history are deleted.",
+  "famDelExportHint": "Download your data first: Settings → My data.",
+  "famDelVerifyHint": "Verify again with a code sent to your phone.",
+  "famDelSendOtp": "Send code",
+  "famDelOtpSent": "Code sent",
+  "famDelStart": "Request family deletion",
+  "famDelAgree": "Agree to delete the family",
+  "famDelWaitingPartner": "Waiting for your partner to agree. You can cancel the request at any time.",
+  "famDelPartnerAsked": "Your partner asked to delete the family. Verify to agree, or cancel the request.",
+  "famDelScheduled": "The family will be deleted on {date}. Until then everyone can only view and download.",
+  "famDelCancel": "Cancel deletion request",
+  "famDelCancelled": "Deletion request cancelled",
+  "famDelRequested": "Deletion request updated",
   "setProfileChangeAvatar": "Change photo",
   "setProfileName": "Your name",
   "setProfileCallName": "Family call name",
@@ -1855,6 +1885,12 @@
   "setSignInGoogle": "Google",
   "setNotLinked": "Not linked",
   "setUnlink": "Unlink",
+  "phoneChangeTitle": "Change phone number",
+  "phoneChangeReauthHint": "First, verify again with a code sent to your current number.",
+  "phoneChangeNewHint": "Enter your new phone number. We'll send a code to it.",
+  "phoneChangeCodeSent": "Code sent to {phone}",
+  "phoneChangeDone": "Your phone number has changed. Other devices were signed out.",
+  "setChangePhone": "Change",
   "setLink": "Link",
   "setSignInHint": "Always keep at least one sign-in method so you don't lose your account.",
   "setTimezoneSection": "Time zone",
@@ -1983,6 +2019,17 @@
   "setSupportSection": "Need more help",
   "setSendRequest": "Send a support request",
   "setSendRequestHint": "Describe the issue, add a screenshot if you like",
+  "supportTitle": "Contact support",
+  "supportHint": "Only what you type here is sent to our support team. Never include passwords or OTP codes.",
+  "supportCategoryLabel": "Topic",
+  "supportCategory": "{category, select, ACCOUNT{Account} INVITATION{Invitations} MEDIA{Photos & videos} BILLING{Plans & billing} PRIVACY{Privacy} other{Other}}",
+  "supportSubject": "Subject",
+  "supportBody": "Describe the problem",
+  "supportSend": "Send request",
+  "supportSent": "Request {code} sent",
+  "supportMine": "Your requests",
+  "supportEmpty": "You haven't sent any requests yet.",
+  "supportStatus": "{status, select, OPEN{Received} IN_PROGRESS{In progress} WAITING_USER{Waiting for you} RESOLVED{Resolved} other{Closed}}",
   "setMyReports": "My reports",
   "setReportsOpen": "{count} in progress",
   "setContactSection": "Contact",
@@ -2107,6 +2154,10 @@
   "usThanksYou": "You",
   "usThanksSendCta": "Send a thank-you",
   "usThanksReact": "Add a heart",
+  "usThanksShareAsk": "{name} would like to share this thank-you as a family moment",
+  "usThanksShareApprove": "Share with family",
+  "usThanksShareKeep": "Keep it between us",
+  "usThanksShareFailed": "Couldn't send, please try again",
   "usThanksWallEmpty": "No thank-yous this month yet",
   "usJournalOnlyYou": "Only you can read this",
   "usJournalOnlyYouHint": "{callName} can't see it either — unless you choose to share a passage.",
@@ -2724,5 +2775,86 @@
   "careStatsPrivacy": "Only Papa & Mama can see these stats",
   "commonPrevWeek": "Previous week",
   "commonNextWeek": "Next week",
-  "memPendingNotify": "{name} posted {count, plural, =1{1 photo} other{{count} photos}} of {child} — waiting for your review"
+  "memPendingNotify": "{name} posted {count, plural, =1{1 photo} other{{count} photos}} of {child} — waiting for your review",
+  "authProviderUnavailable": "Apple/Google sign-in is not available in this build yet. Please use your phone number.",
+  "onboardingPartnerApproveTitle": "{callName} wants to join your family",
+  "onboardingPartnerApproveBody": "Make sure this is really your partner. Once you agree, your family gets a free {days}-day trial.",
+  "onboardingPartnerApprove": "Agree",
+  "onboardingPartnerReject": "Not them",
+  "errorOtpInvalid": "The code is incorrect or has expired. Please try again.",
+  "errorRateLimited": "That was a bit fast. Please wait a moment and try again.",
+  "errorPhoneNotSupported": "This phone number is not supported yet.",
+  "errorInviteUnavailable": "This invite has expired or was already used. Ask the sender for a new one.",
+  "errorAlreadyInFamily": "You are already a parent in another family, so you cannot join this one.",
+  "errorServiceUnavailable": "The server is busy. Please try again in a few minutes.",
+  "memEditTitle": "Edit memory",
+  "memEditSaved": "Changes saved",
+  "memEditAuthorOnlyHint": "Only the author can change the caption and date. You can still change the children and who can see it.",
+  "memEditMediaHint": "Photos can’t be added or removed while editing yet.",
+  "errorVersionConflict": "This memory was just updated elsewhere. Please review and save again.",
+  "errorMemoryNotEditable": "You can’t change this part of the memory.",
+  "errorRequestOpenLimit": "You already have 5 open requests. Wait until one is done before sending another.",
+  "errorRequestResendBlocked": "This request was just answered “Not today”. Try again later.",
+  "errorRequestChanged": "This request just changed. Please check its new status.",
+  "notiSomeone": "A family member",
+  "notiMemoryPublished": "{name} just added a new memory",
+  "notiCommentCreated": "{count, plural, =1{{name} commented on a memory} other{{count} new comments on a memory}}",
+  "notiReactionChanged": "{count, plural, =1{{name} reacted to a memory} other{{count} new reactions on a memory}}",
+  "notiRequestCreated": "{name} sent you a request",
+  "notiRequestAccepted": "{name} accepted your request",
+  "notiRequestDone": "{name} finished your request 💛",
+  "notiRequestDeclined": "{name} can’t do the request today",
+  "notiRequestAcknowledged": "{name} saw your request",
+  "notiCheckinShared": "{name} shared how they feel",
+  "notiAppreciationCreated": "You received a thank-you ❤️",
+  "notiGeneric": "You have a new update",
+  "heartsReasonMission": "A little task for the family",
+  "heartsReasonRequest": "Helped with a request",
+  "heartsReasonOther": "Your Hearts",
+  "setDelOtpSent": "We sent a verification code to {phone}",
+  "@setDelOtpSent": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "errorReauthRequired": "Your verification has expired. Please verify again.",
+  "errorExportActive": "An export is still being prepared. Please wait for it to finish.",
+  "errorEventDateInvalid": "The event date is not valid. Please check it again.",
+  "calendarChildBirthday": "{name}'s birthday ({count, plural, =1{1 year} other{{count} years}})",
+  "@calendarChildBirthday": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarChildMonthiversary": "{name} turns {count} {count, plural, =1{month} other{months}}",
+  "@calendarChildMonthiversary": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notiEventReminder": "Reminder: {title}",
+  "@notiEventReminder": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notiEventReminderPrivate": "You have an upcoming plan",
+  "notiBadgeEarned": "Your family just earned a new badge 🏅",
+  "memCommentsAllow": "Allow comments",
+  "memCommentsAllowHint": "When off, everyone can still react",
+  "memCommentsOff": "Comments are turned off for this memory"
 }

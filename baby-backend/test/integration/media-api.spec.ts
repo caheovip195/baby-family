@@ -59,7 +59,11 @@ interface ApiBody {
   unavailableIds: string[];
   error: { code: string };
 }
-const body = (response: { body: unknown }) => response.body as ApiBody;
+// Success payloads arrive in the spec §11.1 `{ data }` envelope; errors stay `{ error }`.
+const body = (response: { body: unknown }) => {
+  const raw = response.body as { data?: ApiBody; error?: unknown };
+  return (raw.error === undefined ? raw.data : raw) as ApiBody;
+};
 const reserved = (size: number) => {
   const declared = BigInt(size);
   return declared + (declared * 5n + 99n) / 100n;
@@ -72,7 +76,8 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
   let prisma: PrismaService;
   let storage: IObjectStorageService;
   let keys: Awaited<ReturnType<typeof generateKeyPair>>;
-  const [parentA, parentB, outsider] = [
+  const [parentA, parentB, outsider, relative] = [
+    randomUUID(),
     randomUUID(),
     randomUUID(),
     randomUUID(),
@@ -81,10 +86,14 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
     [parentA, randomUUID()],
     [parentB, randomUUID()],
     [outsider, randomUUID()],
+    [relative, randomUUID()],
   ]);
   const familyId = randomUUID();
+  const childId = randomUUID();
+  const memberId = randomUUID();
   const planId = randomUUID();
   const versionId = randomUUID();
+  const noCircleVersionId = randomUUID();
   const licenseId = randomUUID();
   const suffix = randomUUID().replaceAll('-', '').slice(0, 16);
   const future = () => new Date(Date.now() + 24 * 60 * 60 * 1000);
@@ -196,6 +205,34 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
         { familyId, userId: parentB, slot: 'B', kind: 'MOTHER', callName: 'B' },
       ],
     });
+    await prisma.child.create({
+      data: {
+        id: childId,
+        familyId,
+        name: 'Synthetic child',
+        birthDate: new Date('2025-01-01'),
+        colorIndex: 1,
+        createdBy: parentA,
+      },
+    });
+    await prisma.circleMember.create({
+      data: {
+        id: memberId,
+        familyId,
+        userId: relative,
+        relation: 'OTHER',
+        displayName: 'Synthetic relative',
+      },
+    });
+    await prisma.circleGrant.create({
+      data: {
+        circleMemberId: memberId,
+        familyId,
+        childId,
+        permission: 'CONTRIBUTE',
+        createdBy: parentA,
+      },
+    });
     await prisma.plan.create({
       data: {
         id: planId,
@@ -210,6 +247,16 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
         id: versionId,
         planId,
         version: 1,
+        quotas: { storageBytes: 64 * MIB, videoMaxSec: 5, audioMaxSec: 60 },
+        features: { 'circle.enabled': true },
+        availableFrom: past(),
+      },
+    });
+    await prisma.planVersion.create({
+      data: {
+        id: noCircleVersionId,
+        planId,
+        version: 2,
         quotas: { storageBytes: 64 * MIB, videoMaxSec: 5, audioMaxSec: 60 },
         features: {},
         availableFrom: past(),
@@ -246,6 +293,7 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
               asset.multipartUploadId,
             );
         await prisma.outboxEvent.deleteMany({ where: { familyId } });
+        await prisma.memoryChild.deleteMany({ where: { familyId } });
         await prisma.memoryAsset.deleteMany({ where: { familyId } });
         await prisma.memory.deleteMany({ where: { familyId } });
         await prisma.assetVariant.deleteMany({ where: { familyId } });
@@ -253,6 +301,9 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
         await prisma.asset.deleteMany({ where: { familyId } });
         await prisma.familyUsage.deleteMany({ where: { familyId } });
         await prisma.familyEntitlement.deleteMany({ where: { familyId } });
+        await prisma.circleGrant.deleteMany({ where: { familyId } });
+        await prisma.circleMember.deleteMany({ where: { familyId } });
+        await prisma.child.deleteMany({ where: { familyId } });
         await prisma.familyParent.deleteMany({ where: { familyId } });
         await prisma.familyLicense.updateMany({
           where: { id: licenseId },
@@ -356,18 +407,24 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
     expect(reservation).toMatchObject({ status: 'CONFIRMED' });
   });
 
-  it('deduplicates identical content per family and purpose', async () => {
-    const response = await intent(parentB, {
+  it("deduplicates per uploader and never hands out the partner's unshared copy", async () => {
+    const same = {
       kind: 'IMAGE',
       mime: 'image/jpeg',
       size: photo.length,
       sha256: sha256(photo),
-    }).expect(201);
-    expect(body(response)).toEqual({
+    };
+    const own = await intent(parentA, same).expect(201);
+    expect(body(own)).toEqual({
       assetId: photoId,
       status: 'UPLOADED',
       deduplicated: true,
     });
+    // Parent A's upload is not linked to any memory B can see: knowing the hash
+    // must not grant access to it, so B gets an upload of their own.
+    const partner = await intent(parentB, same).expect(201);
+    expect(body(partner)).toMatchObject({ deduplicated: false });
+    expect(body(partner).assetId).not.toBe(photoId);
   });
 
   it('validates input, plan duration and storage quota', async () => {
@@ -395,7 +452,7 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
       durationMs: 1000,
     }).expect(422);
     expect(body(purpose).error.code).toBe('MEDIA_PURPOSE_INVALID');
-    await intent(parentA, { ...base, purpose: 'JOURNAL' }).expect(400);
+    await intent(parentA, { ...base, purpose: 'RECAP' }).expect(400);
     await intent(parentA, { ...base, kind: 'VIDEO', mime: 'video/mp4' }).expect(
       400,
     );
@@ -457,7 +514,7 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
     const done = await complete(parentA, assetId, { parts: etags }).expect(202);
     expect(body(done).status).toBe('UPLOADED');
     // The multipart hash is unverified until the worker runs: no dedup yet.
-    const pending = await intent(parentB, video).expect(409);
+    const pending = await intent(parentA, video).expect(409);
     expect(body(pending).error.code).toBe('UPLOAD_PENDING_VERIFICATION');
 
     // Oversized: parts total more than declared + 5 %.
@@ -588,7 +645,7 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
       data: { visibility: 'PARENTS', kind: 'LETTER', unlockAt: future() },
     });
     await getMedia(parentB, photoId).expect(404);
-    // Once linked, even the uploader needs memory access (trash is not a §6.3 view).
+    // Trash (MEM-17) keeps its thumbnails for the same audience until purge_after.
     await prisma.memory.update({
       where: { id: memory.id },
       data: {
@@ -601,6 +658,257 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
         purgeAfter: future(),
       },
     });
+    await getMedia(parentA, photoId).expect(200);
+    // Once linked, even the uploader needs memory access: expired trash hides it.
+    await prisma.memory.update({
+      where: { id: memory.id },
+      data: { purgeAfter: new Date(Date.now() - 1000) },
+    });
     await getMedia(parentA, photoId).expect(404);
+  });
+
+  it('allows Circle MEMORY uploads, rechecks grants and charges the family quota', async () => {
+    const bytes = randomBytes(32);
+    const payload = {
+      kind: 'IMAGE',
+      mime: 'image/jpeg',
+      size: bytes.length,
+      sha256: sha256(bytes),
+    };
+    const before = await usage();
+    const created = body(await intent(relative, payload).expect(201));
+    expect((await usage()).reservedStorageBytes).toBe(
+      before.reservedStorageBytes + reserved(bytes.length),
+    );
+    expect(
+      (await prisma.asset.findUniqueOrThrow({ where: { id: created.assetId } }))
+        .uploaderUserId,
+    ).toBe(relative);
+    for (const purpose of ['AVATAR', 'COVER', 'JOURNAL']) {
+      expect(
+        body(await intent(relative, { ...payload, purpose }).expect(403)).error
+          .code,
+      ).toBe('MEDIA_PARENT_REQUIRED');
+    }
+    await intent(relative, {
+      ...payload,
+      kind: 'AUDIO',
+      mime: 'audio/mp4',
+      durationMs: 1000,
+    }).expect(422);
+    const video = body(
+      await intent(relative, {
+        ...payload,
+        kind: 'VIDEO',
+        mime: 'video/mp4',
+        durationMs: 1000,
+        sha256: sha256(randomBytes(8)),
+      }).expect(201),
+    );
+    expect(video.status).toBe('PENDING_UPLOAD');
+    await prisma.circleGrant.updateMany({
+      where: { familyId, circleMemberId: memberId },
+      data: { permission: 'VIEW' },
+    });
+    expect(body(await intent(relative, payload).expect(403)).error.code).toBe(
+      'CIRCLE_CONTRIBUTE_REQUIRED',
+    );
+    expect(
+      body(await complete(relative, created.assetId).expect(403)).error.code,
+    ).toBe('CIRCLE_CONTRIBUTE_REQUIRED');
+    await prisma.circleGrant.updateMany({
+      where: { familyId, circleMemberId: memberId },
+      data: { permission: 'CONTRIBUTE' },
+    });
+    await prisma.familyEntitlement.updateMany({
+      where: { familyId },
+      data: { effectivePlanVersionId: noCircleVersionId },
+    });
+    expect(body(await intent(relative, payload).expect(403)).error.code).toBe(
+      'CIRCLE_PAUSED',
+    );
+    expect(
+      body(await complete(relative, created.assetId).expect(403)).error.code,
+    ).toBe('CIRCLE_PAUSED');
+    await request(app.getHttpServer())
+      .post('/api/v1/media/urls')
+      .set('Authorization', auth(relative))
+      .send({ assetIds: [created.assetId] })
+      .expect(403);
+    await prisma.familyEntitlement.updateMany({
+      where: { familyId },
+      data: { effectivePlanVersionId: versionId },
+    });
+    await prisma.familyEntitlement.updateMany({
+      where: { familyId },
+      data: { validUntil: past() },
+    });
+    expect(body(await intent(relative, payload).expect(403)).error.code).toBe(
+      'CIRCLE_PAUSED',
+    );
+    await prisma.familyEntitlement.updateMany({
+      where: { familyId },
+      data: { validUntil: future() },
+    });
+    expect(
+      (
+        await fetch(created.upload.url, {
+          method: 'PUT',
+          headers: created.upload.headers,
+          body: bytes,
+        })
+      ).status,
+    ).toBe(200);
+    await complete(parentA, created.assetId).expect(403);
+    await complete(relative, photoId).expect(403);
+    await complete(relative, created.assetId).expect(202);
+    await complete(relative, created.assetId).expect(202);
+    await getMedia(relative, created.assetId).expect(404); // Unattached uploads are not shared media.
+    const memory = await prisma.memory.create({
+      data: {
+        familyId,
+        authorUserId: relative,
+        authorRole: 'CIRCLE',
+        occurredAt: new Date(),
+        occurredLocalDate: new Date(),
+        visibility: 'FAMILY',
+        status: 'PUBLISHED',
+        publishedAt: new Date(),
+      },
+    });
+    await prisma.memoryChild.create({
+      data: { familyId, memoryId: memory.id, childId, ageMonth: 0 },
+    });
+    await prisma.memoryAsset.create({
+      data: {
+        familyId,
+        memoryId: memory.id,
+        assetId: created.assetId,
+        sortOrder: 0,
+      },
+    });
+    await prisma.asset.update({
+      where: { id: created.assetId },
+      data: { status: 'READY', keepOriginal: true },
+    });
+    await prisma.assetVariant.createMany({
+      data: ['t320', 'orig'].map((variantCode) => ({
+        familyId,
+        assetId: created.assetId,
+        variantCode,
+        storageBucket: 'bf-media',
+        storageKey: `circle/${created.assetId}/${variantCode}`,
+        mime: 'image/jpeg',
+        sizeBytes: 32n,
+      })),
+    });
+    expect(
+      Object.keys(
+        body(await getMedia(relative, created.assetId).expect(200)).urls,
+      ),
+    ).toEqual(['t320']);
+    const batch = body(
+      await request(app.getHttpServer())
+        .post('/api/v1/media/urls')
+        .set('Authorization', auth(relative))
+        .send({ assetIds: [created.assetId, photoId] })
+        .expect(200),
+    );
+    expect(batch.items).toHaveLength(1);
+    expect(batch.unavailableIds).toEqual([photoId]);
+    await prisma.memory.update({
+      where: { id: memory.id },
+      data: { status: 'PENDING_REVIEW' },
+    });
+    await getMedia(relative, created.assetId).expect(200); // Authors may preview their own submission.
+    await prisma.memory.update({
+      where: { id: memory.id },
+      data: { authorUserId: parentA, authorRole: 'PARENT' },
+    });
+    await getMedia(relative, created.assetId).expect(404);
+    await prisma.memory.update({
+      where: { id: memory.id },
+      data: {
+        authorUserId: relative,
+        authorRole: 'CIRCLE',
+        status: 'PUBLISHED',
+      },
+    });
+    const hiddenChild = await prisma.child.create({
+      data: {
+        familyId,
+        name: 'Synthetic hidden child',
+        birthDate: new Date('2025-01-01'),
+        colorIndex: 2,
+        createdBy: parentA,
+      },
+    });
+    await prisma.memoryChild.create({
+      data: {
+        familyId,
+        memoryId: memory.id,
+        childId: hiddenChild.id,
+        ageMonth: 0,
+      },
+    });
+    await getMedia(relative, created.assetId).expect(404);
+    await prisma.memoryChild.update({
+      where: {
+        memoryId_childId: { memoryId: memory.id, childId: hiddenChild.id },
+      },
+      data: { deletedAt: new Date() },
+    });
+    await getMedia(relative, created.assetId).expect(200);
+    // Originals use the dedicated memory download route and its per-child grant.
+    const download = () =>
+      request(app.getHttpServer())
+        .post(`/api/v1/memories/${memory.id}/download-urls`)
+        .set('Authorization', auth(relative))
+        .send({});
+    expect(body(await download().expect(403)).error.code).toBe(
+      'MEMORY_DOWNLOAD_FORBIDDEN',
+    );
+    await prisma.circleGrant.updateMany({
+      where: { familyId, circleMemberId: memberId },
+      data: { allowDownload: true },
+    });
+    expect(body(await download().expect(200)).items).toHaveLength(1);
+    await prisma.memory.update({
+      where: { id: memory.id },
+      data: { visibility: 'PARENTS' },
+    });
+    await getMedia(relative, created.assetId).expect(404);
+  });
+
+  it('uploads private journal photos owned by the uploader only (US-07)', async () => {
+    const bytes = Buffer.from(`journal-${randomUUID()}`);
+    const payload = {
+      purpose: 'JOURNAL',
+      kind: 'IMAGE',
+      mime: 'image/jpeg',
+      size: bytes.length,
+      sha256: sha256(bytes),
+    };
+    const mine = await intent(parentA, payload).expect(201);
+    const asset = await prisma.asset.findUniqueOrThrow({
+      where: { id: body(mine).assetId },
+    });
+    expect(asset).toMatchObject({
+      purpose: 'JOURNAL',
+      privateOwnerUserId: parentA,
+      uploaderUserId: parentA,
+    });
+    // The partner uploading the same bytes never gets the private copy back.
+    const partner = await intent(parentB, payload).expect(201);
+    expect(body(partner).assetId).not.toBe(asset.id);
+    expect(body(partner).deduplicated).toBe(false);
+    // Journal photos are not general family media.
+    await getMedia(parentB, asset.id).expect(404);
+    await intent(parentA, {
+      ...payload,
+      kind: 'VIDEO',
+      mime: 'video/mp4',
+      durationMs: 1000,
+    }).expect(422);
   });
 });

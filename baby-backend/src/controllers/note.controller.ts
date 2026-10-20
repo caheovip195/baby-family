@@ -25,8 +25,10 @@ import type { INoteService } from '../interfaces/services/note-service.interface
 import { CreateNoteDto } from '../dto/note/create-note.dto';
 import { UpdateNoteDto } from '../dto/note/update-note.dto';
 import { NotePageDto, NoteResponseDto } from '../dto/note/note-response.dto';
+import { RawResponse } from '../common/http/response-envelope.interceptor';
 
 @ApiTags('Notes (example)')
+@RawResponse()
 @Controller('notes')
 export class NoteController {
   constructor(@Inject(NOTE_SERVICE) private readonly service: INoteService) {}

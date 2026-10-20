@@ -42,7 +42,10 @@ class _RecapHighlightRow extends StatelessWidget {
               child: SizedBox.square(
                 dimension: 44,
                 child: asset != null
-                    ? Image.asset(asset!, fit: BoxFit.cover)
+                    ? Image(
+                        image: mediaImageProvider(asset!),
+                        fit: BoxFit.cover,
+                      )
                     : ColoredBox(
                         color: AppColors.resolve(
                           context,

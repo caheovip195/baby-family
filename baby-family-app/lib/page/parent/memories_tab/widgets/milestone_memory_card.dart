@@ -45,7 +45,11 @@ class _MilestoneMemoryCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (photo != null)
-              Image.asset(photo, height: 180, fit: BoxFit.cover),
+              Image(
+                image: mediaImageProvider(photo),
+                height: 180,
+                fit: BoxFit.cover,
+              ),
             Padding(
               padding: const EdgeInsets.all(AppSpacing.cardInset),
               child: Row(

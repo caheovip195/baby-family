@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import type { AccessPhase } from '../../common/database.enums';
 import { BillingPlanResponseDto } from './billing-catalog-response.dto';
 
@@ -11,7 +11,16 @@ export class FamilyBillingUsageResponseDto {
   @ApiProperty() letterCount!: number;
 }
 
+import type { SubscriptionStatusBanner } from '../../models/subscription-reminder-state.model';
+
 export class FamilyBillingResponseDto {
+  @ApiPropertyOptional({
+    type: Object,
+    nullable: true,
+    description:
+      'Server-computed SUB-06/07 state, including granted trial reminder policy.',
+  })
+  statusBanner?: SubscriptionStatusBanner | null;
   @ApiProperty({ format: 'uuid' }) familyId!: string;
   @ApiProperty({ enum: ['INCOMPLETE', 'TRIAL', 'PAID', 'EXPIRED', 'BLOCKED'] })
   accessPhase!: AccessPhase;

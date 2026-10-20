@@ -5,5 +5,8 @@ abstract class INotificationRepository extends IBaseRepository {
 
   void updateNotification(String id, JsonMap patch);
 
+  /// Báo các màn đang đọc kho đọc lại — dùng sau thao tác trên server.
+  void touch();
+
   JsonMap addNotification(JsonMap notification);
 }

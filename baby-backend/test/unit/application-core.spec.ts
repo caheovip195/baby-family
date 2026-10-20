@@ -1,3 +1,4 @@
+import type { IProfileImageService } from '../../src/interfaces/services/profile-image-service.interface';
 import { ForbiddenException } from '@nestjs/common';
 import type { AuthPrincipal } from '../../src/common/auth/auth-principal';
 import { DatabaseDecimal } from '../../src/common/database.types';
@@ -15,9 +16,11 @@ import type { IChildRepository } from '../../src/interfaces/repositories/child-r
 import type { IFamilyRepository } from '../../src/interfaces/repositories/family-repository.interface';
 import type { IPregnancyRepository } from '../../src/interfaces/repositories/pregnancy-repository.interface';
 import type { IPregnancyCommandRepository } from '../../src/interfaces/repositories/pregnancy-command-repository.interface';
+import type { IAccountRepository } from '../../src/interfaces/repositories/account-repository.interface';
 import type { IUserRepository } from '../../src/interfaces/repositories/user-repository.interface';
 import type { IUserSettingRepository } from '../../src/interfaces/repositories/user-setting-repository.interface';
 import type { IApplicationAccessService } from '../../src/interfaces/services/application-access-service.interface';
+import { AccountOverview } from '../../src/models/account-overview.model';
 import { Child } from '../../src/models/child.model';
 import { Family } from '../../src/models/family.model';
 import { Pregnancy } from '../../src/models/pregnancy.model';
@@ -25,11 +28,17 @@ import { User } from '../../src/models/user.model';
 import { UserSetting } from '../../src/models/user-setting.model';
 import { ChildService } from '../../src/services/child.service';
 import { FamilyService } from '../../src/services/family.service';
+import { NO_PROFILE_IMAGES } from '../../src/services/no-profile-images';
 import { PregnancyService } from '../../src/services/pregnancy.service';
 import { PregnancyCommandRepository } from '../../src/repositories/pregnancy-command.repository';
 import { UserService } from '../../src/services/user.service';
 import { UserSettingService } from '../../src/services/user-setting.service';
 
+const profileImages = {
+  userAvatar: jest
+    .fn()
+    .mockResolvedValue({ avatarUrl: null, avatarUrlExpiresAt: null }),
+} as unknown as IProfileImageService;
 const actor: AuthPrincipal = {
   userId: 'user-a',
   sessionId: 'session-a',
@@ -149,6 +158,7 @@ function repositoryMock<T>(): jest.Mocked<T> {
 
 describe('Application core services', () => {
   let users: jest.Mocked<IUserRepository>;
+  let accounts: jest.Mocked<IAccountRepository>;
   let settings: jest.Mocked<IUserSettingRepository>;
   let families: jest.Mocked<IFamilyRepository>;
   let children: jest.Mocked<IChildRepository>;
@@ -158,6 +168,19 @@ describe('Application core services', () => {
 
   beforeEach(() => {
     users = repositoryMock<IUserRepository>();
+    accounts = {
+      findOverview: jest.fn().mockResolvedValue(
+        new AccountOverview({
+          user,
+          parentMemberships: [],
+          grantedDocuments: [],
+          awaitingApproval: [],
+        }),
+      ),
+      setOnboardingRole: jest.fn(),
+      registerDevice: jest.fn(),
+      recordConsents: jest.fn(),
+    };
     settings = repositoryMock<IUserSettingRepository>();
     families = repositoryMock<IFamilyRepository>();
     children = repositoryMock<IChildRepository>();
@@ -177,19 +200,24 @@ describe('Application core services', () => {
   });
 
   it('reads only the current user and projects out authentication metadata', async () => {
-    const result = await new UserService(users).getMe(actor);
-    expect(users.findByKey).toHaveBeenCalledWith(
-      { privileged: true },
-      { id: actor.userId },
+    const result = await new UserService(users, accounts, profileImages).getMe(
+      actor,
     );
-    expect(result).toMatchObject({ id: actor.userId, displayName: 'Parent' });
+    expect(accounts.findOverview).toHaveBeenCalledWith(actor.userId);
+    expect(result).toMatchObject({
+      id: actor.userId,
+      displayName: 'Parent',
+      onboardingRole: 'PARENT_FATHER',
+      profileCompleted: false,
+      families: [],
+    });
     expect(result).not.toHaveProperty('tokenVersion');
     expect(result).not.toHaveProperty('status');
     expect(result.createdAt).toBe(at.toISOString());
   });
 
   it('writes only allowed self profile fields, ignoring forged actor/state fields outside HTTP', async () => {
-    await new UserService(users).updateMe(actor, {
+    await new UserService(users, accounts, profileImages).updateMe(actor, {
       displayName: '  New Name  ',
       status: 'BANNED',
       id: 'another-user',
@@ -211,14 +239,17 @@ describe('Application core services', () => {
     'rejects invalid self profile updates %j before persistence',
     async (input) => {
       await expect(
-        new UserService(users).updateMe(actor, input as UpdateUserDto),
+        new UserService(users, accounts, profileImages).updateMe(
+          actor,
+          input as UpdateUserDto,
+        ),
       ).rejects.toBeInstanceOf(ValidationError);
       expect(users.update).not.toHaveBeenCalled();
     },
   );
 
   it('rejects standalone timezone offsets at the self service boundary', async () => {
-    const service = new UserService(users);
+    const service = new UserService(users, accounts, profileImages);
     for (const timezone of ['+07:00', '-05:30']) {
       await expect(
         service.updateMe(actor, { timezone }),
@@ -228,7 +259,7 @@ describe('Application core services', () => {
   });
 
   it('accepts UTC and IANA timezone names for the self profile', async () => {
-    const service = new UserService(users);
+    const service = new UserService(users, accounts, profileImages);
     for (const timezone of ['UTC', 'Asia/Ho_Chi_Minh', 'Etc/GMT+7']) {
       await service.updateMe(actor, { timezone });
       expect(users.update).toHaveBeenLastCalledWith(
@@ -259,6 +290,49 @@ describe('Application core services', () => {
         { timezone },
       );
     }
+  });
+
+  it('FAM-07: sets content language and a READY cover of this family only', async () => {
+    const images = {
+      ...NO_PROFILE_IMAGES,
+      isUsableFamilyCover: jest.fn((_fid: string, assetId: string) =>
+        Promise.resolve(assetId === '00000000-0000-4000-8000-0000000000c1'),
+      ),
+      familyCover: jest.fn(() =>
+        Promise.resolve({
+          coverUrl: 'https://cdn/cover.webp',
+          coverUrlExpiresAt: new Date('2026-10-19T00:00:00Z'),
+        }),
+      ),
+    };
+    const service = new FamilyService(families, access, images);
+    const updated = await service.update(actor, family.id, {
+      contentLocale: 'en',
+      coverAssetId: '00000000-0000-4000-8000-0000000000c1',
+    });
+    expect(families.update).toHaveBeenLastCalledWith(
+      { privileged: true },
+      { id: family.id },
+      {
+        contentLocale: 'en',
+        coverAssetId: '00000000-0000-4000-8000-0000000000c1',
+      },
+    );
+    expect(updated.coverUrl).toBe('https://cdn/cover.webp');
+    await expect(
+      service.update(actor, family.id, {
+        coverAssetId: '00000000-0000-4000-8000-0000000000c2',
+      }),
+    ).rejects.toMatchObject({ code: 'FAMILY_COVER_INVALID' });
+    await expect(
+      service.update(actor, family.id, { contentLocale: 'fr' }),
+    ).rejects.toBeInstanceOf(ValidationError);
+    await service.update(actor, family.id, { coverAssetId: null });
+    expect(families.update).toHaveBeenLastCalledWith(
+      { privileged: true },
+      { id: family.id },
+      { coverAssetId: null },
+    );
   });
 
   it('returns not-found for settings that have not been provisioned, without creating them on GET', async () => {
@@ -306,13 +380,13 @@ describe('Application core services', () => {
     expect(settings.update).not.toHaveBeenCalled();
   });
 
-  it('uses metadata and family-profile-update modes rather than a content gate for family profile', async () => {
+  it('gates the family profile with read and family-profile-update modes (§6.5)', async () => {
     const service = new FamilyService(families, access);
     const result = await service.getById(actor, family.id);
     expect(access.requireParent).toHaveBeenLastCalledWith(
       actor,
       family.id,
-      'metadata',
+      'read',
     );
     expect(result).not.toHaveProperty('settings');
     await service.update(actor, family.id, {

@@ -1,3 +1,4 @@
+import { createPublicKey } from 'node:crypto';
 import {
   Inject,
   Injectable,
@@ -30,7 +31,23 @@ export class AuthenticationService
   ) {}
 
   async onModuleInit(): Promise<void> {
-    const pem = this.config.get('AUTH_JWT_PUBLIC_KEY', { infer: true });
+    // The verifying key comes from AUTH_JWT_PUBLIC_KEY or, when this API also
+    // issues tokens, is derived from AUTH_JWT_PRIVATE_KEY.
+    let pem = this.config.get('AUTH_JWT_PUBLIC_KEY', { infer: true });
+    const privatePem = this.config.get('AUTH_JWT_PRIVATE_KEY', {
+      infer: true,
+    });
+    if (!pem && privatePem) {
+      try {
+        pem = createPublicKey(privatePem.replace(/\\n/g, '\n'))
+          .export({ type: 'spki', format: 'pem' })
+          .toString();
+      } catch {
+        throw new Error(
+          'Invalid AUTH_JWT_PRIVATE_KEY: expected an ES256 PKCS#8 private key.',
+        );
+      }
+    }
     if (!pem) return;
     try {
       this.key = await importSPKI(pem.replace(/\\n/g, '\n'), 'ES256');

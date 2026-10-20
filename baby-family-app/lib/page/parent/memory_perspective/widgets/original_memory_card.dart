@@ -31,8 +31,8 @@ class _OriginalMemoryCard extends StatelessWidget {
           if (photo != null) ...[
             ClipRRect(
               borderRadius: BorderRadius.circular(AppRadius.tile),
-              child: Image.asset(
-                photo,
+              child: Image(
+                image: mediaImageProvider(photo),
                 width: 64,
                 height: 64,
                 fit: BoxFit.cover,

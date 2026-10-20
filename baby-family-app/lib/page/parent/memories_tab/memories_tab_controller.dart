@@ -1,3 +1,4 @@
+import 'package:baby_family/data/dto/memory_grid_photo.dart';
 import 'package:baby_family/data/model/child/child.dart';
 import 'package:baby_family/data/model/family/member.dart';
 import 'package:baby_family/data/model/memory/album.dart';
@@ -44,6 +45,9 @@ class MemoriesTabController extends BaseNotifier {
 
   List<Child> children = const [];
   List<Memory> memories = const [];
+
+  /// MEM-02: ảnh của bé/cả nhà (chế độ server lấy từ lưới ảnh của server).
+  List<MemoryGridPhoto> photos = const [];
   List<ChapterSummary> chapters = const [];
   ChildMemoryStats? stats;
   Map<String, Member> _membersByUser = const {};
@@ -91,7 +95,7 @@ class MemoriesTabController extends BaseNotifier {
       final subjectId = this.subjectId;
       final results = await Future.wait([
         childService.children(),
-        memoryService.memories(childId: subjectId),
+        memoryService.timeline(childId: subjectId),
         familyService.members(),
         memoryService.collections(),
         memoryService.sealedLetters(),
@@ -121,6 +125,8 @@ class MemoriesTabController extends BaseNotifier {
       monthlyChild = born
           ? child
           : children.where((c) => !c.isPregnancy).lastOrNull;
+      // Sau timeline: ký ức của các ô ảnh đã có trong kho.
+      photos = await memoryService.photos(childId: subjectId);
       monthlyCount = monthlyChild == null
           ? 0
           : (await memoryService.monthlyPhotos(monthlyChild!.id)).length;
@@ -186,11 +192,12 @@ class MemoriesTabController extends BaseNotifier {
   List<({DateTime month, List<({String asset, Memory memory})> photos})>
   get photoGroups {
     final groups = <DateTime, List<({String asset, Memory memory})>>{};
-    for (final memory in memories) {
-      final month = DateTime(memory.occurredAt.year, memory.occurredAt.month);
-      for (final asset in memory.mediaAssets) {
-        (groups[month] ??= []).add((asset: asset, memory: memory));
-      }
+    for (final photo in photos) {
+      final at = photo.memory.occurredAt;
+      (groups[DateTime(at.year, at.month)] ??= []).add((
+        asset: photo.asset,
+        memory: photo.memory,
+      ));
     }
     return [
       for (final entry in groups.entries)
@@ -202,5 +209,16 @@ class MemoriesTabController extends BaseNotifier {
   int get monthlyTotal {
     final birth = monthlyChild?.birthDate;
     return birth == null ? 0 : childMonthIndex(birth, today);
+  }
+
+  /// MEM-06 “Thử lại” / “Huỷ” trên thẻ ký ức đang tải nền.
+  Future<void> retryUpload(String memoryId) async {
+    await memoryService.retryUpload(memoryId);
+    await load();
+  }
+
+  Future<void> cancelUpload(String memoryId) async {
+    await memoryService.cancelUpload(memoryId);
+    await load();
   }
 }

@@ -61,6 +61,10 @@ class MyDataController extends BaseNotifier {
     await load();
   }
 
+  /// Link tải mới của bản đã sẵn sàng (null ở bản mock).
+  Future<String?> downloadUrl(DataExportKind kind) =>
+      settingsService.exportDownloadUrl(kind);
+
   Future<void> clearCache() async {
     await settingsService.clearCache();
     await load();

@@ -30,7 +30,7 @@ class _CollectionCard extends StatelessWidget {
     final asset = item.coverAsset;
     final Widget cover;
     if (style == null && asset != null) {
-      cover = Image.asset(asset, fit: BoxFit.cover);
+      cover = Image(image: mediaImageProvider(asset), fit: BoxFit.cover);
     } else {
       final icon = style?.$2;
       cover = ColoredBox(

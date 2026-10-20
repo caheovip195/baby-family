@@ -1,5 +1,6 @@
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:flutter/material.dart';
 
@@ -53,8 +54,8 @@ class MemoryCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (photoAsset != null)
-              Image.asset(
-                photoAsset!,
+              Image(
+                image: mediaImageProvider(photoAsset!),
                 height: photoHeight,
                 fit: BoxFit.cover,
                 semanticLabel: caption,

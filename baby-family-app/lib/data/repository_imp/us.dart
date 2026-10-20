@@ -13,6 +13,9 @@ class UsRepositoryImp extends MockRepositoryImp implements IUsRepository {
   JsonMap addCheckin(JsonMap checkin) => insert('checkins', checkin);
 
   @override
+  void removeCheckin(String id) => removeRow('checkins', id);
+
+  @override
   List<JsonMap> requests(String familyId) =>
       rows('requests', (row) => row['familyId'] == familyId);
 

@@ -32,8 +32,14 @@ import type { ICatalogQueryRepository } from '../interfaces/repositories/catalog
 import { MEDIA_REPOSITORY } from '../interfaces/repositories/media-repository.interface';
 import type { IMediaRepository } from '../interfaces/repositories/media-repository.interface';
 import { APPLICATION_ACCESS_SERVICE } from '../interfaces/services/application-access-service.interface';
-import type { IApplicationAccessService } from '../interfaces/services/application-access-service.interface';
-import type { IMediaService } from '../interfaces/services/media-service.interface';
+import type {
+  FamilyAccessMode,
+  IApplicationAccessService,
+} from '../interfaces/services/application-access-service.interface';
+import type {
+  IMediaService,
+  MediaViewAccess,
+} from '../interfaces/services/media-service.interface';
 import { OBJECT_STORAGE_SERVICE } from '../interfaces/services/object-storage-service.interface';
 import type {
   IObjectStorageService,
@@ -67,7 +73,12 @@ export class MediaService implements IMediaService {
     input: CreateUploadIntentDto,
   ): Promise<UploadIntentResponseDto> {
     // Membership, family lifecycle and an unexpired entitlement (402/403/404).
-    await this.access.requireParent(actor, input.familyId, 'write');
+    const isParent = await this.requireUploadAccess(
+      actor,
+      input.familyId,
+      input.purpose,
+      input.kind,
+    );
     const kind = MEDIA_POLICY.kinds[input.kind] as MediaKindPolicy;
     const purpose = MEDIA_POLICY.purposes[input.purpose];
     const mime = input.mime.toLowerCase();
@@ -80,7 +91,7 @@ export class MediaService implements IMediaService {
       throw mediaError('File type is not supported.', 'MEDIA_TYPE_UNSUPPORTED');
     if (input.size > kind.maxBytes)
       throw mediaError('File is too large.', 'MEDIA_TOO_LARGE');
-    const quotas = await this.quotasOf(actor, input.familyId);
+    const quotas = await this.quotasOf(actor, input.familyId, isParent);
     if (kind.durationQuota) {
       const maxSeconds = quotas[kind.durationQuota];
       if (input.durationMs === undefined)
@@ -99,6 +110,7 @@ export class MediaService implements IMediaService {
     const declaredSize = BigInt(input.size);
     const result = await this.media.reserveUpload({
       familyId: input.familyId,
+      allowSharedCopy: isParent,
       uploaderUserId: actor.userId,
       idempotencyKey,
       requestHash: createHash('sha256')
@@ -123,6 +135,8 @@ export class MediaService implements IMediaService {
       durationMs: input.durationMs ?? null,
       storageBucket: this.storage.bucketName(purpose.bucket),
       storageKey: (assetId) => mediaStorageKey(input.familyId, assetId),
+      privateOwnerUserId:
+        'private' in purpose && purpose.private ? actor.userId : null,
       reservedBytes: maxAcceptedSize(declaredSize),
       storageLimitBytes: BigInt(quotas.storageBytes),
       checksumVerifiedMaxBytes: BigInt(MEDIA_POLICY.multipartThresholdBytes),
@@ -247,12 +261,10 @@ export class MediaService implements IMediaService {
   ): Promise<MediaAssetResponseDto> {
     const familyId = (await this.media.findFamilyIds([assetId])).get(assetId);
     if (!familyId) throw new NotFoundError('Media not found.');
-    await this.access.requireParent(actor, familyId, 'read');
-    const [view] = await this.media.findViewableByParent(
-      familyId,
-      actor.userId,
-      [assetId],
-    );
+    const { isParent } = await this.contentAccess(actor, familyId, 'read');
+    const [view] = await this.viewable(isParent, familyId, actor.userId, [
+      assetId,
+    ]);
     // Not distinguishing "hidden" from "missing" avoids revealing private memories.
     if (!view) throw new NotFoundError('Media not found.');
     return this.project(view);
@@ -261,6 +273,7 @@ export class MediaService implements IMediaService {
   async signViewUrls(
     actor: AuthPrincipal,
     input: MediaUrlsDto,
+    access: MediaViewAccess = 'read',
   ): Promise<MediaUrlsResponseDto> {
     const families = await this.media.findFamilyIds(input.assetIds);
     const byFamily = new Map<string, string[]>();
@@ -268,13 +281,17 @@ export class MediaService implements IMediaService {
       byFamily.set(familyId, [...(byFamily.get(familyId) ?? []), assetId]);
     const items: MediaAssetResponseDto[] = [];
     for (const [familyId, assetIds] of byFamily) {
+      let isParent: boolean;
       try {
-        await this.access.requireParent(actor, familyId, 'read');
+        ({ isParent } = await this.contentAccess(actor, familyId, access));
       } catch (error) {
+        if (error instanceof DomainError && error.code === 'CIRCLE_PAUSED')
+          throw error;
         if (error instanceof DomainError && error.statusCode < 500) continue;
         throw error;
       }
-      const views = await this.media.findViewableByParent(
+      const views = await this.viewable(
+        isParent,
         familyId,
         actor.userId,
         assetIds,
@@ -288,16 +305,75 @@ export class MediaService implements IMediaService {
     };
   }
 
+  private async contentAccess(
+    actor: AuthPrincipal,
+    familyId: string,
+    mode: FamilyAccessMode,
+  ) {
+    if (this.access.requireContentAccess)
+      return this.access.requireContentAccess(actor, familyId, mode);
+    return {
+      family: await this.access.requireParent(actor, familyId, mode),
+      isParent: true,
+    };
+  }
+
+  private viewable(
+    isParent: boolean,
+    familyId: string,
+    userId: string,
+    assetIds: readonly string[],
+  ) {
+    return isParent
+      ? this.media.findViewableByParent(familyId, userId, assetIds)
+      : this.media.findViewableByCircle(familyId, userId, assetIds);
+  }
+
+  private async requireUploadAccess(
+    actor: AuthPrincipal,
+    familyId: string,
+    purpose: string,
+    kind: string,
+  ): Promise<boolean> {
+    const { isParent } = await this.contentAccess(actor, familyId, 'write');
+    if (isParent) return true;
+    if (purpose !== 'MEMORY') {
+      throw mediaError(
+        'Only Parents can upload this purpose.',
+        'MEDIA_PARENT_REQUIRED',
+        403,
+      );
+    }
+    if (!(await this.media.hasContributeChild(familyId, actor.userId)))
+      throw mediaError(
+        'A child contribution grant is required.',
+        'CIRCLE_CONTRIBUTE_REQUIRED',
+        403,
+      );
+    if (!['IMAGE', 'VIDEO'].includes(kind))
+      throw mediaError(
+        'Kind is not allowed for Circle uploads.',
+        'MEDIA_PURPOSE_INVALID',
+      );
+    return false;
+  }
+
   private async quotasOf(
     actor: AuthPrincipal,
     familyId: string,
+    isParent = true,
   ): Promise<MediaQuotas> {
-    const state = await this.catalog.findFamilyBillingState(
-      familyId,
-      actor.userId,
-      new Date(),
-    );
-    const parsed = quotaSchema.safeParse(state?.effectivePlan?.quotas);
+    const state = isParent
+      ? await this.catalog.findFamilyBillingState(
+          familyId,
+          actor.userId,
+          new Date(),
+        )
+      : null;
+    const quotas = isParent
+      ? state?.effectivePlan?.quotas
+      : (await this.media.findEffectivePlan(familyId))?.quotas;
+    const parsed = quotaSchema.safeParse(quotas);
     if (!parsed.success)
       throw new ServiceUnavailableError('Plan media limits are unavailable.');
     return parsed.data;
@@ -309,7 +385,12 @@ export class MediaService implements IMediaService {
   ): Promise<MediaUpload> {
     const upload = await this.media.findUpload(assetId);
     if (!upload) throw new NotFoundError('Media not found.');
-    await this.access.requireParent(actor, upload.asset.familyId, 'write');
+    await this.requireUploadAccess(
+      actor,
+      upload.asset.familyId,
+      upload.asset.purpose,
+      upload.asset.kind,
+    );
     if (upload.asset.uploaderUserId !== actor.userId)
       throw mediaError(
         'Only the uploader can do this.',

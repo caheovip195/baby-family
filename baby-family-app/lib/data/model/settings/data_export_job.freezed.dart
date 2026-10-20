@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$DataExportJob {
 
-@JsonKey(name: 'kind') DataExportKind get kind;@JsonKey(name: 'status') DataExportStatus get status;@JsonKey(name: 'progress') int get progress;@JsonKey(name: 'startedAt') DateTime? get startedAt;@JsonKey(name: 'sizeMb') int? get sizeMb;@JsonKey(name: 'expiresAt') DateTime? get expiresAt;
+@JsonKey(name: 'kind') DataExportKind get kind;@JsonKey(name: 'status') DataExportStatus get status;@JsonKey(name: 'progress') int get progress;@JsonKey(name: 'startedAt') DateTime? get startedAt;@JsonKey(name: 'sizeMb') int? get sizeMb;@JsonKey(name: 'expiresAt') DateTime? get expiresAt;/// Id job xuất trên server (bản thật) — để hỏi lại trạng thái/link tải.
+@JsonKey(name: 'exportId') String? get exportId;
 /// Create a copy of DataExportJob
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +29,16 @@ $DataExportJobCopyWith<DataExportJob> get copyWith => _$DataExportJobCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DataExportJob&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.status, status) || other.status == status)&&(identical(other.progress, progress) || other.progress == progress)&&(identical(other.startedAt, startedAt) || other.startedAt == startedAt)&&(identical(other.sizeMb, sizeMb) || other.sizeMb == sizeMb)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DataExportJob&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.status, status) || other.status == status)&&(identical(other.progress, progress) || other.progress == progress)&&(identical(other.startedAt, startedAt) || other.startedAt == startedAt)&&(identical(other.sizeMb, sizeMb) || other.sizeMb == sizeMb)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.exportId, exportId) || other.exportId == exportId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,kind,status,progress,startedAt,sizeMb,expiresAt);
+int get hashCode => Object.hash(runtimeType,kind,status,progress,startedAt,sizeMb,expiresAt,exportId);
 
 @override
 String toString() {
-  return 'DataExportJob(kind: $kind, status: $status, progress: $progress, startedAt: $startedAt, sizeMb: $sizeMb, expiresAt: $expiresAt)';
+  return 'DataExportJob(kind: $kind, status: $status, progress: $progress, startedAt: $startedAt, sizeMb: $sizeMb, expiresAt: $expiresAt, exportId: $exportId)';
 }
 
 
@@ -48,7 +49,7 @@ abstract mixin class $DataExportJobCopyWith<$Res>  {
   factory $DataExportJobCopyWith(DataExportJob value, $Res Function(DataExportJob) _then) = _$DataExportJobCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'kind') DataExportKind kind,@JsonKey(name: 'status') DataExportStatus status,@JsonKey(name: 'progress') int progress,@JsonKey(name: 'startedAt') DateTime? startedAt,@JsonKey(name: 'sizeMb') int? sizeMb,@JsonKey(name: 'expiresAt') DateTime? expiresAt
+@JsonKey(name: 'kind') DataExportKind kind,@JsonKey(name: 'status') DataExportStatus status,@JsonKey(name: 'progress') int progress,@JsonKey(name: 'startedAt') DateTime? startedAt,@JsonKey(name: 'sizeMb') int? sizeMb,@JsonKey(name: 'expiresAt') DateTime? expiresAt,@JsonKey(name: 'exportId') String? exportId
 });
 
 
@@ -65,7 +66,7 @@ class _$DataExportJobCopyWithImpl<$Res>
 
 /// Create a copy of DataExportJob
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? kind = null,Object? status = null,Object? progress = null,Object? startedAt = freezed,Object? sizeMb = freezed,Object? expiresAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? kind = null,Object? status = null,Object? progress = null,Object? startedAt = freezed,Object? sizeMb = freezed,Object? expiresAt = freezed,Object? exportId = freezed,}) {
   return _then(_self.copyWith(
 kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
 as DataExportKind,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
@@ -73,7 +74,8 @@ as DataExportStatus,progress: null == progress ? _self.progress : progress // ig
 as int,startedAt: freezed == startedAt ? _self.startedAt : startedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,sizeMb: freezed == sizeMb ? _self.sizeMb : sizeMb // ignore: cast_nullable_to_non_nullable
 as int?,expiresAt: freezed == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,exportId: freezed == exportId ? _self.exportId : exportId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -153,7 +155,7 @@ return $default(_that);case _:
 
 @JsonSerializable(explicitToJson: true)
 class _DataExportJob implements DataExportJob {
-  const _DataExportJob({@JsonKey(name: 'kind') required this.kind, @JsonKey(name: 'status') this.status = DataExportStatus.idle, @JsonKey(name: 'progress') this.progress = 0, @JsonKey(name: 'startedAt') this.startedAt, @JsonKey(name: 'sizeMb') this.sizeMb, @JsonKey(name: 'expiresAt') this.expiresAt});
+  const _DataExportJob({@JsonKey(name: 'kind') required this.kind, @JsonKey(name: 'status') this.status = DataExportStatus.idle, @JsonKey(name: 'progress') this.progress = 0, @JsonKey(name: 'startedAt') this.startedAt, @JsonKey(name: 'sizeMb') this.sizeMb, @JsonKey(name: 'expiresAt') this.expiresAt, @JsonKey(name: 'exportId') this.exportId});
   factory _DataExportJob.fromJson(Map<String, dynamic> json) => _$DataExportJobFromJson(json);
 
 @override@JsonKey(name: 'kind') final  DataExportKind kind;
@@ -162,6 +164,8 @@ class _DataExportJob implements DataExportJob {
 @override@JsonKey(name: 'startedAt') final  DateTime? startedAt;
 @override@JsonKey(name: 'sizeMb') final  int? sizeMb;
 @override@JsonKey(name: 'expiresAt') final  DateTime? expiresAt;
+/// Id job xuất trên server (bản thật) — để hỏi lại trạng thái/link tải.
+@override@JsonKey(name: 'exportId') final  String? exportId;
 
 /// Create a copy of DataExportJob
 /// with the given fields replaced by the non-null parameter values.
@@ -176,16 +180,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DataExportJob&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.status, status) || other.status == status)&&(identical(other.progress, progress) || other.progress == progress)&&(identical(other.startedAt, startedAt) || other.startedAt == startedAt)&&(identical(other.sizeMb, sizeMb) || other.sizeMb == sizeMb)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DataExportJob&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.status, status) || other.status == status)&&(identical(other.progress, progress) || other.progress == progress)&&(identical(other.startedAt, startedAt) || other.startedAt == startedAt)&&(identical(other.sizeMb, sizeMb) || other.sizeMb == sizeMb)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.exportId, exportId) || other.exportId == exportId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,kind,status,progress,startedAt,sizeMb,expiresAt);
+int get hashCode => Object.hash(runtimeType,kind,status,progress,startedAt,sizeMb,expiresAt,exportId);
 
 @override
 String toString() {
-  return 'DataExportJob(kind: $kind, status: $status, progress: $progress, startedAt: $startedAt, sizeMb: $sizeMb, expiresAt: $expiresAt)';
+  return 'DataExportJob(kind: $kind, status: $status, progress: $progress, startedAt: $startedAt, sizeMb: $sizeMb, expiresAt: $expiresAt, exportId: $exportId)';
 }
 
 
@@ -196,7 +200,7 @@ abstract mixin class _$DataExportJobCopyWith<$Res> implements $DataExportJobCopy
   factory _$DataExportJobCopyWith(_DataExportJob value, $Res Function(_DataExportJob) _then) = __$DataExportJobCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'kind') DataExportKind kind,@JsonKey(name: 'status') DataExportStatus status,@JsonKey(name: 'progress') int progress,@JsonKey(name: 'startedAt') DateTime? startedAt,@JsonKey(name: 'sizeMb') int? sizeMb,@JsonKey(name: 'expiresAt') DateTime? expiresAt
+@JsonKey(name: 'kind') DataExportKind kind,@JsonKey(name: 'status') DataExportStatus status,@JsonKey(name: 'progress') int progress,@JsonKey(name: 'startedAt') DateTime? startedAt,@JsonKey(name: 'sizeMb') int? sizeMb,@JsonKey(name: 'expiresAt') DateTime? expiresAt,@JsonKey(name: 'exportId') String? exportId
 });
 
 
@@ -213,7 +217,7 @@ class __$DataExportJobCopyWithImpl<$Res>
 
 /// Create a copy of DataExportJob
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? kind = null,Object? status = null,Object? progress = null,Object? startedAt = freezed,Object? sizeMb = freezed,Object? expiresAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? kind = null,Object? status = null,Object? progress = null,Object? startedAt = freezed,Object? sizeMb = freezed,Object? expiresAt = freezed,Object? exportId = freezed,}) {
   return _then(_DataExportJob(
 kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
 as DataExportKind,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
@@ -221,7 +225,8 @@ as DataExportStatus,progress: null == progress ? _self.progress : progress // ig
 as int,startedAt: freezed == startedAt ? _self.startedAt : startedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,sizeMb: freezed == sizeMb ? _self.sizeMb : sizeMb // ignore: cast_nullable_to_non_nullable
 as int?,expiresAt: freezed == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,exportId: freezed == exportId ? _self.exportId : exportId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

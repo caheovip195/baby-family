@@ -51,6 +51,9 @@ class ProfileSettingsController extends BaseNotifier {
 
   void setCallName(String value) => _edit((p) => p.copyWith(callName: value));
 
+  /// AUTH-04: ảnh vừa chọn trên máy; lưu cùng nút Lưu.
+  void setAvatar(String path) => _edit((p) => p.copyWith(avatarAsset: path));
+
   void setAutoTimezone(bool value) =>
       _edit((p) => p.copyWith(autoTimezone: value));
 

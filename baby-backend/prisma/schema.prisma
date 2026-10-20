@@ -136,7 +136,7 @@ model Asset {
   @@unique([id, familyId, uploaderUserId])
   @@unique([id, uploaderUserId])
   @@unique([storageBucket, storageKey])
-  @@unique([familyId, purpose, privateOwnerUserId, sha256], map: "uq_asset_dedup", where: raw("((sha256 IS NOT NULL) AND (deleted_at IS NULL))"))
+  @@unique([familyId, purpose, privateOwnerUserId, uploaderUserId, sha256], map: "uq_asset_dedup", where: raw("((sha256 IS NOT NULL) AND (deleted_at IS NULL))"))
   @@index([familyId, status])
   @@index([status, createdAt], where: raw("((status = ANY (ARRAY['PENDING_UPLOAD'::app.asset_status, 'UPLOADED'::app.asset_status, 'PROCESSING'::app.asset_status])) AND (deleted_at IS NULL))"))
   @@index([purgeAfter], map: "ix_asset_purge", where: raw("(purge_after IS NOT NULL)"))

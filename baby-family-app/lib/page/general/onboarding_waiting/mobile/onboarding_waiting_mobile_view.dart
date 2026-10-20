@@ -3,6 +3,7 @@ import 'package:baby_family/gen/assets.gen.dart';
 import 'package:baby_family/page/general/onboarding_waiting/onboarding_waiting_controller.dart';
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/invite_code.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
@@ -12,6 +13,7 @@ import 'package:baby_family/utils/widget/app_dialog.dart';
 import 'package:baby_family/utils/widget/app_step_heading.dart';
 import 'package:baby_family/utils/widget/app_step_scaffold.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
@@ -33,11 +35,59 @@ class OnboardingWaitingMobileView extends HookConsumerWidget {
     final partner = controller.partnerCallName;
     final invite = controller.invite;
     Future<void> simulate() async {
-      await controller.simulateJoined();
-      if (context.mounted) {
+      final joined = await controller.simulateJoined();
+      if (joined && context.mounted) {
         await context.router.replaceAll([const OnboardingActivatedRoute()]);
       }
     }
+
+    // Bản server: bạn đời đã tham gia (poll) → ONB-ACT.
+    useEffect(() {
+      if (controller.joined) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (context.mounted) {
+            context.router.replaceAll([const OnboardingActivatedRoute()]);
+          }
+        });
+      }
+      return null;
+    }, [controller.joined]);
+
+    // 7.3 bước 6: xác nhận lần cuối người vừa nhận lời mời.
+    final approvalName = controller.approvalCallName;
+    useEffect(() {
+      if (approvalName == null) {
+        return null;
+      }
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (!context.mounted) {
+          return;
+        }
+        final approve = await AppDialog.show<bool>(
+          context: context,
+          barrierDismissible: false,
+          title: l10n.onboardingPartnerApproveTitle(approvalName),
+          content: l10n.onboardingPartnerApproveBody(controller.trialDays),
+          actions: [
+            AppButton.text(
+              label: l10n.onboardingPartnerReject,
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
+            AppButton(
+              label: l10n.onboardingPartnerApprove,
+              onPressed: () => Navigator.of(context).pop(true),
+            ),
+          ],
+        );
+        if (approve != null && context.mounted) {
+          await runWithErrorSnackBar(
+            context,
+            () => controller.decide(approve: approve),
+          );
+        }
+      });
+      return null;
+    }, [approvalName]);
 
     final daysLeft = controller.daysLeft;
     return AppStepScaffold(
@@ -56,10 +106,12 @@ class OnboardingWaitingMobileView extends HookConsumerWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(l10n.onboardingInviteSent),
-                action: SnackBarAction(
-                  label: l10n.onboardingActivateDemo,
-                  onPressed: simulate,
-                ),
+                action: controller.usesServer
+                    ? null
+                    : SnackBarAction(
+                        label: l10n.onboardingActivateDemo,
+                        onPressed: simulate,
+                      ),
               ),
             );
           },
@@ -70,10 +122,12 @@ class OnboardingWaitingMobileView extends HookConsumerWidget {
             context,
             builder: (_) => _WaitingQrSheet(
               code: formatInviteCode(invite?.code ?? ''),
-              onSimulate: () {
-                Navigator.of(context).pop();
-                simulate();
-              },
+              onSimulate: controller.usesServer
+                  ? null
+                  : () {
+                      Navigator.of(context).pop();
+                      simulate();
+                    },
             ),
           ),
         ),
@@ -89,8 +143,11 @@ class OnboardingWaitingMobileView extends HookConsumerWidget {
                   label: l10n.commonConfirm,
                   onPressed: () async {
                     Navigator.of(context).pop();
-                    await controller.cancelFamily();
-                    if (context.mounted) {
+                    final cancelled = await runWithErrorSnackBar(
+                      context,
+                      controller.cancelFamily,
+                    );
+                    if (cancelled && context.mounted) {
                       await context.router.replaceAll([
                         const OnboardingRoleRoute(),
                       ]);

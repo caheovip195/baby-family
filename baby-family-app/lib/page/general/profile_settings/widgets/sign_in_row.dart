@@ -5,10 +5,17 @@ part of '../mobile/profile_settings_mobile_view.dart';
 /// 12/600 `text-secondary`; chưa: “Chưa liên kết” `text-tertiary` + viên
 /// “Liên kết” nền `primary-600`.
 class _SignInRow extends StatelessWidget {
-  const _SignInRow({required this.method, required this.onToggle});
+  const _SignInRow({
+    required this.method,
+    required this.onToggle,
+    this.linkedAction,
+  });
 
   final SignInMethod method;
   final VoidCallback onToggle;
+
+  /// Nhãn thay “Huỷ liên kết” khi đã liên kết (số điện thoại: “Đổi số”).
+  final String? linkedAction;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +42,7 @@ class _SignInRow extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(AppSpacing.s1),
                 child: Text(
-                  l10n.setUnlink,
+                  linkedAction ?? l10n.setUnlink,
                   style: AppTypography.adapt(
                     context,
                     AppTypography.small.copyWith(fontWeight: FontWeight.w600),

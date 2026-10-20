@@ -1,0 +1,406 @@
+[
+  {
+    "code": "laugh_aloud",
+    "category": "EMOTION",
+    "icon": "😊",
+    "titleI18n": {
+      "vi": "Cười to",
+      "en": "Laughed aloud"
+    },
+    "promptI18n": {
+      "vi": "Ai ở đó? Con phản ứng thế nào? Bố mẹ cảm thấy gì?",
+      "en": "Who was there? How did your child react? How did you feel?"
+    },
+    "isTraditional": false,
+    "sortOrder": 0,
+    "dateRule": null
+  },
+  {
+    "code": "roll_over",
+    "category": "MOVEMENT",
+    "icon": "🤸",
+    "titleI18n": {
+      "vi": "Lẫy",
+      "en": "Rolled over"
+    },
+    "promptI18n": {
+      "vi": "Ai ở đó? Con phản ứng thế nào? Bố mẹ cảm thấy gì?",
+      "en": "Who was there? How did your child react? How did you feel?"
+    },
+    "isTraditional": false,
+    "sortOrder": 1,
+    "dateRule": null
+  },
+  {
+    "code": "sit_steady",
+    "category": "MOVEMENT",
+    "icon": "🤸",
+    "titleI18n": {
+      "vi": "Ngồi vững",
+      "en": "Sitting steadily"
+    },
+    "promptI18n": {
+      "vi": "Ai ở đó? Con phản ứng thế nào? Bố mẹ cảm thấy gì?",
+      "en": "Who was there? How did your child react? How did you feel?"
+    },
+    "isTraditional": false,
+    "sortOrder": 2,
+    "dateRule": null
+  },
+  {
+    "code": "first_food",
+    "category": "FOOD",
+    "icon": "🍚",
+    "titleI18n": {
+      "vi": "Ăn dặm",
+      "en": "First solid food"
+    },
+    "promptI18n": {
+      "vi": "Ai ở đó? Con phản ứng thế nào? Bố mẹ cảm thấy gì?",
+      "en": "Who was there? How did your child react? How did you feel?"
+    },
+    "isTraditional": false,
+    "sortOrder": 3,
+    "dateRule": null
+  },
+  {
+    "code": "call_mama",
+    "category": "LANGUAGE",
+    "icon": "🗣",
+    "titleI18n": {
+      "vi": "Gọi “Mẹ”",
+      "en": "Said “Mama”"
+    },
+    "promptI18n": {
+      "vi": "Ai ở đó? Con phản ứng thế nào? Bố mẹ cảm thấy gì?",
+      "en": "Who was there? How did your child react? How did you feel?"
+    },
+    "isTraditional": false,
+    "sortOrder": 4,
+    "dateRule": null
+  },
+  {
+    "code": "first_step",
+    "category": "MOVEMENT",
+    "icon": "🤸",
+    "titleI18n": {
+      "vi": "Bước đi đầu tiên",
+      "en": "First steps"
+    },
+    "promptI18n": {
+      "vi": "Ai ở đó? Con phản ứng thế nào? Bố mẹ cảm thấy gì?",
+      "en": "Who was there? How did your child react? How did you feel?"
+    },
+    "isTraditional": false,
+    "sortOrder": 5,
+    "dateRule": null
+  },
+  {
+    "code": "run",
+    "category": "MOVEMENT",
+    "icon": "🤸",
+    "titleI18n": {
+      "vi": "Chạy",
+      "en": "Running"
+    },
+    "promptI18n": {
+      "vi": "Ai ở đó? Con phản ứng thế nào? Bố mẹ cảm thấy gì?",
+      "en": "Who was there? How did your child react? How did you feel?"
+    },
+    "isTraditional": false,
+    "sortOrder": 6,
+    "dateRule": null
+  },
+  {
+    "code": "two_words",
+    "category": "LANGUAGE",
+    "icon": "🗣",
+    "titleI18n": {
+      "vi": "Nói câu 2 từ",
+      "en": "Two-word sentences"
+    },
+    "promptI18n": {
+      "vi": "Ai ở đó? Con phản ứng thế nào? Bố mẹ cảm thấy gì?",
+      "en": "Who was there? How did your child react? How did you feel?"
+    },
+    "isTraditional": false,
+    "sortOrder": 7,
+    "dateRule": null
+  },
+  {
+    "code": "positive_test",
+    "category": "PREGNANCY",
+    "icon": "🤰",
+    "titleI18n": {
+      "vi": "Que 2 vạch",
+      "en": "Positive test"
+    },
+    "promptI18n": {
+      "vi": "Ai ở đó? Con phản ứng thế nào? Bố mẹ cảm thấy gì?",
+      "en": "Who was there? How did your child react? How did you feel?"
+    },
+    "isTraditional": false,
+    "sortOrder": 8,
+    "dateRule": null
+  },
+  {
+    "code": "heartbeat",
+    "category": "PREGNANCY",
+    "icon": "🤰",
+    "titleI18n": {
+      "vi": "Nghe tim thai",
+      "en": "First heartbeat"
+    },
+    "promptI18n": {
+      "vi": "Ai ở đó? Con phản ứng thế nào? Bố mẹ cảm thấy gì?",
+      "en": "Who was there? How did your child react? How did you feel?"
+    },
+    "isTraditional": false,
+    "sortOrder": 9,
+    "dateRule": null
+  },
+  {
+    "code": "first_kick",
+    "category": "PREGNANCY",
+    "icon": "🤰",
+    "titleI18n": {
+      "vi": "Bé đạp",
+      "en": "First kick"
+    },
+    "promptI18n": {
+      "vi": "Ai ở đó? Con phản ứng thế nào? Bố mẹ cảm thấy gì?",
+      "en": "Who was there? How did your child react? How did you feel?"
+    },
+    "isTraditional": false,
+    "sortOrder": 10,
+    "dateRule": null
+  },
+  {
+    "code": "gender_reveal",
+    "category": "PREGNANCY",
+    "icon": "🤰",
+    "titleI18n": {
+      "vi": "Biết giới tính",
+      "en": "Gender reveal"
+    },
+    "promptI18n": {
+      "vi": "Ai ở đó? Con phản ứng thế nào? Bố mẹ cảm thấy gì?",
+      "en": "Who was there? How did your child react? How did you feel?"
+    },
+    "isTraditional": false,
+    "sortOrder": 11,
+    "dateRule": null
+  },
+  {
+    "code": "name_chosen",
+    "category": "PREGNANCY",
+    "icon": "🤰",
+    "titleI18n": {
+      "vi": "Chọn được tên",
+      "en": "Name chosen"
+    },
+    "promptI18n": {
+      "vi": "Ai ở đó? Con phản ứng thế nào? Bố mẹ cảm thấy gì?",
+      "en": "Who was there? How did your child react? How did you feel?"
+    },
+    "isTraditional": false,
+    "sortOrder": 12,
+    "dateRule": null
+  },
+  {
+    "code": "full_month",
+    "category": "TRADITIONAL",
+    "icon": "🇻🇳",
+    "titleI18n": {
+      "vi": "Đầy tháng",
+      "en": "One month celebration"
+    },
+    "promptI18n": {
+      "vi": "Cả nhà đã cùng con đón ngày này như thế nào?",
+      "en": "How did your family celebrate this day together?"
+    },
+    "isTraditional": true,
+    "sortOrder": 13,
+    "dateRule": {
+      "type": "BIRTH_MONTHS",
+      "months": 1
+    }
+  },
+  {
+    "code": "hundred_days",
+    "category": "TRADITIONAL",
+    "icon": "🇻🇳",
+    "titleI18n": {
+      "vi": "100 ngày",
+      "en": "One hundred days"
+    },
+    "promptI18n": {
+      "vi": "Cả nhà đã cùng con đón ngày này như thế nào?",
+      "en": "How did your family celebrate this day together?"
+    },
+    "isTraditional": true,
+    "sortOrder": 14,
+    "dateRule": {
+      "type": "BIRTH_DAYS",
+      "days": 100
+    }
+  },
+  {
+    "code": "first_birthday",
+    "category": "TRADITIONAL",
+    "icon": "🇻🇳",
+    "titleI18n": {
+      "vi": "Thôi nôi",
+      "en": "First birthday celebration"
+    },
+    "promptI18n": {
+      "vi": "Cả nhà đã cùng con đón ngày này như thế nào?",
+      "en": "How did your family celebrate this day together?"
+    },
+    "isTraditional": true,
+    "sortOrder": 15,
+    "dateRule": {
+      "type": "BIRTH_MONTHS",
+      "months": 12
+    }
+  },
+  {
+    "code": "first_tet",
+    "category": "TRADITIONAL",
+    "icon": "🇻🇳",
+    "titleI18n": {
+      "vi": "Tết đầu tiên",
+      "en": "First Tet"
+    },
+    "promptI18n": {
+      "vi": "Cả nhà đã cùng con đón ngày này như thế nào?",
+      "en": "How did your family celebrate this day together?"
+    },
+    "isTraditional": true,
+    "sortOrder": 16,
+    "dateRule": {
+      "type": "LUNAR_FESTIVAL",
+      "month": 1,
+      "day": 1
+    }
+  },
+  {
+    "code": "first_mid_autumn",
+    "category": "TRADITIONAL",
+    "icon": "🇻🇳",
+    "titleI18n": {
+      "vi": "Trung thu đầu tiên",
+      "en": "First Mid-Autumn Festival"
+    },
+    "promptI18n": {
+      "vi": "Cả nhà đã cùng con đón ngày này như thế nào?",
+      "en": "How did your family celebrate this day together?"
+    },
+    "isTraditional": true,
+    "sortOrder": 17,
+    "dateRule": {
+      "type": "LUNAR_FESTIVAL",
+      "month": 8,
+      "day": 15
+    }
+  },
+  {
+    "code": "first_hair_cut",
+    "category": "TRADITIONAL",
+    "icon": "🇻🇳",
+    "titleI18n": {
+      "vi": "Cắt tóc máu",
+      "en": "First traditional haircut"
+    },
+    "promptI18n": {
+      "vi": "Cả nhà đã cùng con đón ngày này như thế nào?",
+      "en": "How did your family celebrate this day together?"
+    },
+    "isTraditional": true,
+    "sortOrder": 18,
+    "dateRule": null
+  },
+  {
+    "code": "first_hometown",
+    "category": "TRADITIONAL",
+    "icon": "🇻🇳",
+    "titleI18n": {
+      "vi": "Lần đầu về quê",
+      "en": "First hometown visit"
+    },
+    "promptI18n": {
+      "vi": "Cả nhà đã cùng con đón ngày này như thế nào?",
+      "en": "How did your family celebrate this day together?"
+    },
+    "isTraditional": true,
+    "sortOrder": 19,
+    "dateRule": null
+  },
+  {
+    "code": "birth",
+    "category": "TRADITIONAL",
+    "icon": "🇻🇳",
+    "titleI18n": {
+      "vi": "Chào đời",
+      "en": "Birth"
+    },
+    "promptI18n": {
+      "vi": "Cả nhà đã cùng con đón ngày này như thế nào?",
+      "en": "How did your family celebrate this day together?"
+    },
+    "isTraditional": true,
+    "sortOrder": 20,
+    "dateRule": {
+      "type": "BIRTH_MONTHS",
+      "months": 0
+    }
+  },
+  {
+    "code": "first_haircut",
+    "category": "TRADITIONAL",
+    "icon": "🇻🇳",
+    "titleI18n": {
+      "vi": "Cắt tóc máu",
+      "en": "First haircut"
+    },
+    "promptI18n": {
+      "vi": "Cả nhà đã cùng con đón ngày này như thế nào?",
+      "en": "How did your family celebrate this day together?"
+    },
+    "isTraditional": true,
+    "sortOrder": 21,
+    "dateRule": null
+  },
+  {
+    "code": "visit_paternal",
+    "category": "TRADITIONAL",
+    "icon": "🇻🇳",
+    "titleI18n": {
+      "vi": "Lần đầu về quê nội",
+      "en": "First visit to dad's hometown"
+    },
+    "promptI18n": {
+      "vi": "Cả nhà đã cùng con đón ngày này như thế nào?",
+      "en": "How did your family celebrate this day together?"
+    },
+    "isTraditional": true,
+    "sortOrder": 22,
+    "dateRule": null
+  },
+  {
+    "code": "visit_maternal",
+    "category": "TRADITIONAL",
+    "icon": "🇻🇳",
+    "titleI18n": {
+      "vi": "Lần đầu về quê ngoại",
+      "en": "First visit to mum's hometown"
+    },
+    "promptI18n": {
+      "vi": "Cả nhà đã cùng con đón ngày này như thế nào?",
+      "en": "How did your family celebrate this day together?"
+    },
+    "isTraditional": true,
+    "sortOrder": 23,
+    "dateRule": null
+  }
+]

@@ -1,5 +1,6 @@
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/enum.dart';
+import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
@@ -57,7 +58,7 @@ class MemoryThumb extends StatelessWidget {
       child = Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(image, fit: BoxFit.cover),
+          Image(image: mediaImageProvider(image), fit: BoxFit.cover),
           if (extraCount > 0)
             Positioned(
               right: AppSpacing.s1,

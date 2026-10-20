@@ -7,11 +7,14 @@ import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
+import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:baby_family/utils/helper/memory_text.dart';
 import 'package:baby_family/utils/helper/plan_text.dart';
+import 'package:baby_family/utils/helper/server_error_message.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_action_top_bar.dart';
+import 'package:baby_family/utils/widget/app_toggle_row.dart';
 import 'package:baby_family/utils/widget/base_scaffold.dart';
 import 'package:baby_family/utils/widget/child_avatar.dart';
 import 'package:baby_family/utils/widget/loading_progress.dart';
@@ -20,6 +23,7 @@ import 'package:baby_family/utils/widget/plan_limit_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
 
 part '../widgets/caption_box.dart';
@@ -32,21 +36,32 @@ part '../widgets/voice_recorder.dart';
 /// MEM-13, thư MEM-14, cột mốc, ghi âm, kỷ vật, ảnh tháng) dùng cùng ngôn ngữ
 /// hình ảnh với trường theo tài liệu 9.4.
 class MemoryComposerMobileView extends HookConsumerWidget {
-  const MemoryComposerMobileView({this.kind, this.childId, super.key});
+  const MemoryComposerMobileView({
+    this.kind,
+    this.childId,
+    this.memoryId,
+    super.key,
+  });
 
   final String? kind;
   final String? childId;
+
+  /// MEM-09: sửa ký ức này (null = soạn mới).
+  final String? memoryId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = ref.watch(memoryComposerControllerProvider);
     useEffect(() {
-      Future.microtask(() => controller.init(kind, childId));
+      Future.microtask(
+        () => controller.init(kind, childId, memoryId: memoryId),
+      );
       return null;
     }, const []);
     final l10n = context.l10n;
     final type = controller.kind;
     final title = switch (type) {
+      _ when controller.isEditing => l10n.memEditTitle,
       MemoryKind.diary => l10n.memComposerDiary,
       MemoryKind.letter => l10n.commonLetter,
       MemoryKind.milestone => l10n.memComposerMilestone,
@@ -60,10 +75,19 @@ class MemoryComposerMobileView extends HookConsumerWidget {
     };
     Future<void> save() async {
       final saved = await controller.save();
+      final error = controller.saveError;
+      if (saved == null && error != null && context.mounted) {
+        showAppSnackBar(context, actionErrorMessage(error));
+        return;
+      }
       if (saved != null && context.mounted) {
-        ScaffoldMessenger.maybeOf(
-          context,
-        )?.showSnackBar(SnackBar(content: Text(l10n.memoriesSaved)));
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          SnackBar(
+            content: Text(
+              controller.isEditing ? l10n.memEditSaved : l10n.memoriesSaved,
+            ),
+          ),
+        );
         await context.router.maybePop(true);
       }
     }
@@ -119,22 +143,33 @@ class MemoryComposerMobileView extends HookConsumerWidget {
   ) {
     final l10n = context.l10n;
     final type = controller.kind;
+    final editing = controller.isEditing;
     final sections = <Widget>[
-      if (type == MemoryKind.voice) _VoiceRecorder(controller: controller),
-      if (controller.hasMedia)
+      if (editing && !controller.canEditContent)
+        _hint(context, LucideIcons.lock, l10n.memEditAuthorOnlyHint),
+      if (type == MemoryKind.voice && !editing)
+        _VoiceRecorder(controller: controller),
+      if (controller.hasMedia &&
+          (!editing || controller.mediaAssets.isNotEmpty))
         _MediaStrip(
           controller: controller,
-          onAdd: () => _pickMedia(context, controller),
+          onAdd: controller.canEditMedia
+              ? () => _pickMedia(context, controller)
+              : null,
         ),
+      if (editing && controller.hasMedia && !controller.canEditMedia)
+        _hint(context, LucideIcons.images, l10n.memEditMediaHint),
       _CaptionBox(controller: controller),
       _kids(context, controller),
       _ComposerRow(
         icon: LucideIcons.calendar,
         label: l10n.memoriesDate,
         value: memoryDayLabel(l10n, controller.occurredAt, controller.today),
-        onTap: () => _pickDate(context, controller),
+        onTap: controller.canEditContent
+            ? () => _pickDate(context, controller)
+            : null,
       ),
-      if (type == MemoryKind.letter)
+      if (type == MemoryKind.letter && !editing)
         _ComposerRow(
           icon: LucideIcons.mailOpen,
           label: l10n.memLetterOpenDate,
@@ -155,20 +190,30 @@ class MemoryComposerMobileView extends HookConsumerWidget {
           final value = await showMemoryVisibilitySheet(
             context,
             current: controller.visibility,
+            options: controller.visibilityOptions,
           );
           if (value != null) {
             controller.setVisibility(value);
           }
         },
       ),
-      if (type == MemoryKind.photo || type == MemoryKind.milestone)
+      if (editing && controller.canEditContent)
+        AppToggleRow(
+          icon: LucideIcons.messageCircle,
+          title: l10n.memCommentsAllow,
+          subtitle: l10n.memCommentsAllowHint,
+          value: controller.commentsEnabled,
+          onChanged: controller.setCommentsEnabled,
+        ),
+      if ((type == MemoryKind.photo || type == MemoryKind.milestone) &&
+          !editing)
         _ComposerRow(
           icon: LucideIcons.star,
           label: l10n.memoriesMarkMilestone,
           value: controller.milestoneTitle ?? l10n.memChooseMilestone,
           onTap: () => _pickMilestone(context, controller),
         ),
-      if (type == MemoryKind.photo)
+      if (type == MemoryKind.photo && !editing)
         _ComposerRow(
           icon: LucideIcons.folderHeart,
           label: l10n.memoriesAlbum,
@@ -200,6 +245,25 @@ class MemoryComposerMobileView extends HookConsumerWidget {
       ],
     ];
   }
+
+  /// Dòng ghi chú nhỏ (icon 16 + chữ `small`) — MEM-09 giải thích trường bị khoá.
+  Widget _hint(BuildContext context, IconData icon, String text) => Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Icon(
+        icon,
+        size: 16,
+        color: AppColors.resolve(context, kColorTextSecondary6B625B),
+      ),
+      const SizedBox(width: AppSpacing.s2),
+      Expanded(
+        child: Text(
+          text,
+          style: AppTypography.adapt(context, AppTypography.small),
+        ),
+      ),
+    ],
+  );
 
   Widget _kids(BuildContext context, MemoryComposerController controller) {
     final l10n = context.l10n;
@@ -266,15 +330,42 @@ class MemoryComposerMobileView extends HookConsumerWidget {
     controller.setSealedUntil(value);
   }
 
-  /// Ô “+” (bản mẫu: luôn chọn một video dài [kValueMockPickedVideoMinutes]
-  /// phút). Dài hơn giới hạn của gói → SUB-05: cắt ngắn, chọn video khác, lưu
-  /// dạng nhật ký chữ (MEM-13) hoặc nâng cấp (SUB-04/SUB-01).
+  /// Ô “+”. Chế độ server: photo picker hệ thống (MEM-04 — không xin quyền
+  /// toàn bộ thư viện), ảnh thu nhỏ về JPEG trước khi tải lên. Bản mẫu: luôn
+  /// chọn một video dài [kValueMockPickedVideoMinutes] phút; dài hơn giới hạn
+  /// của gói → SUB-05: cắt ngắn, chọn video khác, lưu dạng nhật ký chữ
+  /// (MEM-13) hoặc nâng cấp (SUB-04/SUB-01).
   Future<void> _pickMedia(
     BuildContext context,
     MemoryComposerController controller,
   ) async {
+    if (kValueUseRemoteSession) {
+      // Ảnh và video (MEM-04); video dài hơn giới hạn của gói không được thêm
+      // mà hiện SUB-05 như bản mẫu.
+      final picked = await ImagePicker().pickMultipleMedia(
+        maxWidth: kValueUploadImageMaxSide,
+        maxHeight: kValueUploadImageMaxSide,
+        imageQuality: kValueUploadImageQuality,
+      );
+      final (:accepted, :tooLongMinutes) = await controller.screenPicked([
+        for (final file in picked) file.path,
+      ]);
+      controller.addMedia(accepted);
+      if (tooLongMinutes != null && context.mounted) {
+        await _showVideoLimit(context, controller, tooLongMinutes);
+      }
+      return;
+    }
+    await _showVideoLimit(context, controller, kValueMockPickedVideoMinutes);
+  }
+
+  /// SUB-05 video dài [minutes] phút vượt giới hạn của gói.
+  Future<void> _showVideoLimit(
+    BuildContext context,
+    MemoryComposerController controller,
+    int minutes,
+  ) async {
     final limit = await controller.videoLimit();
-    const minutes = kValueMockPickedVideoMinutes;
     if (!context.mounted || minutes <= limit.maxMinutes) {
       return;
     }

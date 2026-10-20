@@ -102,6 +102,10 @@ class _ThanksNoteCard extends StatelessWidget {
               ],
             ),
           ],
+          if (controller.awaitsMyShareDecision(item)) ...[
+            const SizedBox(height: AppSpacing.s2),
+            _ThanksShareDecision(item: item, controller: controller),
+          ],
           const SizedBox(height: AppSpacing.s2),
           Row(
             children: [
@@ -176,6 +180,55 @@ class _ThanksNoteCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Bạn đời đề nghị đăng lời cảm ơn thành khoảnh khắc gia đình: người nhận
+/// “Đăng cho cả nhà” (tạo ký ức) hoặc “Để riêng hai mình”.
+class _ThanksShareDecision extends StatelessWidget {
+  const _ThanksShareDecision({required this.item, required this.controller});
+
+  final Thanks item;
+  final ThanksWallController controller;
+
+  Future<void> _respond(BuildContext context, {required bool approve}) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final failed = context.l10n.usThanksShareFailed;
+    final ok = await controller.respondShare(item, approve: approve);
+    if (!ok) {
+      messenger.showSnackBar(SnackBar(content: Text(failed)));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          l10n.usThanksShareAsk(controller.partner?.callName ?? ''),
+          style: AppTypography.adapt(
+            context,
+            AppTypography.tiny.copyWith(color: kColorTextSecondary6B625B),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.s1),
+        AppButton.us(
+          label: l10n.usThanksShareApprove,
+          height: 32,
+          fontSize: 12,
+          horizontalPadding: AppSpacing.s2,
+          onPressed: () => _respond(context, approve: true),
+        ),
+        AppButton.text(
+          label: l10n.usThanksShareKeep,
+          height: 28,
+          fontSize: 12,
+          onPressed: () => _respond(context, approve: false),
+        ),
+      ],
     );
   }
 }

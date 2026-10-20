@@ -185,6 +185,7 @@ class MissionCreateController extends BaseNotifier {
         date: today.add(Duration(days: tomorrow ? 1 : 0)),
         dueTime: dueTime,
         repeat: repeat,
+        repeatDays: repeatDays,
         reminder: reminder,
         icon: icon,
       ),

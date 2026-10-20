@@ -7,6 +7,7 @@ import 'package:baby_family/data/service/session.dart';
 import 'package:baby_family/page/application_base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
+import 'package:baby_family/utils/helper/server_error_message.dart';
 import 'package:hooks_riverpod/legacy.dart';
 
 /// INV-01 — xem lời mời: biến thể bạn đời (gTSrl, chọn tên gọi) hoặc người
@@ -88,14 +89,55 @@ class InvitePreviewController extends BaseNotifier {
 
   Future<void> accept() async {
     final invite = data?.invite;
-    await whileLoading(() async {
-      await sessionService.acceptInvite(
-        invite?.code ?? code ?? '',
-        callName: isPartner && callName.trim().isNotEmpty
-            ? callName.trim()
-            : null,
+    try {
+      await whileLoading(() async {
+        await sessionService.acceptInvite(
+          invite?.code ?? code ?? '',
+          callName: isPartner && callName.trim().isNotEmpty
+              ? callName.trim()
+              : null,
+        );
+      });
+    } on Object catch (error) {
+      // Lời mời đổi trạng thái sau khi xem trước → chuyển đúng màn INV-02/03
+      // thay vì chỉ báo lỗi.
+      final current = data;
+      switch (serverErrorCode(error)) {
+        case 'INVITE_EXPIRED' || 'INVITE_ALREADY_USED':
+          if (!isDisposed) {
+            invalid = true;
+            notifyListeners();
+          }
+          return;
+        case 'ALREADY_PARENT_OF_ANOTHER_FAMILY' when current != null:
+          if (!isDisposed) {
+            data = InvitePreviewData(
+              invite: current.invite,
+              children: current.children,
+              hiddenChildren: current.hiddenChildren,
+              state: InvitePreviewState.alreadyParent,
+              currentFamilyName: current.currentFamilyName,
+              currentCallName: current.currentCallName,
+            );
+            notifyListeners();
+          }
+          return;
+      }
+      rethrow;
+    }
+    // 7.3 bước 6: người mời xác nhận lần cuối → INV-04 (chờ xác nhận).
+    final current = data;
+    if (!isDisposed &&
+        current != null &&
+        sessionService.awaitingPartnerApproval) {
+      data = InvitePreviewData(
+        invite: current.invite,
+        children: current.children,
+        hiddenChildren: current.hiddenChildren,
+        state: InvitePreviewState.waitingConfirm,
       );
-    });
+      notifyListeners();
+    }
   }
 
   Future<void> decline() async {

@@ -408,6 +408,13 @@ void main() {
       expect(find.text('Tài khoản chờ xoá 30 ngày — đến 06/11/2026'), findsOne);
       await _tap(tester, find.text('Tiếp tục với Apple'));
       expect(find.text('Đã xác thực · lan•••@icloud.com'), findsOneWidget);
+      // Chưa tích xác nhận → nút xoá chưa bật.
+      await _tap(tester, find.text('Xoá tài khoản'));
+      expect(router.topRoute.name, DeleteAccountRoute.name);
+      await _tap(
+        tester,
+        find.text('Tôi đã hiểu và muốn xoá tài khoản của mình'),
+      );
       await _tap(tester, find.text('Xoá tài khoản'));
       expect(router.topRoute.name, WelcomeRoute.name);
     });

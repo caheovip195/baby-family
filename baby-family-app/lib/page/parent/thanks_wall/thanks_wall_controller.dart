@@ -75,4 +75,19 @@ class ThanksWallController extends BaseNotifier {
     await usService.toggleThanksHeart(item.id);
     await load();
   }
+
+  /// Lời cảm ơn bạn đời gửi tôi kèm đề nghị đăng lên gia đình.
+  bool awaitsMyShareDecision(Thanks item) =>
+      item.shareRequested && item.toUserId == myUserId;
+
+  /// Duyệt / để riêng đề nghị đăng; `false` khi lỗi (view báo lại).
+  Future<bool> respondShare(Thanks item, {required bool approve}) async {
+    try {
+      await usService.respondThanksShare(item.id, approve: approve);
+    } on Object {
+      return false;
+    }
+    await load();
+    return true;
+  }
 }

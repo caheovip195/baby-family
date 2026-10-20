@@ -23,7 +23,8 @@ class _PastMemoryCard extends StatelessWidget {
       if (hearts > 0) '❤️ $hearts',
       if (memory.commentCount > 0) '💬 ${memory.commentCount}',
     ].join('  ');
-    Widget photo(String asset) => Image.asset(asset, fit: BoxFit.cover);
+    Widget photo(String asset) =>
+        Image(image: mediaImageProvider(asset), fit: BoxFit.cover);
     final Widget? media = switch (assets.length) {
       0 => null,
       1 || 2 => SizedBox(height: 210, child: photo(assets.first)),

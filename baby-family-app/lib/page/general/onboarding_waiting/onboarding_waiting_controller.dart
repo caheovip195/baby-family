@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:baby_family/data/model/family/family.dart';
 import 'package:baby_family/data/model/family/invite_info.dart';
 import 'package:baby_family/data/provider/family.dart';
@@ -12,7 +14,8 @@ import 'package:hooks_riverpod/legacy.dart';
 import 'package:share_plus/share_plus.dart';
 
 /// ONB-WAIT — chờ bạn đời: trạng thái lời mời, gửi lại, hiện QR, huỷ gia đình.
-/// Bản mock: “Mô phỏng bạn đời tham gia” → ONB-ACT.
+/// Bản mock: “Mô phỏng bạn đời tham gia” → ONB-ACT. Bản server: hỏi trạng thái
+/// mỗi 30 giây (tài liệu kỹ thuật 23.1) và xin xác nhận lần cuối (7.3 bước 6).
 final onboardingWaitingControllerProvider =
     ChangeNotifierProvider.autoDispose<OnboardingWaitingController>(
       OnboardingWaitingController.new,
@@ -21,7 +24,25 @@ final onboardingWaitingControllerProvider =
 class OnboardingWaitingController extends BaseNotifier {
   OnboardingWaitingController(super.ref) {
     load();
+    if (usesServer) {
+      _poll = Timer.periodic(
+        kValuePartnerStatusPollInterval,
+        (_) => checkStatus(),
+      );
+      checkStatus();
+    }
   }
+
+  Timer? _poll;
+
+  /// Đăng nhập/onboarding qua server thật — ẩn các nút mô phỏng.
+  bool get usesServer => sessionService.usesServer;
+
+  /// Bạn đời đã tham gia → view chuyển ONB-ACT.
+  bool joined = false;
+
+  /// Tên gọi người vừa nhận lời mời, chờ xác nhận lần cuối.
+  String? approvalCallName;
 
   ISessionService get sessionService => ref.read(sessionServiceProvider);
 
@@ -89,10 +110,49 @@ class OnboardingWaitingController extends BaseNotifier {
     });
   }
 
-  Future<void> simulateJoined() async {
+  /// Mock: mô phỏng bạn đời tham gia. Server: hỏi trạng thái ngay.
+  /// Trả `true` khi đã có thể sang ONB-ACT.
+  Future<bool> simulateJoined() async {
+    if (usesServer) {
+      await checkStatus();
+      return joined;
+    }
     await whileLoading(() async {
       await sessionService.simulatePartnerJoined();
     });
+    return true;
+  }
+
+  Future<void> checkStatus() async {
+    try {
+      _apply(await sessionService.checkPartnerStatus());
+    } on Object catch (error) {
+      debugPrint('partner status failed: $error');
+    }
+  }
+
+  /// 7.3 bước 6 — đồng ý / không phải người này.
+  Future<void> decide({required bool approve}) async {
+    await whileLoading(() async {
+      _apply(await sessionService.decidePartner(approve: approve));
+    });
+  }
+
+  void _apply(PartnerJoinStatus status) {
+    if (isDisposed) {
+      return;
+    }
+    joined = status == PartnerJoinStatus.joined;
+    approvalCallName = status == PartnerJoinStatus.awaitingApproval
+        ? (sessionService.pendingPartnerCallName ?? partnerCallName)
+        : null;
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _poll?.cancel();
+    super.dispose();
   }
 
   Future<void> cancelFamily() async {

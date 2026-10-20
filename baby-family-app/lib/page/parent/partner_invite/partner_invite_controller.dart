@@ -117,5 +117,6 @@ class PartnerInviteController extends BaseNotifier {
       return;
     }
     await familyService.revokeInvite(value.id);
+    await sessionService.revokePartnerInvite();
   }
 }

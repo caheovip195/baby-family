@@ -6,6 +6,7 @@ import 'package:baby_family/page/general/invite_preview/invite_preview_controlle
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
 import 'package:baby_family/utils/helper/parent_color.dart';
 import 'package:baby_family/utils/helper/person_name.dart';
@@ -107,8 +108,12 @@ class InvitePreviewMobileView extends HookConsumerWidget {
           isLoading: controller.isLoading,
           onPressed: () async {
             final signedIn = controller.signedIn;
-            await controller.accept();
-            if (!context.mounted) {
+            if (!await runWithErrorSnackBar(context, controller.accept) ||
+                !context.mounted) {
+              return;
+            }
+            // INV-04: đã nhận, chờ người mời xác nhận lần cuối — ở lại màn này.
+            if (controller.state == InvitePreviewState.waitingConfirm) {
               return;
             }
             if (signedIn) {

@@ -1,0 +1,48 @@
+[
+  {
+    "code": "pr-quote",
+    "stage": "CHILD",
+    "minAgeDays": 365,
+    "maxAgeDays": null,
+    "targetKind": "QUOTE",
+    "textI18n": {
+      "vi": "Câu nào của {child} hôm nay làm bạn bật cười?",
+      "en": "What did {child} say today that made you smile?"
+    },
+    "weight": 20,
+    "version": 1
+  },
+  {
+    "code": "diary-01",
+    "stage": "CHILD",
+    "targetKind": "DIARY",
+    "textI18n": {
+      "vi": "Câu nào của con làm bạn bật cười?",
+      "en": "What did your child say that made you laugh?"
+    },
+    "weight": 10,
+    "version": 1
+  },
+  {
+    "code": "diary-02",
+    "stage": "CHILD",
+    "targetKind": "DIARY",
+    "textI18n": {
+      "vi": "Món con thích nhất dạo này?",
+      "en": "Their favourite food lately?"
+    },
+    "weight": 10,
+    "version": 1
+  },
+  {
+    "code": "diary-03",
+    "stage": "CHILD",
+    "targetKind": "DIARY",
+    "textI18n": {
+      "vi": "Hôm nay con vui vì điều gì?",
+      "en": "What made them happy today?"
+    },
+    "weight": 10,
+    "version": 1
+  }
+]

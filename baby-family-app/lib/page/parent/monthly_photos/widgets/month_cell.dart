@@ -27,7 +27,7 @@ class _MonthCell extends StatelessWidget {
       content = Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(asset, fit: BoxFit.cover),
+          Image(image: mediaImageProvider(asset), fit: BoxFit.cover),
           Positioned(
             left: 6,
             bottom: 6,

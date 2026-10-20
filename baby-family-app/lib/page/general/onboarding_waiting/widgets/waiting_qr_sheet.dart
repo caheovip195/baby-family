@@ -3,10 +3,12 @@ part of '../mobile/onboarding_waiting_mobile_view.dart';
 /// Sheet “Hiện mã QR”: QR 148 + mã mời để bạn đời quét khi ngồi cạnh; bản mock
 /// có nút “Mô phỏng bạn đời tham gia”.
 class _WaitingQrSheet extends StatelessWidget {
-  const _WaitingQrSheet({required this.code, required this.onSimulate});
+  const _WaitingQrSheet({required this.code, this.onSimulate});
 
   final String code;
-  final VoidCallback onSimulate;
+
+  /// Chỉ bản mock: “Mô phỏng bạn đời tham gia”.
+  final VoidCallback? onSimulate;
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +39,11 @@ class _WaitingQrSheet extends StatelessWidget {
             AppTypography.h1.copyWith(fontSize: 24, letterSpacing: 2),
           ),
         ),
-        AppButton.secondary(
-          label: l10n.onboardingActivateDemo,
-          onPressed: onSimulate,
-        ),
+        if (onSimulate != null)
+          AppButton.secondary(
+            label: l10n.onboardingActivateDemo,
+            onPressed: onSimulate,
+          ),
       ],
     );
   }

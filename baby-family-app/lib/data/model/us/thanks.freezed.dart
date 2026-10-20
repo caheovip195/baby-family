@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Thanks {
 
-@JsonKey(name: 'id') String get id;@JsonKey(name: 'fromUserId') String get fromUserId;@JsonKey(name: 'toUserId') String get toUserId;@JsonKey(name: 'body') String get body;@JsonKey(name: 'sticker') String? get sticker;@JsonKey(name: 'missionId') String? get missionId;@JsonKey(name: 'memoryId') String? get memoryId;@JsonKey(name: 'createdAt') DateTime get createdAt;@JsonKey(name: 'postedToFamily') bool get postedToFamily;/// Icon Lucide của thẻ trên bức tường cảm ơn (US-06).
+@JsonKey(name: 'id') String get id;@JsonKey(name: 'fromUserId') String get fromUserId;@JsonKey(name: 'toUserId') String get toUserId;@JsonKey(name: 'body') String get body;@JsonKey(name: 'sticker') String? get sticker;@JsonKey(name: 'missionId') String? get missionId;@JsonKey(name: 'memoryId') String? get memoryId;@JsonKey(name: 'createdAt') DateTime get createdAt;@JsonKey(name: 'postedToFamily') bool get postedToFamily;/// Người gửi đề nghị đăng thành khoảnh khắc gia đình, chờ bạn đời duyệt.
+@JsonKey(name: 'shareRequested') bool get shareRequested;/// Icon Lucide của thẻ trên bức tường cảm ơn (US-06).
 @JsonKey(name: 'icon') String? get icon;/// Tên việc/ký ức được gắn (“Thư gửi Hana”).
 @JsonKey(name: 'linkedTitle') String? get linkedTitle;/// Ai đã thả tim lời cảm ơn này.
 @JsonKey(name: 'reactedByUserIds') List<String> get reactedByUserIds;
@@ -31,16 +32,16 @@ $ThanksCopyWith<Thanks> get copyWith => _$ThanksCopyWithImpl<Thanks>(this as Tha
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Thanks&&(identical(other.id, id) || other.id == id)&&(identical(other.fromUserId, fromUserId) || other.fromUserId == fromUserId)&&(identical(other.toUserId, toUserId) || other.toUserId == toUserId)&&(identical(other.body, body) || other.body == body)&&(identical(other.sticker, sticker) || other.sticker == sticker)&&(identical(other.missionId, missionId) || other.missionId == missionId)&&(identical(other.memoryId, memoryId) || other.memoryId == memoryId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.postedToFamily, postedToFamily) || other.postedToFamily == postedToFamily)&&(identical(other.icon, icon) || other.icon == icon)&&(identical(other.linkedTitle, linkedTitle) || other.linkedTitle == linkedTitle)&&const DeepCollectionEquality().equals(other.reactedByUserIds, reactedByUserIds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Thanks&&(identical(other.id, id) || other.id == id)&&(identical(other.fromUserId, fromUserId) || other.fromUserId == fromUserId)&&(identical(other.toUserId, toUserId) || other.toUserId == toUserId)&&(identical(other.body, body) || other.body == body)&&(identical(other.sticker, sticker) || other.sticker == sticker)&&(identical(other.missionId, missionId) || other.missionId == missionId)&&(identical(other.memoryId, memoryId) || other.memoryId == memoryId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.postedToFamily, postedToFamily) || other.postedToFamily == postedToFamily)&&(identical(other.shareRequested, shareRequested) || other.shareRequested == shareRequested)&&(identical(other.icon, icon) || other.icon == icon)&&(identical(other.linkedTitle, linkedTitle) || other.linkedTitle == linkedTitle)&&const DeepCollectionEquality().equals(other.reactedByUserIds, reactedByUserIds));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,fromUserId,toUserId,body,sticker,missionId,memoryId,createdAt,postedToFamily,icon,linkedTitle,const DeepCollectionEquality().hash(reactedByUserIds));
+int get hashCode => Object.hash(runtimeType,id,fromUserId,toUserId,body,sticker,missionId,memoryId,createdAt,postedToFamily,shareRequested,icon,linkedTitle,const DeepCollectionEquality().hash(reactedByUserIds));
 
 @override
 String toString() {
-  return 'Thanks(id: $id, fromUserId: $fromUserId, toUserId: $toUserId, body: $body, sticker: $sticker, missionId: $missionId, memoryId: $memoryId, createdAt: $createdAt, postedToFamily: $postedToFamily, icon: $icon, linkedTitle: $linkedTitle, reactedByUserIds: $reactedByUserIds)';
+  return 'Thanks(id: $id, fromUserId: $fromUserId, toUserId: $toUserId, body: $body, sticker: $sticker, missionId: $missionId, memoryId: $memoryId, createdAt: $createdAt, postedToFamily: $postedToFamily, shareRequested: $shareRequested, icon: $icon, linkedTitle: $linkedTitle, reactedByUserIds: $reactedByUserIds)';
 }
 
 
@@ -51,7 +52,7 @@ abstract mixin class $ThanksCopyWith<$Res>  {
   factory $ThanksCopyWith(Thanks value, $Res Function(Thanks) _then) = _$ThanksCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'fromUserId') String fromUserId,@JsonKey(name: 'toUserId') String toUserId,@JsonKey(name: 'body') String body,@JsonKey(name: 'sticker') String? sticker,@JsonKey(name: 'missionId') String? missionId,@JsonKey(name: 'memoryId') String? memoryId,@JsonKey(name: 'createdAt') DateTime createdAt,@JsonKey(name: 'postedToFamily') bool postedToFamily,@JsonKey(name: 'icon') String? icon,@JsonKey(name: 'linkedTitle') String? linkedTitle,@JsonKey(name: 'reactedByUserIds') List<String> reactedByUserIds
+@JsonKey(name: 'id') String id,@JsonKey(name: 'fromUserId') String fromUserId,@JsonKey(name: 'toUserId') String toUserId,@JsonKey(name: 'body') String body,@JsonKey(name: 'sticker') String? sticker,@JsonKey(name: 'missionId') String? missionId,@JsonKey(name: 'memoryId') String? memoryId,@JsonKey(name: 'createdAt') DateTime createdAt,@JsonKey(name: 'postedToFamily') bool postedToFamily,@JsonKey(name: 'shareRequested') bool shareRequested,@JsonKey(name: 'icon') String? icon,@JsonKey(name: 'linkedTitle') String? linkedTitle,@JsonKey(name: 'reactedByUserIds') List<String> reactedByUserIds
 });
 
 
@@ -68,7 +69,7 @@ class _$ThanksCopyWithImpl<$Res>
 
 /// Create a copy of Thanks
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? fromUserId = null,Object? toUserId = null,Object? body = null,Object? sticker = freezed,Object? missionId = freezed,Object? memoryId = freezed,Object? createdAt = null,Object? postedToFamily = null,Object? icon = freezed,Object? linkedTitle = freezed,Object? reactedByUserIds = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? fromUserId = null,Object? toUserId = null,Object? body = null,Object? sticker = freezed,Object? missionId = freezed,Object? memoryId = freezed,Object? createdAt = null,Object? postedToFamily = null,Object? shareRequested = null,Object? icon = freezed,Object? linkedTitle = freezed,Object? reactedByUserIds = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,fromUserId: null == fromUserId ? _self.fromUserId : fromUserId // ignore: cast_nullable_to_non_nullable
@@ -79,6 +80,7 @@ as String?,missionId: freezed == missionId ? _self.missionId : missionId // igno
 as String?,memoryId: freezed == memoryId ? _self.memoryId : memoryId // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,postedToFamily: null == postedToFamily ? _self.postedToFamily : postedToFamily // ignore: cast_nullable_to_non_nullable
+as bool,shareRequested: null == shareRequested ? _self.shareRequested : shareRequested // ignore: cast_nullable_to_non_nullable
 as bool,icon: freezed == icon ? _self.icon : icon // ignore: cast_nullable_to_non_nullable
 as String?,linkedTitle: freezed == linkedTitle ? _self.linkedTitle : linkedTitle // ignore: cast_nullable_to_non_nullable
 as String?,reactedByUserIds: null == reactedByUserIds ? _self.reactedByUserIds : reactedByUserIds // ignore: cast_nullable_to_non_nullable
@@ -162,7 +164,7 @@ return $default(_that);case _:
 
 @JsonSerializable(explicitToJson: true)
 class _Thanks implements Thanks {
-  const _Thanks({@JsonKey(name: 'id') required this.id, @JsonKey(name: 'fromUserId') required this.fromUserId, @JsonKey(name: 'toUserId') required this.toUserId, @JsonKey(name: 'body') this.body = '', @JsonKey(name: 'sticker') this.sticker, @JsonKey(name: 'missionId') this.missionId, @JsonKey(name: 'memoryId') this.memoryId, @JsonKey(name: 'createdAt') required this.createdAt, @JsonKey(name: 'postedToFamily') this.postedToFamily = false, @JsonKey(name: 'icon') this.icon, @JsonKey(name: 'linkedTitle') this.linkedTitle, @JsonKey(name: 'reactedByUserIds') final  List<String> reactedByUserIds = const []}): _reactedByUserIds = reactedByUserIds;
+  const _Thanks({@JsonKey(name: 'id') required this.id, @JsonKey(name: 'fromUserId') required this.fromUserId, @JsonKey(name: 'toUserId') required this.toUserId, @JsonKey(name: 'body') this.body = '', @JsonKey(name: 'sticker') this.sticker, @JsonKey(name: 'missionId') this.missionId, @JsonKey(name: 'memoryId') this.memoryId, @JsonKey(name: 'createdAt') required this.createdAt, @JsonKey(name: 'postedToFamily') this.postedToFamily = false, @JsonKey(name: 'shareRequested') this.shareRequested = false, @JsonKey(name: 'icon') this.icon, @JsonKey(name: 'linkedTitle') this.linkedTitle, @JsonKey(name: 'reactedByUserIds') final  List<String> reactedByUserIds = const []}): _reactedByUserIds = reactedByUserIds;
   factory _Thanks.fromJson(Map<String, dynamic> json) => _$ThanksFromJson(json);
 
 @override@JsonKey(name: 'id') final  String id;
@@ -174,6 +176,8 @@ class _Thanks implements Thanks {
 @override@JsonKey(name: 'memoryId') final  String? memoryId;
 @override@JsonKey(name: 'createdAt') final  DateTime createdAt;
 @override@JsonKey(name: 'postedToFamily') final  bool postedToFamily;
+/// Người gửi đề nghị đăng thành khoảnh khắc gia đình, chờ bạn đời duyệt.
+@override@JsonKey(name: 'shareRequested') final  bool shareRequested;
 /// Icon Lucide của thẻ trên bức tường cảm ơn (US-06).
 @override@JsonKey(name: 'icon') final  String? icon;
 /// Tên việc/ký ức được gắn (“Thư gửi Hana”).
@@ -201,16 +205,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Thanks&&(identical(other.id, id) || other.id == id)&&(identical(other.fromUserId, fromUserId) || other.fromUserId == fromUserId)&&(identical(other.toUserId, toUserId) || other.toUserId == toUserId)&&(identical(other.body, body) || other.body == body)&&(identical(other.sticker, sticker) || other.sticker == sticker)&&(identical(other.missionId, missionId) || other.missionId == missionId)&&(identical(other.memoryId, memoryId) || other.memoryId == memoryId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.postedToFamily, postedToFamily) || other.postedToFamily == postedToFamily)&&(identical(other.icon, icon) || other.icon == icon)&&(identical(other.linkedTitle, linkedTitle) || other.linkedTitle == linkedTitle)&&const DeepCollectionEquality().equals(other._reactedByUserIds, _reactedByUserIds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Thanks&&(identical(other.id, id) || other.id == id)&&(identical(other.fromUserId, fromUserId) || other.fromUserId == fromUserId)&&(identical(other.toUserId, toUserId) || other.toUserId == toUserId)&&(identical(other.body, body) || other.body == body)&&(identical(other.sticker, sticker) || other.sticker == sticker)&&(identical(other.missionId, missionId) || other.missionId == missionId)&&(identical(other.memoryId, memoryId) || other.memoryId == memoryId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.postedToFamily, postedToFamily) || other.postedToFamily == postedToFamily)&&(identical(other.shareRequested, shareRequested) || other.shareRequested == shareRequested)&&(identical(other.icon, icon) || other.icon == icon)&&(identical(other.linkedTitle, linkedTitle) || other.linkedTitle == linkedTitle)&&const DeepCollectionEquality().equals(other._reactedByUserIds, _reactedByUserIds));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,fromUserId,toUserId,body,sticker,missionId,memoryId,createdAt,postedToFamily,icon,linkedTitle,const DeepCollectionEquality().hash(_reactedByUserIds));
+int get hashCode => Object.hash(runtimeType,id,fromUserId,toUserId,body,sticker,missionId,memoryId,createdAt,postedToFamily,shareRequested,icon,linkedTitle,const DeepCollectionEquality().hash(_reactedByUserIds));
 
 @override
 String toString() {
-  return 'Thanks(id: $id, fromUserId: $fromUserId, toUserId: $toUserId, body: $body, sticker: $sticker, missionId: $missionId, memoryId: $memoryId, createdAt: $createdAt, postedToFamily: $postedToFamily, icon: $icon, linkedTitle: $linkedTitle, reactedByUserIds: $reactedByUserIds)';
+  return 'Thanks(id: $id, fromUserId: $fromUserId, toUserId: $toUserId, body: $body, sticker: $sticker, missionId: $missionId, memoryId: $memoryId, createdAt: $createdAt, postedToFamily: $postedToFamily, shareRequested: $shareRequested, icon: $icon, linkedTitle: $linkedTitle, reactedByUserIds: $reactedByUserIds)';
 }
 
 
@@ -221,7 +225,7 @@ abstract mixin class _$ThanksCopyWith<$Res> implements $ThanksCopyWith<$Res> {
   factory _$ThanksCopyWith(_Thanks value, $Res Function(_Thanks) _then) = __$ThanksCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'fromUserId') String fromUserId,@JsonKey(name: 'toUserId') String toUserId,@JsonKey(name: 'body') String body,@JsonKey(name: 'sticker') String? sticker,@JsonKey(name: 'missionId') String? missionId,@JsonKey(name: 'memoryId') String? memoryId,@JsonKey(name: 'createdAt') DateTime createdAt,@JsonKey(name: 'postedToFamily') bool postedToFamily,@JsonKey(name: 'icon') String? icon,@JsonKey(name: 'linkedTitle') String? linkedTitle,@JsonKey(name: 'reactedByUserIds') List<String> reactedByUserIds
+@JsonKey(name: 'id') String id,@JsonKey(name: 'fromUserId') String fromUserId,@JsonKey(name: 'toUserId') String toUserId,@JsonKey(name: 'body') String body,@JsonKey(name: 'sticker') String? sticker,@JsonKey(name: 'missionId') String? missionId,@JsonKey(name: 'memoryId') String? memoryId,@JsonKey(name: 'createdAt') DateTime createdAt,@JsonKey(name: 'postedToFamily') bool postedToFamily,@JsonKey(name: 'shareRequested') bool shareRequested,@JsonKey(name: 'icon') String? icon,@JsonKey(name: 'linkedTitle') String? linkedTitle,@JsonKey(name: 'reactedByUserIds') List<String> reactedByUserIds
 });
 
 
@@ -238,7 +242,7 @@ class __$ThanksCopyWithImpl<$Res>
 
 /// Create a copy of Thanks
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? fromUserId = null,Object? toUserId = null,Object? body = null,Object? sticker = freezed,Object? missionId = freezed,Object? memoryId = freezed,Object? createdAt = null,Object? postedToFamily = null,Object? icon = freezed,Object? linkedTitle = freezed,Object? reactedByUserIds = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? fromUserId = null,Object? toUserId = null,Object? body = null,Object? sticker = freezed,Object? missionId = freezed,Object? memoryId = freezed,Object? createdAt = null,Object? postedToFamily = null,Object? shareRequested = null,Object? icon = freezed,Object? linkedTitle = freezed,Object? reactedByUserIds = null,}) {
   return _then(_Thanks(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,fromUserId: null == fromUserId ? _self.fromUserId : fromUserId // ignore: cast_nullable_to_non_nullable
@@ -249,6 +253,7 @@ as String?,missionId: freezed == missionId ? _self.missionId : missionId // igno
 as String?,memoryId: freezed == memoryId ? _self.memoryId : memoryId // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,postedToFamily: null == postedToFamily ? _self.postedToFamily : postedToFamily // ignore: cast_nullable_to_non_nullable
+as bool,shareRequested: null == shareRequested ? _self.shareRequested : shareRequested // ignore: cast_nullable_to_non_nullable
 as bool,icon: freezed == icon ? _self.icon : icon // ignore: cast_nullable_to_non_nullable
 as String?,linkedTitle: freezed == linkedTitle ? _self.linkedTitle : linkedTitle // ignore: cast_nullable_to_non_nullable
 as String?,reactedByUserIds: null == reactedByUserIds ? _self._reactedByUserIds : reactedByUserIds // ignore: cast_nullable_to_non_nullable

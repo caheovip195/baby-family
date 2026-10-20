@@ -1,12 +1,15 @@
 import 'package:baby_family/data/dto/circle_view.dart';
 import 'package:baby_family/data/model/child/child.dart';
 import 'package:baby_family/data/model/memory/memory.dart';
+import 'package:baby_family/data/model/session/app_session.dart';
 import 'package:baby_family/data/provider/circle.dart';
 import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/provider/memory.dart';
 import 'package:baby_family/data/provider/mock_store.dart';
+import 'package:baby_family/data/provider/session.dart';
 import 'package:baby_family/data/service/circle.dart';
 import 'package:baby_family/page/application_base.dart';
+import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:hooks_riverpod/legacy.dart';
 
@@ -68,6 +71,12 @@ class CircleHomeController extends BaseNotifier {
 
   bool get heroLiked => _liked.contains(hero?.id);
 
+  AppSession get session => ref.read(sessionServiceProvider).current;
+
+  /// Bản server: lần tải gần nhất cho thấy gia đình tạm dừng chia sẻ (CIR-05)
+  /// hoặc tôi không còn là người thân → view chuyển màn theo phiên.
+  bool sessionMoved = false;
+
   String authorName(String userId) => _authorNames[userId] ?? '';
 
   Future<void> load() async {
@@ -80,6 +89,8 @@ class CircleHomeController extends BaseNotifier {
         return;
       }
       view = loaded;
+      sessionMoved =
+          kValueUseRemoteSession && session.state != SessionState.circleActive;
       _authorNames = {
         for (final member in members)
           if (member.userId != null) member.userId!: member.callName,

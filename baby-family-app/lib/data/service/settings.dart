@@ -1,3 +1,4 @@
+import 'package:baby_family/data/dto/family_deletion_info.dart';
 import 'package:baby_family/data/model/settings/ai_settings.dart';
 import 'package:baby_family/data/model/settings/blocked_person.dart';
 import 'package:baby_family/data/model/settings/data_export_info.dart';
@@ -7,6 +8,7 @@ import 'package:baby_family/data/model/settings/notification_settings.dart';
 import 'package:baby_family/data/model/settings/privacy_settings.dart';
 import 'package:baby_family/data/model/settings/profile_settings.dart';
 import 'package:baby_family/data/model/settings/security_settings.dart';
+import 'package:baby_family/data/model/settings/support_ticket.dart';
 import 'package:baby_family/data/service/base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 
@@ -43,13 +45,54 @@ abstract class ISettingsService extends IBaseService {
 
   Future<void> startExport(DataExportKind kind);
 
+  /// Link tải bản xuất đã sẵn sàng (hết hạn sau vài phút); null khi chưa có
+  /// (bản mock).
+  Future<String?> exportDownloadUrl(DataExportKind kind);
+
   Future<void> clearCache();
 
   /// SET-09/09b/09c — `onlyParent` chọn biến thể 09b.
   Future<DeleteAccountInfo> deleteAccountInfo();
 
-  /// SET-09c “Xoá tài khoản”: mock đăng xuất và nạp lại seed `fresh`.
-  Future<void> deleteAccount();
+  /// SET-09c: gửi OTP xác thực lại tới số của chính tôi (mục 7.25).
+  Future<void> requestReauthOtp();
+
+  /// SET-09c: xác thực lại bằng [code]; sai mã thì ném lỗi.
+  Future<void> verifyReauth(String code);
+
+  /// SET-09c “Xoá tài khoản”: tài khoản chờ xoá 30 ngày rồi đăng xuất. Mock
+  /// đăng xuất và nạp lại seed `fresh`. [keepMemories] = giữ ký ức đã đăng cho
+  /// gia đình (ẩn danh).
+  Future<void> deleteAccount({bool keepMemories = true});
+
+  /// Xoá gia đình (mục 7.25): cả hai Parent đồng ý, sau đó có [graceDays]
+  /// ngày để huỷ. Yêu cầu/đồng ý cần xác thực lại ([verifyReauth]) trước.
+  /// Đổi số điện thoại: sau [verifyReauth], gửi OTP tới [phone] mới (E.164).
+  Future<void> requestPhoneChange(String phone);
+
+  /// Xác nhận số mới bằng mã OTP; các phiên khác bị đăng xuất.
+  Future<void> confirmPhoneChange(String phone, String code);
+
+  /// Hỗ trợ khách hàng: danh mục do server cấu hình (mã, app dịch nhãn).
+  Future<List<String>> supportCategories();
+
+  /// Gửi yêu cầu; trả yêu cầu vừa tạo (có mã tra cứu).
+  Future<SupportTicket> sendSupportRequest({
+    required String category,
+    required String subject,
+    required String body,
+  });
+
+  /// Yêu cầu tôi đã gửi, mới nhất trước.
+  Future<List<SupportTicket>> supportTickets();
+
+  Future<FamilyDeletionInfo> familyDeletion();
+
+  Future<FamilyDeletionInfo> requestFamilyDeletion();
+
+  Future<FamilyDeletionInfo> confirmFamilyDeletion();
+
+  Future<FamilyDeletionInfo> cancelFamilyDeletion();
 
   /// SET-11.
   Future<HelpInfo> help();

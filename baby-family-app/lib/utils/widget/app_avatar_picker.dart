@@ -1,5 +1,6 @@
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
@@ -63,7 +64,7 @@ class AppAvatarPicker extends StatelessWidget {
                       color: AppColors.resolve(context, iconColor),
                       size: iconSize,
                     )
-                  : Image.asset(asset!, fit: BoxFit.cover),
+                  : Image(image: mediaImageProvider(asset!), fit: BoxFit.cover),
             ),
             if (showAddBadge)
               Positioned(

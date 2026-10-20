@@ -17,6 +17,9 @@ abstract class DataExportJob with _$DataExportJob {
     @JsonKey(name: 'startedAt') DateTime? startedAt,
     @JsonKey(name: 'sizeMb') int? sizeMb,
     @JsonKey(name: 'expiresAt') DateTime? expiresAt,
+
+    /// Id job xuất trên server (bản thật) — để hỏi lại trạng thái/link tải.
+    @JsonKey(name: 'exportId') String? exportId,
   }) = _DataExportJob;
 
   factory DataExportJob.fromJson(Map<String, dynamic> json) =>

@@ -623,6 +623,26 @@ class AppLocalizationsVi extends AppLocalizations {
   String get memoriesAddMedia => 'Thêm ảnh';
 
   @override
+  String memUploadProgress(int done, int total) {
+    return 'Đang tải $done/$total ảnh…';
+  }
+
+  @override
+  String get memUploadFailed => 'Tải lên chưa xong';
+
+  @override
+  String get memUploadRetry => 'Thử lại';
+
+  @override
+  String get memUploadCancel => 'Huỷ';
+
+  @override
+  String get memoriesSetCover => 'Đặt làm ảnh bìa';
+
+  @override
+  String get memoriesRemoveMedia => 'Bỏ ảnh này';
+
+  @override
   String get memoriesAddPerspective => 'Thêm góc nhìn của bạn';
 
   @override
@@ -4043,6 +4063,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get memPhotoViewerTitle => 'Xem ảnh';
 
   @override
+  String get memVideoPlay => 'Phát video';
+
+  @override
+  String get memVideoPause => 'Tạm dừng video';
+
+  @override
   String get memSearchTitle => 'Tìm kiếm';
 
   @override
@@ -4050,6 +4076,23 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get recapWeekTitle => 'Tuần của nhà mình';
+
+  @override
+  String recapWeekHeadline(int moments, int firsts) {
+    String _temp0 = intl.Intl.pluralLogic(
+      moments,
+      locale: localeName,
+      other: '$moments khoảnh khắc',
+      zero: 'Một tuần bình yên',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      firsts,
+      locale: localeName,
+      other: ' · $firsts lần đầu',
+      zero: '',
+    );
+    return '$_temp0$_temp1';
+  }
 
   @override
   String get calendarTitle => 'Lịch';
@@ -4480,6 +4523,33 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get careSeriesSection => 'Chuỗi lặp lại';
+
+  @override
+  String get careSeriesDaily => 'Hằng ngày';
+
+  @override
+  String careSeriesPausedUntil(String date) {
+    return 'Tạm dừng tới $date';
+  }
+
+  @override
+  String get careSeriesPauseWeek => 'Tạm dừng 1 tuần';
+
+  @override
+  String get careSeriesEnd => 'Dừng chuỗi';
+
+  @override
+  String get careSeriesEndConfirm =>
+      'Các lần chưa làm từ hôm nay sẽ được bỏ khỏi bảng. Việc đã làm vẫn được giữ.';
+
+  @override
+  String get careSeriesPaused => 'Đã tạm dừng chuỗi 1 tuần';
+
+  @override
+  String get careSeriesEnded => 'Đã dừng chuỗi';
+
+  @override
   String famPlanPaidSubtitle(String price, String date) {
     return '$price · gia hạn $date';
   }
@@ -4724,6 +4794,53 @@ class AppLocalizationsVi extends AppLocalizations {
   String get famDeleteFamilyHint => 'Cần xác nhận kỹ · có 30 ngày để khôi phục';
 
   @override
+  String famDelBody(int days) {
+    return 'Cần cả Bố và Mẹ đồng ý. Sau khi đồng ý, gia đình được giữ thêm $days ngày để huỷ; người thân mất quyền xem ngay. Hết hạn, toàn bộ ký ức, ảnh, thư và lịch sử của cả nhà bị xoá.';
+  }
+
+  @override
+  String get famDelExportHint =>
+      'Nên tải dữ liệu về trước: Cài đặt → Dữ liệu của tôi.';
+
+  @override
+  String get famDelVerifyHint =>
+      'Xác thực lại bằng mã gửi tới số điện thoại của bạn.';
+
+  @override
+  String get famDelSendOtp => 'Gửi mã xác thực';
+
+  @override
+  String get famDelOtpSent => 'Đã gửi mã xác thực';
+
+  @override
+  String get famDelStart => 'Yêu cầu xoá gia đình';
+
+  @override
+  String get famDelAgree => 'Đồng ý xoá gia đình';
+
+  @override
+  String get famDelWaitingPartner =>
+      'Đang chờ bạn đời đồng ý xoá gia đình. Bạn có thể huỷ yêu cầu bất cứ lúc nào.';
+
+  @override
+  String get famDelPartnerAsked =>
+      'Bạn đời đã yêu cầu xoá gia đình. Xác thực lại để đồng ý, hoặc huỷ yêu cầu.';
+
+  @override
+  String famDelScheduled(String date) {
+    return 'Gia đình sẽ bị xoá vào $date. Trong thời gian này cả nhà chỉ xem và tải về được.';
+  }
+
+  @override
+  String get famDelCancel => 'Huỷ yêu cầu xoá';
+
+  @override
+  String get famDelCancelled => 'Đã huỷ yêu cầu xoá gia đình';
+
+  @override
+  String get famDelRequested => 'Đã cập nhật yêu cầu xoá gia đình';
+
+  @override
   String get setProfileChangeAvatar => 'Đổi ảnh đại diện';
 
   @override
@@ -4751,6 +4868,29 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get setUnlink => 'Huỷ liên kết';
+
+  @override
+  String get phoneChangeTitle => 'Đổi số điện thoại';
+
+  @override
+  String get phoneChangeReauthHint =>
+      'Trước tiên, xác thực lại bằng mã gửi tới số hiện tại của bạn.';
+
+  @override
+  String get phoneChangeNewHint =>
+      'Nhập số điện thoại mới. Mã xác nhận sẽ gửi tới số này.';
+
+  @override
+  String phoneChangeCodeSent(String phone) {
+    return 'Đã gửi mã tới $phone';
+  }
+
+  @override
+  String get phoneChangeDone =>
+      'Đã đổi số điện thoại. Các thiết bị khác đã được đăng xuất.';
+
+  @override
+  String get setChangePhone => 'Đổi số';
 
   @override
   String get setLink => 'Liên kết';
@@ -5215,6 +5355,61 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get setSendRequestHint =>
       'Mô tả vấn đề, kèm ảnh chụp màn hình nếu muốn';
+
+  @override
+  String get supportTitle => 'Gửi yêu cầu hỗ trợ';
+
+  @override
+  String get supportHint =>
+      'Chỉ nội dung bạn tự nhập được gửi tới đội hỗ trợ. Đừng ghi mật khẩu hay mã OTP.';
+
+  @override
+  String get supportCategoryLabel => 'Vấn đề về';
+
+  @override
+  String supportCategory(String category) {
+    String _temp0 = intl.Intl.selectLogic(category, {
+      'ACCOUNT': 'Tài khoản',
+      'INVITATION': 'Lời mời',
+      'MEDIA': 'Ảnh & video',
+      'BILLING': 'Gói & thanh toán',
+      'PRIVACY': 'Quyền riêng tư',
+      'other': 'Khác',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get supportSubject => 'Tiêu đề';
+
+  @override
+  String get supportBody => 'Mô tả vấn đề';
+
+  @override
+  String get supportSend => 'Gửi yêu cầu';
+
+  @override
+  String supportSent(String code) {
+    return 'Đã gửi yêu cầu $code';
+  }
+
+  @override
+  String get supportMine => 'Yêu cầu đã gửi';
+
+  @override
+  String get supportEmpty => 'Bạn chưa gửi yêu cầu nào.';
+
+  @override
+  String supportStatus(String status) {
+    String _temp0 = intl.Intl.selectLogic(status, {
+      'OPEN': 'Đã tiếp nhận',
+      'IN_PROGRESS': 'Đang xử lý',
+      'WAITING_USER': 'Chờ bạn phản hồi',
+      'RESOLVED': 'Đã giải quyết',
+      'other': 'Đã đóng',
+    });
+    return '$_temp0';
+  }
 
   @override
   String get setMyReports => 'Báo cáo của tôi';
@@ -5694,6 +5889,20 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get usThanksReact => 'Thả tim';
+
+  @override
+  String usThanksShareAsk(String name) {
+    return '$name muốn đăng lời cảm ơn này thành khoảnh khắc của cả nhà';
+  }
+
+  @override
+  String get usThanksShareApprove => 'Đăng cho cả nhà';
+
+  @override
+  String get usThanksShareKeep => 'Để riêng hai mình';
+
+  @override
+  String get usThanksShareFailed => 'Chưa gửi được, thử lại nhé';
 
   @override
   String get usThanksWallEmpty => 'Tháng này chưa có lời cảm ơn nào';
@@ -8234,4 +8443,201 @@ class AppLocalizationsVi extends AppLocalizations {
   String memPendingNotify(String name, int count, String child) {
     return '$name vừa đăng $count ảnh của $child — chờ bạn duyệt';
   }
+
+  @override
+  String get authProviderUnavailable =>
+      'Bản này chưa hỗ trợ đăng nhập bằng Apple/Google. Vui lòng dùng số điện thoại.';
+
+  @override
+  String onboardingPartnerApproveTitle(String callName) {
+    return '$callName muốn tham gia nhà mình';
+  }
+
+  @override
+  String onboardingPartnerApproveBody(int days) {
+    return 'Hãy chắc chắn đây đúng là bạn đời của bạn. Sau khi đồng ý, nhà mình được dùng thử miễn phí $days ngày.';
+  }
+
+  @override
+  String get onboardingPartnerApprove => 'Đồng ý';
+
+  @override
+  String get onboardingPartnerReject => 'Không phải';
+
+  @override
+  String get errorOtpInvalid =>
+      'Mã chưa đúng hoặc đã hết hạn. Vui lòng thử lại.';
+
+  @override
+  String get errorRateLimited =>
+      'Bạn thao tác hơi nhanh. Vui lòng đợi một chút rồi thử lại.';
+
+  @override
+  String get errorPhoneNotSupported => 'Số điện thoại này chưa được hỗ trợ.';
+
+  @override
+  String get errorInviteUnavailable =>
+      'Lời mời đã hết hạn hoặc đã được dùng. Nhờ người mời gửi lại nhé.';
+
+  @override
+  String get errorAlreadyInFamily =>
+      'Bạn đang là Bố/Mẹ của một gia đình khác nên chưa tham gia được.';
+
+  @override
+  String get errorServiceUnavailable =>
+      'Máy chủ đang bận. Vui lòng thử lại sau ít phút.';
+
+  @override
+  String get memEditTitle => 'Sửa ký ức';
+
+  @override
+  String get memEditSaved => 'Đã lưu thay đổi';
+
+  @override
+  String get memEditAuthorOnlyHint =>
+      'Chỉ người đăng sửa được chú thích và ngày. Bạn vẫn đổi được bé và người xem.';
+
+  @override
+  String get memEditMediaHint => 'Chưa thêm hoặc bớt ảnh được khi sửa ký ức.';
+
+  @override
+  String get errorVersionConflict =>
+      'Ký ức vừa được cập nhật ở nơi khác. Xem lại rồi lưu nhé.';
+
+  @override
+  String get errorMemoryNotEditable => 'Bạn không sửa được phần này của ký ức.';
+
+  @override
+  String get errorRequestOpenLimit =>
+      'Bạn đang có 5 lời nhờ chưa xong. Chờ bớt một lời nhờ rồi gửi tiếp nhé.';
+
+  @override
+  String get errorRequestResendBlocked =>
+      'Lời nhờ này vừa được trả lời “Hôm nay không được”. Thử lại sau nhé.';
+
+  @override
+  String get errorRequestChanged =>
+      'Lời nhờ vừa thay đổi. Xem lại trạng thái mới nhé.';
+
+  @override
+  String get notiSomeone => 'Một thành viên';
+
+  @override
+  String notiMemoryPublished(String name) {
+    return '$name vừa thêm một ký ức mới';
+  }
+
+  @override
+  String notiCommentCreated(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Có $count bình luận mới trên một ký ức',
+      one: '$name vừa bình luận một ký ức',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notiReactionChanged(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Có $count cảm xúc mới trên một ký ức',
+      one: '$name đã thả cảm xúc cho một ký ức',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notiRequestCreated(String name) {
+    return '$name vừa gửi cho bạn một lời nhờ';
+  }
+
+  @override
+  String notiRequestAccepted(String name) {
+    return '$name đã nhận lời nhờ của bạn';
+  }
+
+  @override
+  String notiRequestDone(String name) {
+    return '$name đã làm xong lời nhờ 💛';
+  }
+
+  @override
+  String notiRequestDeclined(String name) {
+    return '$name báo hôm nay chưa làm được lời nhờ';
+  }
+
+  @override
+  String notiRequestAcknowledged(String name) {
+    return '$name đã xem lời nhờ của bạn';
+  }
+
+  @override
+  String notiCheckinShared(String name) {
+    return '$name vừa chia sẻ trạng thái';
+  }
+
+  @override
+  String get notiAppreciationCreated => 'Bạn nhận được một lời cảm ơn ❤️';
+
+  @override
+  String get notiGeneric => 'Bạn có một cập nhật mới';
+
+  @override
+  String get heartsReasonMission => 'Một việc nhỏ cho gia đình';
+
+  @override
+  String get heartsReasonRequest => 'Giúp bạn đời một lời nhờ';
+
+  @override
+  String get heartsReasonOther => 'Hearts của bạn';
+
+  @override
+  String setDelOtpSent(String phone) {
+    return 'Đã gửi mã xác thực tới $phone';
+  }
+
+  @override
+  String get errorReauthRequired =>
+      'Phiên xác thực đã hết hạn. Bạn xác thực lại giúp mình nhé.';
+
+  @override
+  String get errorExportActive =>
+      'Đang có một bản xuất chưa xong. Bạn đợi bản đó xong nhé.';
+
+  @override
+  String get errorEventDateInvalid =>
+      'Ngày của sự kiện chưa hợp lệ. Bạn kiểm tra lại nhé.';
+
+  @override
+  String calendarChildBirthday(String name, int count) {
+    return 'Sinh nhật $count tuổi của $name';
+  }
+
+  @override
+  String calendarChildMonthiversary(String name, int count) {
+    return '$name tròn $count tháng';
+  }
+
+  @override
+  String notiEventReminder(String title) {
+    return 'Nhắc lịch: $title';
+  }
+
+  @override
+  String get notiEventReminderPrivate => 'Bạn có một lịch hẹn sắp tới';
+
+  @override
+  String get notiBadgeEarned => 'Gia đình vừa nhận một huy hiệu mới 🏅';
+
+  @override
+  String get memCommentsAllow => 'Cho phép bình luận';
+
+  @override
+  String get memCommentsAllowHint => 'Tắt thì mọi người vẫn thả cảm xúc được';
+
+  @override
+  String get memCommentsOff => 'Bình luận đã tắt cho ký ức này';
 }

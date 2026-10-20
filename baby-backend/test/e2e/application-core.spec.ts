@@ -25,6 +25,8 @@ import type { IFamilyRepository } from '../../src/interfaces/repositories/family
 import { PREGNANCY_REPOSITORY } from '../../src/interfaces/repositories/pregnancy-repository.interface';
 import type { IPregnancyRepository } from '../../src/interfaces/repositories/pregnancy-repository.interface';
 import { PREGNANCY_COMMAND_REPOSITORY } from '../../src/interfaces/repositories/pregnancy-command-repository.interface';
+import { ACCOUNT_REPOSITORY } from '../../src/interfaces/repositories/account-repository.interface';
+import type { IAccountRepository } from '../../src/interfaces/repositories/account-repository.interface';
 import { USER_REPOSITORY } from '../../src/interfaces/repositories/user-repository.interface';
 import type { IUserRepository } from '../../src/interfaces/repositories/user-repository.interface';
 import { USER_SETTING_REPOSITORY } from '../../src/interfaces/repositories/user-setting-repository.interface';
@@ -37,6 +39,7 @@ import { FAMILY_SERVICE } from '../../src/interfaces/services/family-service.int
 import { PREGNANCY_SERVICE } from '../../src/interfaces/services/pregnancy-service.interface';
 import { USER_SERVICE } from '../../src/interfaces/services/user-service.interface';
 import { USER_SETTING_SERVICE } from '../../src/interfaces/services/user-setting-service.interface';
+import { AccountOverview } from '../../src/models/account-overview.model';
 import { Child } from '../../src/models/child.model';
 import { Family } from '../../src/models/family.model';
 import { Pregnancy } from '../../src/models/pregnancy.model';
@@ -168,6 +171,23 @@ function repositoryMock<T>(): jest.Mocked<T> {
 describe('Authenticated application core HTTP boundary', () => {
   let app: INestApplication<Server>;
   const users = repositoryMock<IUserRepository>();
+  // GET /me reads through the account read model; it resolves the same user mock.
+  const accounts: jest.Mocked<IAccountRepository> = {
+    findOverview: jest.fn(async (userId: string) => {
+      const found = await users.findByKey({ privileged: true }, { id: userId });
+      return found
+        ? new AccountOverview({
+            user: found,
+            parentMemberships: [],
+            grantedDocuments: [],
+            awaitingApproval: [],
+          })
+        : null;
+    }),
+    setOnboardingRole: jest.fn(),
+    registerDevice: jest.fn(),
+    recordConsents: jest.fn(),
+  };
   const settings = repositoryMock<IUserSettingRepository>();
   const families = repositoryMock<IFamilyRepository>();
   const children = repositoryMock<IChildRepository>();
@@ -253,6 +273,7 @@ describe('Authenticated application core HTTP boundary', () => {
         { provide: AUTHENTICATION_SERVICE, useValue: authentication },
         { provide: APPLICATION_ACCESS_SERVICE, useValue: access },
         { provide: USER_REPOSITORY, useValue: users },
+        { provide: ACCOUNT_REPOSITORY, useValue: accounts },
         { provide: USER_SETTING_REPOSITORY, useValue: settings },
         { provide: FAMILY_REPOSITORY, useValue: families },
         { provide: CHILD_REPOSITORY, useValue: children },
@@ -305,7 +326,12 @@ describe('Authenticated application core HTTP boundary', () => {
       displayName: 'Parent',
     });
     expect(response.body).not.toHaveProperty('tokenVersion');
-    expect(response.body).not.toHaveProperty('onboardingRole');
+    expect(response.body).not.toHaveProperty('status');
+    // Onboarding progress is part of the spec §11.3 contract (SPL-01 routing).
+    expect(response.body).toMatchObject({
+      profileCompleted: false,
+      families: [],
+    });
     expect(users.findByKey).toHaveBeenCalledWith(
       { privileged: true },
       { id: actor.userId },
@@ -399,16 +425,12 @@ describe('Authenticated application core HTTP boundary', () => {
       .expect(400);
   });
 
-  it('uses the family metadata gate and supports database UUIDv7 routes', async () => {
+  it('uses the family read gate (§6.5) and supports database UUIDv7 routes', async () => {
     await request(app.getHttpServer())
       .get('/api/v1/families/' + family.id)
       .set('Authorization', authorization)
       .expect(200);
-    expect(access.requireParent).toHaveBeenCalledWith(
-      actor,
-      family.id,
-      'metadata',
-    );
+    expect(access.requireParent).toHaveBeenCalledWith(actor, family.id, 'read');
     await request(app.getHttpServer())
       .patch('/api/v1/families/' + family.id)
       .set('Authorization', authorization)

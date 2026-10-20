@@ -69,6 +69,8 @@ describe('MediaService', () => {
     failUpload: jest.fn(),
     findFamilyIds: jest.fn(),
     findViewableByParent: jest.fn(),
+    findViewableByCircle: jest.fn(),
+    hasContributeChild: jest.fn(),
     startProcessing: jest.fn(),
     findAssetView: jest.fn(),
     findEffectivePlan: jest.fn(),

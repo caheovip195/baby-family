@@ -1,10 +1,12 @@
 import { randomUUID } from 'node:crypto';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { RequestLocaleInterceptor } from './common/i18n/request-locale.interceptor';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
 import { HttpExceptionFilter } from './common/errors/http-exception.filter';
+import { ResponseEnvelopeInterceptor } from './common/http/response-envelope.interceptor';
 import { validateEnvironment } from './config/environment';
 import type { Environment } from './config/environment';
 import { ValkeyThrottlerStorage } from './common/throttling/valkey-throttler.storage';
@@ -98,6 +100,9 @@ import { ObjectStorageService } from './services/object-storage.service';
     ...DATABASE_REPOSITORY_PROVIDERS,
     { provide: APP_FILTER, useClass: HttpExceptionFilter },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
+    // Accept-Language → locale of error messages/system texts (BF-20261019-008).
+    { provide: APP_INTERCEPTOR, useClass: RequestLocaleInterceptor },
+    { provide: APP_INTERCEPTOR, useClass: ResponseEnvelopeInterceptor },
     { provide: CACHE_REPOSITORY, useClass: CacheRepository },
     { provide: OBJECT_STORAGE_SERVICE, useClass: ObjectStorageService },
     { provide: MAIL_SERVICE, useClass: MailService },

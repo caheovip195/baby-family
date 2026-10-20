@@ -8,9 +8,13 @@ class _ProfileAvatar extends StatelessWidget {
     required this.callName,
     required this.isMother,
     required this.onChange,
+    this.asset,
   });
 
   final String callName;
+
+  /// Ảnh đại diện (URL server / file vừa chọn); null = avatar chữ.
+  final String? asset;
   final bool isMother;
   final VoidCallback onChange;
 
@@ -27,13 +31,23 @@ class _ProfileAvatar extends StatelessWidget {
               dimension: 92,
               child: Stack(
                 children: [
-                  AppInitialAvatar(
-                    name: callName,
-                    size: 88,
-                    color: isMother
-                        ? kColorPrimary500EE7B67
-                        : kColorSecondary5006FAE8E,
-                  ),
+                  if (asset case final source?)
+                    ClipOval(
+                      child: Image(
+                        image: mediaImageProvider(source),
+                        width: 88,
+                        height: 88,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  else
+                    AppInitialAvatar(
+                      name: callName,
+                      size: 88,
+                      color: isMother
+                          ? kColorPrimary500EE7B67
+                          : kColorSecondary5006FAE8E,
+                    ),
                   Positioned(
                     right: 0,
                     bottom: 0,

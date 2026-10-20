@@ -8,8 +8,9 @@ import 'package:hooks_riverpod/legacy.dart';
 
 /// SET-09 — Xoá tài khoản, 3 màn trong một trang: 1 Tác động (SET-09),
 /// 2 Gia đình (SET-09b — còn bạn đời `mCafo` / Parent duy nhất `sA3Ch`),
-/// 3–4 Xác thực & xác nhận (SET-09c). Luồng mock đi thẳng: “Xoá tài khoản”
-/// luôn thành công, phiên về `fresh` → Welcome.
+/// 3–4 Xác thực & xác nhận (SET-09c). Bản thật: xác thực lại bằng OTP tới số
+/// của chính tôi rồi gửi yêu cầu xoá (chờ 30 ngày) và đăng xuất. Luồng mock đi
+/// thẳng: “Xoá tài khoản” luôn thành công, phiên về `fresh` → Welcome.
 final deleteAccountControllerProvider =
     ChangeNotifierProvider.autoDispose<DeleteAccountController>(
       DeleteAccountController.new,
@@ -41,6 +42,18 @@ class DeleteAccountController extends BaseNotifier {
   /// SET-09c: đã đăng nhập lại / đã tích xác nhận.
   bool verified = false;
   bool acknowledged = false;
+
+  /// Đã gửi OTP xác thực lại — hiện ô nhập mã.
+  bool otpSent = false;
+  String otpCode = '';
+
+  /// Độ dài mã OTP (AUTH-03).
+  static const otpLength = 6;
+
+  bool get canVerifyOtp => otpCode.length == otpLength && !isLoading;
+
+  /// “Xoá tài khoản” chỉ bật khi đã xác thực lại và đã tích xác nhận.
+  bool get canDelete => verified && acknowledged && !isLoading;
 
   AppSession get session => ref.read(sessionServiceProvider).current;
 
@@ -88,8 +101,30 @@ class DeleteAccountController extends BaseNotifier {
     notifyListeners();
   }
 
+  /// Đăng nhập lại bằng Apple (bản mock).
   void verify() {
     verified = true;
+    notifyListeners();
+  }
+
+  /// “Dùng mã OTP qua SĐT …” → gửi mã; lỗi ném ra để view báo snack bar.
+  Future<void> sendOtp() async {
+    await whileLoading(settingsService.requestReauthOtp);
+    otpSent = true;
+    otpCode = '';
+    notifyListeners();
+  }
+
+  void setOtpCode(String value) {
+    otpCode = value.trim();
+    notifyListeners();
+  }
+
+  /// Xác nhận mã; sai mã ném lỗi (`OTP_INVALID`) để view báo snack bar.
+  Future<void> verifyOtp() async {
+    await whileLoading(() => settingsService.verifyReauth(otpCode));
+    verified = true;
+    otpSent = false;
     notifyListeners();
   }
 
@@ -99,6 +134,8 @@ class DeleteAccountController extends BaseNotifier {
   }
 
   Future<void> deleteAccount() async {
-    await whileLoading(settingsService.deleteAccount);
+    await whileLoading(
+      () => settingsService.deleteAccount(keepMemories: keepMemories),
+    );
   }
 }

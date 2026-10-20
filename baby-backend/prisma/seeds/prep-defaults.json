@@ -1,0 +1,170 @@
+[
+  {
+    "type": "PREP_DEFAULT",
+    "code": "pr-bag",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 0,
+    "data": {
+      "groupCode": "HOSPITAL_BAG",
+      "title": "Túi đồ đi sinh cho mẹ",
+      "sortOrder": 0
+    }
+  },
+  {
+    "type": "PREP_DEFAULT",
+    "code": "pr-bag",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 0,
+    "data": {
+      "groupCode": "HOSPITAL_BAG",
+      "title": "Mama’s hospital bag",
+      "sortOrder": 0
+    }
+  },
+  {
+    "type": "PREP_DEFAULT",
+    "code": "pr-clothes",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 1,
+    "data": {
+      "groupCode": "HOSPITAL_BAG",
+      "title": "Quần áo sơ sinh 3 bộ",
+      "sortOrder": 1
+    }
+  },
+  {
+    "type": "PREP_DEFAULT",
+    "code": "pr-clothes",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 1,
+    "data": {
+      "groupCode": "HOSPITAL_BAG",
+      "title": "Three newborn outfits",
+      "sortOrder": 1
+    }
+  },
+  {
+    "type": "PREP_DEFAULT",
+    "code": "pr-diapers",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 2,
+    "data": {
+      "groupCode": "HOSPITAL_BAG",
+      "title": "Bỉm & khăn sữa",
+      "sortOrder": 2
+    }
+  },
+  {
+    "type": "PREP_DEFAULT",
+    "code": "pr-diapers",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 2,
+    "data": {
+      "groupCode": "HOSPITAL_BAG",
+      "title": "Diapers & muslin cloths",
+      "sortOrder": 2
+    }
+  },
+  {
+    "type": "PREP_DEFAULT",
+    "code": "pr-papers",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 3,
+    "data": {
+      "groupCode": "PAPERS",
+      "title": "CCCD, sổ khám thai, BHYT",
+      "sortOrder": 3
+    }
+  },
+  {
+    "type": "PREP_DEFAULT",
+    "code": "pr-papers",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 3,
+    "data": {
+      "groupCode": "PAPERS",
+      "title": "ID, pregnancy records, insurance",
+      "sortOrder": 3
+    }
+  },
+  {
+    "type": "PREP_DEFAULT",
+    "code": "pr-registration",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 4,
+    "data": {
+      "groupCode": "PAPERS",
+      "title": "Tìm hiểu thủ tục khai sinh",
+      "sortOrder": 4
+    }
+  },
+  {
+    "type": "PREP_DEFAULT",
+    "code": "pr-registration",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 4,
+    "data": {
+      "groupCode": "PAPERS",
+      "title": "Check birth registration",
+      "sortOrder": 4
+    }
+  },
+  {
+    "type": "PREP_DEFAULT",
+    "code": "pr-crib",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 5,
+    "data": {
+      "groupCode": "NURSERY",
+      "title": "Giường cũi & đệm",
+      "sortOrder": 5
+    }
+  },
+  {
+    "type": "PREP_DEFAULT",
+    "code": "pr-crib",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 5,
+    "data": {
+      "groupCode": "NURSERY",
+      "title": "Crib & mattress",
+      "sortOrder": 5
+    }
+  },
+  {
+    "type": "PREP_DEFAULT",
+    "code": "pr-curtains",
+    "locale": "vi",
+    "version": 1,
+    "sortOrder": 6,
+    "data": {
+      "groupCode": "NURSERY",
+      "title": "Lắp rèm cản sáng",
+      "sortOrder": 6
+    }
+  },
+  {
+    "type": "PREP_DEFAULT",
+    "code": "pr-curtains",
+    "locale": "en",
+    "version": 1,
+    "sortOrder": 6,
+    "data": {
+      "groupCode": "NURSERY",
+      "title": "Install blackout curtains",
+      "sortOrder": 6
+    }
+  }
+]

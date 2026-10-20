@@ -48,7 +48,7 @@ class _DayPhotoTile extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Image.asset(asset!, fit: BoxFit.cover),
+                Image(image: mediaImageProvider(asset!), fit: BoxFit.cover),
                 Positioned(
                   top: AppSpacing.s2,
                   right: AppSpacing.s2,

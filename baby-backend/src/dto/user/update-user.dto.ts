@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsIn,
+  IsUUID,
   IsString,
   IsTimeZone,
   MaxLength,
@@ -9,6 +10,13 @@ import {
 } from 'class-validator';
 
 export class UpdateUserDto {
+  @ApiPropertyOptional({ type: String, format: 'uuid', nullable: true })
+  @ValidateIf(
+    (_object, value: unknown) => value !== undefined && value !== null,
+  )
+  @IsUUID()
+  avatarAssetId?: string | null;
+
   @ApiPropertyOptional({ maxLength: 80 })
   @ValidateIf((_object, value: unknown) => value !== undefined)
   @IsString()

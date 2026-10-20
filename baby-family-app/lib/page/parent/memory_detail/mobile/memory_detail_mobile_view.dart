@@ -6,6 +6,7 @@ import 'package:baby_family/page/parent/memory_detail/memory_detail_controller.d
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:baby_family/utils/helper/memory_text.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
@@ -75,7 +76,20 @@ class MemoryDetailMobileView extends HookConsumerWidget {
               ],
             ),
           ),
-          _CommentInput(controller: controller),
+          if (memory.commentsEnabled)
+            _CommentInput(controller: controller)
+          else
+            SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.s4),
+                child: Text(
+                  context.l10n.memCommentsOff,
+                  textAlign: TextAlign.center,
+                  style: AppTypography.adapt(context, AppTypography.caption),
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -242,6 +256,12 @@ class MemoryDetailMobileView extends HookConsumerWidget {
                     : l10n.memEditPerspective,
                 () => router.push(MemoryPerspectiveRoute(memoryId: memory.id)),
               ),
+            if (controller.canEdit)
+              item(
+                LucideIcons.pencil,
+                l10n.memEditTitle,
+                () => _edit(context, controller),
+              ),
             item(
               LucideIcons.flag,
               l10n.famReport,
@@ -276,6 +296,23 @@ class MemoryDetailMobileView extends HookConsumerWidget {
       onSubmit: controller.report,
       onTrack: () => context.router.push(const HelpRoute()),
     );
+  }
+
+  /// ⋯ “Sửa ký ức” → MEM-09; lưu xong đọc lại chi tiết.
+  Future<void> _edit(
+    BuildContext context,
+    MemoryDetailController controller,
+  ) async {
+    final memory = controller.memory;
+    if (memory == null) {
+      return;
+    }
+    final saved = await context.router.push<bool>(
+      MemoryComposerRoute(memoryId: memory.id),
+    );
+    if (saved ?? false) {
+      await controller.load();
+    }
   }
 
   /// ⋯ “Xoá ký ức” → xác nhận → Thùng rác (MEM-17, giữ 30 ngày).

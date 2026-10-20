@@ -7,6 +7,9 @@ class NotificationRepositoryImp extends MockRepositoryImp
   NotificationRepositoryImp(super.store);
 
   @override
+  void touch() => store.commit();
+
+  @override
   List<JsonMap> notifications(String familyId) =>
       rows('notifications', (row) => row['familyId'] == familyId);
 

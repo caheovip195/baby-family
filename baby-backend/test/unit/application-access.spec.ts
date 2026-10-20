@@ -92,6 +92,53 @@ describe('family business access policy', () => {
       await service.requireParent(actor, familyId, 'metadata'),
     ).toBeInstanceOf(Family);
   });
+  it('keeps download reads open after expiry and when blocked (§6.5), but not for waiting or unlicensed families', async () => {
+    const current = state();
+    const expired = (accessPhase: 'EXPIRED' | 'BLOCKED' | 'INCOMPLETE') =>
+      state({
+        entitlement: new FamilyEntitlement({
+          ...current.entitlement!,
+          accessPhase,
+          validUntil: new Date(0),
+        }),
+      });
+    repository.findFamilyAccessState.mockResolvedValue(expired('EXPIRED'));
+    expect(
+      await service.requireParent(actor, familyId, 'download'),
+    ).toBeInstanceOf(Family);
+    await expect(
+      service.requireParent(actor, familyId, 'read'),
+    ).rejects.toMatchObject({ code: 'SUBSCRIPTION_REQUIRED' });
+    repository.findFamilyAccessState.mockResolvedValueOnce(expired('BLOCKED'));
+    expect(
+      await service.requireParent(actor, familyId, 'download'),
+    ).toBeInstanceOf(Family);
+    repository.findFamilyAccessState.mockResolvedValueOnce(expired('BLOCKED'));
+    await expect(
+      service.requireParent(actor, familyId, 'read'),
+    ).rejects.toMatchObject({ code: 'LICENSE_BLOCKED' });
+    repository.findFamilyAccessState.mockResolvedValueOnce(
+      expired('INCOMPLETE'),
+    );
+    await expect(
+      service.requireParent(actor, familyId, 'download'),
+    ).rejects.toMatchObject({ code: 'SUBSCRIPTION_REQUIRED' });
+    repository.findFamilyAccessState.mockResolvedValueOnce(
+      state({ entitlement: null }),
+    );
+    await expect(
+      service.requireParent(actor, familyId, 'download'),
+    ).rejects.toMatchObject({ statusCode: 402 });
+    repository.findFamilyAccessState.mockResolvedValueOnce(
+      state({
+        family: new Family({ ...current.family, status: 'WAITING_PARTNER' }),
+        activeParentCount: 1,
+      }),
+    );
+    await expect(
+      service.requireParent(actor, familyId, 'download'),
+    ).rejects.toMatchObject({ code: 'FAMILY_NOT_ACTIVE' });
+  });
   it('rejects missing entitlement, blocked license and insufficient active Parents', async () => {
     repository.findFamilyAccessState.mockResolvedValueOnce(
       state({ entitlement: null }),

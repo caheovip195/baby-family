@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 import type { AuthPrincipal } from '../common/auth/auth-principal';
 import { NotFoundError } from '../common/errors/domain.error';
 import type { FamilyBillingResponseDto } from '../dto/billing/family-billing-response.dto';
@@ -7,6 +7,8 @@ import type { ICatalogQueryRepository } from '../interfaces/repositories/catalog
 import { APPLICATION_ACCESS_SERVICE } from '../interfaces/services/application-access-service.interface';
 import type { IApplicationAccessService } from '../interfaces/services/application-access-service.interface';
 import type { IFamilyBillingService } from '../interfaces/services/family-billing-service.interface';
+import { SUBSCRIPTION_REMINDER_SERVICE } from '../interfaces/services/subscription-reminder-service.interface';
+import type { ISubscriptionReminderService } from '../interfaces/services/subscription-reminder-service.interface';
 import { BillingProjection } from './billing-projection';
 
 @Injectable()
@@ -16,6 +18,9 @@ export class FamilyBillingService implements IFamilyBillingService {
     private readonly repository: ICatalogQueryRepository,
     @Inject(APPLICATION_ACCESS_SERVICE)
     private readonly access: IApplicationAccessService,
+    @Optional()
+    @Inject(SUBSCRIPTION_REMINDER_SERVICE)
+    private readonly reminders?: ISubscriptionReminderService,
   ) {}
 
   async get(
@@ -30,6 +35,9 @@ export class FamilyBillingService implements IFamilyBillingService {
       now,
     );
     if (!state) throw new NotFoundError('Family was not found.');
-    return BillingProjection.family(state, now);
+    const result = BillingProjection.family(state, now);
+    if (this.reminders)
+      result.statusBanner = await this.reminders.status(familyId, now);
+    return result;
   }
 }

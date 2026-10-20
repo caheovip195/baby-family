@@ -3,6 +3,7 @@ import 'package:baby_family/page/parent/monthly_camera/monthly_camera_controller
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/child_avatar.dart';
@@ -55,7 +56,8 @@ class MonthlyCameraMobileView extends HookConsumerWidget {
         body: Stack(
           fit: StackFit.expand,
           children: [
-            if (viewfinder != null) Image.asset(viewfinder, fit: BoxFit.cover),
+            if (viewfinder != null)
+              Image(image: mediaImageProvider(viewfinder), fit: BoxFit.cover),
             if (controller.ghostOn && ghost != null)
               Positioned(
                 top: 120,
@@ -64,7 +66,10 @@ class MonthlyCameraMobileView extends HookConsumerWidget {
                 height: 520,
                 child: Opacity(
                   opacity: 0.28,
-                  child: Image.asset(ghost, fit: BoxFit.cover),
+                  child: Image(
+                    image: mediaImageProvider(ghost),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             Column(
@@ -199,7 +204,10 @@ class MonthlyCameraMobileView extends HookConsumerWidget {
               clipBehavior: Clip.antiAlias,
               child: gallery == null
                   ? null
-                  : Image.asset(gallery, fit: BoxFit.cover),
+                  : Image(
+                      image: mediaImageProvider(gallery),
+                      fit: BoxFit.cover,
+                    ),
             ),
           ),
         ),

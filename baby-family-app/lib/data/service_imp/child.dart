@@ -11,6 +11,7 @@ import 'package:baby_family/data/repository/memory.dart';
 import 'package:baby_family/data/service/child.dart';
 import 'package:baby_family/data/service_imp/mock_service.dart';
 import 'package:baby_family/utils/constants/enum.dart';
+import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
 
 class ChildServiceImp extends MockServiceImp implements IChildService {
@@ -143,9 +144,21 @@ class ChildServiceImp extends MockServiceImp implements IChildService {
     ];
     final memories = _memoriesOf(childId);
     final current = childMonthIndex(birth, today);
+    final server = Map<String, dynamic>.from(
+      (_repository.child(childId)?[kValueChildKeyServerChapters] as Map?) ??
+          const {},
+    );
     return [
       for (var index = current; index >= 1; index--)
-        _chapter(child.id, birth, index, current, fixtures, memories),
+        _chapter(
+          child.id,
+          birth,
+          index,
+          current,
+          fixtures,
+          memories,
+          server['$index'] as Map?,
+        ),
     ];
   }
 
@@ -155,8 +168,9 @@ class ChildServiceImp extends MockServiceImp implements IChildService {
     int index,
     int current,
     List<JsonMap> fixtures,
-    List<JsonMap> memories,
-  ) {
+    List<JsonMap> memories, [
+    Map<dynamic, dynamic>? server,
+  ]) {
     final range = childMonthRange(birth, index);
     final inRange = memories.where((row) {
       final at = DateTime.parse(row['occurredAt'] as String);
@@ -177,19 +191,24 @@ class ChildServiceImp extends MockServiceImp implements IChildService {
         .map((row) => (row['mediaAssets'] as List?)?.firstOrNull as String?)
         .nonNulls
         .firstOrNull;
+    // Bản server: số liệu + ảnh tháng làm bìa do server tính đúng quyền xem.
+    final serverCover = server?['coverUrl'] as String?;
     return ChapterSummary(
       childId: childId,
       monthIndex: index,
       start: range.start,
       end: range.end,
-      memoryCount: ((fixture?['memories'] as int?) ?? 0) + local.length,
+      memoryCount:
+          server?['memoryCount'] as int? ??
+          ((fixture?['memories'] as int?) ?? 0) + local.length,
       firstsCount:
+          server?['firstsCount'] as int? ??
           ((fixture?['firsts'] as int?) ?? 0) + local.where(_isFirst).length,
       voiceCount:
           ((fixture?['voices'] as int?) ?? 0) +
           local.where((row) => row['kind'] == MemoryKind.voice.name).length,
-      hasMonthlyPhoto: photo,
-      coverAsset: (fixture?['coverAsset'] as String?) ?? cover,
+      hasMonthlyPhoto: photo || serverCover != null,
+      coverAsset: serverCover ?? (fixture?['coverAsset'] as String?) ?? cover,
       current: index == current,
     );
   }

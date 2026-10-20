@@ -1,3 +1,5 @@
+import 'package:baby_family/data/dto/display_prefs.dart';
+
 // FAMILY, BILLING, SETTINGS & CIRCLE: FAM-01, FAM-03, SUB-01, SUB-07, SET-01,
 // SET-06, CIR-01 — render (390/360, light/dark, text 1.3) + main flows.
 import 'package:auto_route/auto_route.dart';
@@ -18,6 +20,19 @@ class _FakeAppSettingService implements IAppSettingService {
 
   @override
   Future<void> changeLanguage(AppLanguage language) async {}
+
+  @override
+  DisplayPrefs currentDisplay() => const DisplayPrefs();
+
+  @override
+  Future<void> changeDisplay({
+    ThemeMode? theme,
+    double? textScale,
+    bool? showLunar,
+  }) async {}
+
+  @override
+  Future<DisplayPrefs?> pullServerDisplay() async => null;
 }
 
 final _settingsOverrides = [

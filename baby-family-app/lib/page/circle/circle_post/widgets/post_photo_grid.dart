@@ -26,7 +26,10 @@ class _PostPhotoGrid extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: radius,
-                  child: Image.asset(asset, fit: BoxFit.cover),
+                  child: Image(
+                    image: mediaImageProvider(asset),
+                    fit: BoxFit.cover,
+                  ),
                 ),
                 Positioned(
                   top: AppSpacing.compact,

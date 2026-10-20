@@ -1,8 +1,10 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/page/general/help/help_controller.dart';
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/theme.dart';
+import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_caps_label.dart';
 import 'package:baby_family/utils/widget/app_grouped_list.dart';
 import 'package:baby_family/utils/widget/app_settings_row.dart';
@@ -77,7 +79,7 @@ class HelpMobileView extends HookConsumerWidget {
                 iconColor: kColorPrimary600C2513F,
                 title: l10n.setSendRequest,
                 subtitle: l10n.setSendRequestHint,
-                onTap: comingSoon,
+                onTap: () => context.router.push(const SupportRequestRoute()),
               ),
               AppSettingsRow(
                 icon: LucideIcons.flag,

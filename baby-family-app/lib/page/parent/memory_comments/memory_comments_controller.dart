@@ -11,6 +11,7 @@ import 'package:baby_family/data/provider/mock_store.dart';
 import 'package:baby_family/data/service/family.dart';
 import 'package:baby_family/data/service/memory.dart';
 import 'package:baby_family/page/application_base.dart';
+import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/legacy.dart';
@@ -71,6 +72,7 @@ class MemoryCommentsController extends BaseNotifier {
   Future<ReportReceipt?> report(MemoryComment comment, ReportRequest request) =>
       memoryService.submitReport(
         targetId: comment.id,
+        target: ReportTarget.comment,
         reasonCode: request.reasonCode,
         note: request.note,
         hideForMe: request.hideForMe,
@@ -84,7 +86,7 @@ class MemoryCommentsController extends BaseNotifier {
     hasError = false;
     try {
       final (value, notes, members, current) = await (
-        memoryService.memory(memoryId),
+        memoryService.refreshMemory(memoryId),
         memoryService.comments(memoryId),
         familyService.members(),
         familyService.me(),

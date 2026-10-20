@@ -6,6 +6,9 @@ class CareRepositoryImp extends MockRepositoryImp implements ICareRepository {
   CareRepositoryImp(super.store);
 
   @override
+  void touch() => store.commit();
+
+  @override
   List<JsonMap> missions(String familyId) =>
       rows('missions', (row) => row['familyId'] == familyId);
 

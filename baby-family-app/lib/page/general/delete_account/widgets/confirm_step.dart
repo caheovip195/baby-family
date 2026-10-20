@@ -2,16 +2,21 @@ part of '../mobile/delete_account_mobile_view.dart';
 
 /// SET-09c bước 3–4 — Xác thực & xác nhận (Pencil `sOUEE`): đăng nhập lại
 /// (Apple / OTP), điều xảy ra khi xoá, ô tích xác nhận, “Xoá tài khoản”.
+/// Bản thật chỉ có OTP: gửi mã → nhập 6 số → xác nhận.
 class _ConfirmStep extends StatelessWidget {
   const _ConfirmStep({
     required this.controller,
     required this.info,
     required this.onDelete,
+    required this.onSendOtp,
+    required this.onVerifyOtp,
   });
 
   final DeleteAccountController controller;
   final DeleteAccountInfo info;
   final VoidCallback onDelete;
+  final VoidCallback onSendOtp;
+  final VoidCallback onVerifyOtp;
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +24,7 @@ class _ConfirmStep extends StatelessWidget {
     const gap = SizedBox(height: AppSpacing.cardInset);
     final account = info.maskedAppleAccount;
     final phone = info.maskedPhone;
+    final verifiedAs = account ?? phone;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -33,14 +39,15 @@ class _ConfirmStep extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              AppButton.social(
-                label: l10n.authApple,
-                icon: LucideIcons.apple,
-                inverted: true,
-                height: 48,
-                onPressed: controller.verify,
-              ),
-              if (controller.verified && account != null) ...[
+              if (account != null)
+                AppButton.social(
+                  label: l10n.authApple,
+                  icon: LucideIcons.apple,
+                  inverted: true,
+                  height: 48,
+                  onPressed: controller.verify,
+                ),
+              if (controller.verified && verifiedAs != null) ...[
                 const SizedBox(height: AppSpacing.s3),
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -64,7 +71,7 @@ class _ConfirmStep extends StatelessWidget {
                       const SizedBox(width: AppSpacing.itemGap),
                       Expanded(
                         child: Text(
-                          l10n.setDelVerified(account),
+                          l10n.setDelVerified(verifiedAs),
                           style: AppTypography.adapt(
                             context,
                             AppTypography.caption.copyWith(
@@ -78,12 +85,12 @@ class _ConfirmStep extends StatelessWidget {
                   ),
                 ),
               ],
-              if (phone != null) ...[
-                const SizedBox(height: AppSpacing.s3),
+              if (phone != null && !controller.verified) ...[
+                if (account != null) const SizedBox(height: AppSpacing.s3),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: InkWell(
-                    onTap: controller.verify,
+                    onTap: controller.isLoading ? null : onSendOtp,
                     child: Text(
                       l10n.setDelUseOtp(phone),
                       style: AppTypography.adapt(
@@ -95,6 +102,29 @@ class _ConfirmStep extends StatelessWidget {
                       ),
                     ),
                   ),
+                ),
+              ],
+              if (controller.otpSent && phone != null) ...[
+                const SizedBox(height: AppSpacing.s3),
+                Text(
+                  l10n.setDelOtpSent(phone),
+                  style: AppTypography.adapt(context, AppTypography.caption),
+                ),
+                const SizedBox(height: AppSpacing.itemGap),
+                AppTextField(
+                  label: l10n.authOtpTitle,
+                  keyboardType: TextInputType.number,
+                  maxLength: DeleteAccountController.otpLength,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  autofocus: true,
+                  onChanged: controller.setOtpCode,
+                ),
+                const SizedBox(height: AppSpacing.itemGap),
+                AppButton(
+                  label: l10n.commonConfirm,
+                  height: 44,
+                  isLoading: controller.isLoading,
+                  onPressed: controller.canVerifyOtp ? onVerifyOtp : null,
                 ),
               ],
             ],
@@ -180,7 +210,7 @@ class _ConfirmStep extends StatelessWidget {
           primaryLabel: l10n.settingsDeleteAccount,
           primaryColor: kColorErrorD14B4B,
           isLoading: controller.isLoading,
-          onPrimary: onDelete,
+          onPrimary: controller.canDelete ? onDelete : null,
           secondaryLabel: l10n.setDelKeepAccount,
           onSecondary: () => context.router.maybePop(),
         ),

@@ -801,6 +801,38 @@
     "description": "MEM — Vị trí GPS trong ảnh luôn được xoá trước khi lưu."
   },
   "memoriesAddMedia": "Thêm ảnh",
+  "memUploadProgress": "Đang tải {done}/{total} ảnh…",
+  "@memUploadProgress": {
+    "description": "MEM-06: tiến độ tải nền",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "memUploadFailed": "Tải lên chưa xong",
+  "@memUploadFailed": {
+    "description": "MEM-06: tải lên lỗi"
+  },
+  "memUploadRetry": "Thử lại",
+  "@memUploadRetry": {
+    "description": "MEM-06: thử lại tải lên"
+  },
+  "memUploadCancel": "Huỷ",
+  "@memUploadCancel": {
+    "description": "MEM-06: huỷ tải lên"
+  },
+  "memoriesSetCover": "Đặt làm ảnh bìa",
+  "@memoriesSetCover": {
+    "description": "MEM-05/09: chạm ảnh để đặt làm bìa"
+  },
+  "memoriesRemoveMedia": "Bỏ ảnh này",
+  "@memoriesRemoveMedia": {
+    "description": "MEM-05/09: nút bỏ ảnh khỏi ký ức"
+  },
   "@memoriesAddMedia": {
     "description": "MEM — Thêm ảnh"
   },
@@ -5959,6 +5991,14 @@
     "description": "MEM-03a — tiêu đề tạm/semantics"
   },
   "memPhotoViewerTitle": "Xem ảnh",
+  "memVideoPlay": "Phát video",
+  "@memVideoPlay": {
+    "description": "MEM-08 phát video"
+  },
+  "memVideoPause": "Tạm dừng video",
+  "@memVideoPause": {
+    "description": "MEM-08 tạm dừng video"
+  },
   "@memPhotoViewerTitle": {
     "description": "MEM-08 — tiêu đề tạm/semantics"
   },
@@ -5971,6 +6011,18 @@
     "description": "MEM-16"
   },
   "recapWeekTitle": "Tuần của nhà mình",
+  "recapWeekHeadline": "{moments, plural, =0{Một tuần bình yên} other{{moments} khoảnh khắc}}{firsts, plural, =0{} other{ · {firsts} lần đầu}}",
+  "@recapWeekHeadline": {
+    "description": "REC-02: tiêu đề recap tuần từ server",
+    "placeholders": {
+      "moments": {
+        "type": "int"
+      },
+      "firsts": {
+        "type": "int"
+      }
+    }
+  },
   "@recapWeekTitle": {
     "description": "REC-02"
   },
@@ -6529,6 +6581,43 @@
       }
     }
   },
+  "careSeriesSection": "Chuỗi lặp lại",
+  "@careSeriesSection": {
+    "description": "CARE-03 chuỗi lặp lại (mục 7.13.6)"
+  },
+  "careSeriesDaily": "Hằng ngày",
+  "@careSeriesDaily": {
+    "description": "CARE-03 chuỗi lặp lại (mục 7.13.6)"
+  },
+  "careSeriesPausedUntil": "Tạm dừng tới {date}",
+  "@careSeriesPausedUntil": {
+    "description": "CARE-03 chuỗi lặp lại (mục 7.13.6)",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "careSeriesPauseWeek": "Tạm dừng 1 tuần",
+  "@careSeriesPauseWeek": {
+    "description": "CARE-03 chuỗi lặp lại (mục 7.13.6)"
+  },
+  "careSeriesEnd": "Dừng chuỗi",
+  "@careSeriesEnd": {
+    "description": "CARE-03 chuỗi lặp lại (mục 7.13.6)"
+  },
+  "careSeriesEndConfirm": "Các lần chưa làm từ hôm nay sẽ được bỏ khỏi bảng. Việc đã làm vẫn được giữ.",
+  "@careSeriesEndConfirm": {
+    "description": "CARE-03 chuỗi lặp lại (mục 7.13.6)"
+  },
+  "careSeriesPaused": "Đã tạm dừng chuỗi 1 tuần",
+  "@careSeriesPaused": {
+    "description": "CARE-03 chuỗi lặp lại (mục 7.13.6)"
+  },
+  "careSeriesEnded": "Đã dừng chuỗi",
+  "@careSeriesEnded": {
+    "description": "CARE-03 chuỗi lặp lại (mục 7.13.6)"
+  },
   "famPlanPaidSubtitle": "{price} · gia hạn {date}",
   "@famPlanPaidSubtitle": {
     "description": "FAM-01 plan card subtitle (paid plan)",
@@ -6888,6 +6977,68 @@
     "description": "FAM-07 danger row"
   },
   "famDeleteFamilyHint": "Cần xác nhận kỹ · có 30 ngày để khôi phục",
+  "famDelBody": "Cần cả Bố và Mẹ đồng ý. Sau khi đồng ý, gia đình được giữ thêm {days} ngày để huỷ; người thân mất quyền xem ngay. Hết hạn, toàn bộ ký ức, ảnh, thư và lịch sử của cả nhà bị xoá.",
+  "@famDelBody": {
+    "description": "FAM-07 xoá gia đình (BF-20261019-008)",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "famDelExportHint": "Nên tải dữ liệu về trước: Cài đặt → Dữ liệu của tôi.",
+  "@famDelExportHint": {
+    "description": "FAM-07 xoá gia đình (BF-20261019-008)"
+  },
+  "famDelVerifyHint": "Xác thực lại bằng mã gửi tới số điện thoại của bạn.",
+  "@famDelVerifyHint": {
+    "description": "FAM-07 xoá gia đình (BF-20261019-008)"
+  },
+  "famDelSendOtp": "Gửi mã xác thực",
+  "@famDelSendOtp": {
+    "description": "FAM-07 xoá gia đình (BF-20261019-008)"
+  },
+  "famDelOtpSent": "Đã gửi mã xác thực",
+  "@famDelOtpSent": {
+    "description": "FAM-07 xoá gia đình (BF-20261019-008)"
+  },
+  "famDelStart": "Yêu cầu xoá gia đình",
+  "@famDelStart": {
+    "description": "FAM-07 xoá gia đình (BF-20261019-008)"
+  },
+  "famDelAgree": "Đồng ý xoá gia đình",
+  "@famDelAgree": {
+    "description": "FAM-07 xoá gia đình (BF-20261019-008)"
+  },
+  "famDelWaitingPartner": "Đang chờ bạn đời đồng ý xoá gia đình. Bạn có thể huỷ yêu cầu bất cứ lúc nào.",
+  "@famDelWaitingPartner": {
+    "description": "FAM-07 xoá gia đình (BF-20261019-008)"
+  },
+  "famDelPartnerAsked": "Bạn đời đã yêu cầu xoá gia đình. Xác thực lại để đồng ý, hoặc huỷ yêu cầu.",
+  "@famDelPartnerAsked": {
+    "description": "FAM-07 xoá gia đình (BF-20261019-008)"
+  },
+  "famDelScheduled": "Gia đình sẽ bị xoá vào {date}. Trong thời gian này cả nhà chỉ xem và tải về được.",
+  "@famDelScheduled": {
+    "description": "FAM-07 xoá gia đình (BF-20261019-008)",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "famDelCancel": "Huỷ yêu cầu xoá",
+  "@famDelCancel": {
+    "description": "FAM-07 xoá gia đình (BF-20261019-008)"
+  },
+  "famDelCancelled": "Đã huỷ yêu cầu xoá gia đình",
+  "@famDelCancelled": {
+    "description": "FAM-07 xoá gia đình (BF-20261019-008)"
+  },
+  "famDelRequested": "Đã cập nhật yêu cầu xoá gia đình",
+  "@famDelRequested": {
+    "description": "FAM-07 xoá gia đình (BF-20261019-008)"
+  },
   "@famDeleteFamilyHint": {
     "description": "FAM-07 danger hint"
   },
@@ -6929,6 +7080,35 @@
     "description": "SET-02"
   },
   "setUnlink": "Huỷ liên kết",
+  "phoneChangeTitle": "Đổi số điện thoại",
+  "@phoneChangeTitle": {
+    "description": "Đổi số điện thoại (BF-20261019-010)"
+  },
+  "phoneChangeReauthHint": "Trước tiên, xác thực lại bằng mã gửi tới số hiện tại của bạn.",
+  "@phoneChangeReauthHint": {
+    "description": "Đổi số điện thoại (BF-20261019-010)"
+  },
+  "phoneChangeNewHint": "Nhập số điện thoại mới. Mã xác nhận sẽ gửi tới số này.",
+  "@phoneChangeNewHint": {
+    "description": "Đổi số điện thoại (BF-20261019-010)"
+  },
+  "phoneChangeCodeSent": "Đã gửi mã tới {phone}",
+  "@phoneChangeCodeSent": {
+    "description": "Đổi số điện thoại (BF-20261019-010)",
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "phoneChangeDone": "Đã đổi số điện thoại. Các thiết bị khác đã được đăng xuất.",
+  "@phoneChangeDone": {
+    "description": "Đổi số điện thoại (BF-20261019-010)"
+  },
+  "setChangePhone": "Đổi số",
+  "@setChangePhone": {
+    "description": "Đổi số điện thoại (BF-20261019-010)"
+  },
   "@setUnlink": {
     "description": "SET-02"
   },
@@ -7590,6 +7770,65 @@
   "setSendRequestHint": "Mô tả vấn đề, kèm ảnh chụp màn hình nếu muốn",
   "@setSendRequestHint": {
     "description": "SET-11"
+  },
+  "supportTitle": "Gửi yêu cầu hỗ trợ",
+  "@supportTitle": {
+    "description": "SET-11 gửi yêu cầu hỗ trợ"
+  },
+  "supportHint": "Chỉ nội dung bạn tự nhập được gửi tới đội hỗ trợ. Đừng ghi mật khẩu hay mã OTP.",
+  "@supportHint": {
+    "description": "SET-11 gửi yêu cầu hỗ trợ"
+  },
+  "supportCategoryLabel": "Vấn đề về",
+  "@supportCategoryLabel": {
+    "description": "SET-11 gửi yêu cầu hỗ trợ"
+  },
+  "supportCategory": "{category, select, ACCOUNT{Tài khoản} INVITATION{Lời mời} MEDIA{Ảnh & video} BILLING{Gói & thanh toán} PRIVACY{Quyền riêng tư} other{Khác}}",
+  "@supportCategory": {
+    "description": "SET-11 gửi yêu cầu hỗ trợ",
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "supportSubject": "Tiêu đề",
+  "@supportSubject": {
+    "description": "SET-11 gửi yêu cầu hỗ trợ"
+  },
+  "supportBody": "Mô tả vấn đề",
+  "@supportBody": {
+    "description": "SET-11 gửi yêu cầu hỗ trợ"
+  },
+  "supportSend": "Gửi yêu cầu",
+  "@supportSend": {
+    "description": "SET-11 gửi yêu cầu hỗ trợ"
+  },
+  "supportSent": "Đã gửi yêu cầu {code}",
+  "@supportSent": {
+    "description": "SET-11 gửi yêu cầu hỗ trợ",
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "supportMine": "Yêu cầu đã gửi",
+  "@supportMine": {
+    "description": "SET-11 gửi yêu cầu hỗ trợ"
+  },
+  "supportEmpty": "Bạn chưa gửi yêu cầu nào.",
+  "@supportEmpty": {
+    "description": "SET-11 gửi yêu cầu hỗ trợ"
+  },
+  "supportStatus": "{status, select, OPEN{Đã tiếp nhận} IN_PROGRESS{Đang xử lý} WAITING_USER{Chờ bạn phản hồi} RESOLVED{Đã giải quyết} other{Đã đóng}}",
+  "@supportStatus": {
+    "description": "SET-11 gửi yêu cầu hỗ trợ",
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
   },
   "setMyReports": "Báo cáo của tôi",
   "@setMyReports": {
@@ -8377,6 +8616,27 @@
     "description": "US-06 FAB"
   },
   "usThanksReact": "Thả tim",
+  "usThanksShareAsk": "{name} muốn đăng lời cảm ơn này thành khoảnh khắc của cả nhà",
+  "@usThanksShareAsk": {
+    "description": "Thẻ lời cảm ơn: bạn đời đề nghị đăng thành khoảnh khắc gia đình",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "usThanksShareApprove": "Đăng cho cả nhà",
+  "@usThanksShareApprove": {
+    "description": "Nút duyệt đăng lời cảm ơn lên gia đình"
+  },
+  "usThanksShareKeep": "Để riêng hai mình",
+  "@usThanksShareKeep": {
+    "description": "Nút giữ lời cảm ơn riêng hai bố mẹ"
+  },
+  "usThanksShareFailed": "Chưa gửi được, thử lại nhé",
+  "@usThanksShareFailed": {
+    "description": "Lỗi khi duyệt/để riêng đề nghị đăng lời cảm ơn"
+  },
   "@usThanksReact": {
     "description": "US-06 tooltip"
   },
@@ -12230,5 +12490,280 @@
         "type": "String"
       }
     }
+  },
+  "authProviderUnavailable": "Bản này chưa hỗ trợ đăng nhập bằng Apple/Google. Vui lòng dùng số điện thoại.",
+  "@authProviderUnavailable": {
+    "description": "AUTH-01: Apple/Google sign-in is not wired to the server yet (local API build)."
+  },
+  "onboardingPartnerApproveTitle": "{callName} muốn tham gia nhà mình",
+  "@onboardingPartnerApproveTitle": {
+    "description": "ONB-WAIT final approval dialog title (business spec 7.3 step 6).",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingPartnerApproveBody": "Hãy chắc chắn đây đúng là bạn đời của bạn. Sau khi đồng ý, nhà mình được dùng thử miễn phí {days} ngày.",
+  "@onboardingPartnerApproveBody": {
+    "description": "ONB-WAIT final approval dialog body.",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingPartnerApprove": "Đồng ý",
+  "@onboardingPartnerApprove": {
+    "description": "ONB-WAIT final approval: approve button."
+  },
+  "onboardingPartnerReject": "Không phải",
+  "@onboardingPartnerReject": {
+    "description": "ONB-WAIT final approval: reject button (wrong person)."
+  },
+  "errorOtpInvalid": "Mã chưa đúng hoặc đã hết hạn. Vui lòng thử lại.",
+  "@errorOtpInvalid": {
+    "description": "AUTH-03: wrong/expired OTP (OTP_INVALID)."
+  },
+  "errorRateLimited": "Bạn thao tác hơi nhanh. Vui lòng đợi một chút rồi thử lại.",
+  "@errorRateLimited": {
+    "description": "429 RATE_LIMITED / INVITE_DAILY_LIMIT."
+  },
+  "errorPhoneNotSupported": "Số điện thoại này chưa được hỗ trợ.",
+  "@errorPhoneNotSupported": {
+    "description": "AUTH-02: PHONE_NOT_SUPPORTED."
+  },
+  "errorInviteUnavailable": "Lời mời đã hết hạn hoặc đã được dùng. Nhờ người mời gửi lại nhé.",
+  "@errorInviteUnavailable": {
+    "description": "INV-01: INVITE_EXPIRED / INVITE_ALREADY_USED."
+  },
+  "errorAlreadyInFamily": "Bạn đang là Bố/Mẹ của một gia đình khác nên chưa tham gia được.",
+  "@errorAlreadyInFamily": {
+    "description": "ALREADY_PARENT_OF_ANOTHER_FAMILY / PARENT_SLOTS_FULL."
+  },
+  "errorServiceUnavailable": "Máy chủ đang bận. Vui lòng thử lại sau ít phút.",
+  "@errorServiceUnavailable": {
+    "description": "503 SERVICE_UNAVAILABLE."
+  },
+  "memEditTitle": "Sửa ký ức",
+  "@memEditTitle": {
+    "description": "MEM-09: tiêu đề màn sửa ký ức và mục trong menu ⋯ của MEM-07"
+  },
+  "memEditSaved": "Đã lưu thay đổi",
+  "@memEditSaved": {
+    "description": "MEM-09: snackbar sau khi lưu thay đổi"
+  },
+  "memEditAuthorOnlyHint": "Chỉ người đăng sửa được chú thích và ngày. Bạn vẫn đổi được bé và người xem.",
+  "@memEditAuthorOnlyHint": {
+    "description": "MEM-09: Parent không phải tác giả — trường bị khoá (đặc tả 7.8.3)"
+  },
+  "memEditMediaHint": "Chưa thêm hoặc bớt ảnh được khi sửa ký ức.",
+  "@memEditMediaHint": {
+    "description": "MEM-09: băng ảnh khi sửa (chưa hỗ trợ đổi ảnh)"
+  },
+  "errorVersionConflict": "Ký ức vừa được cập nhật ở nơi khác. Xem lại rồi lưu nhé.",
+  "@errorVersionConflict": {
+    "description": "Lỗi 412 VERSION_CONFLICT khi sửa"
+  },
+  "errorMemoryNotEditable": "Bạn không sửa được phần này của ký ức.",
+  "@errorMemoryNotEditable": {
+    "description": "Lỗi MEMORY_FIELD_NOT_EDITABLE / MEMORY_VISIBILITY_INVALID"
+  },
+  "errorRequestOpenLimit": "Bạn đang có 5 lời nhờ chưa xong. Chờ bớt một lời nhờ rồi gửi tiếp nhé.",
+  "@errorRequestOpenLimit": {
+    "description": "US-03: 422 REQUEST_OPEN_LIMIT (BR-067)"
+  },
+  "errorRequestResendBlocked": "Lời nhờ này vừa được trả lời “Hôm nay không được”. Thử lại sau nhé.",
+  "@errorRequestResendBlocked": {
+    "description": "US-03: 422 REQUEST_RESEND_BLOCKED (12 giờ sau khi bị từ chối)"
+  },
+  "errorRequestChanged": "Lời nhờ vừa thay đổi. Xem lại trạng thái mới nhé.",
+  "@errorRequestChanged": {
+    "description": "US-04: 409 INVALID_REQUEST_TRANSITION / REQUEST_REMINDER_USED"
+  },
+  "notiSomeone": "Một thành viên",
+  "@notiSomeone": {
+    "description": "NOTI-01: tên người thao tác khi không xác định được"
+  },
+  "notiMemoryPublished": "{name} vừa thêm một ký ức mới",
+  "@notiMemoryPublished": {
+    "description": "NOTI-01 NOTI_MEMORY_PUBLISHED",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notiCommentCreated": "{count, plural, =1{{name} vừa bình luận một ký ức} other{Có {count} bình luận mới trên một ký ức}}",
+  "@notiCommentCreated": {
+    "description": "NOTI-01 NOTI_COMMENT_CREATED (gộp 30 phút)",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notiReactionChanged": "{count, plural, =1{{name} đã thả cảm xúc cho một ký ức} other{Có {count} cảm xúc mới trên một ký ức}}",
+  "@notiReactionChanged": {
+    "description": "NOTI-01 NOTI_REACTION_CHANGED (gộp 30 phút)",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notiRequestCreated": "{name} vừa gửi cho bạn một lời nhờ",
+  "@notiRequestCreated": {
+    "description": "NOTI-01 NOTI_REQUEST_CREATED",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notiRequestAccepted": "{name} đã nhận lời nhờ của bạn",
+  "@notiRequestAccepted": {
+    "description": "NOTI-01 NOTI_REQUEST_ACCEPTED",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notiRequestDone": "{name} đã làm xong lời nhờ 💛",
+  "@notiRequestDone": {
+    "description": "NOTI-01 NOTI_REQUEST_DONE",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notiRequestDeclined": "{name} báo hôm nay chưa làm được lời nhờ",
+  "@notiRequestDeclined": {
+    "description": "NOTI-01 NOTI_REQUEST_DECLINED (giọng trung tính, BR-067)",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notiRequestAcknowledged": "{name} đã xem lời nhờ của bạn",
+  "@notiRequestAcknowledged": {
+    "description": "NOTI-01 NOTI_REQUEST_ACKNOWLEDGED",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notiCheckinShared": "{name} vừa chia sẻ trạng thái",
+  "@notiCheckinShared": {
+    "description": "NOTI-01 NOTI_CHECKIN_SHARED (nhạy cảm, không hiện cảm xúc)",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notiAppreciationCreated": "Bạn nhận được một lời cảm ơn ❤️",
+  "@notiAppreciationCreated": {
+    "description": "NOTI-01 NOTI_APPRECIATION_CREATED"
+  },
+  "notiGeneric": "Bạn có một cập nhật mới",
+  "@notiGeneric": {
+    "description": "NOTI-01: mẫu chưa biết (server mới hơn app)"
+  },
+  "heartsReasonMission": "Một việc nhỏ cho gia đình",
+  "@heartsReasonMission": {
+    "description": "CARE: dòng Hearts khi server không có tiêu đề (nhiệm vụ)"
+  },
+  "heartsReasonRequest": "Giúp bạn đời một lời nhờ",
+  "@heartsReasonRequest": {
+    "description": "CARE: dòng Hearts từ lời nhờ (REQUEST_DONE)"
+  },
+  "heartsReasonOther": "Hearts của bạn",
+  "@heartsReasonOther": {
+    "description": "CARE: dòng Hearts khác"
+  },
+  "setDelOtpSent": "Đã gửi mã xác thực tới {phone}",
+  "@setDelOtpSent": {
+    "description": "SET-09c: đã gửi OTP xác thực lại",
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "errorReauthRequired": "Phiên xác thực đã hết hạn. Bạn xác thực lại giúp mình nhé.",
+  "@errorReauthRequired": {
+    "description": "Lỗi REAUTH_REQUIRED"
+  },
+  "errorExportActive": "Đang có một bản xuất chưa xong. Bạn đợi bản đó xong nhé.",
+  "@errorExportActive": {
+    "description": "Lỗi EXPORT_ALREADY_ACTIVE"
+  },
+  "errorEventDateInvalid": "Ngày của sự kiện chưa hợp lệ. Bạn kiểm tra lại nhé.",
+  "@errorEventDateInvalid": {
+    "description": "Lỗi EVENT_DATE_INVALID / EVENT_LUNAR_DATE_INVALID"
+  },
+  "calendarChildBirthday": "Sinh nhật {count} tuổi của {name}",
+  "@calendarChildBirthday": {
+    "description": "CARE-07: sinh nhật của bé (server tính)",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarChildMonthiversary": "{name} tròn {count} tháng",
+  "@calendarChildMonthiversary": {
+    "description": "CARE-07: tròn tháng của bé (server tính)",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notiEventReminder": "Nhắc lịch: {title}",
+  "@notiEventReminder": {
+    "description": "NOTI_EVENT_REMINDER (CAL-02)",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notiEventReminderPrivate": "Bạn có một lịch hẹn sắp tới",
+  "@notiEventReminderPrivate": {
+    "description": "NOTI_EVENT_REMINDER của sự kiện riêng tư (không có tiêu đề)"
+  },
+  "notiBadgeEarned": "Gia đình vừa nhận một huy hiệu mới 🏅",
+  "@notiBadgeEarned": {
+    "description": "NOTI_BADGE_EARNED (CARE-10)"
+  },
+  "memCommentsAllow": "Cho phép bình luận",
+  "@memCommentsAllow": {
+    "description": "MEM-07/09 bật/tắt bình luận theo ký ức"
+  },
+  "memCommentsAllowHint": "Tắt thì mọi người vẫn thả cảm xúc được",
+  "@memCommentsAllowHint": {
+    "description": "MEM-07/09 bật/tắt bình luận theo ký ức"
+  },
+  "memCommentsOff": "Bình luận đã tắt cho ký ức này",
+  "@memCommentsOff": {
+    "description": "MEM-07/09 bật/tắt bình luận theo ký ức"
   }
 }
