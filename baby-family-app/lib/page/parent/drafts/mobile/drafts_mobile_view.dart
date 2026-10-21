@@ -42,6 +42,13 @@ class DraftsMobileView extends HookConsumerWidget {
 
     void resume(MemoryDraftItem draft) {
       final childId = draft.childIds.firstOrNull;
+      if (draft.location == DraftLocation.cloud) {
+        // MEM-18: nháp trên tài khoản mở trình soạn ở chế độ sửa rồi đăng.
+        context.router
+            .push(MemoryComposerRoute(draftId: draft.id))
+            .then((_) => controller.load());
+        return;
+      }
       context.router.push(switch (draft.kind) {
         MemoryKind.letter => LetterComposerRoute(childId: childId),
         MemoryKind.diary => DiaryEditorRoute(childId: childId),

@@ -4,11 +4,17 @@ import type { MemoryKind } from '../common/database.enums';
  * Technical limits of the memory API (spec §11.5). Plan-dependent limits come
  * from the billing catalog (`photosPerMemory`, `memoryCount` — an absent
  * `memoryCount` means no limit — and `circle.enabled`); kinds with
- * their own workflow (MONTHLY_PHOTO, LETTER, MILESTONE, VOICE, ...) are added
+ * their own workflow (MONTHLY_PHOTO, LETTER, MILESTONE, ...) are added
  * here when that workflow is implemented.
  */
 export const MEMORY_POLICY = {
-  creatableKinds: ['MOMENT', 'DIARY', 'KEEPSAKE', 'QUOTE'] as MemoryKind[],
+  creatableKinds: [
+    'MOMENT',
+    'DIARY',
+    'KEEPSAKE',
+    'QUOTE',
+    'VOICE',
+  ] as MemoryKind[],
   /** Kinds that must carry at least one asset. */
   assetRequiredKinds: ['KEEPSAKE'] as MemoryKind[],
   /** Request-level ceiling; the plan quota `photosPerMemory` is usually lower. */

@@ -913,3 +913,148 @@ Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hi�
 - Kết quả: 124/165 dòng checklist; mọi check app/backend/integration toàn bộ đạt.
 - Theo dõi: seed template v5, khoá mã hoá support khi triển khai, admin trả lời ticket/xử lý ca, app đọc `statusBanner`, liên kết Apple/Google, ghi âm, MEM-18.
 - Trạng thái: Hoàn thành (còn các phần nêu ở “Theo dõi”).
+
+## BF-20261020-001 — Đăng nhập/liên kết Apple & Google + IAP (SUB-01/02/04, store notifications) (2 Codex) + app tiếp tục nháp, thẻ recap tuần, giới hạn gói, múi giờ (Claude)
+
+- Ngày làm: 2026-10-20T18:56:25+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp task tiếp theo đi"
+- Liên quan: BF-20261019-010.
+- Vấn đề/mục tiêu: cho phép đăng nhập/liên kết Apple & Google (giảm phụ thuộc SMS), thu tiền qua Store với quyền gói phản ánh đúng vòng đời (gia hạn/ân hạn/hết hạn/hoàn tiền), nâng cấp gói; trên app: không mất bài viết dở khi lưu nháp trên tài khoản, thấy tổng kết tuần ngay trên dòng thời gian, hiểu rõ khi chạm giới hạn gói.
+- Tác động sản phẩm/dữ liệu: identity mạng xã hội không gộp theo email (tránh chiếm tài khoản); payload Store lưu mã hoá; hoàn tiền/thu hồi khoá license nhưng không xoá dữ liệu; mua trả phí thu hồi phần trial còn lại; chạm giới hạn gói giữ nguyên nội dung đang soạn (lưu nháp).
+- Quyết định & cơ sở: quyền gói theo catalog/rank (không theo tên House/Family); mỗi provider bật bằng cấu hình (thiếu → 503); verifier/publisher qua interface để test offline; app chưa thêm SDK gốc vì cần client id/sản phẩm Store và cấu hình iOS/Android.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Chưa có dữ liệu thật; nên theo dõi tỉ lệ đăng nhập theo phương thức, tỉ lệ verify lỗi/sự kiện Store không gắn được gia đình, chuyển đổi trial → trả phí và nâng cấp, số lần hiện sheet giới hạn và tỉ lệ nâng cấp sau đó, tỉ lệ nháp trên tài khoản được đăng.
+- Kết quả: 128/165 dòng checklist; mọi check app/backend/integration toàn bộ đạt.
+- Theo dõi: SDK đăng nhập + IAP trên app, Play publisher production, cấu hình Store/khóa mã hoá khi triển khai, thử sandbox thật.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Theo dõi”).
+
+## BF-20261021-001 — CI app + giám sát production, ghi âm VOICE + chuyển gia đình FAM-08 + danh mục múi giờ (2 Codex) + app ghi âm, chuyển gia đình, múi giờ (Claude)
+
+- Ngày làm: 2026-10-21T10:24:27+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp task tiếp theo đi"
+- Liên quan: BF-20261020-001.
+- Vấn đề/mục tiêu: lưu giọng nói của con (VOICE) và nghe lại; người vừa là Bố/Mẹ vừa là người thân nhà khác chuyển qua lại; gia đình đặt đúng múi giờ (ảnh hưởng ngày ký ức/nhiệm vụ); đội vận hành có log/metrics để phát hiện sự cố; CI cho app.
+- Tác động sản phẩm/dữ liệu: thời lượng ghi âm do server đo, giới hạn theo `audioMaxSec` của gói; chuyển gia đình chỉ đổi ngữ cảnh, không đổi tư cách (BR-057), danh sách gia đình không lộ bé; log không chứa header/body/token, `/metrics` chỉ mở khi có token.
+- Quyết định & cơ sở: danh mục múi giờ là catalog có version trên server (client không fix cứng); gia đình mặc định lưu ở settings JSON (không migration); chuyển gia đình làm lại bản phản chiếu trên máy để không trộn dữ liệu hai nhà; integration chạy tái tạo worker theo bộ nhớ thay vì tăng heap.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Chưa có dữ liệu thật; nên theo dõi số ký ức VOICE/tuần và tỉ lệ lỗi tải audio, số lần chuyển gia đình, tỉ lệ gia đình đổi múi giờ khỏi mặc định, tỉ lệ 5xx và job FAILED trên `/metrics`.
+- Kết quả: 131/165 dòng checklist; mọi check app/backend/integration toàn bộ đạt.
+- Theo dõi: CI thật, cảnh báo sự cố, thử ghi âm trên máy thật, SDK đăng nhập + IAP.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Theo dõi”).
+
+## BF-20261021-002 — Admin backend (xác thực admin, kiểm duyệt, khoá license, CSKH, catalog) + người/địa điểm ký ức, email giao dịch, outbox consumer (2 Codex) + app nhật ký, người/địa điểm, ticket hỗ trợ (Claude)
+
+- Ngày làm: 2026-10-21T10:49:41+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp task tiếp theo đi"
+- Liên quan: BF-20261021-001.
+- Vấn đề/mục tiêu: đội vận hành xử lý báo cáo, khoá license, trả lời CSKH có kiểm soát; ký ức ghi lại được ai có mặt, cảm xúc, nơi chốn; người dùng nhận email cho sự kiện quan trọng (xuất dữ liệu, hẹn xoá, cảnh báo bảo mật); không mất nhật ký đang viết.
+- Tác động sản phẩm/dữ liệu: admin tách hoàn toàn khỏi app (token riêng, TOTP, RBAC, khoá khi sai nhiều), mọi thao tác ghi audit, xem nội dung bị báo cáo phải có quyền và để lại dấu vết; email chỉ tới địa chỉ đã xác minh, không chứa tên bé/nội dung ký ức; Hearts thêm cho ký ức/góc nhìn (+2, tối đa 5 lần/ngày, chung trần ngày).
+- Quyết định & cơ sở: catalog admin chỉ đọc (sửa phải qua version mới — làm sau); “Ai ở đó” không nhận diện khuôn mặt (đặc tả 7.22); tự lưu nháp nhật ký trên máy (không đẩy nháp chưa xong lên server).
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Chưa có dữ liệu thật; nên theo dõi thời gian xử lý ca kiểm duyệt/ticket, số license bị khoá và lý do, tỉ lệ ký ức có người/cảm xúc/địa điểm, tỉ lệ email giao hàng thành công, số nhật ký được khôi phục từ nháp.
+- Kết quả: 135/165 dòng checklist; mọi check app/backend/integration toàn bộ đạt.
+- Theo dõi: web admin, catalog có version qua admin, SMTP production, SDK đăng nhập + IAP.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Theo dõi”).
+
+## BF-20261021-003 — US-01 bản server không hiện câu hỏi mẫu + Trợ giúp/FAQ và Giới thiệu từ server (Claude; Codex hết quota tới 15:25)
+
+- Ngày làm: 2026-10-21T11:43:03+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp task tiếp theo đi"
+- Liên quan: BF-20261021-002.
+- Vấn đề/mục tiêu: bản server không được hiện nội dung mẫu cho gia đình thật (câu hỏi hôm nay); người dùng tự tìm câu trả lời thường gặp và liên hệ hỗ trợ ngay trong app.
+- Tác động sản phẩm/dữ liệu: thẻ câu hỏi ẩn ở bản server cho tới 1.1; FAQ do server quản lý (đổi nội dung không cần phát hành app); liên hệ/pháp lý chỉ hiện khi đã cấu hình — không hiện thông tin giả.
+- Quyết định & cơ sở: catalog FAQ có version trong config (theo chuẩn extensibility), endpoint công khai để xem được cả khi chưa đăng nhập; không tự bịa email/hotline/URL pháp lý.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Chưa có dữ liệu thật; nên theo dõi lượt mở FAQ theo câu hỏi, tỉ lệ người xem FAQ rồi vẫn gửi yêu cầu hỗ trợ.
+- Kết quả: 137/165 dòng checklist; mọi check app/backend/integration toàn bộ đạt.
+- Theo dõi: nội dung pháp lý thật, cấu hình liên hệ khi triển khai.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Theo dõi”).
+
+## BF-20261021-004 — Bộ kiểm thử bất biến bảo mật §6.4 (release blocker) (Claude; Codex hết quota tới 15:25)
+
+- Ngày làm: 2026-10-21T11:57:44+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp task tiếp theo đi"
+- Liên quan: BF-20261021-003.
+- Vấn đề/mục tiêu: chứng minh tự động các bất biến bảo mật release blocker (§6.4) trước khi phát hành — không lộ dữ liệu chéo gia đình, không lộ dữ liệu riêng của bạn đời, người thân chỉ thấy bé được cấp quyền.
+- Tác động sản phẩm/dữ liệu: người ngoài gọi lịch/sự kiện/mẫu nhiệm vụ nay nhận 404 thay vì 403 (không còn đoán được gia đình có tồn tại); không đổi hành vi với thành viên.
+- Quyết định & cơ sở: một spec quét route trên AppModule thật cộng bảng bao phủ thay vì nhân bản test theo miền; phần 1.1 ghi rõ là chưa có route thay vì bỏ ngỏ.
+- Cách kiểm chứng/đo lường: spec chạy trong integration/CI; không có số liệu sản phẩm. Khi thêm route mới phải thêm vào danh sách quét.
+- Kết quả: 138/165 dòng checklist; mọi check backend/integration toàn bộ đạt.
+- Theo dõi: pentest, bất biến 1.1.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Theo dõi”).
+
+## BF-20261021-005 — Catalog nhiệm vụ đủ ≥ 90 ngày nội dung mỗi giai đoạn (bổ sung mẫu + test chứng minh) (Claude; Codex hết quota tới 15:25)
+
+- Ngày làm: 2026-10-21T12:20:16+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp task tiếp theo đi"
+- Liên quan: BF-20261019-003, BF-20261021-004.
+- Vấn đề/mục tiêu: nhiệm vụ hằng ngày không được lặp lại nhàm chán — đặc tả yêu cầu ≥ 90 ngày nội dung cho mỗi giai đoạn; trước đây catalog quá nhỏ nên bộ sinh phải nới cửa sổ không lặp từ 14 xuống 7 ngày.
+- Tác động sản phẩm/dữ liệu: 268 mẫu (vi/en) phủ thai kỳ, sau sinh, sơ sinh, nhũ nhi, tập đi, mẫu giáo đến 6 tuổi; người mang thai/vừa sinh luôn có việc chăm sóc bản thân; gia đình chỉ đang mang thai không còn bị lỗi tạo bảng, gia đình có con lớn không còn bị gán việc thai kỳ cho con.
+- Quyết định & cơ sở: chuẩn hoá yêu cầu thành “đủ mẫu cho một cửa sổ không lặp ở mức mặc định” và chứng minh bằng mô phỏng bộ sinh thật 90 ngày thay vì chỉ đếm; chỉ thêm mẫu mới, không sửa mẫu đã publish.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Sau khi chạy seed trên môi trường thật, nên theo dõi tỉ lệ bảng phải nới cửa sổ, tỉ lệ hoàn thành và bỏ qua theo mẫu/giai đoạn để cắt tỉa nội dung kém.
+- Kết quả: 139/165 dòng checklist; kiểm tra backend đạt (một test chập chờn có sẵn đã sửa).
+- Theo dõi: duyệt nội dung, mức HEAVY, trẻ trên 6 tuổi.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Theo dõi”).
+
+## BF-20261021-006 — Web Admin CMS `baby-admin/` (đăng nhập, kiểm duyệt, khoá license, CSKH, catalog) (Claude; Codex hết quota tới 15:25)
+
+- Ngày làm: 2026-10-21T16:02:38+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp task tiếp theo đi" (và "Try again" khi lượt trước bị ngắt).
+- Liên quan: BF-20261021-002.
+- Vấn đề/mục tiêu: đội vận hành cần công cụ thật để xử lý báo cáo vi phạm, khoá license và trả lời CSKH thay vì gọi API thủ công.
+- Tác động sản phẩm/dữ liệu: mọi thao tác nhạy cảm bắt buộc lý do và được ghi audit ở backend; web chỉ giữ phiên 15 phút trong `sessionStorage`; không hiển thị ảnh/nội dung riêng ngoài luồng kiểm duyệt có lý do.
+- Quyết định & cơ sở: theo stack đã chốt trong tài liệu kỹ thuật §24; catalog chỉ đọc vì nội dung đã publish là bất biến (sửa phải qua phiên bản mới); menu theo vai trò nhưng quyền thật ở server.
+- Cách kiểm chứng/đo lường: test và chạy thật nêu ở SESSIONS. Khi vận hành nên theo dõi thời gian xử lý ca so với SLA, số ca quá hạn, thời gian phản hồi ticket.
+- Kết quả: 141/165 dòng checklist.
+- Theo dõi: publish catalog, tra cứu, audit log, triển khai sau VPN/IP allowlist.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Theo dõi”).
+
+## BF-20261021-007 — Publish phiên bản catalog qua Admin (Codex) + app mua gói IAP và đăng nhập/liên kết Apple & Google (Claude)
+
+- Ngày làm: 2026-10-21T16:11:43+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp task tiếp theo đi"
+- Liên quan: BF-20261020-001, BF-20261021-006.
+- Vấn đề/mục tiêu: vận hành tự đổi gói/chính sách dùng thử/nội dung nhiệm vụ có kiểm soát; người dùng mua gói và đăng nhập bằng Apple/Google thật trên app.
+- Tác động sản phẩm/dữ liệu: quyền lợi chỉ đổi sau khi server xác minh giao dịch Store; huỷ ở Store/Apple/Google không làm gì; phiên bản catalog đã publish bất biến, thay đổi qua bản mới có lý do + audit.
+- Quyết định & cơ sở: app lấy mã sản phẩm và token gắn tài khoản từ server (không fix cứng); client id Google cấu hình khi build; hướng mới của người dùng (media xử lý ở client, upload thẳng S3) được ghi nhận cho task tiếp theo.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Sau khi lên sandbox nên theo dõi tỉ lệ mua thành công/huỷ/lỗi verify theo store, tỉ lệ đăng nhập theo phương thức.
+- Kết quả: 142/165 dòng checklist; mọi check app/backend/admin đạt.
+- Theo dõi: cấu hình Store/Apple/Google thật, thử sandbox.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Theo dõi”).
+
+## BF-20261021-008 — Luồng media mới: client nén/tạo biến thể ảnh–video, server chỉ cấp phiên upload presigned, client upload thẳng S3 (Codex backend + Claude app)
+
+- Ngày làm: 2026-10-21T16:48:34+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm luồng media theo hướng mới: client nén/xử lý ảnh, video; server chỉ cấp phiên upload presigned, client upload thẳng lên S3."
+- Liên quan: BF-20261021-007 (hướng người dùng chốt giữa task đó).
+- Vấn đề/mục tiêu:
+  - Bỏ xử lý media trên server: client nén/tạo biến thể, upload thẳng S3.
+  - Không tải lại ảnh/video mà máy người đăng vẫn còn.
+  - Định hướng app dùng được khi không có mạng.
+- Tác động sản phẩm/dữ liệu:
+  - Ảnh/video sẵn sàng ngay sau `complete`, không chờ worker.
+  - Server lưu thêm SHA-256 file gốc + khoá metadata. Không phải dữ liệu nhận dạng trẻ; không dùng cho quyền/dedup.
+  - Ảnh trong máy hiển thị nhanh hơn, tiết kiệm băng thông.
+  - Cần quyền thư viện. Nếu không cho quyền, app vẫn dùng ảnh server như trước.
+- Quyết định & cơ sở:
+  - Không dùng hash tên file vì tên không ổn định và trùng giữa các máy. Dùng SHA-256 nội dung gốc + bộ lọc metadata/thời điểm chụp để băm ít.
+  - Picker ký ức giữ file gốc để khớp được.
+  - Offline-first theo outbox + idempotency, tận dụng `Idempotency-Key`/`If-Match` sẵn có.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Sau khi ra mắt nên đo:
+  - Tỉ lệ ảnh hiển thị từ máy so với từ server, thời gian khớp.
+  - Tỉ lệ upload lỗi theo mã `UPLOAD_*`; dung lượng trung bình mỗi asset sau nén.
+  - Với offline-first: tỉ lệ thay đổi tạo khi offline, thời gian tới khi đồng bộ, tỉ lệ `rejected`/`conflict`.
+- Kết quả: luồng media mới chạy end-to-end qua test (app 806, backend integration 596). Có tài liệu thiết kế offline-first.
+- Theo dõi:
+  - Thử máy thật (nén video, quyền thư viện).
+  - Deploy migration.
+  - Triển khai offline-first theo lộ trình.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Theo dõi").
+
+## BF-20261021-009 — Commit các thay đổi BF-20261020-001 → BF-20261021-008 thẳng vào main
+
+- Ngày làm: 2026-10-21T17:19:36+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Commit tất cả thay đổi BF-20261020-001 đến BF-20261021-008 thẳng vào main."
+- Vấn đề/mục tiêu: lưu lại các vòng làm việc vào lịch sử git.
+- Tác động sản phẩm/dữ liệu: thuần kỹ thuật, không đổi hành vi sản phẩm; chưa có dữ liệu đo.
+- Quyết định & cơ sở: commit thẳng `main` theo yêu cầu; bỏ `.DS_Store`; không push.
+- Cách kiểm chứng/đo lường: `git log`/`git status` sau commit.
+- Kết quả: đã commit.
+- Theo dõi: push khi người dùng yêu cầu.
+- Trạng thái: Hoàn thành.

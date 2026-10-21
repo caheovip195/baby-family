@@ -64,6 +64,7 @@ class _TimelineView extends StatelessWidget {
             chapter: chapter,
             controller: controller,
           ),
+          final RecapWeekEntry entry => _RecapWeekCard(entry: entry),
           final Memory memory => _TimelineMemory(
             memory: memory,
             controller: controller,

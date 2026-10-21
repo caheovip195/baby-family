@@ -625,3 +625,56 @@ do agent tự đặt tên (06/10, 09/10, 11/10).
 - CARE-03: `ICareService.missionSeries/pauseSeries/endSeries` (`MissionSeriesInfo`, server `/families/{fid}/mission-series`, `/mission-series/{id}/pause`, `DELETE /mission-series/{id}`); mục “Chuỗi lặp lại” trong `MissionSettings` (chỉ quản lý chuỗi của tôi / Cùng nhau).
 - Hỗ trợ: `SupportRequestPage` (`/settings/help/request`) từ Trợ giúp; danh mục `GET /v1/support/categories` (mặc định `kValueSupportCategories` khi chạy mock), gửi `POST /v1/support/tickets`, danh sách `GET /v1/me/support/tickets`.
 - Test: care_remote +1, settings_remote +2; `make check` 781 pass. Chưa có xem/nhắn tiếp ticket, ghi âm, MEM-18.
+
+## 2026-10-20 — BF-20261020-001: soạn tiếp nháp trên tài khoản, thẻ recap tuần, giới hạn gói SUB-05, phương thức đăng nhập từ server
+
+- MEM-18: `MemoryComposerRoute(draftId:)` mở nháp server ở chế độ sửa; lưu = `updateMemory` rồi `IMemoryService.publishDraft` (`POST /v1/memories/{id}/publish`). `drafts()` phản chiếu nháp vào kho; `IMemoryRepository.memories()` bỏ hàng `remoteStatus: DRAFT`.
+- Thẻ recap tuần: `TimelineItemRecord.periodStart`, `IMemoryService.latestRecapWeek()` (thẻ `WEEKLY_RECAP` mới nhất của `/timeline` cả nhà) → `RecapWeekEntry` chèn vào `MemoriesTabController.timeline`, widget `_RecapWeekCard` → `WeeklyRecapRoute`.
+- SUB-05: composer lưu lỗi `QUOTA_*` (`kValuePlanQuotaErrorCodes`) → `showPlanLimitSheet` (lưu nháp / nâng cấp).
+- Phương thức đăng nhập: `GET /v1/me/sign-in-methods` → `ProfileSettings.signInMethods` (bản server); Apple/Google ở chế độ server chỉ hiện trạng thái (chưa có SDK).
+- Test: subject_memory_remote +2, settings_remote +1; `make check` 784 pass.
+
+## 2026-10-21 — BF-20261021-001: ghi âm VOICE, chuyển gia đình FAM-08, múi giờ FAM-07
+
+- VOICE: `record` 7.1.2 (+ `RECORD_AUDIO`); `IVoiceRecorderRepository` (micro) → `IVoiceRecordingService` (`voiceRecordingServiceProvider`: thật khi có server, `MockVoiceRecordingService` 12 giây ở bản mẫu); composer `toggleVoice` bắt đầu/dừng/ghi lại, gửi tệp m4a làm asset. `MediaUploader` gửi `AUDIO` + thời lượng, `waitReady` (`GET /v1/media/{id}`) trước khi tạo; `Memory.voiceUrl` từ `assets[].urls.a`, `PlayableVoiceCard` trên dòng thời gian.
+- FAM-08: `IFamilyService.memberships()` từ `/v1/me/families`; `switchFamily` = `PUT /v1/me/default-family`; `ISessionService.changeFamily` reseed bản phản chiếu rồi `_syncFromServer` theo `remotePreferredFamilyId` (Parent ↔ người thân); `MemoryRemoteServiceImp` xoá cache khi đổi gia đình.
+- FAM-07: `IFamilyService.timezones()` (`/v1/catalog/timezones`), `FamilySettings.timezoneId`, sheet chọn múi giờ có tìm kiếm trong Cài đặt gia đình.
+- Test: family_remote +2, session_remote +1, subject_memory_remote +2; `make check` 789 pass.
+
+## 2026-10-21 — BF-20261021-002: người/cảm xúc/địa điểm ký ức, nhật ký tự lưu, ticket hỗ trợ chi tiết
+
+- MEM-05 nâng cao: `MemoryComposerController.people/feeling/locationLabel` + sheet chọn người (thành viên hoặc gõ tên), cảm xúc (`kValueMomentFeelings`, l10n `memFeeling`), địa điểm; `IMemoryService.create(locationLabel:)`; remote gửi `people:[{displayName}]`, `feeling` (UPPER), `locationLabel`, phản chiếu `MemoryRecord.people/locationLabel`; chi tiết hiển thị cảm xúc đã dịch + địa điểm.
+- MEM-13: `saveDraft(body:, draftId:)` cập nhật cùng nháp (`resumable: true`), `draft(kind)` ưu tiên nháp trên máy do người dùng lưu (cả bản server), `clearDraft` xoá nháp cùng loại; `DiaryEditorController` tự lưu sau 2 giây, lưu nốt khi đóng.
+- Hỗ trợ: `SupportTicketPage` (`/settings/help/ticket?ticketId=`), `ISettingsService.supportTicket/sendSupportMessage` (`GET /v1/support/tickets/{id}`, `POST …/messages`).
+- Test: mock_services +1, settings_remote +1, subject_memory_remote +1; `make check` 792 pass.
+
+## 2026-10-21 — BF-20261021-003: US-01 không hiện câu hỏi mẫu, Trợ giúp/FAQ + Giới thiệu từ server
+
+- `UsRemoteServiceImp.coupleToday` bỏ `question` khi có gia đình server (câu hỏi kết nối là 1.1).
+- `IAccountRemoteRepository.helpCenter` (`GET /v1/support/help-center?locale`), `SettingsRemoteServiceImp.help()` → `HelpInfo.faqAnswers/termsUrl/privacyUrl`; Trợ giúp: sheet câu trả lời, `mailto:`/`tel:`, ẩn dòng chưa cấu hình; Giới thiệu mở URL pháp lý.
+- Test: couple_remote (không có câu hỏi), settings_remote +1; `make check` 793 pass.
+
+## 2026-10-21 — BF-20261021-007: mua gói IAP, đăng nhập Apple/Google
+
+- IAP: `in_app_purchase` 3.3.1; `IStorePurchaseRepository` (`store` APP_STORE/PLAY, `buy(productId, accountToken)`, `complete`); `FamilyRemoteServiceImp.purchasePlan` → `POST /v1/families/{fid}/purchase-intents` → Store → `POST …/purchases/verify` (`signedTransaction` | `purchaseToken`) → complete → đồng bộ billing. `PlansController.purchase`/`UpgradePlanController.upgrade` trả `false` khi huỷ.
+- Apple/Google: `sign_in_with_apple` 8.2.0, `google_sign_in` 7.2.0; `ISocialCredentialRepository`; `SessionRemoteServiceImp.signIn(apple|google)` → `POST /v1/auth/apple|google`; client id Google qua `--dart-define GOOGLE_CLIENT_ID`, `GOOGLE_SERVER_CLIENT_ID`. Còn cấu hình native: capability Sign in with Apple, GIDClientID + URL scheme iOS, sản phẩm Store.
+- `UserCancelled` (huỷ ở Store/Apple/Google) → `runWithErrorSnackBar` không báo lỗi.
+- Test: family_remote +2, session_remote +2; `make check` 797 pass.
+
+## 2026-10-21 — BF-20261021-008: media xử lý trên máy, upload thẳng S3; hiển thị ảnh trong máy trước
+
+- `IMediaRepository.processImage`/`processVideo`:
+  - Ảnh: `orig` ≤ 4096 (JPEG q90) + `m1080`/`t320`.
+  - Video: `video_compress` ≤ 1080p + `poster`/`t320`.
+  - `source` gồm SHA-256 file gốc, khoá `kind|ngắn x dài|giây` và `capturedAt` (EXIF).
+- `MediaUploader`: intent kèm `variants`/`source` → PUT file chính + từng `variantUploads` → `complete`. `uploadAvatar` dùng cho `/me/avatar`.
+- Picker ký ức không resize nữa (`pickMultipleMedia()`), để giữ bytes gốc cho việc khớp SHA. Picker avatar/cover vẫn giới hạn 2048 vì mỗi object avatar ≤ 5 MiB.
+- Local-first: `ILocalMediaService` (`LocalMediaServiceImp`, `photo_manager`). `MemoryLibraryRemoteServiceImp.localMedia` thay URL ảnh/video bằng file trong thư viện máy khi khớp. Cơ chế khớp:
+  1. Chỉ mục đã lưu (mã hoá, xoá khi đăng xuất).
+  2. Ứng viên cùng khoá + thời điểm chụp ±2 s → SHA-256.
+  3. Nếu không khớp SHA: chỉ nhận khi có đúng một ứng viên cùng khoá + thời điểm chụp.
+  4. Ghi miss và thử lại sau 1 ngày.
+
+  Không so theo tên file. Quyền thư viện được xin khi chọn ảnh trong màn soạn. Android cần `READ_MEDIA_IMAGES`/`VIDEO`.
+- Test: `local_media_test` (6), memory_library_remote (+1 local), subject_memory_remote (MEM-04/08 client nén), settings_remote (avatar có biến thể). `make check` 806 pass.
+- Thiết kế offline-first (chưa làm): `docs/04_THIET_KE_OFFLINE_FIRST.md`.

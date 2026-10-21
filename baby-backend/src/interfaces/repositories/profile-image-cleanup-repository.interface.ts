@@ -17,5 +17,6 @@ export interface IProfileImageCleanupRepository {
     staleBefore: Date,
     lease?: JobLease,
   ): Promise<UserAsset | null>;
+  variantKeys(assetId: string): Promise<string[]>;
   clearDeadline(asset: UserAsset, lease?: JobLease): Promise<void>;
 }

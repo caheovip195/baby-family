@@ -14,6 +14,16 @@ export interface IProfileImageService {
   ): Promise<{
     assetId: string;
     status: string;
+    variantUploads?: {
+      code: string;
+      upload: {
+        mode: 'single';
+        method: 'PUT';
+        url: string;
+        headers: Record<string, string>;
+        expiresAt: Date;
+      };
+    }[];
     upload?: {
       mode: 'single';
       method: 'PUT';

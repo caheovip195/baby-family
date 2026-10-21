@@ -11,7 +11,11 @@ export interface IMediaMaintenanceService {
   purgeOrphans(
     now: Date,
     context?: JobContext,
+    familyId?: string,
   ): Promise<Record<string, number>>;
   /** Confirms single uploads whose object exists although complete was never called. */
-  reconcileUploads(now: Date): Promise<Record<string, number>>;
+  reconcileUploads(
+    now: Date,
+    familyId?: string,
+  ): Promise<Record<string, number>>;
 }

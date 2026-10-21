@@ -15,7 +15,21 @@ export class BadgeAwardRepository implements IBadgeAwardRepository {
   constructor(private readonly prisma: PrismaService) {}
   async eventFamily(eventId: string): Promise<string | null> {
     const event = await this.prisma.outboxEvent.findFirst({
-      where: { eventId, eventType: 'mission.changed', deletedAt: null },
+      where: {
+        eventId,
+        eventType: {
+          in: [
+            'mission.changed',
+            'memory.created',
+            'memory.published',
+            'memory.restored',
+            'memory.perspective.changed',
+            'us.request.done',
+            'us.appreciation.created',
+          ],
+        },
+        deletedAt: null,
+      },
       select: { familyId: true },
     });
     return event?.familyId ?? null;

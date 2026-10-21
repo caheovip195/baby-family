@@ -2,7 +2,8 @@ part of '../mobile/memory_composer_mobile_view.dart';
 
 /// Khối ghi âm (loại Ghi âm — tài liệu 9.4 MEM-04 “Ghi âm”): nền
 /// `secondary-100` bo 16 như VoiceCard; nút mic tròn 64 `secondary-500`;
-/// trạng thái 13/700 `secondary-700`. Ghi âm là mô phỏng (đoạn mẫu 0:12).
+/// trạng thái 13/700 `secondary-700`. Bấm để ghi, bấm lần nữa để dừng; bản
+/// mẫu (không server) “ghi” đoạn 0:12.
 class _VoiceRecorder extends StatelessWidget {
   const _VoiceRecorder({required this.controller});
 
@@ -35,7 +36,11 @@ class _VoiceRecorder extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  seconds == null ? LucideIcons.mic : LucideIcons.check,
+                  controller.recording
+                      ? LucideIcons.square
+                      : seconds == null
+                      ? LucideIcons.mic
+                      : LucideIcons.check,
                   size: 28,
                   color: AppColors.onPrimary(context),
                 ),
@@ -44,7 +49,11 @@ class _VoiceRecorder extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.s3),
           Text(
-            seconds == null
+            controller.recording
+                ? l10n.memVoiceRecording
+                : controller.micDenied
+                ? l10n.memVoiceMicDenied
+                : seconds == null
                 ? l10n.memVoiceTapToRecord
                 : l10n.memVoiceRecorded(memoryDuration(seconds)),
             style: AppTypography.caption.copyWith(

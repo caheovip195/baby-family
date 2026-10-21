@@ -1185,6 +1185,12 @@ export class MissionBoardRepository implements IMissionBoardRepository {
             .map((c) => c.id)
         : [],
     });
+    // A child-scoped template needs a matching child, except pregnancy ones
+    // (stored at family scope when laid out).
+    const assignable = (candidate: ReturnType<typeof toCandidate>) =>
+      candidate.stage === 'PREGNANCY' ||
+      !['CHILD', 'MULTI_CHILD'].includes(candidate.suggestedScope) ||
+      candidate.childIds.length > 0;
     const seed = `${familyId}:${boardDate.toISOString().slice(0, 10)}:${POLICY.generatorVersion}`;
     let result:
       | ReturnType<
@@ -1212,7 +1218,8 @@ export class MissionBoardRepository implements IMissionBoardRepository {
               fit(t, parents[i]!.userId) &&
               t.roleFit !== 'TOGETHER',
           )
-          .map((t) => toCandidate(t, i));
+          .map((t) => toCandidate(t, i))
+          .filter(assignable);
       const together = context.templates
         .filter(
           (t) =>
@@ -1221,7 +1228,8 @@ export class MissionBoardRepository implements IMissionBoardRepository {
             this.matches(t, context) &&
             categories.every((disabled) => !disabled.includes(t.category)),
         )
-        .map((t) => toCandidate(t, 0));
+        .map((t) => toCandidate(t, 0))
+        .filter(assignable);
       const current = MissionBoardBalanceModel.generate({
         seed,
         level,
@@ -1286,15 +1294,21 @@ export class MissionBoardRepository implements IMissionBoardRepository {
             (a, b) =>
               (counts.get(a) ?? 0) - (counts.get(b) ?? 0) || a.localeCompare(b),
           );
-          if (!matches.length) fail('MISSION_BOARD_POOL_INSUFFICIENT', 409);
-          ids =
-            candidate.multiChildOk && scope === 'MULTI_CHILD'
-              ? matches
-              : result.assignedChildIds[candidate.id]?.length
-                ? result.assignedChildIds[candidate.id]!
-                : [matches[0]!];
-          scope = ids.length > 1 ? 'MULTI_CHILD' : 'CHILD';
-          for (const id of ids) counts.set(id, (counts.get(id) ?? 0) + 1);
+          // Pregnancy templates are about the unborn baby: never assigned to an
+          // existing child, stored at family scope.
+          if (!matches.length && candidate.stage === 'PREGNANCY') {
+            scope = 'FAMILY';
+          } else {
+            if (!matches.length) fail('MISSION_BOARD_POOL_INSUFFICIENT', 409);
+            ids =
+              candidate.multiChildOk && scope === 'MULTI_CHILD'
+                ? matches
+                : result.assignedChildIds[candidate.id]?.length
+                  ? result.assignedChildIds[candidate.id]!
+                  : [matches[0]!];
+            scope = ids.length > 1 ? 'MULTI_CHILD' : 'CHILD';
+            for (const id of ids) counts.set(id, (counts.get(id) ?? 0) + 1);
+          }
         }
         const row = await tx.mission.create({
           data: {

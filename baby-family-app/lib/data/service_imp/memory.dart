@@ -28,6 +28,7 @@ import 'package:baby_family/data/service_imp/child.dart';
 import 'package:baby_family/data/service_imp/mock_service.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
+import 'package:flutter/foundation.dart';
 
 class MemoryServiceImp extends MockServiceImp implements IMemoryService {
   MemoryServiceImp(
@@ -158,6 +159,7 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
     DateTime? occurredAt,
     String? feeling,
     List<String> people = const [],
+    String? locationLabel,
     String? milestoneCode,
     String? milestoneTitle,
     int? monthIndex,
@@ -190,6 +192,7 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
       'visibility': visibility.name,
       'feeling': ?feeling,
       'people': people,
+      'locationLabel': ?locationLabel,
       'milestoneCode': ?milestoneCode,
       'milestoneTitle': ?(milestone?['title'] ?? milestoneTitle),
       'monthIndex': ?monthIndex,
@@ -462,6 +465,10 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
   @override
   Future<Memory?> draft(MemoryKind kind) async {
     await ready();
+    final device = deviceDraft(kind);
+    if (device != null) {
+      return device;
+    }
     final drafts = _repository.catalog()['memoryDrafts'] as Map?;
     final row = drafts?[kind.name] as Map?;
     if (row == null || _usedDrafts.contains(kind.name)) {
@@ -480,6 +487,14 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
   @override
   Future<void> clearDraft(MemoryKind kind) async {
     await ready();
+    // Ký ức đã lưu: bỏ nháp trên máy cùng loại (MEM-18).
+    for (final row in [..._repository.drafts(myUserId)]) {
+      if (row['kind'] == kind.name &&
+          row['location'] == DraftLocation.device.name &&
+          row['resumable'] == true) {
+        _repository.removeDraft(row['id'] as String);
+      }
+    }
     if (!_usedDrafts.contains(kind.name)) {
       sessionRepository.patchSession({
         'usedDrafts': [..._usedDrafts, kind.name],
@@ -868,24 +883,69 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
   Future<MemoryDraftItem> saveDraft({
     required MemoryKind kind,
     String title = '',
+    String? body,
     List<String> childIds = const [],
     List<String> mediaAssets = const [],
     int? voiceDurationSec,
+    String? draftId,
   }) async {
     await ready();
-    return MemoryDraftItem.fromJson(
-      _repository.addDraft({
-        'kind': kind.name,
-        'title': title,
-        'childIds': childIds,
-        'updatedAt': now.toIso8601String(),
-        'location': DraftLocation.device.name,
-        'mediaAssets': mediaAssets.take(1).toList(),
-        'extraCount': mediaAssets.length > 1 ? mediaAssets.length - 1 : 0,
-        'voiceDurationSec': ?voiceDurationSec,
-        'userId': myUserId,
-      }),
-    );
+    final row = <String, dynamic>{
+      'kind': kind.name,
+      'title': title,
+      'body': ?body,
+      'childIds': childIds,
+      'updatedAt': now.toIso8601String(),
+      'location': DraftLocation.device.name,
+      'mediaAssets': mediaAssets.take(1).toList(),
+      'allMediaAssets': mediaAssets,
+      'extraCount': mediaAssets.length > 1 ? mediaAssets.length - 1 : 0,
+      'voiceDurationSec': ?voiceDurationSec,
+      'userId': myUserId,
+      // Nháp người dùng lưu (khác nháp mẫu của dữ liệu demo) — mở lại được.
+      'resumable': true,
+    };
+    final existing = draftId == null
+        ? null
+        : _repository
+              .drafts(myUserId)
+              .where((draft) => draft['id'] == draftId)
+              .firstOrNull;
+    if (existing != null) {
+      _repository.updateDraft(draftId!, row);
+      return MemoryDraftItem.fromJson({...existing, ...row});
+    }
+    return MemoryDraftItem.fromJson(_repository.addDraft(row));
+  }
+
+  /// Nháp trên máy mới nhất của [kind] (MEM-18 “Tiếp tục”), dạng ký ức để
+  /// trình soạn điền lại.
+  @protected
+  Memory? deviceDraft(MemoryKind kind) {
+    final rows = [
+      for (final row in _repository.drafts(myUserId))
+        if (row['kind'] == kind.name &&
+            row['location'] == DraftLocation.device.name &&
+            row['resumable'] == true)
+          row,
+    ]..sort((a, b) => '${b['updatedAt']}'.compareTo('${a['updatedAt']}'));
+    final row = rows.firstOrNull;
+    if (row == null) {
+      return null;
+    }
+    return Memory.fromJson({
+      'id': row['id'],
+      'familyId': familyId,
+      'kind': kind.name,
+      'authorId': myUserId,
+      'title': row['title'],
+      'body': row['body'],
+      'childIds': row['childIds'] ?? const <String>[],
+      'mediaAssets': row['allMediaAssets'] ?? row['mediaAssets'] ?? const [],
+      'voiceDurationSec': row['voiceDurationSec'],
+      'occurredAt': now.toIso8601String(),
+      'createdAt': row['updatedAt'],
+    });
   }
 
   @override
@@ -903,6 +963,14 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
     await ready();
     _repository.removeDraft(draftId);
   }
+
+  /// Bản trên máy không có thẻ recap trên dòng thời gian (thẻ ở trang chủ).
+  @override
+  Future<DateTime?> latestRecapWeek() async => null;
+
+  /// Nháp trên máy không phải ký ức — chỉ bản server đăng được.
+  @override
+  Future<Memory?> publishDraft(String draftId) async => null;
 
   @override
   Future<List<Memory>> pendingPosts() async {

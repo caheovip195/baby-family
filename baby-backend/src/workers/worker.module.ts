@@ -100,6 +100,34 @@ import { SubscriptionReminderService } from '../services/subscription-reminder.s
 import { SUBSCRIPTION_REMINDER_REPOSITORY } from '../interfaces/repositories/subscription-reminder-repository.interface';
 import { SubscriptionReminderRepository } from '../repositories/subscription-reminder.repository';
 import { SubscriptionReminderQueueWorker } from './subscription-reminder.worker';
+import {
+  IAP_BILLING_CONFIG,
+  createIapBillingConfig,
+} from '../config/iap-billing-policy';
+import { IAP_BILLING_REPOSITORY } from '../interfaces/repositories/iap-billing-repository.interface';
+import { IapBillingRepository } from '../repositories/iap-billing.repository';
+import { IAP_BILLING_SERVICE } from '../interfaces/services/iap-billing-service.interface';
+import { IapBillingService } from '../services/iap-billing.service';
+import { STORE_PUBLISHER } from '../interfaces/services/store-publisher.interface';
+import { StorePublisherService } from '../services/store-publisher.service';
+import { STORE_VERIFIER } from '../interfaces/services/store-verifier.interface';
+import { StoreVerifierService } from '../services/store-verifier.service';
+import { CATALOG_QUERY_REPOSITORY } from '../interfaces/repositories/catalog-query-repository.interface';
+import { CatalogQueryRepository } from '../repositories/catalog-query.repository';
+import { FAMILY_BILLING_SERVICE } from '../interfaces/services/family-billing-service.interface';
+import { FamilyBillingService } from '../services/family-billing.service';
+import { IapBillingQueueWorker } from './iap-billing.worker';
+import { TRANSACTIONAL_MAIL_SERVICE } from '../interfaces/services/transactional-mail-service.interface';
+import { TRANSACTIONAL_MAIL_REPOSITORY } from '../interfaces/repositories/transactional-mail-repository.interface';
+import { TransactionalMailService } from '../services/transactional-mail.service';
+import { TransactionalMailRepository } from '../repositories/transactional-mail.repository';
+import { TransactionalMailQueueWorker } from './transactional-mail.worker';
+import { MAIL_SERVICE } from '../interfaces/services/mail-service.interface';
+import { MailService } from '../services/mail.service';
+import { MEMORY_HEART_AWARD_SERVICE } from '../interfaces/services/memory-heart-award-service.interface';
+import { MEMORY_HEART_AWARD_REPOSITORY } from '../interfaces/repositories/memory-heart-award-repository.interface';
+import { MemoryHeartAwardService } from '../services/memory-heart-award.service';
+import { MemoryHeartAwardRepository } from '../repositories/memory-heart-award.repository';
 
 /** Composition root of the background worker process (no HTTP). */
 @Module({
@@ -118,6 +146,26 @@ import { SubscriptionReminderQueueWorker } from './subscription-reminder.worker'
     DatabaseModule,
   ],
   providers: [
+    { provide: MEMORY_HEART_AWARD_SERVICE, useClass: MemoryHeartAwardService },
+    {
+      provide: MEMORY_HEART_AWARD_REPOSITORY,
+      useClass: MemoryHeartAwardRepository,
+    },
+    { provide: MAIL_SERVICE, useClass: MailService },
+    { provide: TRANSACTIONAL_MAIL_SERVICE, useClass: TransactionalMailService },
+    {
+      provide: TRANSACTIONAL_MAIL_REPOSITORY,
+      useClass: TransactionalMailRepository,
+    },
+    TransactionalMailQueueWorker,
+    { provide: IAP_BILLING_CONFIG, useFactory: createIapBillingConfig },
+    { provide: IAP_BILLING_REPOSITORY, useClass: IapBillingRepository },
+    { provide: IAP_BILLING_SERVICE, useClass: IapBillingService },
+    { provide: STORE_PUBLISHER, useClass: StorePublisherService },
+    { provide: STORE_VERIFIER, useClass: StoreVerifierService },
+    { provide: CATALOG_QUERY_REPOSITORY, useClass: CatalogQueryRepository },
+    { provide: FAMILY_BILLING_SERVICE, useClass: FamilyBillingService },
+    IapBillingQueueWorker,
     {
       provide: SUBSCRIPTION_REMINDER_REPOSITORY,
       useClass: SubscriptionReminderRepository,

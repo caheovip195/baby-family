@@ -33,12 +33,14 @@ _Memory _$MemoryFromJson(Map<String, dynamic> json) => _Memory(
   people:
       (json['people'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const [],
+  locationLabel: json['locationLabel'] as String?,
   milestoneCode: json['milestoneCode'] as String?,
   milestoneTitle: json['milestoneTitle'] as String?,
   monthIndex: (json['monthIndex'] as num?)?.toInt(),
   pregnancyWeek: (json['pregnancyWeek'] as num?)?.toInt(),
   pregnancyDay: (json['pregnancyDay'] as num?)?.toInt(),
   voiceDurationSec: (json['voiceDurationSec'] as num?)?.toInt(),
+  voiceUrl: json['voiceUrl'] as String?,
   sealedUntil: json['sealedUntil'] == null
       ? null
       : DateTime.parse(json['sealedUntil'] as String),
@@ -91,12 +93,14 @@ Map<String, dynamic> _$MemoryToJson(_Memory instance) => <String, dynamic>{
   'visibility': _$MemoryVisibilityEnumMap[instance.visibility]!,
   'feeling': instance.feeling,
   'people': instance.people,
+  'locationLabel': instance.locationLabel,
   'milestoneCode': instance.milestoneCode,
   'milestoneTitle': instance.milestoneTitle,
   'monthIndex': instance.monthIndex,
   'pregnancyWeek': instance.pregnancyWeek,
   'pregnancyDay': instance.pregnancyDay,
   'voiceDurationSec': instance.voiceDurationSec,
+  'voiceUrl': instance.voiceUrl,
   'sealedUntil': instance.sealedUntil?.toIso8601String(),
   'missionId': instance.missionId,
   'reactions': instance.reactions,

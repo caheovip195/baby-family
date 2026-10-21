@@ -5,6 +5,9 @@ import 'package:baby_family/data/model/circle/circle_invite_record.dart';
 import 'package:baby_family/data/model/circle/circle_member_record.dart';
 import 'package:baby_family/data/model/family/family_record.dart';
 import 'package:baby_family/data/model/family/family_settings_record.dart';
+import 'package:baby_family/data/model/family/my_family_record.dart';
+import 'package:baby_family/data/model/family/purchase_intent_record.dart';
+import 'package:baby_family/data/model/family/timezone_catalog.dart';
 import 'package:baby_family/data/repository/base.dart';
 
 /// Gia đình trên server: tên (`PATCH /families/:fid`) và cài đặt quyền riêng
@@ -48,4 +51,24 @@ abstract class IFamilyRemoteRepository extends IBaseRepository {
 
   /// `GET /v1/families/{familyId}/billing`.
   Future<FamilyBillingRecord?> familyBilling(String familyId);
+
+  /// FAM-08 `GET /v1/me/families`.
+  Future<List<MyFamilyRecord>> myFamilies();
+
+  /// FAM-08 `PUT /v1/me/default-family`.
+  Future<void> setDefaultFamily(String familyId);
+
+  /// FAM-07 `GET /v1/catalog/timezones`.
+  Future<TimezoneCatalog?> timezones(String locale);
+
+  /// SUB-01/04 `POST /v1/families/{fid}/purchase-intents`.
+  Future<PurchaseIntentRecord?> purchaseIntent(
+    String familyId,
+    String idempotencyKey, {
+    required String planCode,
+    required String store,
+  });
+
+  /// SUB-02 `POST /v1/families/{fid}/purchases/verify`.
+  Future<FamilyBillingRecord?> verifyPurchase(String familyId, JsonMap body);
 }

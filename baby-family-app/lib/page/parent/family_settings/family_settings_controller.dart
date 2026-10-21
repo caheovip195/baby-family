@@ -1,4 +1,5 @@
 import 'package:baby_family/data/model/family/family_settings.dart';
+import 'package:baby_family/data/model/family/timezone_catalog.dart';
 import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/service/family.dart';
 import 'package:baby_family/page/application_base.dart';
@@ -48,4 +49,11 @@ class FamilySettingsController extends BaseNotifier {
     notifyListeners();
     await familyService.saveFamilySettings(settings!);
   }
+
+  /// FAM-07: danh mục múi giờ của server (rỗng ở bản mẫu).
+  Future<List<TimezoneOption>> timezones() => familyService.timezones();
+
+  Future<void> setTimezone(TimezoneOption option) => update(
+    (s) => s.copyWith(timezoneId: option.id, timezoneLabel: option.label),
+  );
 }

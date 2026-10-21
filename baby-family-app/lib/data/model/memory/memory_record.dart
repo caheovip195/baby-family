@@ -24,6 +24,12 @@ abstract class MemoryRecord with _$MemoryRecord {
     @JsonKey(name: 'pregnancyId') String? pregnancyId,
     @JsonKey(name: 'pregnancyWeek') int? pregnancyWeek,
     @JsonKey(name: 'feeling') String? feeling,
+
+    /// “Ai ở đó” (BF-20261021-002) và địa điểm gõ chữ.
+    @JsonKey(name: 'people')
+    @Default(<MemoryPersonRecord>[])
+    List<MemoryPersonRecord> people,
+    @JsonKey(name: 'locationLabel') String? locationLabel,
     @JsonKey(name: 'quoteContext') String? quoteContext,
     @JsonKey(name: 'commentCount') @Default(0) int commentCount,
     @JsonKey(name: 'commentsEnabled') @Default(true) bool commentsEnabled,
@@ -33,6 +39,9 @@ abstract class MemoryRecord with _$MemoryRecord {
     @JsonKey(name: 'myReaction') String? myReaction,
     @JsonKey(name: 'perspectiveCount') @Default(0) int perspectiveCount,
     @JsonKey(name: 'coverAssetId') String? coverAssetId,
+
+    /// VOICE (BF-20261021-001): thời lượng do server đo từ asset audio.
+    @JsonKey(name: 'durationSec') double? durationSec,
     @JsonKey(name: 'assets')
     @Default(<MediaAssetRecord>[])
     List<MediaAssetRecord> assets,
@@ -45,4 +54,18 @@ abstract class MemoryRecord with _$MemoryRecord {
 
   factory MemoryRecord.fromJson(Map<String, dynamic> json) =>
       _$MemoryRecordFromJson(json);
+}
+
+/// Một người “Ai ở đó”: thành viên ([memberId]/[userId]) hoặc tên gõ.
+@Freezed(when: FreezedWhenOptions.none)
+abstract class MemoryPersonRecord with _$MemoryPersonRecord {
+  @JsonSerializable(explicitToJson: true)
+  const factory MemoryPersonRecord({
+    @JsonKey(name: 'memberId') String? memberId,
+    @JsonKey(name: 'userId') String? userId,
+    @JsonKey(name: 'displayName') @Default('') String displayName,
+  }) = _MemoryPersonRecord;
+
+  factory MemoryPersonRecord.fromJson(Map<String, dynamic> json) =>
+      _$MemoryPersonRecordFromJson(json);
 }

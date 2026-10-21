@@ -1,3 +1,5 @@
+import { ProfileImageClientVariantsPersistence } from '../../src/repositories/profile-image-client-variants.persistence';
+import { Prisma } from '../../src/generated/prisma/client';
 import { randomUUID } from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
@@ -119,6 +121,10 @@ describe('Profile image cleanup (durable media.purge-orphans)', () => {
             bucketOf: (bucket: string) =>
               bucket === 'bf-user-media' ? 'userMedia' : null,
             eraseObjectVersions: erase,
+            listKeys: (_bucket: string, prefix: string) =>
+              Promise.resolve(
+                [...versions.keys()].filter((key) => key.startsWith(prefix)),
+              ),
           },
         },
       ],
@@ -136,6 +142,10 @@ describe('Profile image cleanup (durable media.purge-orphans)', () => {
         where: { id: { in: owners } },
         data: { avatarAssetId: null },
       });
+      if (owners.length)
+        await prisma.$executeRaw(
+          Prisma.sql`DELETE FROM app.user_asset_variants WHERE owner_user_id::text IN (${Prisma.join(owners)})`,
+        );
       await prisma.userAsset.deleteMany({
         where: { ownerUserId: { in: owners } },
       });
@@ -164,6 +174,38 @@ describe('Profile image cleanup (durable media.purge-orphans)', () => {
         where: { jobRun: { idempotencyKey: run.key } },
       }),
     ).toBe(1);
+  });
+  it('keeps client originals while attached and erases every declared variant after detach', async () => {
+    const asset = await makeAsset('READY', true);
+    await new ProfileImageClientVariantsPersistence().create(
+      prisma,
+      asset.id,
+      asset.owner,
+      ['orig', 'm1080', 't320'].map((code) => ({
+        variantCode: code,
+        storageBucket: 'bf-user-media',
+        storageKey:
+          code === 'orig' ? asset.key : asset.key.replace(/raw$/, code),
+        mime: 'image/webp',
+        sizeBytes: 10n,
+        checksumSha256: Buffer.alloc(32),
+        width: null,
+        height: null,
+      })),
+    );
+    versions.set(asset.key.replace(/raw$/, 't320'), ['client-thumbnail']);
+    expect(await execution(asset.owner).run()).toBe('SUCCEEDED');
+    expect(versions.has(asset.key)).toBe(true);
+    await prisma.user.update({
+      where: { id: asset.owner },
+      data: { avatarAssetId: null },
+    });
+    expect(await execution(asset.owner).run()).toBe('SUCCEEDED');
+    expect(versions.has(asset.key)).toBe(false);
+    expect(versions.has(asset.key.replace(/raw$/, 't320'))).toBe(false);
+    expect(
+      await new ProfileImageClientVariantsPersistence().list(prisma, asset.id),
+    ).toEqual([]);
   });
   it('records unavailable bucket as a failed attempt and retains the purge deadline', async () => {
     const asset = await makeAsset(

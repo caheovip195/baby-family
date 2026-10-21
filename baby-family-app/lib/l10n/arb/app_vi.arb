@@ -5746,6 +5746,59 @@
       }
     }
   },
+  "memVoiceRecording": "Đang ghi… chạm để dừng",
+  "@memVoiceRecording": {
+    "description": "MEM-04 ghi âm"
+  },
+  "memVoiceMicDenied": "Cần quyền micro để ghi âm — bật trong Cài đặt của máy",
+  "@memVoiceMicDenied": {
+    "description": "MEM-04 ghi âm"
+  },
+  "memPeopleLabel": "Ai ở đó",
+  "@memPeopleLabel": {
+    "description": "MEM-05 nâng cao: ai ở đó, cảm xúc, địa điểm"
+  },
+  "memPeopleChoose": "Chọn người",
+  "@memPeopleChoose": {
+    "description": "MEM-05 nâng cao: ai ở đó, cảm xúc, địa điểm"
+  },
+  "memPeopleAddName": "Thêm tên",
+  "@memPeopleAddName": {
+    "description": "MEM-05 nâng cao: ai ở đó, cảm xúc, địa điểm"
+  },
+  "memFeelingLabel": "Cảm xúc của khoảnh khắc",
+  "@memFeelingLabel": {
+    "description": "MEM-05 nâng cao: ai ở đó, cảm xúc, địa điểm"
+  },
+  "memFeelingChoose": "Chọn cảm xúc",
+  "@memFeelingChoose": {
+    "description": "MEM-05 nâng cao: ai ở đó, cảm xúc, địa điểm"
+  },
+  "memFeelingNone": "Không chọn",
+  "@memFeelingNone": {
+    "description": "MEM-05 nâng cao: ai ở đó, cảm xúc, địa điểm"
+  },
+  "memFeeling": "{feeling, select, love{Thương yêu} joy{Vui vẻ} touched{Xúc động} surprised{Bất ngờ} peaceful{Bình yên} proud{Tự hào} other{{feeling}}}",
+  "@memFeeling": {
+    "description": "MEM-05 nâng cao: ai ở đó, cảm xúc, địa điểm",
+    "placeholders": {
+      "feeling": {
+        "type": "String"
+      }
+    }
+  },
+  "memLocationLabel": "Địa điểm",
+  "@memLocationLabel": {
+    "description": "MEM-05 nâng cao: ai ở đó, cảm xúc, địa điểm"
+  },
+  "memLocationAdd": "Thêm địa điểm",
+  "@memLocationAdd": {
+    "description": "MEM-05 nâng cao: ai ở đó, cảm xúc, địa điểm"
+  },
+  "memLocationHint": "Ví dụ: Nhà bà nội, Biển Vũng Tàu",
+  "@memLocationHint": {
+    "description": "MEM-05 nâng cao: ai ở đó, cảm xúc, địa điểm"
+  },
   "memKeepsakeTitleHint": "Tên kỷ vật",
   "@memKeepsakeTitleHint": {
     "description": "MEM-05 (kỷ vật) — gợi ý tên"
@@ -6952,6 +7005,10 @@
   "@famSettingsTimezone": {
     "description": "FAM-07 row"
   },
+  "famTimezoneSearch": "Tìm thành phố hoặc múi giờ",
+  "@famTimezoneSearch": {
+    "description": "FAM-07 chọn múi giờ"
+  },
   "famSettingsLunar": "Hiển thị âm lịch",
   "@famSettingsLunar": {
     "description": "FAM-07 toggle"
@@ -7829,6 +7886,30 @@
         "type": "String"
       }
     }
+  },
+  "supportThread": "Trao đổi",
+  "@supportThread": {
+    "description": "SET-11 chi tiết yêu cầu hỗ trợ"
+  },
+  "supportNoReply": "Đội hỗ trợ sẽ trả lời tại đây.",
+  "@supportNoReply": {
+    "description": "SET-11 chi tiết yêu cầu hỗ trợ"
+  },
+  "supportTeam": "Đội hỗ trợ",
+  "@supportTeam": {
+    "description": "SET-11 chi tiết yêu cầu hỗ trợ"
+  },
+  "supportReply": "Nhắn thêm",
+  "@supportReply": {
+    "description": "SET-11 chi tiết yêu cầu hỗ trợ"
+  },
+  "supportSendReply": "Gửi",
+  "@supportSendReply": {
+    "description": "SET-11 chi tiết yêu cầu hỗ trợ"
+  },
+  "supportClosedHint": "Yêu cầu này đã đóng. Gửi yêu cầu mới nếu bạn cần thêm trợ giúp.",
+  "@supportClosedHint": {
+    "description": "SET-11 chi tiết yêu cầu hỗ trợ"
   },
   "setMyReports": "Báo cáo của tôi",
   "@setMyReports": {
@@ -9861,6 +9942,31 @@
         "type": "int"
       }
     }
+  },
+  "subLimitQuotaTitle": "{reason, select, QUOTA_STORAGE_EXCEEDED{Đã dùng hết dung lượng của gói} QUOTA_PHOTOS_PER_MEMORY{Quá số ảnh cho một ký ức} other{Đã đạt số ký ức của gói}}",
+  "@subLimitQuotaTitle": {
+    "description": "SUB-05 giới hạn gói theo mã lỗi server",
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "subLimitQuotaBody": "{reason, select, QUOTA_PHOTOS_PER_MEMORY{{plan} giới hạn số ảnh mỗi ký ức. Bớt vài ảnh rồi lưu lại, hoặc nâng cấp để thêm nhiều ảnh hơn.} other{{plan} đã chạm giới hạn này. Giữ bản đang soạn làm nháp, hoặc nâng cấp để lưu tiếp.}}",
+  "@subLimitQuotaBody": {
+    "description": "SUB-05 giới hạn gói theo mã lỗi server",
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      },
+      "plan": {
+        "type": "String"
+      }
+    }
+  },
+  "subLimitKeepDraft": "Lưu thành nháp",
+  "@subLimitKeepDraft": {
+    "description": "SUB-05 giới hạn gói theo mã lỗi server"
   },
   "subIssueTitle": "Thanh toán gia hạn chưa thành công",
   "@subIssueTitle": {

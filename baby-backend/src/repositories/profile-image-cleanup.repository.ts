@@ -1,3 +1,4 @@
+import { ProfileImageClientVariantsPersistence } from './profile-image-client-variants.persistence';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../database/prisma.service';
@@ -7,6 +8,7 @@ import { UserAsset } from '../models/user-asset.model';
 
 @Injectable()
 export class ProfileImageCleanupRepository implements IProfileImageCleanupRepository {
+  private readonly clientVariants = new ProfileImageClientVariantsPersistence();
   constructor(private readonly prisma: PrismaService) {}
   async findDue(
     cutoff: Date,
@@ -74,9 +76,15 @@ export class ProfileImageCleanupRepository implements IProfileImageCleanupReposi
       return new UserAsset(retired);
     });
   }
+  async variantKeys(assetId: string) {
+    const variants = await this.clientVariants.list(this.prisma, assetId);
+    return variants.map((v) => v.storageKey);
+  }
   async clearDeadline(asset: UserAsset, lease?: JobLease): Promise<void> {
     await this.prisma.$transaction(async (tx) => {
       if (lease) await this.fence(tx, lease);
+      if (asset.status === 'DELETED')
+        await this.clientVariants.retire(tx, asset.id);
       await tx.userAsset.updateMany({
         where: {
           id: asset.id,

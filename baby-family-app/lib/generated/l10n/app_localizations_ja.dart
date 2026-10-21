@@ -3832,6 +3832,53 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get memVoiceRecording => '録音中… タップで停止';
+
+  @override
+  String get memVoiceMicDenied => '録音にはマイクの許可が必要です。端末の設定で許可してください';
+
+  @override
+  String get memPeopleLabel => 'その場にいた人';
+
+  @override
+  String get memPeopleChoose => '人を選ぶ';
+
+  @override
+  String get memPeopleAddName => '名前を追加';
+
+  @override
+  String get memFeelingLabel => 'その時の気持ち';
+
+  @override
+  String get memFeelingChoose => '気持ちを選ぶ';
+
+  @override
+  String get memFeelingNone => '選ばない';
+
+  @override
+  String memFeeling(String feeling) {
+    String _temp0 = intl.Intl.selectLogic(feeling, {
+      'love': '愛おしい',
+      'joy': 'うれしい',
+      'touched': '感動',
+      'surprised': 'びっくり',
+      'peaceful': '穏やか',
+      'proud': '誇らしい',
+      'other': '$feeling',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get memLocationLabel => '場所';
+
+  @override
+  String get memLocationAdd => '場所を追加';
+
+  @override
+  String get memLocationHint => '例：おばあちゃんの家、海';
+
+  @override
   String get memKeepsakeTitleHint => '記念の品の名前';
 
   @override
@@ -4701,6 +4748,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get famSettingsTimezone => '家族のタイムゾーン';
 
   @override
+  String get famTimezoneSearch => '都市またはタイムゾーンを検索';
+
+  @override
   String get famSettingsLunar => '旧暦を表示';
 
   @override
@@ -5317,6 +5367,24 @@ class AppLocalizationsJa extends AppLocalizations {
     });
     return '$_temp0';
   }
+
+  @override
+  String get supportThread => 'やり取り';
+
+  @override
+  String get supportNoReply => 'サポートからの返信はここに表示されます。';
+
+  @override
+  String get supportTeam => 'サポート';
+
+  @override
+  String get supportReply => 'メッセージを追加';
+
+  @override
+  String get supportSendReply => '送信';
+
+  @override
+  String get supportClosedHint => 'このお問い合わせは終了しました。必要なら新しく送信してください。';
 
   @override
   String get setMyReports => '自分の報告';
@@ -6605,6 +6673,29 @@ class AppLocalizationsJa extends AppLocalizations {
   String subLimitTrimmed(int max) {
     return '動画を $max 分にカットしました';
   }
+
+  @override
+  String subLimitQuotaTitle(String reason) {
+    String _temp0 = intl.Intl.selectLogic(reason, {
+      'QUOTA_STORAGE_EXCEEDED': 'プランの容量がいっぱいです',
+      'QUOTA_PHOTOS_PER_MEMORY': '1つの思い出の写真が多すぎます',
+      'other': 'プランの思い出の上限に達しました',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String subLimitQuotaBody(String reason, String plan) {
+    String _temp0 = intl.Intl.selectLogic(reason, {
+      'QUOTA_PHOTOS_PER_MEMORY':
+          '$planは思い出ごとの写真数に上限があります。数枚減らして保存するか、アップグレードしてください。',
+      'other': '$planの上限に達しました。下書きとして残すか、アップグレードして保存を続けてください。',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get subLimitKeepDraft => '下書きに保存';
 
   @override
   String get subIssueTitle => '更新の支払いが完了していません';

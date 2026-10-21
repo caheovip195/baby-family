@@ -45,6 +45,26 @@ class AuthRepositoryImp extends BaseRepositoryImp implements IAuthRepository {
   }
 
   @override
+  Future<AuthCertificate> signInWithApple({
+    required String identityToken,
+    required String nonce,
+    String? fullName,
+  }) async {
+    final rs = await client!.signInWithApple({
+      'identityToken': identityToken,
+      'nonce': nonce,
+      'fullName': ?fullName,
+    });
+    return rs.auth!;
+  }
+
+  @override
+  Future<AuthCertificate> signInWithGoogle(String idToken) async {
+    final rs = await client!.signInWithGoogle({'idToken': idToken});
+    return rs.auth!;
+  }
+
+  @override
   Future<MeProfile?> getMeProfile() async {
     final rs = await client!.getMeProfile();
     return rs.profile;

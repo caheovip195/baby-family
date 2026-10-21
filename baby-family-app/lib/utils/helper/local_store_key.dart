@@ -16,6 +16,7 @@ mixin LocalStoreKey {
   static const String languageKey = 'language';
   static const String displayKey = 'display';
   static const String offlineSnapshotKey = 'offline_snapshot';
+  static const String localMediaIndexKey = 'local_media_index';
 
   /// Bé đang chọn ở Child Switcher, lưu theo từng gia đình.
   static const String selectedSubjectPrefix = 'selected_subject_';

@@ -251,3 +251,26 @@ const kValueSupportCategories = [
   'OTHER',
 ];
 const kValueSupportStatusOpen = 'OPEN';
+
+/// SUB-05: mã lỗi server khi chạm giới hạn gói lúc lưu ký ức.
+const kValueQuotaPhotosPerMemory = 'QUOTA_PHOTOS_PER_MEMORY';
+const kValuePlanQuotaErrorCodes = {
+  'QUOTA_MEMORY_COUNT_EXCEEDED',
+  'QUOTA_STORAGE_EXCEEDED',
+  kValueQuotaPhotosPerMemory,
+};
+const kValueSupportSenderUser = 'USER';
+
+/// Trạng thái ticket không nhận tin nhắn thêm.
+const kValueSupportClosedStatuses = {'RESOLVED', 'CLOSED'};
+
+/// Cảm xúc của khoảnh khắc (mã theo enum `MomentFeeling` của server, viết
+/// thường; nhãn ở l10n `memFeeling`).
+const kValueMomentFeelings = [
+  'love',
+  'joy',
+  'touched',
+  'surprised',
+  'peaceful',
+  'proud',
+];

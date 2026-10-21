@@ -237,7 +237,11 @@ export class MemoryLibraryService implements IMemoryLibraryService {
     for (const [index, asset] of row.assets.entries()) {
       // Workers erase non-retained raw uploads after processing; never sign a missing original.
       const original = row.variants.find(
-        (v) => v.assetId === asset.id && v.variantCode === 'orig',
+        (v) =>
+          v.assetId === asset.id &&
+          (v.variantCode === 'orig' ||
+            (v.storageKey === asset.storageKey &&
+              ['v1080', 'a'].includes(v.variantCode))),
       );
       if (asset.status !== 'READY' || !asset.keepOriginal || !original)
         continue;
@@ -251,6 +255,7 @@ export class MemoryLibraryService implements IMemoryLibraryService {
         'video/mp4': 'mp4',
         'video/quicktime': 'mov',
         'audio/mp4': 'm4a',
+        'audio/x-m4a': 'm4a',
         'audio/mpeg': 'mp3',
         'audio/aac': 'aac',
         'audio/wav': 'wav',

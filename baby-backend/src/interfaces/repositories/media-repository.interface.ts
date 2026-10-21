@@ -1,14 +1,17 @@
+import type { CreateUploadVariantDto } from '../../dto/media/create-upload-intent.dto';
 import type { AssetKind } from '../../common/database.enums';
 import type { JobLease } from '../../models/job-lease.model';
 import type { Asset } from '../../models/asset.model';
 import type {
   MediaAssetView,
+  MediaSource,
   MediaUpload,
 } from '../../models/media-upload.model';
 
 export const MEDIA_REPOSITORY = Symbol('MEDIA_REPOSITORY');
 
 export interface ReserveUploadInput {
+  variants?: CreateUploadVariantDto[];
   familyId: string;
   allowSharedCopy?: boolean;
   uploaderUserId: string;
@@ -23,6 +26,8 @@ export interface ReserveUploadInput {
   width: number | null;
   height: number | null;
   durationMs: number | null;
+  /** Fingerprint of the original on the uploader's device (BF-20261021-008). */
+  source?: MediaSource | null;
   storageBucket: string;
   storageKey: (assetId: string) => string;
   /** Owner-only asset (JOURNAL); the DB requires it to equal the uploader. */
@@ -97,7 +102,11 @@ export interface IMediaRepository {
    * PENDING_UPLOAD → UPLOADED, reservation CONFIRMED, usage moved from reserved to
    * stored and a `media.asset_uploaded` outbox event, in one transaction. Idempotent.
    */
-  confirmUpload(assetId: string, sizeBytes: bigint): Promise<Asset>;
+  confirmUpload(
+    assetId: string,
+    sizeBytes: bigint,
+    variantSizes?: ReadonlyMap<string, bigint>,
+  ): Promise<Asset>;
   /** PENDING_UPLOAD → FAILED and release the reservation. */
   failUpload(assetId: string, reason: string): Promise<void>;
   /** Family of each existing (non-deleted) asset. */
@@ -140,7 +149,7 @@ export interface IMediaRepository {
     lease: JobLease,
   ): Promise<boolean>;
   /** PROCESSING assets untouched since `before` (worker gave up) → FAILED. */
-  failStaleProcessing(before: Date): Promise<number>;
+  failStaleProcessing(before: Date, familyId?: string): Promise<number>;
   /**
    * UPLOADED/PROCESSING assets idle since `before` whose processing run is missing,
    * waiting or has an expired lease (lost queue job), for re-enqueueing.
@@ -149,6 +158,7 @@ export interface IMediaRepository {
     before: Date,
     runKeyPrefix: string,
     limit: number,
+    familyId?: string,
   ): Promise<Asset[]>;
 
   // --- Maintenance (purge-orphans, reconcile-uploads) ---
@@ -156,6 +166,7 @@ export interface IMediaRepository {
     rule: PurgeRule,
     cutoff: Date,
     limit: number,
+    familyId?: string,
   ): Promise<string[]>;
   /**
    * Atomically re-checks `rule`, refunds quota (open reservation and stored bytes),
@@ -163,12 +174,16 @@ export interface IMediaRepository {
    */
   retireAsset(assetId: string, rule: PurgeRule, cutoff: Date): Promise<boolean>;
   /** Retired assets whose storage objects are not deleted yet. */
-  findAssetsAwaitingObjectPurge(limit: number): Promise<Asset[]>;
+  findAssetsAwaitingObjectPurge(
+    limit: number,
+    familyId?: string,
+  ): Promise<Asset[]>;
   markObjectsPurged(assetId: string): Promise<void>;
   /** Unexpired single uploads created before `before` but never completed. */
   findUncompletedUploads(
     before: Date,
     maxDeclaredBytes: bigint,
     limit: number,
+    familyId?: string,
   ): Promise<MediaUpload[]>;
 }

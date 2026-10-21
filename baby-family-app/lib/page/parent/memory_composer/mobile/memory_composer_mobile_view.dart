@@ -14,6 +14,11 @@ import 'package:baby_family/utils/helper/server_error_message.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_action_top_bar.dart';
+import 'package:baby_family/utils/widget/app_bottom_sheet.dart';
+import 'package:baby_family/utils/widget/app_button.dart';
+import 'package:baby_family/utils/widget/app_radio_mark.dart';
+import 'package:baby_family/utils/widget/app_selectable_chip.dart';
+import 'package:baby_family/utils/widget/app_text_input_sheet.dart';
 import 'package:baby_family/utils/widget/app_toggle_row.dart';
 import 'package:baby_family/utils/widget/base_scaffold.dart';
 import 'package:baby_family/utils/widget/child_avatar.dart';
@@ -40,6 +45,7 @@ class MemoryComposerMobileView extends HookConsumerWidget {
     this.kind,
     this.childId,
     this.memoryId,
+    this.draftId,
     super.key,
   });
 
@@ -49,12 +55,20 @@ class MemoryComposerMobileView extends HookConsumerWidget {
   /// MEM-09: sửa ký ức này (null = soạn mới).
   final String? memoryId;
 
+  /// MEM-18: soạn tiếp nháp trên tài khoản, lưu xong thì đăng.
+  final String? draftId;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = ref.watch(memoryComposerControllerProvider);
     useEffect(() {
       Future.microtask(
-        () => controller.init(kind, childId, memoryId: memoryId),
+        () => controller.init(
+          kind,
+          childId,
+          memoryId: memoryId,
+          draftId: draftId,
+        ),
       );
       return null;
     }, const []);
@@ -77,6 +91,11 @@ class MemoryComposerMobileView extends HookConsumerWidget {
       final saved = await controller.save();
       final error = controller.saveError;
       if (saved == null && error != null && context.mounted) {
+        final code = serverErrorCode(error);
+        if (code != null && kValuePlanQuotaErrorCodes.contains(code)) {
+          await _showQuotaLimit(context, controller, code);
+          return;
+        }
         showAppSnackBar(context, actionErrorMessage(error));
         return;
       }
@@ -213,6 +232,42 @@ class MemoryComposerMobileView extends HookConsumerWidget {
           value: controller.milestoneTitle ?? l10n.memChooseMilestone,
           onTap: () => _pickMilestone(context, controller),
         ),
+      if ((type == MemoryKind.photo || type == MemoryKind.milestone) &&
+          !editing) ...[
+        _ComposerRow(
+          icon: LucideIcons.usersRound,
+          label: l10n.memPeopleLabel,
+          value: controller.people.isEmpty
+              ? l10n.memPeopleChoose
+              : controller.people.join(', '),
+          onTap: () => _pickPeople(context, controller),
+        ),
+        _ComposerRow(
+          icon: LucideIcons.smile,
+          label: l10n.memFeelingLabel,
+          value: controller.feeling == null
+              ? l10n.memFeelingChoose
+              : l10n.memFeeling(controller.feeling!),
+          onTap: () => _pickFeeling(context, controller),
+        ),
+        _ComposerRow(
+          icon: LucideIcons.mapPin,
+          label: l10n.memLocationLabel,
+          value: controller.locationLabel ?? l10n.memLocationAdd,
+          onTap: () async {
+            final value = await showAppTextInputSheet(
+              context,
+              title: l10n.memLocationLabel,
+              actionLabel: l10n.commonDone,
+              hint: l10n.memLocationHint,
+              initialValue: controller.locationLabel,
+            );
+            if (value != null) {
+              controller.setLocation(value);
+            }
+          },
+        ),
+      ],
       if (type == MemoryKind.photo && !editing)
         _ComposerRow(
           icon: LucideIcons.folderHeart,
@@ -342,11 +397,12 @@ class MemoryComposerMobileView extends HookConsumerWidget {
     if (kValueUseRemoteSession) {
       // Ảnh và video (MEM-04); video dài hơn giới hạn của gói không được thêm
       // mà hiện SUB-05 như bản mẫu.
-      final picked = await ImagePicker().pickMultipleMedia(
-        maxWidth: kValueUploadImageMaxSide,
-        maxHeight: kValueUploadImageMaxSide,
-        imageQuality: kValueUploadImageQuality,
-      );
+      // File gốc (không resize ở picker): client nén khi upload, và nội dung
+      // gốc dùng để nhận ra bản trong thư viện máy sau này.
+      final picked = await ImagePicker().pickMultipleMedia();
+      if (picked.isNotEmpty) {
+        await controller.enableLocalMedia();
+      }
       final (:accepted, :tooLongMinutes) = await controller.screenPicked([
         for (final file in picked) file.path,
       ]);
@@ -357,6 +413,144 @@ class MemoryComposerMobileView extends HookConsumerWidget {
       return;
     }
     await _showVideoLimit(context, controller, kValueMockPickedVideoMinutes);
+  }
+
+  /// “Ai ở đó”: chọn thành viên hoặc gõ tên (không nhận diện khuôn mặt).
+  Future<void> _pickPeople(
+    BuildContext context,
+    MemoryComposerController controller,
+  ) async {
+    final l10n = context.l10n;
+    await showAppBottomSheet<void>(
+      context,
+      builder: (sheetContext) => ListenableBuilder(
+        listenable: controller,
+        builder: (_, _) => AppBottomSheet(
+          title: l10n.memPeopleLabel,
+          children: [
+            Wrap(
+              spacing: AppSpacing.s2,
+              runSpacing: AppSpacing.s2,
+              children: [
+                for (final name in {
+                  ...controller.peopleSuggestions,
+                  ...controller.people,
+                })
+                  AppSelectableChip(
+                    label: name,
+                    selected: controller.people.contains(name),
+                    onPressed: () => controller.togglePerson(name),
+                  ),
+                AppSelectableChip(
+                  label: l10n.memPeopleAddName,
+                  prefix: const Icon(LucideIcons.plus, size: 16),
+                  onPressed: () async {
+                    final name = await showAppTextInputSheet(
+                      sheetContext,
+                      title: l10n.memPeopleAddName,
+                      actionLabel: l10n.commonDone,
+                    );
+                    if (name != null && name.trim().isNotEmpty) {
+                      controller.togglePerson(name);
+                    }
+                  },
+                ),
+              ],
+            ),
+            AppButton(
+              label: l10n.commonDone,
+              height: 44,
+              onPressed: () => Navigator.of(sheetContext).pop(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickFeeling(
+    BuildContext context,
+    MemoryComposerController controller,
+  ) async {
+    final l10n = context.l10n;
+    final picked = await showAppBottomSheet<String>(
+      context,
+      builder: (sheetContext) => AppBottomSheet(
+        title: l10n.memFeelingLabel,
+        gap: 0,
+        children: [
+          for (final code in [...kValueMomentFeelings, ''])
+            InkWell(
+              onTap: () => Navigator.of(sheetContext).pop(code),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.s3),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        code.isEmpty
+                            ? l10n.memFeelingNone
+                            : l10n.memFeeling(code),
+                        style: AppTypography.adapt(context, AppTypography.body),
+                      ),
+                    ),
+                    AppRadioMark(
+                      selected: (controller.feeling ?? '') == code,
+                      size: 22,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+    if (picked != null) {
+      controller.setFeeling(picked.isEmpty ? null : picked);
+    }
+  }
+
+  /// SUB-05: server từ chối lưu vì chạm giới hạn gói ([code] `QUOTA_*`) —
+  /// nội dung đang soạn được giữ (lưu nháp hoặc ở lại sửa), lối nâng cấp.
+  Future<void> _showQuotaLimit(
+    BuildContext context,
+    MemoryComposerController controller,
+    String code,
+  ) async {
+    final limit = await controller.videoLimit();
+    if (!context.mounted) {
+      return;
+    }
+    final l10n = context.l10n;
+    final photos = code == kValueQuotaPhotosPerMemory;
+    final choice = await showPlanLimitSheet(
+      context,
+      icon: photos ? LucideIcons.images : LucideIcons.hardDrive,
+      title: l10n.subLimitQuotaTitle(code),
+      message: l10n.subLimitQuotaBody(code, planTitle(l10n, limit.plan)),
+      primaryLabel: photos ? l10n.commonClose : l10n.subLimitKeepDraft,
+      secondaryLabel: l10n.commonLater,
+      isTopPlan: limit.plan == PlanState.family,
+    );
+    if (!context.mounted) {
+      return;
+    }
+    switch (choice) {
+      case PlanLimitChoice.primary when !photos:
+        await controller.saveDraft();
+        if (context.mounted) {
+          showAppSnackBar(context, l10n.memDraftSaved);
+          await context.router.maybePop();
+        }
+      case PlanLimitChoice.upgrade:
+        await context.router.push(
+          limit.plan == PlanState.house
+              ? const UpgradePlanRoute()
+              : const PlansRoute(),
+        );
+      case _:
+        break;
+    }
   }
 
   /// SUB-05 video dài [minutes] phút vượt giới hạn của gói.

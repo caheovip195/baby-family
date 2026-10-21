@@ -29,6 +29,7 @@ import 'package:baby_family/data/repository/auth.dart';
 import 'package:baby_family/data/repository/base.dart';
 import 'package:baby_family/data/repository/offline_snapshot.dart';
 import 'package:baby_family/data/repository/onboarding.dart';
+import 'package:baby_family/data/repository/social_credential.dart';
 import 'package:baby_family/data/service/auth.dart';
 import 'package:baby_family/data/service/memory.dart';
 import 'package:baby_family/data/service_imp/circle_remote.dart';
@@ -44,6 +45,8 @@ import '../helpers/design_qa.dart';
 
 /// Server giả: giữ trạng thái `GET /me` + gia đình như backend (BF-20261015-012).
 class _FakeServer {
+  final socialCalls = <String>[];
+
   MeProfile me = const MeProfile(id: 'srv-user', displayName: 'Baby Family');
 
   /// Mất mạng: mọi lời gọi server lỗi kết nối.
@@ -99,6 +102,30 @@ class _FakeAuthRepository implements IAuthRepository {
     refreshToken: 'refresh',
     expiresIn: 900,
   );
+
+  @override
+  Future<AuthCertificate> signInWithApple({
+    required String identityToken,
+    required String nonce,
+    String? fullName,
+  }) async {
+    server.socialCalls.add('apple $identityToken $nonce ${fullName ?? '-'}');
+    return const AuthCertificate(
+      accessToken: 'access-apple',
+      refreshToken: 'refresh',
+      expiresIn: 900,
+    );
+  }
+
+  @override
+  Future<AuthCertificate> signInWithGoogle(String idToken) async {
+    server.socialCalls.add('google $idToken');
+    return const AuthCertificate(
+      accessToken: 'access-google',
+      refreshToken: 'refresh',
+      expiresIn: 900,
+    );
+  }
 
   @override
   Future<MeProfile?> getMeProfile() async {
@@ -335,6 +362,7 @@ class _FakeMemoryService implements IMemoryService {
     DateTime? occurredAt,
     String? feeling,
     List<String> people = const [],
+    String? locationLabel,
     String? milestoneCode,
     String? milestoneTitle,
     int? monthIndex,
@@ -369,6 +397,27 @@ class _FakeMemoryService implements IMemoryService {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+class _FakeSocial implements ISocialCredentialRepository {
+  _FakeSocial({this.cancel = false});
+
+  final bool cancel;
+
+  @override
+  Future<AppleCredential> apple() async {
+    if (cancel) {
+      throw const SocialSignInCancelled();
+    }
+    return const AppleCredential(
+      identityToken: 'apple-jwt',
+      rawNonce: 'raw-nonce',
+      fullName: 'Lan',
+    );
+  }
+
+  @override
+  Future<String> google() async => 'google-jwt';
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -396,6 +445,45 @@ void main() {
     snapshots = _MemorySnapshots();
     server = _FakeServer();
     auth = _FakeAuthService();
+  });
+
+  SessionRemoteServiceImp buildSocial({bool cancel = false}) {
+    container = ProviderContainer(
+      overrides: mockOverrides(seed: DemoSeed.fresh),
+    );
+    addTearDown(container.dispose);
+    return SessionRemoteServiceImp(
+      container.read(sessionServiceProvider) as SessionServiceImp,
+      auth,
+      _FakeAuthRepository(server),
+      _FakeOnboardingRepository(server),
+      container.read(childRepositoryProvider),
+      snapshots,
+      _FakeSocial(cancel: cancel),
+    );
+  }
+
+  test('AUTH-01: Apple and Google sign in through the server', () async {
+    final apple = buildSocial();
+    await apple.signIn(AuthMethod.apple);
+    expect(server.socialCalls, ['apple apple-jwt raw-nonce Lan']);
+    expect(auth.saved?.accessToken, 'access-apple');
+    expect(apple.current.state, isNot(SessionState.signedOut));
+
+    final google = buildSocial();
+    await google.signIn(AuthMethod.google);
+    expect(server.socialCalls.last, 'google google-jwt');
+    expect(auth.saved?.accessToken, 'access-google');
+  });
+
+  test('AUTH-01: closing the Apple sheet signs nobody in', () async {
+    final session = buildSocial(cancel: true);
+    await expectLater(
+      session.signIn(AuthMethod.apple),
+      throwsA(isA<SocialSignInCancelled>()),
+    );
+    expect(server.socialCalls, isEmpty);
+    expect(auth.saved, isNull);
   });
 
   test('Parent A: OTP → profile → role → family → approval → trial', () async {
@@ -633,6 +721,55 @@ void main() {
       expect(first, isNotNull);
     },
   );
+
+  test('FAM-08: a Parent who is also a relative switches families', () async {
+    auth.saved = const AuthCertificate(
+      accessToken: 'access',
+      refreshToken: 'refresh',
+      expiresIn: 900,
+    );
+    server
+      ..me = server.me.copyWith(
+        profileCompleted: true,
+        onboardingRole: 'PARENT_MOTHER',
+        families: const [
+          MeFamily(
+            familyId: 'srv-family',
+            name: 'Nhà thử',
+            status: 'ACTIVE',
+            kind: 'MOTHER',
+            callName: 'Mama',
+          ),
+        ],
+      )
+      ..familyStatus = 'ACTIVE'
+      ..setupDone.add('srv-family')
+      ..circles = const [
+        MyCircleRecord(
+          familyId: 'srv-grand',
+          familyName: 'Nhà ông bà',
+          status: 'ACTIVE',
+        ),
+      ];
+    final session = build();
+    expect((await session.restore()).state, SessionState.active);
+    String? serverFamily() =>
+        container
+                .read(sessionRepositoryProvider)
+                .session()[kValueSessionKeyServerFamilyId]
+            as String?;
+
+    final asRelative = await session.changeFamily('srv-grand');
+    expect(asRelative.state, SessionState.circleActive);
+    expect(asRelative.role, FamilyRole.relative);
+    expect(serverFamily(), 'srv-grand');
+    // Mở lại app vẫn ở gia đình đã chọn.
+    expect((await session.restore()).state, SessionState.circleActive);
+
+    final asParent = await session.changeFamily('srv-family');
+    expect(asParent.state, SessionState.active);
+    expect(serverFamily(), 'srv-family');
+  });
 
   test('invite accepted before sign-in is applied after AUTH-04', () async {
     final session = build();

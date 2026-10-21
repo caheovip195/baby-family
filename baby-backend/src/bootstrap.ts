@@ -12,7 +12,12 @@ export function configureApp(app: INestApplication): void {
   app.use(helmet());
   app.enableCors({ origin: config.get('CORS_ORIGINS', { infer: true }) });
   app.setGlobalPrefix('api/v1', {
-    exclude: [{ path: 'health/{*path}', method: RequestMethod.ALL }],
+    exclude: [
+      { path: 'health/{*path}', method: RequestMethod.ALL },
+      { path: 'metrics', method: RequestMethod.ALL },
+      // Admin CMS is a separate surface (own auth) at /admin/v1/*.
+      { path: 'admin/v1/{*path}', method: RequestMethod.ALL },
+    ],
   });
   app.useGlobalPipes(
     new ValidationPipe({

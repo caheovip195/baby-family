@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import {
   ConflictError,
   DomainError,
@@ -37,6 +38,8 @@ function asset(overrides: Partial<AssetAttributes> = {}): Asset {
     height: null,
     durationMs: null,
     sha256: new Uint8Array(32),
+    sourceSha256: null,
+    sourceKey: null,
     capturedAt: null,
     blurhash: null,
     keepOriginal: false,
@@ -102,6 +105,7 @@ describe('MediaService', () => {
     catalog as unknown as ICatalogQueryRepository,
     media,
     storage as unknown as IObjectStorageService,
+    new ConfigService({ MEDIA_SERVER_PROCESSING: 'legacy' }),
   );
   const intent = {
     familyId,
@@ -110,6 +114,12 @@ describe('MediaService', () => {
     mime: 'image/jpeg',
     size: 1000,
     sha256: 'a'.repeat(64),
+    variants: ['m1080', 't320'].map((code) => ({
+      code,
+      mime: 'image/jpeg',
+      size: 100,
+      sha256: 'b'.repeat(64),
+    })),
   };
   beforeEach(() => {
     access.requireParent.mockResolvedValue({});

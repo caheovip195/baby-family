@@ -1,3 +1,5 @@
+import { Type } from 'class-transformer';
+import { MemoryPersonInputDto } from './memory-people.dto';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   ArrayMaxSize,
@@ -10,6 +12,7 @@ import {
   IsUUID,
   MaxLength,
   ValidateIf,
+  ValidateNested,
 } from 'class-validator';
 import { MomentFeeling, Visibility } from '../../common/database.enums';
 import { MEMORY_POLICY } from '../../config/memory-policy';
@@ -25,6 +28,14 @@ const nullable = (_object: object, value: unknown) =>
  * `visibility` (spec §6.2 canEditMemory). Only the author may edit media.
  */
 export class UpdateMemoryDto {
+  @ApiPropertyOptional({ type: [MemoryPersonInputDto], maxItems: 30 })
+  @ValidateIf(optional)
+  @IsArray()
+  @ArrayMaxSize(30)
+  @ValidateNested({ each: true })
+  @Type(() => MemoryPersonInputDto)
+  people?: MemoryPersonInputDto[];
+
   @ApiPropertyOptional({ type: [String] })
   @ValidateIf(optional)
   @IsArray()

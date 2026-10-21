@@ -1,3 +1,4 @@
+import { enqueueTransactionalMail } from './transactional-mail-outbox';
 import { Injectable } from '@nestjs/common';
 import type { AuthPrincipal } from '../common/auth/auth-principal';
 import { DomainError } from '../common/errors/domain.error';
@@ -115,6 +116,13 @@ export class AccountSecurityRepository implements IAccountSecurityRepository {
           actor,
           now,
           'PHONE_CHANGED',
+        );
+        await enqueueTransactionalMail(
+          tx,
+          'PHONE_CHANGED',
+          actor.userId,
+          identity.id,
+          `${identity.id}:${now.toISOString()}`,
         );
         // Existing audit supports non-admin actors via nullable adminId. Never persist either phone or OTP.
         await tx.adminAuditEvent.create({

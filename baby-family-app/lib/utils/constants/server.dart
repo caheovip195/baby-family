@@ -9,11 +9,21 @@ mixin Api {
   // --- Đăng nhập & phiên ---
   static const authPhoneOtp = '/v1/auth/phone/otp';
   static const authPhoneVerify = '/v1/auth/phone/verify';
+  static const authApple = '/v1/auth/apple';
+  static const authGoogle = '/v1/auth/google';
   static const mePhoneOtp = '/v1/me/phone/otp';
   static const mePhoneVerify = '/v1/me/phone/verify';
   static const supportCategories = '/v1/support/categories';
+  static const supportHelpCenter = '/v1/support/help-center';
+  static const meSignInMethods = '/v1/me/sign-in-methods';
+  static const meFamilies = '/v1/me/families';
+  static const meDefaultFamily = '/v1/me/default-family';
+  static const catalogTimezones = '/v1/catalog/timezones';
   static const supportTickets = '/v1/support/tickets';
   static const meSupportTickets = '/v1/me/support/tickets';
+  static const supportTicket = '/v1/support/tickets/{ticketId}';
+  static const supportTicketMessages =
+      '/v1/support/tickets/{ticketId}/messages';
   static const authRefresh = '/v1/auth/refresh';
   static const authLogout = '/v1/auth/logout';
 
@@ -44,6 +54,7 @@ mixin Api {
   // --- Media (mục 10.2) ---
   static const mediaUploadIntents = '/v1/media/upload-intents';
   static const mediaComplete = '/v1/media/{assetId}/complete';
+  static const mediaAsset = '/v1/media/{assetId}';
 
   // --- Ký ức (mục 11.3, 11.5) ---
   static const memories = '/v1/memories';
@@ -57,6 +68,7 @@ mixin Api {
   static const memoryRestore = '/v1/memories/{memoryId}/restore';
   static const memoryPurge = '/v1/memories/{memoryId}/purge';
   static const meDrafts = '/v1/me/drafts';
+  static const memoryPublish = '/v1/memories/{memoryId}/publish';
 
   // --- Tìm kiếm (MEM-15/16), báo cáo & chặn (RPT-01/02) ---
   static const familySearch = '/v1/families/{familyId}/search';
@@ -212,6 +224,10 @@ mixin Api {
   static const meNotificationSettings = '/v1/me/notification-settings';
   static const meAiSettings = '/v1/me/ai-settings';
   static const familyBilling = '/v1/families/{familyId}/billing';
+  static const familyPurchaseIntents =
+      '/v1/families/{familyId}/purchase-intents';
+  static const familyPurchaseVerify =
+      '/v1/families/{familyId}/purchases/verify';
   static const familyCircleLeave = '/v1/families/{familyId}/circle/leave';
   static const coupleAppreciationShareRespond =
       '/v1/families/{familyId}/us/appreciations/{appreciationId}/share-respond';

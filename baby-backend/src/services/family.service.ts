@@ -1,4 +1,5 @@
 import { Inject, Injectable, Optional } from '@nestjs/common';
+import { isCatalogTimezone } from '../config/timezone-catalog';
 import { NO_PROFILE_IMAGES } from './no-profile-images';
 import type { AuthPrincipal } from '../common/auth/auth-principal';
 import {
@@ -70,17 +71,8 @@ export class FamilyService implements IFamilyService {
       data.name = input.name.trim();
     }
     if (input.timezone !== undefined) {
-      try {
-        if (
-          typeof input.timezone !== 'string' ||
-          input.timezone.length > 64 ||
-          /^[+-]/.test(input.timezone)
-        )
-          throw new Error();
-        new Intl.DateTimeFormat('en', { timeZone: input.timezone });
-      } catch {
+      if (!isCatalogTimezone(input.timezone))
         throw new ValidationError('Timezone must be a valid IANA timezone.');
-      }
       data.timezone = input.timezone;
     }
     if (input.contentLocale !== undefined) {

@@ -1,5 +1,6 @@
-import { randomUUID } from 'node:crypto';
 import { Module } from '@nestjs/common';
+import { httpLoggingOptions } from './common/observability/http-logging';
+import { ObservabilityModule } from './common/observability/observability.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { RequestLocaleInterceptor } from './common/i18n/request-locale.interceptor';
@@ -41,31 +42,10 @@ import { ObjectStorageService } from './services/object-storage.service';
     LoggerModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService<Environment, true>) => ({
-        pinoHttp: {
-          level: config.get('LOG_LEVEL', { infer: true }),
-          genReqId: (req, res) => {
-            const incoming = req.headers['x-request-id'];
-            const id =
-              typeof incoming === 'string' &&
-              /^[a-zA-Z0-9_-]{1,100}$/.test(incoming)
-                ? incoming
-                : randomUUID();
-            res.setHeader('X-Request-Id', id);
-            return id;
-          },
-          serializers: {
-            req: (request: { id?: string; method?: string; url?: string }) => ({
-              id: request.id,
-              method: request.method,
-              url: request.url?.split('?')[0],
-            }),
-          },
-          redact: [
-            'req.headers.authorization',
-            'req.headers.cookie',
-            'res.headers["set-cookie"]',
-          ],
-        },
+        pinoHttp: httpLoggingOptions(
+          config.get('LOG_LEVEL', { infer: true }),
+          config.get('LOG_FORMAT', { infer: true }),
+        ),
       }),
     }),
     ThrottlerModule.forRootAsync({
@@ -88,6 +68,7 @@ import { ObjectStorageService } from './services/object-storage.service';
       }),
     }),
     DatabaseModule,
+    ObservabilityModule,
   ],
   controllers: [
     ...APPLICATION_CONTROLLERS,

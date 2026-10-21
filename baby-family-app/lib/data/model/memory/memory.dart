@@ -25,12 +25,16 @@ abstract class Memory with _$Memory {
     MemoryVisibility visibility,
     @JsonKey(name: 'feeling') String? feeling,
     @JsonKey(name: 'people') @Default([]) List<String> people,
+    @JsonKey(name: 'locationLabel') String? locationLabel,
     @JsonKey(name: 'milestoneCode') String? milestoneCode,
     @JsonKey(name: 'milestoneTitle') String? milestoneTitle,
     @JsonKey(name: 'monthIndex') int? monthIndex,
     @JsonKey(name: 'pregnancyWeek') int? pregnancyWeek,
     @JsonKey(name: 'pregnancyDay') int? pregnancyDay,
     @JsonKey(name: 'voiceDurationSec') int? voiceDurationSec,
+
+    /// VOICE bản server: URL nghe đã ký (biến thể `a`, hết hạn ~1 giờ).
+    @JsonKey(name: 'voiceUrl') String? voiceUrl,
     @JsonKey(name: 'sealedUntil') DateTime? sealedUntil,
     @JsonKey(name: 'missionId') String? missionId,
     @JsonKey(name: 'reactions') @Default({}) Map<String, int> reactions,

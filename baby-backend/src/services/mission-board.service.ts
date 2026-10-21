@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { AuthPrincipal } from '../common/auth/auth-principal';
-import { DomainError } from '../common/errors/domain.error';
+import { DomainError, NotFoundError } from '../common/errors/domain.error';
 import { MISSION_POLICY } from '../config/mission-policy';
 import { requireMissionOwner } from '../models/mission-board-state.model';
 import type {
@@ -142,12 +142,8 @@ export class MissionBoardService implements IMissionBoardService {
     const familyId =
       query.familyId ??
       (await this.repository.familyIdForActor(actor.userId, query.childId));
-    if (!familyId)
-      throw new DomainError(
-        'Family access denied.',
-        'FAMILY_ACCESS_DENIED',
-        403,
-      );
+    // §6.4.1: an unknown or foreign child does not reveal another family.
+    if (!familyId) throw new NotFoundError('Family was not found.');
     await this.context(actor, familyId, 'read');
     return {
       items: await this.repository.templates(

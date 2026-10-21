@@ -129,7 +129,13 @@ class MemoryDetailMobileView extends HookConsumerWidget {
       if (memory.feeling != null)
         _DetailPill(
           icon: LucideIcons.smile,
-          label: memory.feeling!,
+          label: l10n.memFeeling(memory.feeling!),
+          iconSize: 13,
+        ),
+      if (memory.locationLabel != null)
+        _DetailPill(
+          icon: LucideIcons.mapPin,
+          label: memory.locationLabel!,
           iconSize: 13,
         ),
     ];

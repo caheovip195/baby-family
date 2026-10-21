@@ -5,6 +5,7 @@ import { createTransport } from 'nodemailer';
 import type { Transporter } from 'nodemailer';
 import {
   ServiceUnavailableError,
+  DomainError,
   ValidationError,
 } from '../common/errors/domain.error';
 import type { Environment } from '../config/environment';
@@ -69,9 +70,24 @@ export class MailService implements IMailService, OnModuleDestroy {
         subject: message.subject,
         text: message.text,
         html: message.html,
+        messageId: message.messageId,
       });
       return { messageId: String(info.messageId) };
-    } catch {
+    } catch (error) {
+      // A refused connection or explicit SMTP rejection has no accepted side effect.
+      const failure = error as { code?: string; responseCode?: number };
+      if (
+        failure.code === 'ECONNREFUSED' ||
+        failure.code === 'ENOTFOUND' ||
+        (typeof failure.responseCode === 'number' &&
+          failure.responseCode >= 400)
+      ) {
+        throw new DomainError(
+          'Mail delivery was rejected.',
+          'MAIL_DELIVERY_RETRYABLE',
+          503,
+        );
+      }
       // SMTP errors may echo addresses; keep them out of API responses/logs.
       throw new ServiceUnavailableError('Mail delivery is unavailable.');
     }

@@ -44,7 +44,17 @@ interface PartUrl {
 interface ApiBody {
   assetId: string;
   status: string;
+  source?: { sha256: string; key: string; capturedAt: string | null } | null;
   deduplicated: boolean;
+  variantUploads: {
+    code: string;
+    upload: {
+      mode: string;
+      url: string;
+      method: string;
+      headers: Record<string, string>;
+    };
+  }[];
   upload: {
     mode: string;
     url: string;
@@ -75,6 +85,7 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
   let app: INestApplication<Server>;
   let prisma: PrismaService;
   let storage: IObjectStorageService;
+  let configuration: ConfigService;
   let keys: Awaited<ReturnType<typeof generateKeyPair>>;
   const [parentA, parentB, outsider, relative] = [
     randomUUID(),
@@ -154,8 +165,9 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
         'Media integration requires a dedicated *_test database.',
       );
     keys = await generateKeyPair('ES256');
-    const configuration = new ConfigService({
+    configuration = new ConfigService({
       ...validateEnvironment({ ...process.env, ...s3 }),
+      MEDIA_SERVER_PROCESSING: 'legacy',
       AUTH_JWT_PUBLIC_KEY: await exportSPKI(keys.publicKey),
     });
     const { AppModule } = await import('../../src/app.module.js');
@@ -352,7 +364,7 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
 
     const replay = await intent(parentA, payload, key).expect(201);
     expect(body(replay).assetId).toBe(photoId);
-    await intent(parentA, { ...payload, width: 1 }, key).expect(201); // dimensions are not identity
+    await intent(parentA, payload, key).expect(201);
     const reused = await intent(parentA, { ...payload, size: 10 }, key).expect(
       409,
     );
@@ -461,7 +473,7 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
       kind: 'VIDEO',
       mime: 'video/mp4',
       durationMs: 6000,
-    }).expect(402);
+    }).expect(422);
     expect(body(duration).error.code).toBe('MEDIA_DURATION_EXCEEDED');
     const quota = await intent(parentA, {
       ...base,
@@ -910,5 +922,407 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
       mime: 'video/mp4',
       durationMs: 1000,
     }).expect(422);
+  });
+  describe('client-created variants (server processing disabled)', () => {
+    beforeAll(() => configuration.set('MEDIA_SERVER_PROCESSING', 'disabled'));
+    afterAll(() => configuration.set('MEDIA_SERVER_PROCESSING', 'legacy'));
+
+    function clientFile(
+      kind: 'IMAGE' | 'VIDEO' | 'AUDIO' = 'IMAGE',
+      purpose = 'MEMORY',
+    ) {
+      const bytes = randomBytes(2048);
+      const variantBytes = randomBytes(256);
+      const codes =
+        kind === 'IMAGE'
+          ? ['m1080', 't320']
+          : kind === 'VIDEO'
+            ? ['poster', 't320']
+            : [];
+      return {
+        bytes,
+        variantBytes,
+        payload: {
+          purpose,
+          kind,
+          mime:
+            kind === 'IMAGE'
+              ? 'image/jpeg'
+              : kind === 'VIDEO'
+                ? 'video/mp4'
+                : 'audio/mp4',
+          size: bytes.length,
+          sha256: sha256(bytes),
+          ...(kind !== 'AUDIO' ? { width: 640, height: 480 } : {}),
+          ...(kind !== 'IMAGE' ? { durationMs: 1000 } : {}),
+          variants: codes.map((code) => ({
+            code,
+            mime: 'image/jpeg',
+            size: variantBytes.length,
+            sha256: sha256(variantBytes),
+            width: code === 't320' ? 320 : 640,
+            height: code === 't320' ? 240 : 480,
+          })),
+        },
+      };
+    }
+
+    async function put(
+      upload: { url: string; headers: Record<string, string> },
+      bytes: Buffer,
+    ) {
+      const response = await fetch(upload.url, {
+        method: 'PUT',
+        headers: upload.headers,
+        body: bytes,
+      });
+      expect(response.status).toBe(200);
+    }
+
+    for (const kind of ['IMAGE', 'VIDEO', 'AUDIO'] as const) {
+      it(`completes ${kind} immediately, charges every object and never queues processing`, async () => {
+        const file = clientFile(kind);
+        const before = await usage();
+        const result = body(await intent(parentA, file.payload).expect(201));
+        expect(result.variantUploads.map((item) => item.code).sort()).toEqual(
+          file.payload.variants.map((item) => item.code).sort(),
+        );
+        const declared =
+          file.bytes.length +
+          file.variantBytes.length * file.payload.variants.length;
+        expect((await usage()).reservedStorageBytes).toBe(
+          before.reservedStorageBytes +
+            reserved(file.bytes.length) +
+            BigInt(file.payload.variants.length) *
+              reserved(file.variantBytes.length),
+        );
+        await put(result.upload, file.bytes);
+        for (const item of result.variantUploads) {
+          expect(item.upload).toMatchObject({ mode: 'single', method: 'PUT' });
+          expect(item.upload.headers['x-amz-checksum-sha256']).toBeTruthy();
+          expect(new URL(item.upload.url).pathname).toContain(
+            `/fam/${familyId}/a/${result.assetId}/${item.code}`,
+          );
+          await put(item.upload, file.variantBytes);
+        }
+        const done = body(await complete(parentA, result.assetId).expect(202));
+        expect(done).toEqual({ assetId: result.assetId, status: 'READY' });
+        await complete(parentA, result.assetId).expect(202);
+        const asset = await prisma.asset.findUniqueOrThrow({
+          where: { id: result.assetId },
+        });
+        expect(asset).toMatchObject({
+          status: 'READY',
+          durationMs: kind === 'IMAGE' ? null : 1000,
+          width: kind === 'AUDIO' ? null : 640,
+        });
+        const variants = await prisma.assetVariant.findMany({
+          where: { assetId: result.assetId, deletedAt: null },
+        });
+        expect(variants.map((variant) => variant.variantCode).sort()).toEqual(
+          (kind === 'IMAGE'
+            ? ['orig', 'm1080', 't320']
+            : kind === 'VIDEO'
+              ? ['v1080', 'poster', 't320']
+              : ['a']
+          ).sort(),
+        );
+        const alias = variants.find(
+          (variant) =>
+            variant.variantCode ===
+            (kind === 'IMAGE' ? 'orig' : kind === 'VIDEO' ? 'v1080' : 'a'),
+        );
+        expect(alias?.storageKey).toBe(asset.storageKey);
+        if (kind !== 'IMAGE') {
+          const memory = await prisma.memory.create({
+            data: {
+              familyId,
+              authorUserId: parentA,
+              authorRole: 'PARENT',
+              occurredAt: new Date(),
+              occurredLocalDate: new Date(),
+              visibility: 'PARENTS',
+              status: 'PUBLISHED',
+              publishedAt: new Date(),
+            },
+          });
+          await prisma.memoryAsset.create({
+            data: {
+              familyId,
+              memoryId: memory.id,
+              assetId: asset.id,
+              sortOrder: 0,
+            },
+          });
+          const download = body(
+            await request(app.getHttpServer())
+              .post(`/api/v1/memories/${memory.id}/download-urls`)
+              .set('Authorization', auth(parentA))
+              .send({})
+              .expect(200),
+          );
+          expect(download.items).toHaveLength(1);
+          const item = download.items[0] as { assetId: string; url: string };
+          expect(item.assetId).toBe(asset.id);
+          expect(new URL(item.url).pathname).toContain(`/${asset.storageKey}`);
+          const response = await fetch(item.url);
+          expect(response.status).toBe(200);
+          expect(Buffer.from(await response.arrayBuffer())).toEqual(file.bytes);
+        }
+
+        const after = await usage();
+        expect(after.storageBytes).toBe(before.storageBytes + BigInt(declared));
+        expect(after.reservedStorageBytes).toBe(before.reservedStorageBytes);
+        expect(
+          await prisma.outboxEvent.count({
+            where: {
+              familyId,
+              aggregateId: result.assetId,
+              eventType: 'media.asset_uploaded',
+            },
+          }),
+        ).toBe(0);
+        const view = body(await getMedia(parentA, result.assetId).expect(200));
+        expect(Object.keys(view.urls).sort()).toEqual(
+          (kind === 'IMAGE'
+            ? ['m1080', 't320']
+            : kind === 'VIDEO'
+              ? ['v1080', 'poster', 't320']
+              : ['a']
+          ).sort(),
+        );
+      });
+    }
+
+    it('publishes a PROCESSING memory atomically when its final client asset becomes READY', async () => {
+      const file = clientFile();
+      const result = body(await intent(parentA, file.payload).expect(201));
+      const secondFile = clientFile();
+      const second = body(
+        await intent(parentA, secondFile.payload).expect(201),
+      );
+      const memory = await prisma.memory.create({
+        data: {
+          familyId,
+          authorUserId: parentA,
+          authorRole: 'PARENT',
+          occurredAt: new Date(),
+          occurredLocalDate: new Date(),
+          visibility: 'PARENTS',
+          status: 'PROCESSING',
+        },
+      });
+      await prisma.memoryAsset.create({
+        data: {
+          familyId,
+          memoryId: memory.id,
+          assetId: result.assetId,
+          sortOrder: 0,
+        },
+      });
+      await prisma.memoryAsset.create({
+        data: {
+          familyId,
+          memoryId: memory.id,
+          assetId: second.assetId,
+          sortOrder: 1,
+        },
+      });
+      await put(result.upload, file.bytes);
+      for (const item of result.variantUploads)
+        await put(item.upload, file.variantBytes);
+      await complete(parentA, result.assetId).expect(202);
+      await complete(parentA, result.assetId).expect(202);
+      expect(
+        await prisma.memory.findUniqueOrThrow({ where: { id: memory.id } }),
+      ).toMatchObject({ status: 'PROCESSING' });
+      expect(
+        await prisma.outboxEvent.count({
+          where: {
+            familyId,
+            aggregateId: memory.id,
+            eventType: 'memory.published',
+          },
+        }),
+      ).toBe(0);
+      await put(second.upload, secondFile.bytes);
+      for (const item of second.variantUploads)
+        await put(item.upload, secondFile.variantBytes);
+      await complete(parentA, second.assetId).expect(202);
+      await complete(parentA, second.assetId).expect(202);
+      expect(
+        await prisma.memory.findUniqueOrThrow({ where: { id: memory.id } }),
+      ).toMatchObject({ status: 'PUBLISHED', publishedAt: expect.any(Date) });
+      expect(
+        await prisma.outboxEvent.count({
+          where: {
+            familyId,
+            aggregateId: memory.id,
+            eventType: 'memory.published',
+          },
+        }),
+      ).toBe(1);
+    });
+
+    it('replays identical variant declarations regardless of object field order or list order', async () => {
+      const file = clientFile();
+      const key = randomUUID();
+      const first = body(await intent(parentA, file.payload, key).expect(201));
+      const variants = [...file.payload.variants].reverse().map((v) => ({
+        height: v.height,
+        width: v.width,
+        sha256: v.sha256,
+        size: v.size,
+        mime: v.mime,
+        code: v.code,
+      }));
+      const replay = body(
+        await intent(parentA, { ...file.payload, variants }, key).expect(201),
+      );
+      expect(replay.assetId).toBe(first.assetId);
+      expect(replay.variantUploads.map((v) => v.code).sort()).toEqual([
+        'm1080',
+        't320',
+      ]);
+      const changed = body(
+        await intent(parentA, { ...file.payload, width: 641 }, key).expect(409),
+      );
+      expect(changed.error.code).toBe('IDEMPOTENCY_KEY_REUSED');
+    });
+
+    it('stores the device original fingerprint and returns it with the asset (BF-20261021-008)', async () => {
+      const file = clientFile();
+      const original = createHash('sha256')
+        .update(`original-${randomUUID()}`)
+        .digest('hex');
+      const source = {
+        sha256: original,
+        key: 'IMAGE|3024x4032|0',
+        capturedAt: '2026-10-01T08:00:00.000Z',
+      };
+      const key = randomUUID();
+      const result = body(
+        await intent(parentA, { ...file.payload, source }, key).expect(201),
+      );
+      await put(result.upload, file.bytes);
+      for (const item of result.variantUploads)
+        await put(item.upload, file.variantBytes);
+      await complete(parentA, result.assetId).expect(202);
+      const view = body(await getMedia(parentA, result.assetId).expect(200));
+      expect(view.source).toEqual(source);
+      const changed = body(
+        await intent(
+          parentA,
+          { ...file.payload, source: { ...source, key: 'IMAGE|1x1|0' } },
+          key,
+        ).expect(409),
+      );
+      expect(changed.error.code).toBe('IDEMPOTENCY_KEY_REUSED');
+      const plain = clientFile();
+      const other = body(await intent(parentA, plain.payload).expect(201));
+      await put(other.upload, plain.bytes);
+      for (const item of other.variantUploads)
+        await put(item.upload, plain.variantBytes);
+      await complete(parentA, other.assetId).expect(202);
+      expect(
+        body(await getMedia(parentA, other.assetId).expect(200)).source,
+      ).toBeNull();
+      await intent(parentA, {
+        ...clientFile().payload,
+        source: { ...source, sha256: 'xyz' },
+      }).expect(400);
+    });
+
+    it('rejects absent required variant declarations and all legacy kinds by default', async () => {
+      for (const kind of ['IMAGE', 'VIDEO', 'AUDIO'] as const) {
+        const file = clientFile(kind);
+        const legacy: Record<string, unknown> = { ...file.payload };
+        delete legacy.variants;
+        expect(body(await intent(parentA, legacy).expect(422)).error.code).toBe(
+          'MEDIA_VARIANTS_REQUIRED',
+        );
+      }
+      const file = clientFile();
+      expect(
+        body(
+          await intent(parentA, {
+            ...file.payload,
+            variants: file.payload.variants.slice(0, 1),
+          }).expect(422),
+        ).error.code,
+      ).toBe('MEDIA_VARIANTS_REQUIRED');
+    });
+
+    it('rejects declared video duration beyond the current plan with 422', async () => {
+      const file = clientFile('VIDEO');
+      expect(
+        body(
+          await intent(parentA, { ...file.payload, durationMs: 5001 }).expect(
+            422,
+          ),
+        ).error.code,
+      ).toBe('MEDIA_DURATION_EXCEEDED');
+    });
+
+    for (const purpose of ['AVATAR', 'COVER', 'JOURNAL']) {
+      it(`accepts the same client IMAGE contract for ${purpose}`, async () => {
+        const file = clientFile('IMAGE', purpose);
+        const result = body(await intent(parentA, file.payload).expect(201));
+        await put(result.upload, file.bytes);
+        for (const item of result.variantUploads)
+          await put(item.upload, file.variantBytes);
+        expect(
+          body(await complete(parentA, result.assetId).expect(202)).status,
+        ).toBe('READY');
+      });
+    }
+
+    for (const mismatch of ['missing', 'size'] as const) {
+      it(`fails and removes every uploaded object when a variant has ${mismatch} data`, async () => {
+        const file = clientFile();
+        const payload =
+          mismatch === 'size'
+            ? {
+                ...file.payload,
+                variants: file.payload.variants.map((variant) => ({
+                  ...variant,
+                  size: 1,
+                })),
+              }
+            : file.payload;
+        const before = await usage();
+        const result = body(await intent(parentA, payload).expect(201));
+        await put(result.upload, file.bytes);
+        for (const item of result.variantUploads) {
+          if (mismatch === 'missing' && item.code === 't320') continue;
+          await put(item.upload, file.variantBytes);
+        }
+        expect(
+          body(await complete(parentA, result.assetId).expect(422)).error.code,
+        ).toBe(
+          mismatch === 'missing'
+            ? 'UPLOAD_VARIANT_MISSING'
+            : 'UPLOAD_VARIANT_SIZE_MISMATCH',
+        );
+        const failed = await prisma.asset.findUniqueOrThrow({
+          where: { id: result.assetId },
+        });
+        expect(failed.status).toBe('FAILED');
+        const variants = await prisma.assetVariant.findMany({
+          where: { assetId: result.assetId },
+        });
+        for (const object of [failed, ...variants])
+          await expect(
+            storage.headObject({
+              bucket: storage.bucketOf(object.storageBucket)!,
+              key: object.storageKey,
+            }),
+          ).resolves.toBeNull();
+        expect((await usage()).reservedStorageBytes).toBe(
+          before.reservedStorageBytes,
+        );
+        expect((await usage()).storageBytes).toBe(before.storageBytes);
+      });
+    }
   });
 });

@@ -6,6 +6,7 @@ import 'package:baby_family/data/model/family/invite_info.dart';
 import 'package:baby_family/data/model/family/member.dart';
 import 'package:baby_family/data/model/family/plan_details.dart';
 import 'package:baby_family/data/model/family/plan_offer.dart';
+import 'package:baby_family/data/model/family/timezone_catalog.dart';
 import 'package:baby_family/data/service/base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 
@@ -89,6 +90,10 @@ abstract class IFamilyService extends IBaseService {
   Future<FamilySettings> familySettings();
 
   Future<void> saveFamilySettings(FamilySettings settings);
+
+  /// FAM-07: danh mục múi giờ (server cấu hình, nhãn theo ngôn ngữ app);
+  /// rỗng ở bản mẫu.
+  Future<List<TimezoneOption>> timezones();
 
   // --- Batch 3 (SUB-03, FAM-05/08) ---
 

@@ -3400,6 +3400,4502 @@
       "rolloutPct": 100,
       "status": "ACTIVE",
       "version": 1
+    },
+    {
+      "code": "ANY-25",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "HOME",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Gom quần áo bẩn vào giỏ",
+        "en": "Gather the laundry into the basket"
+      },
+      "descI18n": {
+        "vi": "Gom đồ cần giặt về một chỗ để việc giặt nhẹ hơn.",
+        "en": "Collect what needs washing in one place to make laundry easier."
+      },
+      "tags": ["any", "home"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-26",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "HOME",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 4,
+      "durationMin": 20,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Phơi hoặc gấp một mẻ đồ",
+        "en": "Hang or fold one load"
+      },
+      "descI18n": {
+        "vi": "Phơi đồ vừa giặt hoặc gấp gọn đồ đã khô.",
+        "en": "Hang the fresh laundry or fold what is already dry."
+      },
+      "tags": ["any", "home"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-27",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "HOME",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Rửa bình nước và cốc trong ngày",
+        "en": "Wash today’s bottles and cups"
+      },
+      "descI18n": {
+        "vi": "Rửa sạch và úp ráo các bình, cốc đã dùng.",
+        "en": "Wash and air-dry the bottles and cups used today."
+      },
+      "tags": ["any", "home"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-28",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "HOME",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Đổ rác và thay túi mới",
+        "en": "Take out the trash and reline the bin"
+      },
+      "descI18n": {
+        "vi": "Mang rác ra ngoài và lót sẵn túi mới.",
+        "en": "Take the trash out and put in a fresh bag."
+      },
+      "tags": ["any", "home"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-29",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "HOME",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 4,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Lau sàn khu vực bé hay chơi",
+        "en": "Mop the floor where the baby plays"
+      },
+      "descI18n": {
+        "vi": "Lau sạch một góc sàn nơi bé thường ngồi chơi.",
+        "en": "Clean the patch of floor where the little one usually plays."
+      },
+      "tags": ["any", "home"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-30",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "HOME",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Sắp lại tủ lạnh một chút",
+        "en": "Tidy the fridge a little"
+      },
+      "descI18n": {
+        "vi": "Bỏ đồ hết hạn và xếp gọn ngăn hay dùng.",
+        "en": "Toss anything expired and tidy the shelf you use most."
+      },
+      "tags": ["any", "home"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-31",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "HOME",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 4,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Thay ga hoặc vỏ gối",
+        "en": "Change the sheets or pillowcases"
+      },
+      "descI18n": {
+        "vi": "Thay một bộ ga hoặc vỏ gối sạch cho giường.",
+        "en": "Put clean sheets or pillowcases on a bed."
+      },
+      "tags": ["any", "home"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-32",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "HOME",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Rửa bát sau bữa ăn",
+        "en": "Do the dishes after a meal"
+      },
+      "descI18n": {
+        "vi": "Rửa và úp gọn bát đĩa ngay sau bữa.",
+        "en": "Wash and put away the dishes right after eating."
+      },
+      "tags": ["any", "home"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-33",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "HOME",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Lau tay nắm cửa và công tắc",
+        "en": "Wipe door handles and switches"
+      },
+      "descI18n": {
+        "vi": "Lau nhẹ những chỗ cả nhà hay chạm vào.",
+        "en": "Give the spots everyone touches a quick wipe."
+      },
+      "tags": ["any", "home"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-34",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "HOME",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 4,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Dọn gọn lối đi trong nhà",
+        "en": "Clear the walkways at home"
+      },
+      "descI18n": {
+        "vi": "Cất đồ vướng chân để đi lại an toàn hơn.",
+        "en": "Put away anything underfoot so moving around is safer."
+      },
+      "tags": ["any", "home"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-35",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "PREP",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Lên thực đơn cho ngày mai",
+        "en": "Plan tomorrow’s meals"
+      },
+      "descI18n": {
+        "vi": "Chọn trước món ăn để sáng mai đỡ vội.",
+        "en": "Pick tomorrow’s dishes so the morning is less rushed."
+      },
+      "tags": ["any", "prep"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-36",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "PREP",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 4,
+      "durationMin": 20,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Đi chợ hoặc đặt đồ thiết yếu",
+        "en": "Shop or order the essentials"
+      },
+      "descI18n": {
+        "vi": "Mua bổ sung vài món sắp hết trong nhà.",
+        "en": "Restock a few things that are running low."
+      },
+      "tags": ["any", "prep"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-37",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "PREP",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Kiểm tra đồ dùng sắp hết",
+        "en": "Check what is running low"
+      },
+      "descI18n": {
+        "vi": "Xem nhanh tã, khăn, sữa tắm còn đủ không.",
+        "en": "Quickly check if diapers, wipes and soap will last."
+      },
+      "tags": ["any", "prep"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-38",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "PREP",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Chuẩn bị túi đồ khi ra ngoài",
+        "en": "Pack the outing bag"
+      },
+      "descI18n": {
+        "vi": "Xếp sẵn khăn, nước và đồ cần cho lần ra ngoài tới.",
+        "en": "Put wipes, water and the essentials in the bag for the next outing."
+      },
+      "tags": ["any", "prep"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-39",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "PREP",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Xem lại lịch của cả nhà tuần này",
+        "en": "Review this week’s family calendar"
+      },
+      "descI18n": {
+        "vi": "Ghi chú lịch khám, việc riêng để không bị trùng.",
+        "en": "Note check-ups and plans so nothing clashes."
+      },
+      "tags": ["any", "prep"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-40",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "PREP",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 4,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Sơ chế sẵn một món",
+        "en": "Prep one ingredient ahead"
+      },
+      "descI18n": {
+        "vi": "Rửa, cắt sẵn rau hoặc thịt cho bữa sau.",
+        "en": "Wash or chop vegetables or meat for the next meal."
+      },
+      "tags": ["any", "prep"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-41",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SUPPORT",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 4,
+      "durationMin": 20,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Nhận ca trông bé một buổi",
+        "en": "Take one childcare shift"
+      },
+      "descI18n": {
+        "vi": "Trông bé để người kia có thời gian cho mình.",
+        "en": "Look after the little one so the other has time for themselves."
+      },
+      "tags": ["any", "support"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-42",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SUPPORT",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 5,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Nhắn hỏi người kia cần gì",
+        "en": "Ask what your partner needs"
+      },
+      "descI18n": {
+        "vi": "Hỏi xem hôm nay bạn đời cần mình giúp việc gì.",
+        "en": "Ask what your partner would like help with today."
+      },
+      "tags": ["any", "support"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-43",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SUPPORT",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Pha một ly đồ uống cho người kia",
+        "en": "Make a drink for your partner"
+      },
+      "descI18n": {
+        "vi": "Pha trà, sữa hay nước ấm theo ý người kia.",
+        "en": "Make tea, milk or warm water the way they like it."
+      },
+      "tags": ["any", "support"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-44",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SUPPORT",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 4,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Để người kia ngủ thêm một chút",
+        "en": "Let your partner sleep in"
+      },
+      "descI18n": {
+        "vi": "Lo việc buổi sáng để người kia ngủ bù.",
+        "en": "Handle the morning so your partner can catch up on sleep."
+      },
+      "tags": ["any", "support"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-45",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SUPPORT",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Lo một việc vặt bên ngoài",
+        "en": "Run one errand"
+      },
+      "descI18n": {
+        "vi": "Đi gửi đồ, lấy hàng hay đóng tiền giúp cả nhà.",
+        "en": "Drop off, pick up or pay something for the family."
+      },
+      "tags": ["any", "support"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-46",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SUPPORT",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 5,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Khen người kia một điều cụ thể",
+        "en": "Praise one specific thing"
+      },
+      "descI18n": {
+        "vi": "Nói ra một việc người kia đã làm tốt hôm nay.",
+        "en": "Name one thing your partner did well today."
+      },
+      "tags": ["any", "support"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-47",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SUPPORT",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 4,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Dọn bữa và mời người kia ăn trước",
+        "en": "Serve a meal and let them eat first"
+      },
+      "descI18n": {
+        "vi": "Chuẩn bị bữa và để người kia ăn khi còn nóng.",
+        "en": "Set out the meal and let your partner eat while it is warm."
+      },
+      "tags": ["any", "support"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-48",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SUPPORT",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Gọi hỏi thăm ông bà",
+        "en": "Call the grandparents"
+      },
+      "descI18n": {
+        "vi": "Gọi điện kể ông bà nghe chuyện của bé.",
+        "en": "Call and tell the grandparents a little news about the baby."
+      },
+      "tags": ["any", "support"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-49",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Đi bộ ngắn một mình",
+        "en": "Take a short walk alone"
+      },
+      "descI18n": {
+        "vi": "Ra ngoài đi bộ vài phút cho đầu óc thư thái.",
+        "en": "Step out for a few minutes to clear your head."
+      },
+      "tags": ["any", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-50",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Giãn cơ cổ và vai",
+        "en": "Stretch your neck and shoulders"
+      },
+      "descI18n": {
+        "vi": "Làm vài động tác giãn cơ nhẹ cho đỡ mỏi.",
+        "en": "Do a few gentle stretches to ease tension."
+      },
+      "tags": ["any", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-51",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Đọc vài trang sách",
+        "en": "Read a few pages"
+      },
+      "descI18n": {
+        "vi": "Đọc vài trang của cuốn sách bạn thích.",
+        "en": "Read a few pages of a book you enjoy."
+      },
+      "tags": ["any", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-52",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 5,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Uống đủ nước hôm nay",
+        "en": "Drink enough water today"
+      },
+      "descI18n": {
+        "vi": "Để sẵn một bình nước và uống đều trong ngày.",
+        "en": "Keep a bottle nearby and sip through the day."
+      },
+      "tags": ["any", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-53",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Chợp mắt khi bé ngủ",
+        "en": "Nap while the baby naps"
+      },
+      "descI18n": {
+        "vi": "Tranh thủ nghỉ ngắn khi bé đang ngủ.",
+        "en": "Grab a short rest while the little one sleeps."
+      },
+      "tags": ["any", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-54",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Nghe một bản nhạc bạn thích",
+        "en": "Listen to a song you love"
+      },
+      "descI18n": {
+        "vi": "Dành vài phút chỉ để nghe nhạc.",
+        "en": "Take a few minutes just for music."
+      },
+      "tags": ["any", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-55",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 5,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Viết ra một điều đang làm bạn lo",
+        "en": "Write down one worry"
+      },
+      "descI18n": {
+        "vi": "Ghi lại để nhẹ lòng, không cần giải quyết ngay.",
+        "en": "Write it down to lighten the load; no need to solve it now."
+      },
+      "tags": ["any", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-56",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Tắm thư thả hơn thường lệ",
+        "en": "Take an unhurried shower"
+      },
+      "descI18n": {
+        "vi": "Cho mình thêm vài phút dưới vòi nước ấm.",
+        "en": "Give yourself a few extra minutes of warm water."
+      },
+      "tags": ["any", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-57",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 5,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Hít thở chậm năm lần",
+        "en": "Breathe slowly five times"
+      },
+      "descI18n": {
+        "vi": "Hít sâu, thở ra chậm trong năm nhịp.",
+        "en": "Breathe in deeply and out slowly, five times."
+      },
+      "tags": ["any", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-58",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 20,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Gặp hoặc nhắn tin cho một người bạn",
+        "en": "Reach out to a friend"
+      },
+      "descI18n": {
+        "vi": "Giữ kết nối với bạn bè dù chỉ vài dòng.",
+        "en": "Stay connected with a friend, even with a short message."
+      },
+      "tags": ["any", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-59",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "MEMORY",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 5,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ghi một câu về hôm nay",
+        "en": "Write one line about today"
+      },
+      "descI18n": {
+        "vi": "Một câu ngắn là đủ để nhớ ngày hôm nay.",
+        "en": "One short line is enough to remember today."
+      },
+      "tags": ["any", "memory"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1,
+      "memoryPromptI18n": {
+        "vi": "Kể lại khoảnh khắc này bằng vài dòng nhé.",
+        "en": "Tell this moment in a few lines."
+      }
+    },
+    {
+      "code": "ANY-60",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "MEMORY",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 5,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Chụp một góc nhà hôm nay",
+        "en": "Photograph a corner of home"
+      },
+      "descI18n": {
+        "vi": "Lưu lại góc nhà đang thay đổi cùng bé.",
+        "en": "Capture a corner of home as it changes with your family."
+      },
+      "tags": ["any", "memory"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1,
+      "memoryPromptI18n": {
+        "vi": "Kể lại khoảnh khắc này bằng vài dòng nhé.",
+        "en": "Tell this moment in a few lines."
+      }
+    },
+    {
+      "code": "ANY-61",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "MEMORY",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 4,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Chọn ảnh đẹp nhất tuần này",
+        "en": "Pick the best photo of the week"
+      },
+      "descI18n": {
+        "vi": "Chọn một tấm ảnh và ghi vài chữ vì sao bạn thích.",
+        "en": "Choose one photo and note why you love it."
+      },
+      "tags": ["any", "memory"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1,
+      "memoryPromptI18n": {
+        "vi": "Kể lại khoảnh khắc này bằng vài dòng nhé.",
+        "en": "Tell this moment in a few lines."
+      }
+    },
+    {
+      "code": "ANY-62",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "MEMORY",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 5,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ghi lại một điều bạn biết ơn",
+        "en": "Note one thing you are grateful for"
+      },
+      "descI18n": {
+        "vi": "Viết một điều nhỏ hôm nay khiến bạn biết ơn.",
+        "en": "Write down one small thing from today you are grateful for."
+      },
+      "tags": ["any", "memory"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1,
+      "memoryPromptI18n": {
+        "vi": "Kể lại khoảnh khắc này bằng vài dòng nhé.",
+        "en": "Tell this moment in a few lines."
+      }
+    },
+    {
+      "code": "ANY-63",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "MEMORY",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Quay một đoạn video ngắn",
+        "en": "Record a short video"
+      },
+      "descI18n": {
+        "vi": "Quay vài giây khoảnh khắc thường ngày của cả nhà.",
+        "en": "Film a few seconds of an ordinary family moment."
+      },
+      "tags": ["any", "memory"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1,
+      "memoryPromptI18n": {
+        "vi": "Kể lại khoảnh khắc này bằng vài dòng nhé.",
+        "en": "Tell this moment in a few lines."
+      }
+    },
+    {
+      "code": "ANY-64",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "MEMORY",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 4,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Viết lại một lời ông bà dặn",
+        "en": "Write down a grandparent’s advice"
+      },
+      "descI18n": {
+        "vi": "Ghi lại lời khuyên hay câu chuyện của ông bà.",
+        "en": "Record a piece of advice or a story from the grandparents."
+      },
+      "tags": ["any", "memory"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1,
+      "memoryPromptI18n": {
+        "vi": "Kể lại khoảnh khắc này bằng vài dòng nhé.",
+        "en": "Tell this moment in a few lines."
+      }
+    },
+    {
+      "code": "ANY-65",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "CARE",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Rửa và tiệt trùng đồ dùng của bé",
+        "en": "Clean and sterilise baby items"
+      },
+      "descI18n": {
+        "vi": "Làm sạch bình, núm hoặc đồ gặm của bé.",
+        "en": "Clean bottles, teats or teethers."
+      },
+      "tags": ["any", "care"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-66",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "CARE",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Cắt móng tay cho bé",
+        "en": "Trim the little one’s nails"
+      },
+      "descI18n": {
+        "vi": "Cắt gọn móng tay khi bé thư thái hoặc đang ngủ.",
+        "en": "Trim the nails while they are calm or asleep."
+      },
+      "tags": ["any", "care"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-67",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "CARE",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Chuẩn bị quần áo theo thời tiết",
+        "en": "Lay out weather-ready clothes"
+      },
+      "descI18n": {
+        "vi": "Xem thời tiết và để sẵn đồ phù hợp cho ngày mai.",
+        "en": "Check the forecast and set out tomorrow’s clothes."
+      },
+      "tags": ["any", "care"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-68",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "CARE",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Kiểm tra tủ thuốc gia đình",
+        "en": "Check the family first-aid kit"
+      },
+      "descI18n": {
+        "vi": "Xem hạn dùng thuốc hạ sốt, nhiệt kế, băng gạc.",
+        "en": "Check fever medicine, the thermometer and bandages are in date."
+      },
+      "tags": ["any", "care"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-69",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "CARE",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Lau đồ chơi bé hay cầm",
+        "en": "Wipe down favourite toys"
+      },
+      "descI18n": {
+        "vi": "Lau sạch vài món đồ chơi bé dùng nhiều nhất.",
+        "en": "Clean the toys the little one handles most."
+      },
+      "tags": ["any", "care"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-70",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "CARE",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 4,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Giặt riêng một mẻ đồ của bé",
+        "en": "Wash a load of baby clothes"
+      },
+      "descI18n": {
+        "vi": "Giặt đồ của bé bằng nước giặt dịu nhẹ.",
+        "en": "Wash the little one’s clothes with a gentle detergent."
+      },
+      "tags": ["any", "care"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-71",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "BONDING",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Kể bé nghe về ngày của bạn",
+        "en": "Tell the little one about your day"
+      },
+      "descI18n": {
+        "vi": "Kể vài chuyện nhỏ trong ngày bằng giọng nhẹ nhàng.",
+        "en": "Share a few small things from your day in a gentle voice."
+      },
+      "tags": ["any", "bonding"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-72",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "BONDING",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ôm bé lâu hơn một chút",
+        "en": "Hold the little one a little longer"
+      },
+      "descI18n": {
+        "vi": "Ôm bé thêm vài phút, không vội làm gì khác.",
+        "en": "Hold them for a few extra minutes without rushing."
+      },
+      "tags": ["any", "bonding"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-73",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "OUTDOOR",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 4,
+      "durationMin": 20,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ra ngoài hít thở không khí",
+        "en": "Get some fresh air"
+      },
+      "descI18n": {
+        "vi": "Đưa cả nhà ra hiên, sân hoặc công viên gần nhà.",
+        "en": "Take the family out to the porch, yard or a nearby park."
+      },
+      "tags": ["any", "outdoor"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-74",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "HOME",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Mở cửa sổ cho phòng thoáng",
+        "en": "Air out a room"
+      },
+      "descI18n": {
+        "vi": "Mở cửa vài phút để không khí lưu thông.",
+        "en": "Open the windows for a few minutes to let air through."
+      },
+      "tags": ["any", "home"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-75",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "COUPLE",
+      "suggestedScope": "COUPLE",
+      "roleFit": "TOGETHER",
+      "hearts": 5,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Cùng ăn một bữa không điện thoại",
+        "en": "Share a phone-free meal"
+      },
+      "descI18n": {
+        "vi": "Đặt điện thoại xuống và ăn cùng nhau.",
+        "en": "Put the phones away and eat together."
+      },
+      "tags": ["any", "couple"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-76",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "COUPLE",
+      "suggestedScope": "COUPLE",
+      "roleFit": "TOGETHER",
+      "hearts": 4,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Nhắc lại một kỷ niệm của hai người",
+        "en": "Recall a memory of the two of you"
+      },
+      "descI18n": {
+        "vi": "Kể cho nhau nghe một kỷ niệm trước khi có bé.",
+        "en": "Tell each other a memory from before the baby."
+      },
+      "tags": ["any", "couple"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-77",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "TOGETHER",
+      "suggestedScope": "FAMILY",
+      "roleFit": "TOGETHER",
+      "hearts": 5,
+      "durationMin": 20,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Cả nhà cùng dọn một góc",
+        "en": "Tidy one corner together"
+      },
+      "descI18n": {
+        "vi": "Chọn một góc nhỏ và cùng dọn trong 15 phút.",
+        "en": "Pick a small corner and tidy it together for 15 minutes."
+      },
+      "tags": ["any", "together"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-78",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "TOGETHER",
+      "suggestedScope": "FAMILY",
+      "roleFit": "TOGETHER",
+      "hearts": 5,
+      "durationMin": 20,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Lên kế hoạch cho cuối tuần",
+        "en": "Plan the weekend together"
+      },
+      "descI18n": {
+        "vi": "Cùng chọn một việc vui nhỏ cho cả nhà cuối tuần này.",
+        "en": "Choose one small fun thing for the family this weekend."
+      },
+      "tags": ["any", "together"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-29",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 20,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ăn nhẹ khi thấy nôn nao",
+        "en": "Snack when you feel queasy"
+      },
+      "descI18n": {
+        "vi": "Để sẵn bánh quy hoặc trái cây để ăn từng chút.",
+        "en": "Keep crackers or fruit nearby and eat little by little."
+      },
+      "tags": ["pregnancy", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-30",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 20,
+      "category": "SUPPORT",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PARTNER_OF_PREGNANT",
+      "hearts": 4,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Lo bữa khi mẹ bầu ngại mùi",
+        "en": "Handle meals when smells are hard"
+      },
+      "descI18n": {
+        "vi": "Nấu hoặc mua món mẹ bầu thấy dễ ăn.",
+        "en": "Cook or buy something easy for the pregnant parent to eat."
+      },
+      "tags": ["pregnancy", "support"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-31",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 20,
+      "category": "PREP",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ghi câu hỏi cho lần khám tới",
+        "en": "List questions for the next check-up"
+      },
+      "descI18n": {
+        "vi": "Viết sẵn điều muốn hỏi bác sĩ.",
+        "en": "Write down what you want to ask the doctor."
+      },
+      "tags": ["pregnancy", "prep"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-32",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 20,
+      "category": "PREP",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Tìm hiểu về giai đoạn thai kỳ này",
+        "en": "Learn about this stage of pregnancy"
+      },
+      "descI18n": {
+        "vi": "Cùng đọc một bài đáng tin về tuần thai hiện tại.",
+        "en": "Read a trusted article about the current week together."
+      },
+      "tags": ["pregnancy", "prep"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-33",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 20,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ngủ sớm hơn tối nay",
+        "en": "Go to bed earlier tonight"
+      },
+      "descI18n": {
+        "vi": "Cho cơ thể nghỉ thêm khi đang mệt hơn thường lệ.",
+        "en": "Give your body extra rest while you feel more tired."
+      },
+      "tags": ["pregnancy", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-34",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 20,
+      "category": "SUPPORT",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PARTNER_OF_PREGNANT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Nhắc mẹ bầu uống vitamin",
+        "en": "Remind about prenatal vitamins"
+      },
+      "descI18n": {
+        "vi": "Đặt nhắc nhở hoặc mang vitamin kèm ly nước.",
+        "en": "Set a reminder or bring the vitamins with a glass of water."
+      },
+      "tags": ["pregnancy", "support"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-35",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 20,
+      "category": "BONDING",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Chọn một bài hát dành cho bé",
+        "en": "Pick a song for the baby"
+      },
+      "descI18n": {
+        "vi": "Chọn bài hát mà cả nhà sẽ hát cho bé nghe.",
+        "en": "Choose a song the family will sing to the baby."
+      },
+      "tags": ["pregnancy", "bonding"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-36",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 20,
+      "category": "MEMORY",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 5,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ghi lại cảm xúc khi biết tin có bé",
+        "en": "Write how you felt at the news"
+      },
+      "descI18n": {
+        "vi": "Viết vài dòng về lúc bạn biết tin vui.",
+        "en": "Write a few lines about the moment you found out."
+      },
+      "tags": ["pregnancy", "memory"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1,
+      "memoryPromptI18n": {
+        "vi": "Kể lại khoảnh khắc này bằng vài dòng nhé.",
+        "en": "Tell this moment in a few lines."
+      }
+    },
+    {
+      "code": "PG-37",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 42,
+      "category": "OUTDOOR",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 20,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Đi bộ nhẹ sau bữa tối",
+        "en": "Take a gentle walk after dinner"
+      },
+      "descI18n": {
+        "vi": "Cùng đi bộ chậm vài phút sau bữa.",
+        "en": "Walk slowly together for a few minutes after dinner."
+      },
+      "tags": ["pregnancy", "outdoor"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-38",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 42,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Tập vài động tác cho mẹ bầu",
+        "en": "Do a few prenatal stretches"
+      },
+      "descI18n": {
+        "vi": "Tập nhẹ theo hướng dẫn bác sĩ cho phép.",
+        "en": "Do gentle exercises your doctor has approved."
+      },
+      "tags": ["pregnancy", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-39",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 42,
+      "category": "SUPPORT",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PARTNER_OF_PREGNANT",
+      "hearts": 4,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Nhận hết việc nặng hôm nay",
+        "en": "Take on the heavy chores today"
+      },
+      "descI18n": {
+        "vi": "Lo những việc phải bê vác hoặc cúi nhiều.",
+        "en": "Handle anything that needs lifting or a lot of bending."
+      },
+      "tags": ["pregnancy", "support"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-40",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 42,
+      "category": "PREP",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Tính quãng đường tới nơi sinh",
+        "en": "Plan the route to the birthplace"
+      },
+      "descI18n": {
+        "vi": "Xem đường đi và thời gian tới bệnh viện.",
+        "en": "Check the route and travel time to the hospital."
+      },
+      "tags": ["pregnancy", "prep"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-41",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 42,
+      "category": "BONDING",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Đọc tên gọi ở nhà cho bé nghe",
+        "en": "Say the baby’s nickname aloud"
+      },
+      "descI18n": {
+        "vi": "Gọi bé bằng tên ở nhà và nói vài lời.",
+        "en": "Call the baby by their nickname and say a few words."
+      },
+      "tags": ["pregnancy", "bonding"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-42",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 42,
+      "category": "MEMORY",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 5,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ghi lại một thay đổi của cơ thể",
+        "en": "Note one change you notice"
+      },
+      "descI18n": {
+        "vi": "Ghi lại cảm nhận hôm nay để sau này nhìn lại.",
+        "en": "Write down how today feels so you can look back later."
+      },
+      "tags": ["pregnancy", "memory"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1,
+      "memoryPromptI18n": {
+        "vi": "Kể lại khoảnh khắc này bằng vài dòng nhé.",
+        "en": "Tell this moment in a few lines."
+      }
+    },
+    {
+      "code": "NB-13",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "CARE",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Vệ sinh rốn cho bé",
+        "en": "Care for the umbilical stump"
+      },
+      "descI18n": {
+        "vi": "Giữ rốn khô thoáng theo hướng dẫn của bác sĩ.",
+        "en": "Keep it clean and dry as your doctor advised."
+      },
+      "tags": ["child", "care"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-14",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "CARE",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Ghi lại cữ ăn và giấc ngủ",
+        "en": "Log feeds and sleep"
+      },
+      "descI18n": {
+        "vi": "Ghi giờ bú và ngủ để dễ nhận ra nếp của bé.",
+        "en": "Note feeding and sleep times to spot the baby’s rhythm."
+      },
+      "tags": ["child", "care"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-15",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "BONDING",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Để bé nghe nhịp tim của bạn",
+        "en": "Let the baby hear your heartbeat"
+      },
+      "descI18n": {
+        "vi": "Bế bé áp ngực, nói chuyện thật khẽ.",
+        "en": "Hold the baby against your chest and talk softly."
+      },
+      "tags": ["child", "bonding"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-16",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "CARE",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Quấn bé ấm và vừa vặn",
+        "en": "Swaddle snugly and safely"
+      },
+      "descI18n": {
+        "vi": "Quấn khăn gọn gàng, không quá chặt ở hông.",
+        "en": "Wrap neatly without tightness around the hips."
+      },
+      "tags": ["child", "care"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-17",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "MEMORY",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 5,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Chụp bàn chân nhỏ của bé",
+        "en": "Photograph the tiny feet"
+      },
+      "descI18n": {
+        "vi": "Lưu lại bàn chân bé trước khi lớn nhanh.",
+        "en": "Capture those feet before they grow."
+      },
+      "tags": ["child", "memory"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1,
+      "memoryPromptI18n": {
+        "vi": "Kể lại khoảnh khắc này bằng vài dòng nhé.",
+        "en": "Tell this moment in a few lines."
+      }
+    },
+    {
+      "code": "NB-18",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SUPPORT",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 4,
+      "durationMin": 20,
+      "multiChildOk": false,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Trông bé để người kia tắm",
+        "en": "Mind the baby so they can shower"
+      },
+      "descI18n": {
+        "vi": "Nhận bé một lúc để người kia tắm thư thả.",
+        "en": "Take the baby for a while so your partner can shower."
+      },
+      "tags": ["child", "support"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-19",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 180,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "BONDING",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Nói chuyện với bé lúc thay tã",
+        "en": "Chat during diaper changes"
+      },
+      "descI18n": {
+        "vi": "Kể bé nghe mình đang làm gì bằng giọng vui.",
+        "en": "Tell the baby what you are doing in a cheerful voice."
+      },
+      "tags": ["child", "bonding"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-20",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 180,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "PLAY",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Cho bé ngắm tranh tương phản",
+        "en": "Show high-contrast pictures"
+      },
+      "descI18n": {
+        "vi": "Đưa tranh đen trắng cách mặt bé vừa tầm nhìn.",
+        "en": "Hold black-and-white images at the baby’s viewing distance."
+      },
+      "tags": ["child", "play"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-21",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 180,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "CARE",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Massage bụng nhẹ cho bé",
+        "en": "Give a gentle tummy massage"
+      },
+      "descI18n": {
+        "vi": "Xoa bụng bé theo chiều kim đồng hồ thật nhẹ.",
+        "en": "Rub the tummy gently in clockwise circles."
+      },
+      "tags": ["child", "care"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-22",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 180,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "BONDING",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Đọc to một trang sách cho bé",
+        "en": "Read a page aloud"
+      },
+      "descI18n": {
+        "vi": "Giọng đều và ấm giúp bé quen với ngôn ngữ.",
+        "en": "A calm, warm voice helps the baby get used to language."
+      },
+      "tags": ["child", "bonding"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-23",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 180,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "OUTDOOR",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 15,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Cho bé tắm nắng sớm",
+        "en": "Enjoy gentle morning sun"
+      },
+      "descI18n": {
+        "vi": "Đưa bé ra nắng nhẹ buổi sớm trong vài phút.",
+        "en": "Take the baby into soft early sunlight for a few minutes."
+      },
+      "tags": ["child", "outdoor"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-24",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 180,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "MEMORY",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 5,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ghi lại lần đầu bé nhìn theo bạn",
+        "en": "Note the first time they follow you"
+      },
+      "descI18n": {
+        "vi": "Ghi ngày bé dõi mắt theo bạn hoặc cười đáp lại.",
+        "en": "Note when the baby first tracks you or smiles back."
+      },
+      "tags": ["child", "memory"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1,
+      "memoryPromptI18n": {
+        "vi": "Kể lại khoảnh khắc này bằng vài dòng nhé.",
+        "en": "Tell this moment in a few lines."
+      }
+    },
+    {
+      "code": "PS-01",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "PLAY",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 4,
+      "durationMin": 20,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Cùng con chơi đóng vai",
+        "en": "Play pretend together"
+      },
+      "descI18n": {
+        "vi": "Đóng vai bán hàng, bác sĩ hay nấu ăn cùng con.",
+        "en": "Play shop, doctor or cooking with your child."
+      },
+      "tags": ["child", "play"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PS-02",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "BONDING",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 15,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Hỏi con điều vui nhất hôm nay",
+        "en": "Ask about the best part of today"
+      },
+      "descI18n": {
+        "vi": "Lắng nghe con kể, đừng vội sửa lời.",
+        "en": "Listen to your child’s story without correcting it."
+      },
+      "tags": ["child", "bonding"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PS-03",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "HOME",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Giao con một việc nhà nhỏ",
+        "en": "Give your child a small chore"
+      },
+      "descI18n": {
+        "vi": "Nhờ con xếp đũa, cất giày hay tưới cây.",
+        "en": "Ask them to set chopsticks, put shoes away or water a plant."
+      },
+      "tags": ["child", "home"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PS-04",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "OUTDOOR",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 4,
+      "durationMin": 30,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Đưa con ra sân chơi",
+        "en": "Take your child to the playground"
+      },
+      "descI18n": {
+        "vi": "Để con chạy nhảy và chơi cùng bạn.",
+        "en": "Let them run, climb and play with others."
+      },
+      "tags": ["child", "outdoor"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PS-05",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "PLAY",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 15,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Cùng con vẽ một bức tranh",
+        "en": "Draw a picture together"
+      },
+      "descI18n": {
+        "vi": "Vẽ chung một chủ đề con chọn.",
+        "en": "Draw something on a theme your child picks."
+      },
+      "tags": ["child", "play"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PS-06",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "BONDING",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 15,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Đọc truyện trước giờ ngủ",
+        "en": "Read a bedtime story"
+      },
+      "descI18n": {
+        "vi": "Để con chọn truyện và cùng đoán đoạn sau.",
+        "en": "Let your child choose and guess what happens next."
+      },
+      "tags": ["child", "bonding"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PS-07",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "CARE",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Chuẩn bị đồ đi học cho con",
+        "en": "Pack the school bag together"
+      },
+      "descI18n": {
+        "vi": "Cùng con xếp cặp, bình nước cho ngày mai.",
+        "en": "Pack the bag and water bottle for tomorrow with your child."
+      },
+      "tags": ["child", "care"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PS-08",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "MEMORY",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 5,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ghi lại một câu hỏi ngộ nghĩnh của con",
+        "en": "Record one funny question"
+      },
+      "descI18n": {
+        "vi": "Ghi nguyên văn câu con hỏi hôm nay.",
+        "en": "Write down a question your child asked today, word for word."
+      },
+      "tags": ["child", "memory"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1,
+      "memoryPromptI18n": {
+        "vi": "Kể lại khoảnh khắc này bằng vài dòng nhé.",
+        "en": "Tell this moment in a few lines."
+      }
+    },
+    {
+      "code": "PS-09",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "PLAY",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 4,
+      "durationMin": 20,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Xếp hình hoặc ghép tranh cùng con",
+        "en": "Do a puzzle together"
+      },
+      "descI18n": {
+        "vi": "Chọn bộ xếp hình vừa sức và kiên nhẫn chờ con.",
+        "en": "Pick a puzzle at the right level and give them time."
+      },
+      "tags": ["child", "play"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PS-10",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "CARE",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Cùng con chọn bữa ăn lành mạnh",
+        "en": "Choose a healthy meal together"
+      },
+      "descI18n": {
+        "vi": "Cho con chọn giữa hai món rau hoặc trái cây.",
+        "en": "Let your child choose between two vegetables or fruits."
+      },
+      "tags": ["child", "care"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PS-11",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "OUTDOOR",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 4,
+      "durationMin": 30,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Đi dạo và gọi tên mọi thứ",
+        "en": "Walk and name what you see"
+      },
+      "descI18n": {
+        "vi": "Cùng con gọi tên cây, xe, con vật trên đường.",
+        "en": "Name trees, vehicles and animals along the way."
+      },
+      "tags": ["child", "outdoor"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PS-12",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "BONDING",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ôm con và nói điều bạn tự hào",
+        "en": "Hug and say what you are proud of"
+      },
+      "descI18n": {
+        "vi": "Nói cụ thể việc con đã cố gắng hôm nay.",
+        "en": "Name one specific effort your child made today."
+      },
+      "tags": ["child", "bonding"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PS-13",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "HOME",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 15,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Cùng con nấu một món đơn giản",
+        "en": "Cook something simple together"
+      },
+      "descI18n": {
+        "vi": "Để con rửa rau hoặc khuấy trộn an toàn.",
+        "en": "Let your child wash vegetables or stir safely."
+      },
+      "tags": ["child", "home"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PS-14",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "PLAY",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 15,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Chơi trò đếm và màu sắc",
+        "en": "Play counting and colours"
+      },
+      "descI18n": {
+        "vi": "Đếm đồ vật hoặc tìm đồ cùng màu trong nhà.",
+        "en": "Count things or find objects of the same colour at home."
+      },
+      "tags": ["child", "play"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PS-15",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "CARE",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Tập cho con tự đánh răng",
+        "en": "Practise brushing teeth"
+      },
+      "descI18n": {
+        "vi": "Đánh răng cùng con và để con tự làm trước.",
+        "en": "Brush together and let your child try first."
+      },
+      "tags": ["child", "care"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PS-16",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "MEMORY",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 4,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Lưu lại bức tranh con vẽ",
+        "en": "Save your child’s drawing"
+      },
+      "descI18n": {
+        "vi": "Chụp tranh và ghi con kể gì về nó.",
+        "en": "Photograph it and note what your child says about it."
+      },
+      "tags": ["child", "memory"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1,
+      "memoryPromptI18n": {
+        "vi": "Kể lại khoảnh khắc này bằng vài dòng nhé.",
+        "en": "Tell this moment in a few lines."
+      }
+    },
+    {
+      "code": "PS-17",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "BONDING",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Gọi tên cảm xúc cùng con",
+        "en": "Name feelings together"
+      },
+      "descI18n": {
+        "vi": "Hỏi con đang vui, buồn hay giận và vì sao.",
+        "en": "Ask if they feel happy, sad or cross, and why."
+      },
+      "tags": ["child", "bonding"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PS-18",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "OUTDOOR",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 4,
+      "durationMin": 20,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Chơi bóng cùng con",
+        "en": "Play ball together"
+      },
+      "descI18n": {
+        "vi": "Lăn, ném hoặc đá bóng ở nơi an toàn.",
+        "en": "Roll, throw or kick a ball somewhere safe."
+      },
+      "tags": ["child", "outdoor"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PS-19",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "HOME",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Cùng con cất đồ chơi trước giờ ngủ",
+        "en": "Tidy toys before bed"
+      },
+      "descI18n": {
+        "vi": "Biến việc dọn dẹp thành trò chơi ngắn.",
+        "en": "Turn tidying into a quick game."
+      },
+      "tags": ["child", "home"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PS-20",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "PLAY",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 15,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Hát và vận động theo bài hát",
+        "en": "Sing and move to a song"
+      },
+      "descI18n": {
+        "vi": "Chọn bài có động tác để con làm theo.",
+        "en": "Pick a song with actions your child can copy."
+      },
+      "tags": ["child", "play"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PS-21",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "CARE",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Giữ giờ ngủ đều cho con",
+        "en": "Keep a steady bedtime"
+      },
+      "descI18n": {
+        "vi": "Bắt đầu nếp đi ngủ cùng một giờ như mọi hôm.",
+        "en": "Start the bedtime routine at the usual time."
+      },
+      "tags": ["child", "care"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PS-22",
+      "stage": "CHILD",
+      "minAgeDays": 900,
+      "maxAgeDays": 2190,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "MEMORY",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 5,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Hỏi con muốn làm gì khi lớn",
+        "en": "Ask what they want to be"
+      },
+      "descI18n": {
+        "vi": "Ghi lại câu trả lời để sau này cùng đọc.",
+        "en": "Write down the answer to read together later."
+      },
+      "tags": ["child", "memory"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1,
+      "memoryPromptI18n": {
+        "vi": "Kể lại khoảnh khắc này bằng vài dòng nhé.",
+        "en": "Tell this moment in a few lines."
+      }
+    },
+    {
+      "code": "PG-43",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 16,
+      "maxPregWeek": 30,
+      "category": "BONDING",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Chờ bé đạp và đáp lại",
+        "en": "Wait for a kick and answer"
+      },
+      "descI18n": {
+        "vi": "Đặt tay lên bụng, nói chuyện khi bé cử động.",
+        "en": "Rest a hand on the bump and talk when the baby moves."
+      },
+      "tags": ["pregnancy", "bonding"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-44",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 16,
+      "maxPregWeek": 30,
+      "category": "PREP",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Tìm hiểu lớp học tiền sản",
+        "en": "Look up antenatal classes"
+      },
+      "descI18n": {
+        "vi": "Xem lịch lớp học tiền sản gần nhà hoặc trực tuyến.",
+        "en": "Check antenatal classes nearby or online."
+      },
+      "tags": ["pregnancy", "prep"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-45",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 16,
+      "maxPregWeek": 30,
+      "category": "SUPPORT",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PARTNER_OF_PREGNANT",
+      "hearts": 4,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Chuẩn bị gối kê lưng khi ngủ",
+        "en": "Set up pillows for sleep"
+      },
+      "descI18n": {
+        "vi": "Sắp gối để mẹ bầu nằm nghiêng dễ chịu hơn.",
+        "en": "Arrange pillows so side-sleeping is more comfortable."
+      },
+      "tags": ["pregnancy", "support"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-46",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 16,
+      "maxPregWeek": 30,
+      "category": "MEMORY",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 5,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ghi lại lần đầu cảm nhận bé đạp",
+        "en": "Note the first kicks"
+      },
+      "descI18n": {
+        "vi": "Ghi ngày và cảm giác khi bé cử động rõ.",
+        "en": "Write the date and how it felt when the baby moved."
+      },
+      "tags": ["pregnancy", "memory"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1,
+      "memoryPromptI18n": {
+        "vi": "Kể lại khoảnh khắc này bằng vài dòng nhé.",
+        "en": "Tell this moment in a few lines."
+      }
+    },
+    {
+      "code": "IN-25",
+      "stage": "CHILD",
+      "minAgeDays": 60,
+      "maxAgeDays": 150,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "PLAY",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Cho bé với tay lấy đồ chơi",
+        "en": "Let the baby reach for a toy"
+      },
+      "descI18n": {
+        "vi": "Treo hoặc giơ đồ chơi vừa tầm để bé với.",
+        "en": "Hold or hang a toy within reach for the baby to grab."
+      },
+      "tags": ["child", "play"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "IN-26",
+      "stage": "CHILD",
+      "minAgeDays": 60,
+      "maxAgeDays": 150,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "BONDING",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Trò chuyện qua lại với bé",
+        "en": "Have a back-and-forth chat"
+      },
+      "descI18n": {
+        "vi": "Chờ bé bập bẹ rồi đáp lại như một cuộc trò chuyện.",
+        "en": "Wait for the baby to coo, then answer like a conversation."
+      },
+      "tags": ["child", "bonding"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "IN-27",
+      "stage": "CHILD",
+      "minAgeDays": 60,
+      "maxAgeDays": 150,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "CARE",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Giữ nếp ngủ ngày cho bé",
+        "en": "Keep a regular nap routine"
+      },
+      "descI18n": {
+        "vi": "Cho bé ngủ ngày ở nơi yên tĩnh, đúng giờ quen.",
+        "en": "Settle the baby for naps in a quiet place at the usual times."
+      },
+      "tags": ["child", "care"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "IN-28",
+      "stage": "CHILD",
+      "minAgeDays": 60,
+      "maxAgeDays": 150,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "PLAY",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Cho bé nghe các âm thanh khác nhau",
+        "en": "Play with different sounds"
+      },
+      "descI18n": {
+        "vi": "Gõ nhẹ, lắc chuông, vò giấy để bé lắng nghe.",
+        "en": "Tap, ring a bell or crinkle paper for the baby to hear."
+      },
+      "tags": ["child", "play"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "IN-29",
+      "stage": "CHILD",
+      "minAgeDays": 60,
+      "maxAgeDays": 150,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "OUTDOOR",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 15,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Cho bé ngắm cây trong bóng mát",
+        "en": "Watch leaves in the shade"
+      },
+      "descI18n": {
+        "vi": "Bế bé ra chỗ râm mát, ngắm lá rung trong gió.",
+        "en": "Take the baby somewhere shady to watch the leaves move."
+      },
+      "tags": ["child", "outdoor"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "IN-30",
+      "stage": "CHILD",
+      "minAgeDays": 60,
+      "maxAgeDays": 150,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "MEMORY",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 5,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ghi lại lần đầu bé cười thành tiếng",
+        "en": "Note the first laugh"
+      },
+      "descI18n": {
+        "vi": "Ghi ngày và điều làm bé bật cười.",
+        "en": "Write the date and what made the baby laugh."
+      },
+      "tags": ["child", "memory"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1,
+      "memoryPromptI18n": {
+        "vi": "Kể lại khoảnh khắc này bằng vài dòng nhé.",
+        "en": "Tell this moment in a few lines."
+      }
+    },
+    {
+      "code": "PG-47",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 42,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ăn một bữa phụ giàu dinh dưỡng",
+        "en": "Have a nourishing snack"
+      },
+      "descI18n": {
+        "vi": "Chọn sữa chua, hạt hoặc trái cây cho bữa phụ.",
+        "en": "Choose yoghurt, nuts or fruit for a snack."
+      },
+      "tags": ["pregnancy", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-48",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 42,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Nằm nghiêng nghỉ ngơi một lúc",
+        "en": "Rest lying on your side"
+      },
+      "descI18n": {
+        "vi": "Nằm nghiêng trái, kê gối giữa hai chân cho dễ chịu.",
+        "en": "Lie on your left side with a pillow between your knees."
+      },
+      "tags": ["pregnancy", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-49",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 42,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Viết ra điều bạn đang cần",
+        "en": "Write down what you need"
+      },
+      "descI18n": {
+        "vi": "Ghi một điều bạn mong được giúp để nói với người kia.",
+        "en": "Note one thing you would like help with and share it."
+      },
+      "tags": ["pregnancy", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-50",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 42,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Thư giãn đôi chân",
+        "en": "Relax your legs"
+      },
+      "descI18n": {
+        "vi": "Gác chân cao và xoay nhẹ cổ chân vài vòng.",
+        "en": "Put your feet up and gently roll your ankles."
+      },
+      "tags": ["pregnancy", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-51",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 42,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Tắm nắng nhẹ buổi sáng",
+        "en": "Get some gentle morning sun"
+      },
+      "descI18n": {
+        "vi": "Đứng ở chỗ nắng sớm vài phút, tránh nắng gắt.",
+        "en": "Stand in early sunlight for a few minutes; avoid harsh sun."
+      },
+      "tags": ["pregnancy", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-52",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 42,
+      "category": "SUPPORT",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PARTNER_OF_PREGNANT",
+      "hearts": 4,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Đi cùng tới buổi khám thai",
+        "en": "Go to the check-up together"
+      },
+      "descI18n": {
+        "vi": "Sắp xếp để đi cùng và ghi lại lời bác sĩ dặn.",
+        "en": "Arrange to go along and note what the doctor says."
+      },
+      "tags": ["pregnancy", "support"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-53",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 42,
+      "category": "SUPPORT",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PARTNER_OF_PREGNANT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Chuẩn bị nước và đồ ăn nhẹ cạnh giường",
+        "en": "Leave water and snacks by the bed"
+      },
+      "descI18n": {
+        "vi": "Để sẵn nước và bánh để mẹ bầu không phải dậy tìm.",
+        "en": "Set out water and snacks so they don’t have to get up."
+      },
+      "tags": ["pregnancy", "support"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-54",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 42,
+      "category": "SUPPORT",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PARTNER_OF_PREGNANT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Hỏi mẹ bầu hôm nay thấy thế nào",
+        "en": "Ask how they feel today"
+      },
+      "descI18n": {
+        "vi": "Lắng nghe trọn vẹn, chưa vội đưa lời khuyên.",
+        "en": "Listen fully before offering any advice."
+      },
+      "tags": ["pregnancy", "support"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-55",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 42,
+      "category": "PREP",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Dọn một ngăn tủ cho đồ của bé",
+        "en": "Clear a drawer for baby things"
+      },
+      "descI18n": {
+        "vi": "Làm trống một ngăn để sau này cất đồ sơ sinh.",
+        "en": "Empty one drawer for the newborn’s clothes later."
+      },
+      "tags": ["pregnancy", "prep"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-56",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 42,
+      "category": "PREP",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Bàn về việc chia ca sau sinh",
+        "en": "Talk about sharing shifts after birth"
+      },
+      "descI18n": {
+        "vi": "Cùng nghĩ ai làm gì trong những tuần đầu.",
+        "en": "Think together about who does what in the first weeks."
+      },
+      "tags": ["pregnancy", "prep"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-57",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 42,
+      "category": "HOME",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Làm nhà thoáng và dễ đi lại",
+        "en": "Make the home easy to move around"
+      },
+      "descI18n": {
+        "vi": "Dẹp bớt đồ trên sàn để mẹ bầu đi lại an toàn.",
+        "en": "Clear floor clutter so moving around is safe."
+      },
+      "tags": ["pregnancy", "home"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-58",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 42,
+      "category": "MEMORY",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 5,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ghi lại tuần thai hôm nay",
+        "en": "Note this week of pregnancy"
+      },
+      "descI18n": {
+        "vi": "Ghi một dòng về tuần thai và cảm xúc của cả nhà.",
+        "en": "Write one line about this week and how everyone feels."
+      },
+      "tags": ["pregnancy", "memory"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1,
+      "memoryPromptI18n": {
+        "vi": "Kể lại khoảnh khắc này bằng vài dòng nhé.",
+        "en": "Tell this moment in a few lines."
+      }
+    },
+    {
+      "code": "NB-25",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 42,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ăn một bữa nóng không vội",
+        "en": "Eat a warm meal without rushing"
+      },
+      "descI18n": {
+        "vi": "Ngồi ăn trọn bữa, nhờ người kia trông bé.",
+        "en": "Sit down for a full meal while someone else holds the baby."
+      },
+      "tags": ["child", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-26",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 42,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Uống nước mỗi lần cho bé bú",
+        "en": "Drink water at every feed"
+      },
+      "descI18n": {
+        "vi": "Để ly nước cạnh chỗ cho bú và uống mỗi cữ.",
+        "en": "Keep a glass where you feed and sip each time."
+      },
+      "tags": ["child", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-27",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 42,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Nói ra cảm xúc của mình hôm nay",
+        "en": "Say how you feel today"
+      },
+      "descI18n": {
+        "vi": "Chia sẻ với người kia nếu thấy mệt hay buồn.",
+        "en": "Tell your partner if you feel tired or low."
+      },
+      "tags": ["child", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-28",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 42,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Nằm nghỉ ngay khi có thể",
+        "en": "Lie down whenever you can"
+      },
+      "descI18n": {
+        "vi": "Ưu tiên nghỉ hơn việc nhà trong những tuần đầu.",
+        "en": "Rest comes before chores in the early weeks."
+      },
+      "tags": ["child", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-79",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ngồi yên uống một tách trà",
+        "en": "Sit quietly with a cup of tea"
+      },
+      "descI18n": {
+        "vi": "Dành vài phút không làm gì khác.",
+        "en": "Take a few minutes doing nothing else."
+      },
+      "tags": ["any", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "ANY-80",
+      "stage": "ANY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ra ban công hít thở",
+        "en": "Step outside to breathe"
+      },
+      "descI18n": {
+        "vi": "Đứng ngoài trời vài phút cho đầu óc nhẹ nhõm.",
+        "en": "Stand outside for a few minutes to clear your head."
+      },
+      "tags": ["any", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-29",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 42,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 4,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Chợp mắt sau cữ bú",
+        "en": "Nap after a feed"
+      },
+      "descI18n": {
+        "vi": "Giao bé cho người kia và ngủ một giấc ngắn.",
+        "en": "Hand the baby over and take a short sleep."
+      },
+      "tags": ["child", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-30",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 42,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Chườm ấm chỗ đau mỏi",
+        "en": "Use a warm compress where it aches"
+      },
+      "descI18n": {
+        "vi": "Chườm ấm lưng hoặc vai nếu bác sĩ không dặn khác.",
+        "en": "Warm your back or shoulders unless your doctor advised otherwise."
+      },
+      "tags": ["child", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-31",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 42,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ăn thêm một bữa phụ",
+        "en": "Have an extra snack"
+      },
+      "descI18n": {
+        "vi": "Chọn món dễ ăn, giàu năng lượng như cháo hay sữa.",
+        "en": "Pick something easy and filling like porridge or milk."
+      },
+      "tags": ["child", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-32",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 42,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Tắm gội nhanh cho sảng khoái",
+        "en": "Take a quick refreshing wash"
+      },
+      "descI18n": {
+        "vi": "Tắm nước ấm ở phòng kín gió, giữ ấm sau khi tắm.",
+        "en": "Use warm water in a draught-free room and keep warm afterwards."
+      },
+      "tags": ["child", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-33",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 42,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 5,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Nghe một bản nhạc dịu khi cho bú",
+        "en": "Play calm music while feeding"
+      },
+      "descI18n": {
+        "vi": "Bật nhạc nhẹ để cữ bú thư thái hơn.",
+        "en": "Put on something gentle to make the feed more relaxing."
+      },
+      "tags": ["child", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-34",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 42,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Nhờ người kia một việc cụ thể",
+        "en": "Ask for one specific thing"
+      },
+      "descI18n": {
+        "vi": "Nói rõ một việc bạn cần người kia làm hôm nay.",
+        "en": "Say clearly one thing you need your partner to do today."
+      },
+      "tags": ["child", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-35",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 42,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Đi lại nhẹ trong nhà",
+        "en": "Walk gently around the house"
+      },
+      "descI18n": {
+        "vi": "Đi chậm vài vòng trong nhà nếu cơ thể cho phép.",
+        "en": "Take a few slow laps inside if your body allows."
+      },
+      "tags": ["child", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-36",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 42,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Gác chân nghỉ khi bế bé",
+        "en": "Put your feet up while holding the baby"
+      },
+      "descI18n": {
+        "vi": "Ngồi tựa lưng, gác chân khi cho bé bú hoặc ru.",
+        "en": "Sit back with your feet up while feeding or rocking."
+      },
+      "tags": ["child", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-37",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 42,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 5,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ghi một điều bạn đã làm tốt",
+        "en": "Note one thing you did well"
+      },
+      "descI18n": {
+        "vi": "Viết lại một việc nhỏ bạn tự hào hôm nay.",
+        "en": "Write down one small thing you are proud of today."
+      },
+      "tags": ["child", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-38",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 42,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Để điện thoại xuống và nhắm mắt",
+        "en": "Put the phone down and close your eyes"
+      },
+      "descI18n": {
+        "vi": "Nằm nghỉ vài phút không màn hình.",
+        "en": "Rest for a few minutes without a screen."
+      },
+      "tags": ["child", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-59",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 42,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ngâm chân với nước ấm",
+        "en": "Soak your feet in warm water"
+      },
+      "descI18n": {
+        "vi": "Ngâm chân vài phút trước khi ngủ.",
+        "en": "Soak your feet for a few minutes before bed."
+      },
+      "tags": ["pregnancy", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "PG-60",
+      "stage": "PREGNANCY",
+      "minAgeDays": null,
+      "maxAgeDays": null,
+      "minPregWeek": 1,
+      "maxPregWeek": 42,
+      "category": "SELF",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PREGNANT_MOTHER",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ngồi thẳng lưng và thả lỏng vai",
+        "en": "Sit tall and relax your shoulders"
+      },
+      "descI18n": {
+        "vi": "Chỉnh tư thế ngồi, kê gối sau lưng cho đỡ mỏi.",
+        "en": "Adjust how you sit and put a cushion behind your back."
+      },
+      "tags": ["pregnancy", "self"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-39",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "CARE",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Kiểm tra nhiệt độ phòng cho bé",
+        "en": "Check the room temperature"
+      },
+      "descI18n": {
+        "vi": "Giữ phòng thoáng, không quá nóng hay lạnh.",
+        "en": "Keep the room airy and neither too hot nor too cold."
+      },
+      "tags": ["child", "care"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-40",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "CARE",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Thay ga cũi cho bé",
+        "en": "Change the crib sheet"
+      },
+      "descI18n": {
+        "vi": "Thay ga sạch và kiểm tra cũi không có đồ thừa.",
+        "en": "Put on a clean sheet and keep the crib clear."
+      },
+      "tags": ["child", "care"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-41",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "CARE",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Vệ sinh mắt mũi cho bé",
+        "en": "Clean the baby’s eyes and nose"
+      },
+      "descI18n": {
+        "vi": "Dùng gạc sạch lau nhẹ từ trong ra ngoài.",
+        "en": "Wipe gently from the inside out with clean gauze."
+      },
+      "tags": ["child", "care"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-42",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "CARE",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 4,
+      "durationMin": 15,
+      "multiChildOk": false,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Nhận một cữ bú đêm",
+        "en": "Take one night feed"
+      },
+      "descI18n": {
+        "vi": "Thay phiên cho bé bú hoặc dỗ bé ban đêm.",
+        "en": "Take a turn feeding or settling the baby at night."
+      },
+      "tags": ["child", "care"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-43",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "BONDING",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Bế bé đi quanh nhà",
+        "en": "Carry the baby around the house"
+      },
+      "descI18n": {
+        "vi": "Vừa bế vừa kể tên đồ vật cho bé nghe.",
+        "en": "Name things for the baby as you walk around."
+      },
+      "tags": ["child", "bonding"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-44",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "BONDING",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ru bé bằng một câu hát quen",
+        "en": "Rock the baby with a familiar song"
+      },
+      "descI18n": {
+        "vi": "Chọn một câu hát và hát mỗi lần dỗ bé ngủ.",
+        "en": "Pick one song and sing it each time you settle them."
+      },
+      "tags": ["child", "bonding"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-45",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "BONDING",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Để bé nắm ngón tay bạn",
+        "en": "Let the baby hold your finger"
+      },
+      "descI18n": {
+        "vi": "Đặt ngón tay vào lòng bàn tay bé và trò chuyện.",
+        "en": "Put a finger in the baby’s palm and talk to them."
+      },
+      "tags": ["child", "bonding"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-46",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "PLAY",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Cho bé ngắm khuôn mặt bạn",
+        "en": "Let the baby study your face"
+      },
+      "descI18n": {
+        "vi": "Đưa mặt lại gần, làm vài biểu cảm chậm.",
+        "en": "Come close and make a few slow expressions."
+      },
+      "tags": ["child", "play"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-47",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "PLAY",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Cho bé nằm sấp vài phút",
+        "en": "Give a few minutes of tummy time"
+      },
+      "descI18n": {
+        "vi": "Cho bé nằm sấp khi tỉnh táo, luôn có người bên cạnh.",
+        "en": "Place the baby on their tummy while awake and supervised."
+      },
+      "tags": ["child", "play"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-48",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "MEMORY",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 5,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Chụp ảnh bé cạnh một món đồ quen",
+        "en": "Photograph the baby next to a familiar object"
+      },
+      "descI18n": {
+        "vi": "Đặt cùng một món đồ để sau này thấy bé lớn thế nào.",
+        "en": "Use the same object to see how much they grow."
+      },
+      "tags": ["child", "memory"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1,
+      "memoryPromptI18n": {
+        "vi": "Kể lại khoảnh khắc này bằng vài dòng nhé.",
+        "en": "Tell this moment in a few lines."
+      }
+    },
+    {
+      "code": "NB-49",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "MEMORY",
+      "suggestedScope": "CHILD",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 5,
+      "multiChildOk": false,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Ghi lại giấc ngủ dài nhất tuần",
+        "en": "Note this week’s longest sleep"
+      },
+      "descI18n": {
+        "vi": "Ghi lại để nhìn thấy nếp ngủ của bé thay đổi.",
+        "en": "Write it down to see how sleep changes."
+      },
+      "tags": ["child", "memory"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1,
+      "memoryPromptI18n": {
+        "vi": "Kể lại khoảnh khắc này bằng vài dòng nhé.",
+        "en": "Tell this moment in a few lines."
+      }
+    },
+    {
+      "code": "NB-50",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SUPPORT",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PARTNER_OF_PREGNANT",
+      "hearts": 4,
+      "durationMin": 15,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Lo bữa ăn cho người vừa sinh",
+        "en": "Make a meal for the new parent"
+      },
+      "descI18n": {
+        "vi": "Chuẩn bị bữa ấm, dễ tiêu cho người vừa sinh.",
+        "en": "Prepare something warm and easy to digest."
+      },
+      "tags": ["child", "support"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-51",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SUPPORT",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PARTNER_OF_PREGNANT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Mang bé đến khi cần bú",
+        "en": "Bring the baby for feeds"
+      },
+      "descI18n": {
+        "vi": "Đón bé, thay tã rồi mang đến cho người cho bú.",
+        "en": "Fetch the baby, change them and bring them for feeding."
+      },
+      "tags": ["child", "support"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-52",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "SUPPORT",
+      "suggestedScope": "FAMILY",
+      "roleFit": "PARTNER_OF_PREGNANT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": false,
+      "titleI18n": {
+        "vi": "Tiếp khách thay người vừa sinh",
+        "en": "Handle visitors"
+      },
+      "descI18n": {
+        "vi": "Nhận lời thăm hỏi và hẹn lại khi cả nhà sẵn sàng.",
+        "en": "Take messages and visits so the new parent can rest."
+      },
+      "tags": ["child", "support"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-53",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "HOME",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Dọn khu vực thay tã",
+        "en": "Tidy the changing area"
+      },
+      "descI18n": {
+        "vi": "Bỏ tã bẩn, bổ sung khăn và kem cho lần sau.",
+        "en": "Bin used diapers and restock wipes and cream."
+      },
+      "tags": ["child", "home"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
+    },
+    {
+      "code": "NB-54",
+      "stage": "CHILD",
+      "minAgeDays": 0,
+      "maxAgeDays": 90,
+      "minPregWeek": null,
+      "maxPregWeek": null,
+      "category": "PREP",
+      "suggestedScope": "FAMILY",
+      "roleFit": "ANY_PARENT",
+      "hearts": 3,
+      "durationMin": 10,
+      "multiChildOk": true,
+      "requestable": true,
+      "titleI18n": {
+        "vi": "Pha sẵn nước ấm và bình sạch",
+        "en": "Prepare warm water and clean bottles"
+      },
+      "descI18n": {
+        "vi": "Chuẩn bị trước cho cữ bú tiếp theo.",
+        "en": "Get things ready for the next feed."
+      },
+      "tags": ["child", "prep"],
+      "weight": 10,
+      "rolloutPct": 100,
+      "status": "ACTIVE",
+      "version": 1
     }
   ]
 }

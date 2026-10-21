@@ -2,6 +2,7 @@ import 'package:baby_family/page/general/about/about_controller.dart';
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
+import 'package:baby_family/utils/helper/external_launcher.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/widget/app_grouped_list.dart';
 import 'package:baby_family/utils/widget/app_logo.dart';
@@ -49,12 +50,16 @@ class AboutMobileView extends HookConsumerWidget {
                     AppSettingsRow(
                       icon: LucideIcons.fileText,
                       title: l10n.setTerms,
-                      onTap: comingSoon,
+                      onTap: controller.termsUrl == null
+                          ? comingSoon
+                          : () => launchExternalUrl(controller.termsUrl!),
                     ),
                     AppSettingsRow(
                       icon: LucideIcons.shield,
                       title: l10n.setPrivacyPolicy,
-                      onTap: comingSoon,
+                      onTap: controller.privacyUrl == null
+                          ? comingSoon
+                          : () => launchExternalUrl(controller.privacyUrl!),
                     ),
                     AppSettingsRow(
                       icon: LucideIcons.code,

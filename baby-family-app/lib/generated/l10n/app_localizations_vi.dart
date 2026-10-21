@@ -3896,6 +3896,54 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get memVoiceRecording => 'Đang ghi… chạm để dừng';
+
+  @override
+  String get memVoiceMicDenied =>
+      'Cần quyền micro để ghi âm — bật trong Cài đặt của máy';
+
+  @override
+  String get memPeopleLabel => 'Ai ở đó';
+
+  @override
+  String get memPeopleChoose => 'Chọn người';
+
+  @override
+  String get memPeopleAddName => 'Thêm tên';
+
+  @override
+  String get memFeelingLabel => 'Cảm xúc của khoảnh khắc';
+
+  @override
+  String get memFeelingChoose => 'Chọn cảm xúc';
+
+  @override
+  String get memFeelingNone => 'Không chọn';
+
+  @override
+  String memFeeling(String feeling) {
+    String _temp0 = intl.Intl.selectLogic(feeling, {
+      'love': 'Thương yêu',
+      'joy': 'Vui vẻ',
+      'touched': 'Xúc động',
+      'surprised': 'Bất ngờ',
+      'peaceful': 'Bình yên',
+      'proud': 'Tự hào',
+      'other': '$feeling',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get memLocationLabel => 'Địa điểm';
+
+  @override
+  String get memLocationAdd => 'Thêm địa điểm';
+
+  @override
+  String get memLocationHint => 'Ví dụ: Nhà bà nội, Biển Vũng Tàu';
+
+  @override
   String get memKeepsakeTitleHint => 'Tên kỷ vật';
 
   @override
@@ -4773,6 +4821,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get famSettingsTimezone => 'Múi giờ gia đình';
 
   @override
+  String get famTimezoneSearch => 'Tìm thành phố hoặc múi giờ';
+
+  @override
   String get famSettingsLunar => 'Hiển thị âm lịch';
 
   @override
@@ -5410,6 +5461,25 @@ class AppLocalizationsVi extends AppLocalizations {
     });
     return '$_temp0';
   }
+
+  @override
+  String get supportThread => 'Trao đổi';
+
+  @override
+  String get supportNoReply => 'Đội hỗ trợ sẽ trả lời tại đây.';
+
+  @override
+  String get supportTeam => 'Đội hỗ trợ';
+
+  @override
+  String get supportReply => 'Nhắn thêm';
+
+  @override
+  String get supportSendReply => 'Gửi';
+
+  @override
+  String get supportClosedHint =>
+      'Yêu cầu này đã đóng. Gửi yêu cầu mới nếu bạn cần thêm trợ giúp.';
 
   @override
   String get setMyReports => 'Báo cáo của tôi';
@@ -6711,6 +6781,30 @@ class AppLocalizationsVi extends AppLocalizations {
   String subLimitTrimmed(int max) {
     return 'Đã cắt video còn $max phút';
   }
+
+  @override
+  String subLimitQuotaTitle(String reason) {
+    String _temp0 = intl.Intl.selectLogic(reason, {
+      'QUOTA_STORAGE_EXCEEDED': 'Đã dùng hết dung lượng của gói',
+      'QUOTA_PHOTOS_PER_MEMORY': 'Quá số ảnh cho một ký ức',
+      'other': 'Đã đạt số ký ức của gói',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String subLimitQuotaBody(String reason, String plan) {
+    String _temp0 = intl.Intl.selectLogic(reason, {
+      'QUOTA_PHOTOS_PER_MEMORY':
+          '$plan giới hạn số ảnh mỗi ký ức. Bớt vài ảnh rồi lưu lại, hoặc nâng cấp để thêm nhiều ảnh hơn.',
+      'other':
+          '$plan đã chạm giới hạn này. Giữ bản đang soạn làm nháp, hoặc nâng cấp để lưu tiếp.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get subLimitKeepDraft => 'Lưu thành nháp';
 
   @override
   String get subIssueTitle => 'Thanh toán gia hạn chưa thành công';

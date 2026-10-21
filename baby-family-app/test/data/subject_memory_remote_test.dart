@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:baby_family/data/dto/processed_media.dart';
 import 'package:baby_family/data/model/child/child_record.dart';
 import 'package:baby_family/data/model/child/child_stats_record.dart';
 import 'package:baby_family/data/model/memory/comment_record.dart';
@@ -8,9 +9,9 @@ import 'package:baby_family/data/model/memory/media_asset_record.dart';
 import 'package:baby_family/data/model/memory/media_grid_item_record.dart';
 import 'package:baby_family/data/model/memory/memory_record.dart';
 import 'package:baby_family/data/model/memory/on_this_day_record.dart';
-import 'package:baby_family/data/model/memory/today_story_record.dart';
 import 'package:baby_family/data/model/memory/reaction_state.dart';
 import 'package:baby_family/data/model/memory/timeline_item_record.dart';
+import 'package:baby_family/data/model/memory/today_story_record.dart';
 import 'package:baby_family/data/model/memory/upload_instruction.dart';
 import 'package:baby_family/data/model/memory/upload_intent.dart';
 import 'package:baby_family/data/model/memory/upload_part_url.dart';
@@ -153,6 +154,53 @@ class _FakeMedia implements IMediaRepository {
   Future<int?> mediaDurationMs(String path) async => 95000;
 
   @override
+  Future<ProcessedMedia> processImage(String path) async => ProcessedMedia(
+    kind: 'IMAGE',
+    mime: 'image/jpeg',
+    bytes: Uint8List.fromList(path.codeUnits),
+    width: 4032,
+    height: 3024,
+    variants: [
+      MediaVariantFile(
+        code: 'm1080',
+        mime: 'image/jpeg',
+        bytes: Uint8List.fromList([1, 2, 3]),
+        width: 1080,
+        height: 810,
+      ),
+      MediaVariantFile(
+        code: 't320',
+        mime: 'image/jpeg',
+        bytes: Uint8List.fromList([4]),
+        width: 320,
+        height: 240,
+      ),
+    ],
+  );
+
+  @override
+  Future<ProcessedMedia> processVideo(String path) async => ProcessedMedia(
+    kind: 'VIDEO',
+    mime: 'video/mp4',
+    bytes: Uint8List.fromList(path.codeUnits),
+    width: 1920,
+    height: 1080,
+    durationMs: 95000,
+    variants: [
+      MediaVariantFile(
+        code: 'poster',
+        mime: 'image/jpeg',
+        bytes: Uint8List.fromList([5, 6]),
+      ),
+      MediaVariantFile(
+        code: 't320',
+        mime: 'image/jpeg',
+        bytes: Uint8List.fromList([7]),
+      ),
+    ],
+  );
+
+  @override
   Future<UploadIntent?> createUploadIntent(
     String idempotencyKey,
     JsonMap body,
@@ -167,6 +215,16 @@ class _FakeMedia implements IMediaRepository {
     return UploadIntent(
       assetId: 'asset-${intents.length}',
       status: 'PENDING_UPLOAD',
+      variantUploads: [
+        for (final variant in (body['variants'] as List?) ?? const [])
+          VariantUpload(
+            code: (variant as Map)['code'] as String,
+            upload: UploadInstruction(
+              mode: 'single',
+              url: 'https://s3/${variant['code']}',
+            ),
+          ),
+      ],
       upload: multipart
           ? const UploadInstruction(
               mode: 'multipart',
@@ -200,6 +258,18 @@ class _FakeMedia implements IMediaRepository {
     completed.add(assetId);
     completedParts.add(parts);
     return UploadStatus(assetId: assetId, status: 'UPLOADED');
+  }
+
+  /// Lần hỏi trạng thái (VOICE chờ READY): lần đầu còn PROCESSING.
+  final statusChecks = <String>[];
+
+  @override
+  Future<UploadStatus?> assetStatus(String assetId) async {
+    statusChecks.add(assetId);
+    return UploadStatus(
+      assetId: assetId,
+      status: statusChecks.length == 1 ? 'PROCESSING' : 'READY',
+    );
   }
 }
 
@@ -430,6 +500,24 @@ class _FakeFeed implements IMemoryFeedRepository {
   @override
   Future<List<MemoryRecord>> drafts(String familyId) async => draftRecords;
 
+  final published = <String>[];
+
+  @override
+  Future<MemoryRecord?> publish(String memoryId) async {
+    published.add(memoryId);
+    return MemoryRecord(
+      id: memoryId,
+      kind: 'DIARY',
+      status: 'PUBLISHED',
+      version: 2,
+      authorUserId: 'srv-me',
+      title: 'Nháp trên tài khoản',
+      visibility: 'PARENTS',
+      occurredAt: DateTime.utc(2026, 10, 18),
+      createdAt: DateTime.utc(2026, 10, 18),
+    );
+  }
+
   List<MemoryRecord> searchRecords = const [];
   final searches = <String>[];
   OnThisDayRecord? onThisDayRecord;
@@ -578,6 +666,155 @@ void main() {
     expect(second.firstsCount, 2);
   });
 
+  test('the newest weekly recap card of the family timeline is kept', () async {
+    final service = memories();
+    expect(await service.latestRecapWeek(), isNull);
+    feed.timelineItems = const [
+      TimelineItemRecord(
+        type: 'RECAP',
+        kind: 'WEEKLY_RECAP',
+        periodStart: '2026-10-05',
+      ),
+      TimelineItemRecord(
+        type: 'RECAP',
+        kind: 'WEEKLY_RECAP',
+        periodStart: '2026-10-12',
+      ),
+    ];
+    await service.timeline();
+    expect(await service.latestRecapWeek(), DateTime(2026, 10, 12));
+  });
+
+  test(
+    'MEM-04: the client compresses and uploads every variant to S3',
+    () async {
+      final service = memories();
+      await service.create(
+        kind: MemoryKind.photo,
+        childIds: const [],
+        mediaAssets: const ['/tmp/a.jpg'],
+        deferUpload: true,
+      );
+      await service.uploadsSettled;
+      final intent = media.intents.single;
+      expect(intent['kind'], 'IMAGE');
+      expect(intent['width'], 4032);
+      expect((intent['variants'] as List).map((v) => (v as Map)['code']), [
+        'm1080',
+        't320',
+      ]);
+      // File chính + 2 biến thể (PUT riêng), rồi complete.
+      expect(media.uploaded, hasLength(3));
+      expect(media.completed, ['asset-1']);
+    },
+  );
+
+  test(
+    'MEM-08: a video is compressed on the device with poster and thumb',
+    () async {
+      final service = memories();
+      await service.create(
+        kind: MemoryKind.photo,
+        childIds: const [],
+        mediaAssets: const ['/tmp/clip.mp4'],
+        deferUpload: true,
+      );
+      await service.uploadsSettled;
+      final intent = media.intents.single;
+      expect(intent['kind'], 'VIDEO');
+      expect(intent['mime'], 'video/mp4');
+      expect(intent['durationMs'], 95000);
+      expect((intent['variants'] as List).map((v) => (v as Map)['code']), [
+        'poster',
+        't320',
+      ]);
+      expect(media.uploaded, hasLength(3));
+    },
+  );
+
+  test(
+    'VOICE: audio is uploaded, awaited READY, then created',
+    () async {
+      final service = memories();
+      await service.create(
+        kind: MemoryKind.voice,
+        childIds: const [],
+        mediaAssets: const ['/tmp/voice_1.m4a'],
+        voiceDurationSec: 12,
+        deferUpload: true,
+      );
+      await service.uploadsSettled;
+      expect(media.intents.single['kind'], 'AUDIO');
+      expect(media.intents.single['mime'], 'audio/mp4');
+      expect(media.statusChecks, ['asset-1', 'asset-1']);
+      expect(feed.created.single['kind'], 'VOICE');
+      expect(feed.created.single['assetIds'], ['asset-1']);
+    },
+    timeout: const Timeout(Duration(seconds: 10)),
+  );
+
+  test('MEM-05: who was there, feeling and place go to the server', () async {
+    final service = memories();
+    await service.create(
+      kind: MemoryKind.photo,
+      childIds: const [],
+      body: 'Đi biển',
+      people: const ['Bà nội', ' '],
+      feeling: 'joy',
+      locationLabel: ' Vũng Tàu ',
+    );
+    final body = feed.created.single;
+    expect(body['people'], [
+      {'displayName': 'Bà nội'},
+    ]);
+    expect(body['feeling'], 'JOY');
+    expect(body['locationLabel'], 'Vũng Tàu');
+
+    feed.latest = MemoryRecord(
+      id: 'srv-beach',
+      kind: 'MOMENT',
+      status: 'PUBLISHED',
+      authorUserId: 'srv-me',
+      visibility: 'FAMILY',
+      feeling: 'JOY',
+      locationLabel: 'Vũng Tàu',
+      people: const [MemoryPersonRecord(displayName: 'Bà nội')],
+      occurredAt: DateTime.utc(2026, 10, 1),
+      createdAt: DateTime.utc(2026, 10, 1),
+    );
+    final mirrored = (await service.refreshMemory('srv-beach'))!;
+    expect(mirrored.people, ['Bà nội']);
+    expect(mirrored.feeling, 'joy');
+    expect(mirrored.locationLabel, 'Vũng Tàu');
+  });
+
+  test('VOICE: duration and the signed listen URL are mirrored', () async {
+    final service = memories();
+    feed.latest = MemoryRecord(
+      id: 'srv-voice',
+      kind: 'VOICE',
+      status: 'PUBLISHED',
+      authorUserId: 'srv-me',
+      visibility: 'FAMILY',
+      occurredAt: DateTime.utc(2026, 10, 1),
+      createdAt: DateTime.utc(2026, 10, 1),
+      durationSec: 12.4,
+      assets: [
+        const MediaAssetRecord(
+          assetId: 'a-1',
+          kind: 'AUDIO',
+          status: 'READY',
+          urls: {'a': 'https://cdn/voice.m4a'},
+        ),
+      ],
+    );
+    final voice = (await service.refreshMemory('srv-voice'))!;
+    expect(voice.kind, MemoryKind.voice);
+    expect(voice.voiceDurationSec, 12);
+    expect(voice.voiceUrl, 'https://cdn/voice.m4a');
+    expect(voice.mediaAssets, isEmpty);
+  });
+
   test('MEM-08: videos show their poster and keep a playable URL', () async {
     final service = memories();
     feed.latest = MemoryRecord(
@@ -689,7 +926,8 @@ void main() {
         mediaAssets: const ['/tmp/first-steps.MOV'],
       );
       expect(media.intents.single, containsPair('kind', 'VIDEO'));
-      expect(media.intents.single, containsPair('mime', 'video/quicktime'));
+      // Video .mov được nén trên máy thành mp4 trước khi upload.
+      expect(media.intents.single, containsPair('mime', 'video/mp4'));
       expect(media.intents.single, containsPair('durationMs', 95000));
       expect(media.completedParts.single, [
         {'n': 1, 'etag': 'e1'},
@@ -812,6 +1050,39 @@ void main() {
     },
   );
 
+  test('MEM-18: an account draft opens for editing, then publishes', () async {
+    final service = memories();
+    feed.draftRecords = [
+      MemoryRecord(
+        id: 'srv-draft',
+        kind: 'DIARY',
+        status: 'DRAFT',
+        version: 1,
+        authorUserId: 'srv-me',
+        title: 'Nháp trên tài khoản',
+        visibility: 'PRIVATE',
+        occurredAt: DateTime.utc(2026, 10, 18),
+        createdAt: DateTime.utc(2026, 10, 18),
+      ),
+    ];
+    await service.drafts();
+    // Mở được trong trình soạn nhưng không hiện trong dòng thời gian.
+    expect((await service.memory('srv-draft'))?.title, 'Nháp trên tài khoản');
+    expect(
+      (await service.memories()).map((memory) => memory.id),
+      isNot(contains('srv-draft')),
+    );
+    final published = await service.publishDraft('srv-draft');
+    expect(feed.published, ['srv-draft']);
+    expect(published?.id, 'srv-draft');
+    expect(
+      container
+          .read(memoryRepositoryProvider)
+          .memory('srv-draft')?['remoteStatus'],
+      'PUBLISHED',
+    );
+  });
+
   test('HOME-01: this week\'s counts come from the server', () async {
     final week = await children().weekSummary();
     expect(week.moments, 7);
@@ -868,9 +1139,10 @@ void main() {
       visibility: MemoryVisibility.parents,
       occurredAt: DateTime.utc(2026, 10, 5, 2),
     );
+    // Ảnh được nén trên máy thành JPEG (kể cả PNG).
     expect(media.intents.map((intent) => intent['mime']), [
       'image/jpeg',
-      'image/png',
+      'image/jpeg',
     ]);
     expect(media.intents.first['purpose'], 'MEMORY');
     expect(media.completed, ['asset-1', 'asset-2']);

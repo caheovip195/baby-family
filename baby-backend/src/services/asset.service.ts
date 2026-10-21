@@ -57,6 +57,8 @@ export class AssetService implements IAssetService {
       'durationMs',
       'sha256',
       'capturedAt',
+      'sourceSha256',
+      'sourceKey',
       'blurhash',
       'keepOriginal',
       'failureReason',

@@ -107,6 +107,8 @@ model Asset {
   durationMs                                    Int?                     @map("duration_ms")
   sha256                                        Bytes?
   capturedAt                                    DateTime?                @map("captured_at") @db.Timestamptz(3)
+  sourceSha256                                  Bytes?                   @map("source_sha256")
+  sourceKey                                     String?                  @map("source_key") @db.VarChar(64)
   blurhash                                      String?                  @db.VarChar(64)
   keepOriginal                                  Boolean                  @default(false) @map("keep_original")
   failureReason                                 String?                  @map("failure_reason") @db.VarChar(60)
@@ -3740,4 +3742,32 @@ enum RequestUrgency {
 
   @@map("request_urgency")
   @@schema("us")
+}
+
+// app.user_asset_variants is raw-managed by migration 20261021090000_user_asset_client_variants
+// and ProfileImageClientVariantsPersistence to preserve existing generated persistence contracts.
+model UserAssetVariant {
+  id                String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  assetId           String    @map("asset_id") @db.Uuid
+  ownerUserId       String    @map("owner_user_id") @db.Uuid
+  variantCode       String    @map("variant_code") @db.VarChar(30)
+  storageBucket     String    @map("storage_bucket") @db.VarChar(80)
+  storageKey        String    @map("storage_key")
+  mime              String    @db.VarChar(80)
+  sizeBytes         BigInt    @map("size_bytes")
+  verifiedSizeBytes BigInt?   @map("verified_size_bytes")
+  checksumSha256    Bytes     @map("checksum_sha256")
+  width             Int?
+  height            Int?
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt         DateTime? @map("deleted_at") @db.Timestamptz(3)
+
+  @@unique([assetId, variantCode])
+  @@unique([storageBucket, storageKey])
+  @@index([ownerUserId])
+  @@map("user_asset_variants")
+  // Raw-managed declarations; avoids adding generic CRUD for private upload internals.
+  @@ignore
+  @@schema("app")
 }

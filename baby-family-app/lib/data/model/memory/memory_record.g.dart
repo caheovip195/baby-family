@@ -6,59 +6,65 @@ part of 'memory_record.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_MemoryRecord _$MemoryRecordFromJson(Map<String, dynamic> json) =>
-    _MemoryRecord(
-      id: json['id'] as String?,
-      familyId: json['familyId'] as String?,
-      kind: json['kind'] as String?,
-      status: json['status'] as String?,
-      version: (json['version'] as num?)?.toInt(),
-      authorUserId: json['authorUserId'] as String?,
-      title: json['title'] as String?,
-      body: json['body'] as String?,
-      occurredAt: json['occurredAt'] == null
-          ? null
-          : DateTime.parse(json['occurredAt'] as String),
-      visibility: json['visibility'] as String?,
-      familyMoment: json['familyMoment'] as bool? ?? false,
-      childIds:
-          (json['childIds'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList() ??
-          const <String>[],
-      pregnancyId: json['pregnancyId'] as String?,
-      pregnancyWeek: (json['pregnancyWeek'] as num?)?.toInt(),
-      feeling: json['feeling'] as String?,
-      quoteContext: json['quoteContext'] as String?,
-      commentCount: (json['commentCount'] as num?)?.toInt() ?? 0,
-      commentsEnabled: json['commentsEnabled'] as bool? ?? true,
-      reactions:
-          (json['reactions'] as Map<String, dynamic>?)?.map(
-            (k, e) => MapEntry(k, (e as num).toInt()),
-          ) ??
-          const <String, int>{},
-      myReaction: json['myReaction'] as String?,
-      perspectiveCount: (json['perspectiveCount'] as num?)?.toInt() ?? 0,
-      coverAssetId: json['coverAssetId'] as String?,
-      assets:
-          (json['assets'] as List<dynamic>?)
-              ?.map((e) => MediaAssetRecord.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          const <MediaAssetRecord>[],
-      createdAt: json['createdAt'] == null
-          ? null
-          : DateTime.parse(json['createdAt'] as String),
-      publishedAt: json['publishedAt'] == null
-          ? null
-          : DateTime.parse(json['publishedAt'] as String),
-      trashedAt: json['trashedAt'] == null
-          ? null
-          : DateTime.parse(json['trashedAt'] as String),
-      trashedBy: json['trashedBy'] as String?,
-      purgeAfter: json['purgeAfter'] == null
-          ? null
-          : DateTime.parse(json['purgeAfter'] as String),
-    );
+_MemoryRecord _$MemoryRecordFromJson(
+  Map<String, dynamic> json,
+) => _MemoryRecord(
+  id: json['id'] as String?,
+  familyId: json['familyId'] as String?,
+  kind: json['kind'] as String?,
+  status: json['status'] as String?,
+  version: (json['version'] as num?)?.toInt(),
+  authorUserId: json['authorUserId'] as String?,
+  title: json['title'] as String?,
+  body: json['body'] as String?,
+  occurredAt: json['occurredAt'] == null
+      ? null
+      : DateTime.parse(json['occurredAt'] as String),
+  visibility: json['visibility'] as String?,
+  familyMoment: json['familyMoment'] as bool? ?? false,
+  childIds:
+      (json['childIds'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+      const <String>[],
+  pregnancyId: json['pregnancyId'] as String?,
+  pregnancyWeek: (json['pregnancyWeek'] as num?)?.toInt(),
+  feeling: json['feeling'] as String?,
+  people:
+      (json['people'] as List<dynamic>?)
+          ?.map((e) => MemoryPersonRecord.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const <MemoryPersonRecord>[],
+  locationLabel: json['locationLabel'] as String?,
+  quoteContext: json['quoteContext'] as String?,
+  commentCount: (json['commentCount'] as num?)?.toInt() ?? 0,
+  commentsEnabled: json['commentsEnabled'] as bool? ?? true,
+  reactions:
+      (json['reactions'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, (e as num).toInt()),
+      ) ??
+      const <String, int>{},
+  myReaction: json['myReaction'] as String?,
+  perspectiveCount: (json['perspectiveCount'] as num?)?.toInt() ?? 0,
+  coverAssetId: json['coverAssetId'] as String?,
+  durationSec: (json['durationSec'] as num?)?.toDouble(),
+  assets:
+      (json['assets'] as List<dynamic>?)
+          ?.map((e) => MediaAssetRecord.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const <MediaAssetRecord>[],
+  createdAt: json['createdAt'] == null
+      ? null
+      : DateTime.parse(json['createdAt'] as String),
+  publishedAt: json['publishedAt'] == null
+      ? null
+      : DateTime.parse(json['publishedAt'] as String),
+  trashedAt: json['trashedAt'] == null
+      ? null
+      : DateTime.parse(json['trashedAt'] as String),
+  trashedBy: json['trashedBy'] as String?,
+  purgeAfter: json['purgeAfter'] == null
+      ? null
+      : DateTime.parse(json['purgeAfter'] as String),
+);
 
 Map<String, dynamic> _$MemoryRecordToJson(_MemoryRecord instance) =>
     <String, dynamic>{
@@ -77,6 +83,8 @@ Map<String, dynamic> _$MemoryRecordToJson(_MemoryRecord instance) =>
       'pregnancyId': instance.pregnancyId,
       'pregnancyWeek': instance.pregnancyWeek,
       'feeling': instance.feeling,
+      'people': instance.people.map((e) => e.toJson()).toList(),
+      'locationLabel': instance.locationLabel,
       'quoteContext': instance.quoteContext,
       'commentCount': instance.commentCount,
       'commentsEnabled': instance.commentsEnabled,
@@ -84,10 +92,25 @@ Map<String, dynamic> _$MemoryRecordToJson(_MemoryRecord instance) =>
       'myReaction': instance.myReaction,
       'perspectiveCount': instance.perspectiveCount,
       'coverAssetId': instance.coverAssetId,
+      'durationSec': instance.durationSec,
       'assets': instance.assets.map((e) => e.toJson()).toList(),
       'createdAt': instance.createdAt?.toIso8601String(),
       'publishedAt': instance.publishedAt?.toIso8601String(),
       'trashedAt': instance.trashedAt?.toIso8601String(),
       'trashedBy': instance.trashedBy,
       'purgeAfter': instance.purgeAfter?.toIso8601String(),
+    };
+
+_MemoryPersonRecord _$MemoryPersonRecordFromJson(Map<String, dynamic> json) =>
+    _MemoryPersonRecord(
+      memberId: json['memberId'] as String?,
+      userId: json['userId'] as String?,
+      displayName: json['displayName'] as String? ?? '',
+    );
+
+Map<String, dynamic> _$MemoryPersonRecordToJson(_MemoryPersonRecord instance) =>
+    <String, dynamic>{
+      'memberId': instance.memberId,
+      'userId': instance.userId,
+      'displayName': instance.displayName,
     };

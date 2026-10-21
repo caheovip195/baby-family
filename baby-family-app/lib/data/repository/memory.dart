@@ -81,6 +81,8 @@ abstract class IMemoryRepository extends IBaseRepository {
   /// MEM-05 đóng khi đang soạn → nháp trên máy (MEM-18).
   JsonMap addDraft(JsonMap draft);
 
+  void updateDraft(String id, JsonMap patch);
+
   List<JsonMap> pendingPosts(String familyId);
 
   JsonMap addPendingPost(JsonMap post);

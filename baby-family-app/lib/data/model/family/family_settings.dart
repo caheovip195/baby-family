@@ -22,6 +22,9 @@ abstract class FamilySettings with _$FamilySettings {
     @Default(true)
     bool milestoneSuggestions,
     @JsonKey(name: 'timezoneLabel') @Default('') String timezoneLabel,
+
+    /// Múi giờ IANA của gia đình (bản server); null ở bản mẫu.
+    @JsonKey(name: 'timezoneId') String? timezoneId,
     @JsonKey(name: 'showLunar') @Default(true) bool showLunar,
     @JsonKey(name: 'milestonesByLunar') @Default(true) bool milestonesByLunar,
     @JsonKey(name: 'contentLanguage') @Default('vi') String contentLanguage,

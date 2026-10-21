@@ -23,7 +23,7 @@ const marker =
 const schema = await readFile(path.join(root, 'prisma/schema.prisma'), 'utf8');
 const blocks = [
   ...schema.matchAll(/^(model|enum)\s+(\w+)\s*\{([\s\S]*?)^\}/gm),
-];
+].filter(([, kind, , body]) => kind !== 'model' || !body.includes('@@ignore'));
 const modelNames = new Set(
   blocks.filter(([, kind]) => kind === 'model').map(([, , name]) => name),
 );

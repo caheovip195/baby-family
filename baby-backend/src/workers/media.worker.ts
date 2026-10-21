@@ -36,6 +36,10 @@ export class MediaQueueWorker
   ) {}
 
   onApplicationBootstrap(): void {
+    if (
+      this.config.get('MEDIA_SERVER_PROCESSING', { infer: true }) !== 'legacy'
+    )
+      return;
     const url = this.config.get('REDIS_URL', { infer: true });
     if (!url) throw new Error('REDIS_URL is required for the worker.');
     this.worker = new Worker(

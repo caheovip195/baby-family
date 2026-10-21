@@ -1,9 +1,10 @@
+import { isCatalogTimezone } from '../../config/timezone-catalog';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsIn,
   IsString,
   IsUUID,
-  IsTimeZone,
+  ValidateBy,
   MaxLength,
   MinLength,
   ValidateIf,
@@ -20,7 +21,10 @@ export class UpdateFamilyDto {
   @ApiPropertyOptional({ example: 'Asia/Ho_Chi_Minh' })
   @ValidateIf((_object, value: unknown) => value !== undefined)
   @IsString()
-  @IsTimeZone()
+  @ValidateBy({
+    name: 'isCatalogTimezone',
+    validator: { validate: isCatalogTimezone },
+  })
   @MaxLength(64)
   timezone?: string;
 

@@ -27,6 +27,8 @@ export interface CreateAssetInput {
   durationMs?: number | null;
   sha256?: Uint8Array | null;
   capturedAt?: Date | null;
+  sourceSha256?: Uint8Array | null;
+  sourceKey?: string | null;
   blurhash?: string | null;
   keepOriginal?: boolean;
   failureReason?: string | null;
@@ -46,6 +48,8 @@ export interface UpdateAssetInput {
   durationMs?: number | null;
   sha256?: Uint8Array | null;
   capturedAt?: Date | null;
+  sourceSha256?: Uint8Array | null;
+  sourceKey?: string | null;
   blurhash?: string | null;
   keepOriginal?: boolean;
   failureReason?: string | null;

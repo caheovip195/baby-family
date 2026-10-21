@@ -1,4 +1,5 @@
 import { Type } from 'class-transformer';
+import { MemoryPersonInputDto } from './memory-people.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   ArrayMaxSize,
@@ -54,6 +55,14 @@ export class CreateMemoryDto {
   @ValidateIf(optional)
   @IsIn(['DRAFT'])
   status?: 'DRAFT';
+
+  @ApiPropertyOptional({ type: [MemoryPersonInputDto], maxItems: 30 })
+  @ValidateIf(optional)
+  @IsArray()
+  @ArrayMaxSize(30)
+  @ValidateNested({ each: true })
+  @Type(() => MemoryPersonInputDto)
+  people?: MemoryPersonInputDto[];
 
   @ApiPropertyOptional({ type: MemoryMilestoneInputDto })
   @ValidateIf(optional)

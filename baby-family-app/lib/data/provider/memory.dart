@@ -8,18 +8,44 @@ import 'package:baby_family/data/provider/session.dart';
 import 'package:baby_family/data/repository/media.dart';
 import 'package:baby_family/data/repository/memory.dart';
 import 'package:baby_family/data/repository/memory_feed.dart';
+import 'package:baby_family/data/repository/voice_recorder.dart';
+import 'package:baby_family/data/repository_imp/gallery.dart';
+import 'package:baby_family/data/repository_imp/local_media_index.dart';
 import 'package:baby_family/data/repository_imp/media.dart';
 import 'package:baby_family/data/repository_imp/memory.dart';
 import 'package:baby_family/data/repository_imp/memory_feed.dart';
 import 'package:baby_family/data/repository_imp/memory_library_remote.dart';
+import 'package:baby_family/data/repository_imp/voice_recorder.dart';
+import 'package:baby_family/data/service/local_media.dart';
 import 'package:baby_family/data/service/memory.dart';
+import 'package:baby_family/data/service/voice_recording.dart';
+import 'package:baby_family/data/service_imp/local_media.dart';
 import 'package:baby_family/data/service_imp/memory.dart';
 import 'package:baby_family/data/service_imp/memory_library_remote.dart';
+import 'package:baby_family/data/service_imp/voice_recording.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final memoryRepositoryProvider = Provider<IMemoryRepository>(
   (ref) => MemoryRepositoryImp(ref.watch(mockStoreProvider)),
+);
+
+final voiceRecorderRepositoryProvider = Provider<IVoiceRecorderRepository>((
+  ref,
+) {
+  final recorder = VoiceRecorderRepositoryImp();
+  ref.onDispose(recorder.dispose);
+  return recorder;
+});
+
+/// Ghi âm VOICE: micro thật khi chạy với server, đoạn mẫu ở bản mock.
+final voiceRecordingServiceProvider = Provider<IVoiceRecordingService>(
+  (ref) => kValueUseRemoteSession
+      ? VoiceRecordingServiceImp(
+          ref.watch(voiceRecorderRepositoryProvider),
+          ref.watch(mediaRepositoryProvider),
+        )
+      : MockVoiceRecordingService(),
 );
 
 final memoryFeedRepositoryProvider = Provider<IMemoryFeedRepository>(
@@ -30,11 +56,22 @@ final mediaRepositoryProvider = Provider<IMediaRepository>(
   (ref) => MediaRepositoryImp(),
 );
 
+/// Ưu tiên ảnh/video còn trong thư viện máy (chỉ bản chạy với server).
+final localMediaServiceProvider = Provider<ILocalMediaService>(
+  (ref) => kValueUseRemoteSession
+      ? LocalMediaServiceImp(
+          GalleryRepositoryImp(),
+          LocalMediaIndexRepositoryImp(),
+          ref.watch(appClockProvider),
+        )
+      : const NoLocalMediaService(),
+);
+
 /// Bản mock, hoặc bản gọi server khi chạy với `BABY_FAMILY_API_URL` (đăng ký
 /// ức có ảnh, đồng bộ feed).
 final memoryServiceProvider = Provider<IMemoryService>(
   (ref) => kValueUseRemoteSession
-      ? MemoryLibraryRemoteServiceImp(
+      ? (MemoryLibraryRemoteServiceImp(
           ref.watch(sessionRepositoryProvider),
           ref.watch(appClockProvider),
           ref.watch(memoryRepositoryProvider),
@@ -43,7 +80,7 @@ final memoryServiceProvider = Provider<IMemoryService>(
           ref.watch(memoryFeedRepositoryProvider),
           ref.watch(mediaRepositoryProvider),
           MemoryLibraryRemoteRepositoryImp(),
-        )
+        )..localMedia = ref.watch(localMediaServiceProvider))
       : MemoryServiceImp(
           ref.watch(sessionRepositoryProvider),
           ref.watch(appClockProvider),

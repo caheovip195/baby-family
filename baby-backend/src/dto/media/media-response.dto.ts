@@ -22,7 +22,15 @@ export class UploadInstructionDto {
   @ApiProperty({ type: String, format: 'date-time' }) expiresAt!: Date;
 }
 
+export class VariantUploadDto {
+  @ApiProperty() code!: string;
+  @ApiProperty({ type: UploadInstructionDto }) upload!: UploadInstructionDto;
+}
+
 export class UploadIntentResponseDto {
+  @ApiPropertyOptional({ type: [VariantUploadDto] })
+  variantUploads?: VariantUploadDto[];
+
   @ApiProperty({ format: 'uuid' }) assetId!: string;
   @ApiProperty() status!: AssetStatus;
   @ApiProperty({
@@ -54,6 +62,12 @@ export class MediaAssetResponseDto {
   @ApiProperty({ type: Number, nullable: true }) height!: number | null;
   @ApiProperty({ type: Number, nullable: true }) durationMs!: number | null;
   @ApiProperty({ type: String, nullable: true }) blurhash!: string | null;
+  @ApiPropertyOptional({
+    nullable: true,
+    description:
+      'Original on the uploader device: {sha256, key, capturedAt} (BF-20261021-008).',
+  })
+  source?: { sha256: string; key: string; capturedAt: string | null } | null;
   @ApiProperty({
     type: 'object',
     additionalProperties: { type: 'string' },

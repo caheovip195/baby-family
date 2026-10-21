@@ -40,6 +40,13 @@ const environmentSchema = z.object({
   AUTH_JWT_PRIVATE_KEY: optional(z.string().min(1)),
   // HMAC pepper for phone/OTP/invite-code/identity hashes (spec §5.3, §6.5). Required to issue tokens.
   AUTH_SECRET_PEPPER: optional(z.string().min(32)),
+  // Social identity verification is opt-in; missing provider settings fail closed.
+  AUTH_APPLE_JWKS_URL: optional(z.url()),
+  AUTH_APPLE_ISSUER: optional(z.string().min(1)),
+  AUTH_APPLE_CLIENT_ID: optional(z.string().min(1)),
+  AUTH_GOOGLE_JWKS_URL: optional(z.url()),
+  AUTH_GOOGLE_ISSUER: optional(z.string().min(1)),
+  AUTH_GOOGLE_CLIENT_ID: optional(z.string().min(1)),
   // AES-256-GCM root key (base64, 32 bytes) for Papa & Mama check-in notes (spec §7.16.1).
   // Absent → creating/reading a note fails closed (503 CHECKIN_ENCRYPTION_UNAVAILABLE).
   COUPLE_CHECKIN_ENCRYPTION_KEY: optional(
@@ -49,6 +56,24 @@ const environmentSchema = z.object({
   ),
   // AES-256-GCM key (base64, 32 bytes) for support ticket content. Absent → support
   // endpoints that store/read content fail closed (503 SUPPORT_ENCRYPTION_UNAVAILABLE).
+  // Admin CMS (separate from app auth): base64 32-byte keys for TOTP secrets at
+  // rest and for signing admin session tokens. Absent → admin login fails closed.
+  ADMIN_CMS_TOTP_ENCRYPTION_KEY: optional(
+    z.string().refine((value) => Buffer.from(value, 'base64').length === 32, {
+      message: 'must be 32 bytes encoded as base64',
+    }),
+  ),
+  ADMIN_CMS_TOKEN_SECRET: optional(
+    z.string().refine((value) => Buffer.from(value, 'base64').length === 32, {
+      message: 'must be 32 bytes encoded as base64',
+    }),
+  ),
+  // SET-11/12: public support contact and legal links (unset → hidden in the app).
+  SUPPORT_CONTACT_EMAIL: optional(z.string().email()),
+  SUPPORT_CONTACT_HOTLINE: optional(z.string().min(3).max(32)),
+  LEGAL_TERMS_URL: optional(z.string().url()),
+  LEGAL_PRIVACY_URL: optional(z.string().url()),
+  LEGAL_LICENSES_URL: optional(z.string().url()),
   SUPPORT_ENCRYPTION_KEY: optional(
     z.string().refine((value) => Buffer.from(value, 'base64').length === 32, {
       message: 'must be 32 bytes encoded as base64',
@@ -81,6 +106,21 @@ const environmentSchema = z.object({
         .filter(Boolean),
     )
     .pipe(z.array(z.url())),
+  LOG_FORMAT: z.enum(['json', 'pretty']).default('json'),
+  METRICS_TOKEN: optional(z.string().min(32).max(512)),
+  ERROR_REPORTING_DSN: optional(
+    z.url().refine((value) => {
+      const url = new URL(value);
+      return (
+        url.protocol === 'https:' &&
+        Boolean(url.username) &&
+        !url.password &&
+        /^\/(?:[^/]+\/)*[0-9]+$/.test(url.pathname) &&
+        !url.search &&
+        !url.hash
+      );
+    }, 'Expected an HTTPS Sentry DSN with public key and numeric project ID'),
+  ),
   LOG_LEVEL: z
     .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
     .default('info'),
@@ -110,6 +150,7 @@ const environmentSchema = z.object({
   S3_BUCKET_USER_MEDIA: bucketName('bf-user-media'),
   S3_BUCKET_EXPORTS: bucketName('bf-exports'),
   S3_BUCKET_PUBLIC: bucketName('bf-public'),
+  MAIL_HOST: optional(z.string().min(1)),
   // SMTP (Mailpit locally). Optional: mail sending fails closed when absent.
   SMTP_HOST: optional(z.string().min(1)),
   SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(587),
@@ -125,6 +166,7 @@ const environmentSchema = z.object({
   FCM_SERVICE_ACCOUNT_FILE: optional(z.string().min(1)),
   // Background worker (src/workers). Media tools must be on PATH or configured here.
   WORKER_ID: optional(z.string().min(1).max(100)),
+  MEDIA_SERVER_PROCESSING: z.enum(['disabled', 'legacy']).default('disabled'),
   MEDIA_WORKER_CONCURRENCY: z.coerce.number().int().min(1).max(16).default(2),
   FFMPEG_PATH: z.string().min(1).default('ffmpeg'),
   FFPROBE_PATH: z.string().min(1).default('ffprobe'),
@@ -184,7 +226,22 @@ function crossFieldIssues(env: ParsedEnvironment): string[] {
 }
 
 export function validateEnvironment(input: Record<string, unknown>) {
-  const result = environmentSchema.safeParse(input);
+  // MAIL_* aliases share the existing adapter and production TLS validation.
+  const normalized = { ...input };
+  for (const key of [
+    'HOST',
+    'PORT',
+    'USER',
+    'PASSWORD',
+    'FROM',
+    'SECURE',
+    'REQUIRE_TLS',
+    'ALLOW_INSECURE',
+  ]) {
+    if (input[`MAIL_${key}`] !== undefined && input[`MAIL_${key}`] !== '')
+      normalized[`SMTP_${key}`] = input[`MAIL_${key}`];
+  }
+  const result = environmentSchema.safeParse(normalized);
   if (!result.success) {
     // Never include environment values (which may contain secrets) in validation errors.
     const fields = result.error.issues.map(

@@ -19,7 +19,16 @@ import sharp from 'sharp';
 import { validateEnvironment } from '../../src/config/environment';
 import { mediaStorageKey } from '../../src/config/media-policy';
 import { PrismaService } from '../../src/database/prisma.service';
-import { ValkeyConnection } from '../../src/database/valkey.connection';
+import { JOBS } from '../../src/config/jobs';
+import {
+  JOB_RUNNER_SERVICE,
+  type IJobRunnerService,
+} from '../../src/interfaces/services/job-runner-service.interface';
+import {
+  MEDIA_PROCESSING_SERVICE,
+  type IMediaProcessingService,
+} from '../../src/interfaces/services/media-processing-service.interface';
+import { JOB_QUEUE_SERVICE } from '../../src/interfaces/services/job-queue-service.interface';
 import { MEDIA_REPOSITORY } from '../../src/interfaces/repositories/media-repository.interface';
 import type { IMediaRepository } from '../../src/interfaces/repositories/media-repository.interface';
 import { MEDIA_MAINTENANCE_SERVICE } from '../../src/interfaces/services/media-maintenance-service.interface';
@@ -27,8 +36,8 @@ import type { IMediaMaintenanceService } from '../../src/interfaces/services/med
 import { OBJECT_STORAGE_SERVICE } from '../../src/interfaces/services/object-storage-service.interface';
 import type { IObjectStorageService } from '../../src/interfaces/services/object-storage-service.interface';
 
-// Full worker process against PostgreSQL (*_test), MinIO, Valkey (logical DB 15)
-// and the local ffmpeg. Skipped without a configured stack (e.g. CI).
+// Legacy processing against PostgreSQL, MinIO and ffmpeg. Global worker lifecycle
+// loops stay stopped: durable jobs execute only for assets owned by this spec.
 const VARIABLES = [
   'REDIS_URL',
   'S3_ENDPOINT',
@@ -65,13 +74,16 @@ const describeStack =
 const sha256 = (body: Buffer) => createHash('sha256').update(body).digest();
 
 describeStack(
-  'Media worker: outbox → BullMQ → processing, purge, reconcile',
+  'Legacy media: scoped durable processing, purge, reconcile',
   () => {
     let app: INestApplicationContext;
     let prisma: PrismaService;
     let media: IMediaRepository;
     let storage: IObjectStorageService;
     let maintenance: IMediaMaintenanceService;
+    let runner: IJobRunnerService;
+    let processing: IMediaProcessingService;
+    const enqueue = jest.fn().mockResolvedValue(undefined);
     const userId = randomUUID();
     const familyId = randomUUID();
     const planId = randomUUID();
@@ -127,6 +139,24 @@ describeStack(
     }
 
     async function settled(assetId: string, timeoutMs = 60_000) {
+      await runner
+        .execute(
+          JOBS.processAsset,
+          {
+            scopeKey: assetId,
+            familyId,
+            scheduledFor: new Date(),
+            idempotencyKey: `${JOBS.processAsset.name}:${assetId}`,
+            inputReference: { assetId },
+          },
+          (context) => processing.processAsset(assetId, context),
+        )
+        .catch(async (error: unknown) => {
+          const asset = await prisma.asset.findUniqueOrThrow({
+            where: { id: assetId },
+          });
+          if (asset.status !== 'FAILED') throw error;
+        });
       const deadline = Date.now() + timeoutMs;
       for (;;) {
         const asset = await prisma.asset.findUniqueOrThrow({
@@ -170,19 +200,23 @@ describeStack(
           ...process.env,
           ...stack,
           MEDIA_WORKER_CONCURRENCY: '2',
+          MEDIA_SERVER_PROCESSING: 'legacy',
         }),
       );
       const { WorkerModule } =
         await import('../../src/workers/worker.module.js');
       const module = await Test.createTestingModule({ imports: [WorkerModule] })
+        .overrideProvider(JOB_QUEUE_SERVICE)
+        .useValue({ enqueue, isConfigured: () => true, schedule: jest.fn() })
         .overrideProvider(ConfigService)
         .useValue(configuration)
         .compile();
-      // The testing module is the worker's application context (lifecycle hooks start
-      // the outbox relay, BullMQ workers and schedules on init).
+      // Never call app.init(): it starts global relay, queues and schedules.
       app = module;
-      await app.init();
       prisma = app.get(PrismaService);
+      await prisma.onModuleInit();
+      runner = app.get(JOB_RUNNER_SERVICE);
+      processing = app.get(MEDIA_PROCESSING_SERVICE);
       media = app.get(MEDIA_REPOSITORY);
       storage = app.get(OBJECT_STORAGE_SERVICE);
       maintenance = app.get(MEDIA_MAINTENANCE_SERVICE);
@@ -293,9 +327,6 @@ describeStack(
           });
           await prisma.planVersion.deleteMany({ where: { planId } });
           await prisma.plan.deleteMany({ where: { id: planId } });
-          const client = app.get(ValkeyConnection).client;
-          const keys = (await client?.keys('bull:*')) ?? [];
-          if (client && keys.length) await client.del(...keys);
         }
       } finally {
         if (app) await app.close();
@@ -396,7 +427,53 @@ describeStack(
       const event = await prisma.outboxEvent.findFirstOrThrow({
         where: { aggregateId: assetId },
       });
-      expect(event.publishedAt).not.toBeNull();
+      // The global relay stays stopped; delivery remains durably pending.
+      expect(event).toMatchObject({
+        familyId,
+        eventType: 'media.asset_uploaded',
+        publishedAt: null,
+      });
+      // Simulate a crash after READY committed but before the raw/stale object cleanup.
+      const replayFile = path.join(workDir, `${assetId}-replayed.bin`);
+      writeFileSync(replayFile, Buffer.from('raw upload with metadata'));
+      await storage.uploadFile(
+        { bucket: 'media', key: asset.storageKey },
+        replayFile,
+        'image/jpeg',
+      );
+      const staleKey = `${path.posix.dirname(asset.storageKey)}/stalled-attempt/t320.webp`;
+      await storage.uploadFile(
+        { bucket: 'media', key: staleKey },
+        replayFile,
+        'image/webp',
+      );
+      expect(await versionsOf(asset.storageKey)).toBeGreaterThan(0);
+      const recovery = jest.fn(
+        (context: Parameters<IMediaProcessingService['processAsset']>[1]) =>
+          processing.processAsset(assetId, context),
+      );
+      await runner.execute(
+        JOBS.processAsset,
+        {
+          scopeKey: assetId,
+          familyId,
+          scheduledFor: new Date(),
+          idempotencyKey: `cleanup-recovery:${assetId}`,
+          inputReference: { assetId },
+        },
+        recovery,
+      );
+      expect(recovery).toHaveBeenCalledTimes(1);
+      await expect(recovery.mock.results[0]!.value).resolves.toEqual({
+        cleaned: 1,
+      });
+      expect(await versionsOf(asset.storageKey)).toBe(0);
+      expect(
+        await storage.listKeys('media', prefixOf(asset.storageKey)),
+      ).toEqual(expect.arrayContaining(variants.map((v) => v.storageKey)));
+      await expect(
+        storage.headObject({ bucket: 'media', key: staleKey }),
+      ).resolves.toBeNull();
     }, 90_000);
 
     it('keeps original pixels without GPS when the plan keeps originals', async () => {
@@ -492,6 +569,8 @@ describeStack(
       });
       const stats = await maintenance.purgeOrphans(
         new Date(Date.now() + 2 * 60 * 60 * 1000),
+        undefined,
+        familyId,
       );
       expect(stats.failed).toBeGreaterThanOrEqual(1);
       expect(stats.objectsPurged).toBeGreaterThanOrEqual(1);
@@ -576,7 +655,11 @@ describeStack(
       });
       const reservedBefore = (await usageOf()).reservedStorageBytes;
       await new Promise((resolve) => setTimeout(resolve, 1600));
-      const stats = await maintenance.purgeOrphans(new Date());
+      const stats = await maintenance.purgeOrphans(
+        new Date(),
+        undefined,
+        familyId,
+      );
       expect(stats.expired).toBeGreaterThanOrEqual(1);
       const expired = await prisma.asset.findUniqueOrThrow({
         where: { id: expiredId },
@@ -607,6 +690,7 @@ describeStack(
       });
       const reconciled = await maintenance.reconcileUploads(
         new Date(Date.now() + 11 * 60 * 1000),
+        familyId,
       );
       expect(reconciled.confirmed).toBeGreaterThanOrEqual(1);
       // Confirmation emits the same outbox event, so the worker processes it too.
@@ -625,8 +709,14 @@ describeStack(
       });
       const requeued = await maintenance.reconcileUploads(
         new Date(Date.now() + 16 * 60 * 1000),
+        familyId,
       );
       expect(requeued.requeued).toBeGreaterThanOrEqual(1);
+      expect(enqueue).toHaveBeenCalledWith(
+        JOBS.processAsset,
+        expect.any(String),
+        { assetId: lostId },
+      );
       await expect(settled(lostId)).resolves.toMatchObject({ status: 'READY' });
     }, 120_000);
   },

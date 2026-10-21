@@ -23,6 +23,9 @@ _MediaAssetRecord _$MediaAssetRecordFromJson(Map<String, dynamic> json) =>
       urlsExpireAt: json['urlsExpireAt'] == null
           ? null
           : DateTime.parse(json['urlsExpireAt'] as String),
+      source: json['source'] == null
+          ? null
+          : MediaSourceRecord.fromJson(json['source'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$MediaAssetRecordToJson(_MediaAssetRecord instance) =>
@@ -36,4 +39,21 @@ Map<String, dynamic> _$MediaAssetRecordToJson(_MediaAssetRecord instance) =>
       'blurhash': instance.blurhash,
       'urls': instance.urls,
       'urlsExpireAt': instance.urlsExpireAt?.toIso8601String(),
+      'source': instance.source?.toJson(),
+    };
+
+_MediaSourceRecord _$MediaSourceRecordFromJson(Map<String, dynamic> json) =>
+    _MediaSourceRecord(
+      sha256: json['sha256'] as String?,
+      key: json['key'] as String?,
+      capturedAt: json['capturedAt'] == null
+          ? null
+          : DateTime.parse(json['capturedAt'] as String),
+    );
+
+Map<String, dynamic> _$MediaSourceRecordToJson(_MediaSourceRecord instance) =>
+    <String, dynamic>{
+      'sha256': instance.sha256,
+      'key': instance.key,
+      'capturedAt': instance.capturedAt?.toIso8601String(),
     };

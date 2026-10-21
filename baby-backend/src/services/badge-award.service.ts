@@ -1,4 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
+import { MEMORY_HEART_AWARD_SERVICE } from '../interfaces/services/memory-heart-award-service.interface';
+import type { IMemoryHeartAwardService } from '../interfaces/services/memory-heart-award-service.interface';
 import { BADGE_AWARD_POLICY } from '../config/badge-award-policy';
 import { BADGE_AWARD_REPOSITORY } from '../interfaces/repositories/badge-award-repository.interface';
 import type {
@@ -14,12 +16,16 @@ export class BadgeAwardService implements IBadgeAwardService {
   constructor(
     @Inject(BADGE_AWARD_REPOSITORY)
     private readonly repository: IBadgeAwardRepository,
+    @Optional()
+    @Inject(MEMORY_HEART_AWARD_SERVICE)
+    private readonly memoryHearts?: IMemoryHeartAwardService,
   ) {}
   async award(
     now: Date,
     context: JobContext,
     eventId?: string,
   ): Promise<Record<string, number>> {
+    if (eventId) await this.memoryHearts?.award(eventId, context);
     let awarded = 0;
     let families = 0;
     if (eventId) {

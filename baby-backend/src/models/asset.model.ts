@@ -17,6 +17,8 @@ export interface AssetAttributes {
   durationMs: number | null;
   sha256: Uint8Array | null;
   capturedAt: Date | null;
+  sourceSha256: Uint8Array | null;
+  sourceKey: string | null;
   blurhash: string | null;
   keepOriginal: boolean;
   failureReason: string | null;
@@ -45,6 +47,8 @@ export class Asset implements AssetAttributes {
   readonly durationMs: number | null;
   readonly sha256: Uint8Array | null;
   readonly capturedAt: Date | null;
+  readonly sourceSha256: Uint8Array | null;
+  readonly sourceKey: string | null;
   readonly blurhash: string | null;
   readonly keepOriginal: boolean;
   readonly failureReason: string | null;
@@ -72,6 +76,8 @@ export class Asset implements AssetAttributes {
     this.durationMs = attributes.durationMs;
     this.sha256 = attributes.sha256;
     this.capturedAt = attributes.capturedAt;
+    this.sourceSha256 = attributes.sourceSha256;
+    this.sourceKey = attributes.sourceKey;
     this.blurhash = attributes.blurhash;
     this.keepOriginal = attributes.keepOriginal;
     this.failureReason = attributes.failureReason;

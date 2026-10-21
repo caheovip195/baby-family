@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 mixin _$TimelineItemRecord {
 
 @JsonKey(name: 'type') String? get type;@JsonKey(name: 'memory') MemoryRecord? get memory;@JsonKey(name: 'id') String? get id;@JsonKey(name: 'kind') String? get kind;@JsonKey(name: 'childId') String? get childId;@JsonKey(name: 'monthIndex') int? get monthIndex;@JsonKey(name: 'date') String? get date;/// Thẻ `CHAPTER` (BF-20261019-008): ảnh tháng làm bìa + số liệu tháng.
-@JsonKey(name: 'coverUrl') String? get coverUrl;@JsonKey(name: 'memoryCount') int? get memoryCount;@JsonKey(name: 'firstsCount') int? get firstsCount;
+@JsonKey(name: 'coverUrl') String? get coverUrl;@JsonKey(name: 'memoryCount') int? get memoryCount;@JsonKey(name: 'firstsCount') int? get firstsCount;/// Thẻ `RECAP/WEEKLY_RECAP`: ngày đầu tuần của bản tổng kết (YYYY-MM-DD).
+@JsonKey(name: 'periodStart') String? get periodStart;
 /// Create a copy of TimelineItemRecord
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +30,16 @@ $TimelineItemRecordCopyWith<TimelineItemRecord> get copyWith => _$TimelineItemRe
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TimelineItemRecord&&(identical(other.type, type) || other.type == type)&&(identical(other.memory, memory) || other.memory == memory)&&(identical(other.id, id) || other.id == id)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.childId, childId) || other.childId == childId)&&(identical(other.monthIndex, monthIndex) || other.monthIndex == monthIndex)&&(identical(other.date, date) || other.date == date)&&(identical(other.coverUrl, coverUrl) || other.coverUrl == coverUrl)&&(identical(other.memoryCount, memoryCount) || other.memoryCount == memoryCount)&&(identical(other.firstsCount, firstsCount) || other.firstsCount == firstsCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TimelineItemRecord&&(identical(other.type, type) || other.type == type)&&(identical(other.memory, memory) || other.memory == memory)&&(identical(other.id, id) || other.id == id)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.childId, childId) || other.childId == childId)&&(identical(other.monthIndex, monthIndex) || other.monthIndex == monthIndex)&&(identical(other.date, date) || other.date == date)&&(identical(other.coverUrl, coverUrl) || other.coverUrl == coverUrl)&&(identical(other.memoryCount, memoryCount) || other.memoryCount == memoryCount)&&(identical(other.firstsCount, firstsCount) || other.firstsCount == firstsCount)&&(identical(other.periodStart, periodStart) || other.periodStart == periodStart));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,type,memory,id,kind,childId,monthIndex,date,coverUrl,memoryCount,firstsCount);
+int get hashCode => Object.hash(runtimeType,type,memory,id,kind,childId,monthIndex,date,coverUrl,memoryCount,firstsCount,periodStart);
 
 @override
 String toString() {
-  return 'TimelineItemRecord(type: $type, memory: $memory, id: $id, kind: $kind, childId: $childId, monthIndex: $monthIndex, date: $date, coverUrl: $coverUrl, memoryCount: $memoryCount, firstsCount: $firstsCount)';
+  return 'TimelineItemRecord(type: $type, memory: $memory, id: $id, kind: $kind, childId: $childId, monthIndex: $monthIndex, date: $date, coverUrl: $coverUrl, memoryCount: $memoryCount, firstsCount: $firstsCount, periodStart: $periodStart)';
 }
 
 
@@ -49,7 +50,7 @@ abstract mixin class $TimelineItemRecordCopyWith<$Res>  {
   factory $TimelineItemRecordCopyWith(TimelineItemRecord value, $Res Function(TimelineItemRecord) _then) = _$TimelineItemRecordCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'type') String? type,@JsonKey(name: 'memory') MemoryRecord? memory,@JsonKey(name: 'id') String? id,@JsonKey(name: 'kind') String? kind,@JsonKey(name: 'childId') String? childId,@JsonKey(name: 'monthIndex') int? monthIndex,@JsonKey(name: 'date') String? date,@JsonKey(name: 'coverUrl') String? coverUrl,@JsonKey(name: 'memoryCount') int? memoryCount,@JsonKey(name: 'firstsCount') int? firstsCount
+@JsonKey(name: 'type') String? type,@JsonKey(name: 'memory') MemoryRecord? memory,@JsonKey(name: 'id') String? id,@JsonKey(name: 'kind') String? kind,@JsonKey(name: 'childId') String? childId,@JsonKey(name: 'monthIndex') int? monthIndex,@JsonKey(name: 'date') String? date,@JsonKey(name: 'coverUrl') String? coverUrl,@JsonKey(name: 'memoryCount') int? memoryCount,@JsonKey(name: 'firstsCount') int? firstsCount,@JsonKey(name: 'periodStart') String? periodStart
 });
 
 
@@ -66,7 +67,7 @@ class _$TimelineItemRecordCopyWithImpl<$Res>
 
 /// Create a copy of TimelineItemRecord
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? type = freezed,Object? memory = freezed,Object? id = freezed,Object? kind = freezed,Object? childId = freezed,Object? monthIndex = freezed,Object? date = freezed,Object? coverUrl = freezed,Object? memoryCount = freezed,Object? firstsCount = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? type = freezed,Object? memory = freezed,Object? id = freezed,Object? kind = freezed,Object? childId = freezed,Object? monthIndex = freezed,Object? date = freezed,Object? coverUrl = freezed,Object? memoryCount = freezed,Object? firstsCount = freezed,Object? periodStart = freezed,}) {
   return _then(_self.copyWith(
 type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String?,memory: freezed == memory ? _self.memory : memory // ignore: cast_nullable_to_non_nullable
@@ -78,7 +79,8 @@ as int?,date: freezed == date ? _self.date : date // ignore: cast_nullable_to_no
 as String?,coverUrl: freezed == coverUrl ? _self.coverUrl : coverUrl // ignore: cast_nullable_to_non_nullable
 as String?,memoryCount: freezed == memoryCount ? _self.memoryCount : memoryCount // ignore: cast_nullable_to_non_nullable
 as int?,firstsCount: freezed == firstsCount ? _self.firstsCount : firstsCount // ignore: cast_nullable_to_non_nullable
-as int?,
+as int?,periodStart: freezed == periodStart ? _self.periodStart : periodStart // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 /// Create a copy of TimelineItemRecord
@@ -170,7 +172,7 @@ return $default(_that);case _:
 
 @JsonSerializable(explicitToJson: true)
 class _TimelineItemRecord implements TimelineItemRecord {
-  const _TimelineItemRecord({@JsonKey(name: 'type') this.type, @JsonKey(name: 'memory') this.memory, @JsonKey(name: 'id') this.id, @JsonKey(name: 'kind') this.kind, @JsonKey(name: 'childId') this.childId, @JsonKey(name: 'monthIndex') this.monthIndex, @JsonKey(name: 'date') this.date, @JsonKey(name: 'coverUrl') this.coverUrl, @JsonKey(name: 'memoryCount') this.memoryCount, @JsonKey(name: 'firstsCount') this.firstsCount});
+  const _TimelineItemRecord({@JsonKey(name: 'type') this.type, @JsonKey(name: 'memory') this.memory, @JsonKey(name: 'id') this.id, @JsonKey(name: 'kind') this.kind, @JsonKey(name: 'childId') this.childId, @JsonKey(name: 'monthIndex') this.monthIndex, @JsonKey(name: 'date') this.date, @JsonKey(name: 'coverUrl') this.coverUrl, @JsonKey(name: 'memoryCount') this.memoryCount, @JsonKey(name: 'firstsCount') this.firstsCount, @JsonKey(name: 'periodStart') this.periodStart});
   factory _TimelineItemRecord.fromJson(Map<String, dynamic> json) => _$TimelineItemRecordFromJson(json);
 
 @override@JsonKey(name: 'type') final  String? type;
@@ -184,6 +186,8 @@ class _TimelineItemRecord implements TimelineItemRecord {
 @override@JsonKey(name: 'coverUrl') final  String? coverUrl;
 @override@JsonKey(name: 'memoryCount') final  int? memoryCount;
 @override@JsonKey(name: 'firstsCount') final  int? firstsCount;
+/// Thẻ `RECAP/WEEKLY_RECAP`: ngày đầu tuần của bản tổng kết (YYYY-MM-DD).
+@override@JsonKey(name: 'periodStart') final  String? periodStart;
 
 /// Create a copy of TimelineItemRecord
 /// with the given fields replaced by the non-null parameter values.
@@ -198,16 +202,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TimelineItemRecord&&(identical(other.type, type) || other.type == type)&&(identical(other.memory, memory) || other.memory == memory)&&(identical(other.id, id) || other.id == id)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.childId, childId) || other.childId == childId)&&(identical(other.monthIndex, monthIndex) || other.monthIndex == monthIndex)&&(identical(other.date, date) || other.date == date)&&(identical(other.coverUrl, coverUrl) || other.coverUrl == coverUrl)&&(identical(other.memoryCount, memoryCount) || other.memoryCount == memoryCount)&&(identical(other.firstsCount, firstsCount) || other.firstsCount == firstsCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TimelineItemRecord&&(identical(other.type, type) || other.type == type)&&(identical(other.memory, memory) || other.memory == memory)&&(identical(other.id, id) || other.id == id)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.childId, childId) || other.childId == childId)&&(identical(other.monthIndex, monthIndex) || other.monthIndex == monthIndex)&&(identical(other.date, date) || other.date == date)&&(identical(other.coverUrl, coverUrl) || other.coverUrl == coverUrl)&&(identical(other.memoryCount, memoryCount) || other.memoryCount == memoryCount)&&(identical(other.firstsCount, firstsCount) || other.firstsCount == firstsCount)&&(identical(other.periodStart, periodStart) || other.periodStart == periodStart));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,type,memory,id,kind,childId,monthIndex,date,coverUrl,memoryCount,firstsCount);
+int get hashCode => Object.hash(runtimeType,type,memory,id,kind,childId,monthIndex,date,coverUrl,memoryCount,firstsCount,periodStart);
 
 @override
 String toString() {
-  return 'TimelineItemRecord(type: $type, memory: $memory, id: $id, kind: $kind, childId: $childId, monthIndex: $monthIndex, date: $date, coverUrl: $coverUrl, memoryCount: $memoryCount, firstsCount: $firstsCount)';
+  return 'TimelineItemRecord(type: $type, memory: $memory, id: $id, kind: $kind, childId: $childId, monthIndex: $monthIndex, date: $date, coverUrl: $coverUrl, memoryCount: $memoryCount, firstsCount: $firstsCount, periodStart: $periodStart)';
 }
 
 
@@ -218,7 +222,7 @@ abstract mixin class _$TimelineItemRecordCopyWith<$Res> implements $TimelineItem
   factory _$TimelineItemRecordCopyWith(_TimelineItemRecord value, $Res Function(_TimelineItemRecord) _then) = __$TimelineItemRecordCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'type') String? type,@JsonKey(name: 'memory') MemoryRecord? memory,@JsonKey(name: 'id') String? id,@JsonKey(name: 'kind') String? kind,@JsonKey(name: 'childId') String? childId,@JsonKey(name: 'monthIndex') int? monthIndex,@JsonKey(name: 'date') String? date,@JsonKey(name: 'coverUrl') String? coverUrl,@JsonKey(name: 'memoryCount') int? memoryCount,@JsonKey(name: 'firstsCount') int? firstsCount
+@JsonKey(name: 'type') String? type,@JsonKey(name: 'memory') MemoryRecord? memory,@JsonKey(name: 'id') String? id,@JsonKey(name: 'kind') String? kind,@JsonKey(name: 'childId') String? childId,@JsonKey(name: 'monthIndex') int? monthIndex,@JsonKey(name: 'date') String? date,@JsonKey(name: 'coverUrl') String? coverUrl,@JsonKey(name: 'memoryCount') int? memoryCount,@JsonKey(name: 'firstsCount') int? firstsCount,@JsonKey(name: 'periodStart') String? periodStart
 });
 
 
@@ -235,7 +239,7 @@ class __$TimelineItemRecordCopyWithImpl<$Res>
 
 /// Create a copy of TimelineItemRecord
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? type = freezed,Object? memory = freezed,Object? id = freezed,Object? kind = freezed,Object? childId = freezed,Object? monthIndex = freezed,Object? date = freezed,Object? coverUrl = freezed,Object? memoryCount = freezed,Object? firstsCount = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? type = freezed,Object? memory = freezed,Object? id = freezed,Object? kind = freezed,Object? childId = freezed,Object? monthIndex = freezed,Object? date = freezed,Object? coverUrl = freezed,Object? memoryCount = freezed,Object? firstsCount = freezed,Object? periodStart = freezed,}) {
   return _then(_TimelineItemRecord(
 type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String?,memory: freezed == memory ? _self.memory : memory // ignore: cast_nullable_to_non_nullable
@@ -247,7 +251,8 @@ as int?,date: freezed == date ? _self.date : date // ignore: cast_nullable_to_no
 as String?,coverUrl: freezed == coverUrl ? _self.coverUrl : coverUrl // ignore: cast_nullable_to_non_nullable
 as String?,memoryCount: freezed == memoryCount ? _self.memoryCount : memoryCount // ignore: cast_nullable_to_non_nullable
 as int?,firstsCount: freezed == firstsCount ? _self.firstsCount : firstsCount // ignore: cast_nullable_to_non_nullable
-as int?,
+as int?,periodStart: freezed == periodStart ? _self.periodStart : periodStart // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

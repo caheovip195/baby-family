@@ -9,6 +9,7 @@ import 'package:baby_family/data/model/settings/privacy_settings.dart';
 import 'package:baby_family/data/model/settings/profile_settings.dart';
 import 'package:baby_family/data/model/settings/security_settings.dart';
 import 'package:baby_family/data/model/settings/support_ticket.dart';
+import 'package:baby_family/data/model/settings/support_ticket_detail.dart';
 import 'package:baby_family/data/service/base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 
@@ -85,6 +86,13 @@ abstract class ISettingsService extends IBaseService {
 
   /// Yêu cầu tôi đã gửi, mới nhất trước.
   Future<List<SupportTicket>> supportTickets();
+
+  /// Chi tiết + trao đổi với CSKH; null khi không còn (đã xoá / không phải
+  /// của tôi).
+  Future<SupportTicketDetail?> supportTicket(String ticketId);
+
+  /// Nhắn thêm (yêu cầu đã giải quyết/đóng thì server từ chối).
+  Future<void> sendSupportMessage(String ticketId, String body);
 
   Future<FamilyDeletionInfo> familyDeletion();
 

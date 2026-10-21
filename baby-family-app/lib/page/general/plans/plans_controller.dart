@@ -6,6 +6,7 @@ import 'package:baby_family/data/model/session/app_session.dart';
 import 'package:baby_family/data/provider/child.dart';
 import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/provider/session.dart';
+import 'package:baby_family/data/repository/store_purchase.dart';
 import 'package:baby_family/data/service/family.dart';
 import 'package:baby_family/page/application_base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
@@ -77,7 +78,13 @@ class PlansController extends BaseNotifier {
     notifyListeners();
   }
 
-  Future<void> purchase() async {
-    await whileLoading(() => familyService.purchasePlan(selected));
+  /// `false` khi người dùng huỷ ở bảng thanh toán của Store.
+  Future<bool> purchase() async {
+    try {
+      await whileLoading(() => familyService.purchasePlan(selected));
+      return true;
+    } on StorePurchaseCancelled {
+      return false;
+    }
   }
 }

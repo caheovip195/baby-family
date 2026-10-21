@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:baby_family/data/dto/invite_preview_data.dart';
 import 'package:baby_family/data/dto/onboarding_samples.dart';
+import 'package:baby_family/data/model/auth_certificate.dart';
 import 'package:baby_family/data/model/child/child.dart';
 import 'package:baby_family/data/model/circle/my_circle_record.dart';
 import 'package:baby_family/data/model/family/family.dart';
@@ -16,6 +17,7 @@ import 'package:baby_family/data/repository/base.dart';
 import 'package:baby_family/data/repository/child.dart';
 import 'package:baby_family/data/repository/offline_snapshot.dart';
 import 'package:baby_family/data/repository/onboarding.dart';
+import 'package:baby_family/data/repository/social_credential.dart';
 import 'package:baby_family/data/service/auth.dart';
 import 'package:baby_family/data/service/session.dart';
 import 'package:baby_family/data/service_imp/base.dart';
@@ -43,6 +45,7 @@ class SessionRemoteServiceImp extends BaseServiceImp
     this._onboardingRepository,
     this._childRepository, [
     this._snapshots,
+    this._social,
   ]);
 
   final SessionServiceImp _local;
@@ -54,11 +57,17 @@ class SessionRemoteServiceImp extends BaseServiceImp
   /// Bản chụp để mở app lúc mất mạng (null = không lưu).
   final IOfflineSnapshotRepository? _snapshots;
 
+  /// Đăng nhập Apple/Google trên máy (null = không hỗ trợ ở bản này).
+  final ISocialCredentialRepository? _social;
+
   MeProfile? _me;
   String? _pendingPartnerCallName;
 
   // Khoá phụ trong bản ghi phiên trên máy (không lộ ra [AppSession]).
   static const _keyFamilyId = kValueSessionKeyServerFamilyId;
+
+  /// FAM-08: gia đình người dùng chọn mở (id server).
+  static const _keyPreferredFamilyId = 'remotePreferredFamilyId';
   static const _keyPendingCode = 'remotePendingCode';
   static const _keyPendingCallName = 'remotePendingCallName';
   static const _keyAwaiting = 'remoteAwaiting';
@@ -109,10 +118,31 @@ class SessionRemoteServiceImp extends BaseServiceImp
     return _local.current;
   }
 
+  /// AUTH-01 Apple/Google: lấy JWT của nhà cung cấp trên máy → server xác
+  /// minh và phát hành phiên (không gộp tài khoản theo email). Đóng hộp thoại
+  /// → [SocialSignInCancelled].
   @override
   Future<void> signIn(AuthMethod method) async {
-    // Apple/Google cần credential của Store; server chưa hỗ trợ ở bản này.
-    throw UnsupportedError(currentL10n().authProviderUnavailable);
+    final social = _social;
+    if (social == null || method == AuthMethod.phone) {
+      throw UnsupportedError(currentL10n().authProviderUnavailable);
+    }
+    final AuthCertificate certificate;
+    if (method == AuthMethod.apple) {
+      final apple = await social.apple();
+      certificate = await _authRepository.signInWithApple(
+        identityToken: apple.identityToken,
+        nonce: apple.rawNonce,
+        fullName: apple.fullName,
+      );
+    } else {
+      certificate = await _authRepository.signInWithGoogle(
+        await social.google(),
+      );
+    }
+    await _authService.saveSession(certificate);
+    await _local.signIn(method);
+    await _afterSignIn();
   }
 
   @override
@@ -131,6 +161,12 @@ class SessionRemoteServiceImp extends BaseServiceImp
     );
     await _authService.saveSession(certificate);
     await _local.verifyOtp(code);
+    await _afterSignIn();
+  }
+
+  /// Sau khi có phiên (OTP, Apple, Google): đăng ký thiết bị, đồng bộ hồ sơ
+  /// và áp dụng lời mời đang chờ.
+  Future<void> _afterSignIn() async {
     try {
       await _authRepository.registerDevice(_device);
     } on DioException catch (error) {
@@ -484,6 +520,20 @@ class SessionRemoteServiceImp extends BaseServiceImp
     await _local.signOut();
   }
 
+  /// FAM-08: xoá bản phản chiếu của gia đình đang mở (dữ liệu mẫu `fresh`),
+  /// ghi nhớ gia đình được chọn rồi đồng bộ lại từ server.
+  @override
+  Future<AppSession> changeFamily(String familyId) async {
+    if (_local.sessionRepository.session()[_keyFamilyId] == familyId) {
+      return current;
+    }
+    await _local.reseed(DemoSeed.fresh);
+    _patch({_keyPreferredFamilyId: familyId});
+    await _syncFromServer();
+    await _saveSnapshot();
+    return current;
+  }
+
   @override
   Future<void> reseed(DemoSeed seed, {String? actor}) =>
       _local.reseed(seed, actor: actor);
@@ -546,8 +596,17 @@ class SessionRemoteServiceImp extends BaseServiceImp
       await _local.saveProfile(name: me.displayName);
     }
     _patch({_keyAwaiting: me.awaitingApproval.isNotEmpty ? true : null});
-    final family = me.families.isEmpty ? null : me.families.first;
-    if (family == null && await _syncCircle()) {
+    // FAM-08: gia đình đã chọn; không phải nhà mình làm Bố/Mẹ → nhà là người
+    // thân.
+    final preferred =
+        _local.sessionRepository.session()[_keyPreferredFamilyId] as String?;
+    final family =
+        me.families.where((item) => item.familyId == preferred).firstOrNull ??
+        me.families.firstOrNull;
+    final preferCircle =
+        preferred != null &&
+        !me.families.any((item) => item.familyId == preferred);
+    if ((family == null || preferCircle) && await _syncCircle(preferred)) {
       _local.applyServerAvatar(me.avatarUrl);
       return;
     }
@@ -584,7 +643,7 @@ class SessionRemoteServiceImp extends BaseServiceImp
   /// CIR-WAIT / CIR-01 / CIR-05 (BF-20261019-005): tư cách người thân từ
   /// `GET /v1/me/circles`. Trả `false` khi tài khoản không phải người thân
   /// (để luồng Papa/Mama chạy tiếp).
-  Future<bool> _syncCircle() async {
+  Future<bool> _syncCircle([String? preferredFamilyId]) async {
     final List<MyCircleRecord> circles;
     try {
       circles = await _onboardingRepository.myCircles();
@@ -601,9 +660,12 @@ class SessionRemoteServiceImp extends BaseServiceImp
       _patch({_keyFamilyId: null});
       return true;
     }
-    final circle = circles
-        .where((item) => item.status != 'AWAITING_APPROVAL')
-        .firstOrNull;
+    final joined = circles.where((item) => item.status != 'AWAITING_APPROVAL');
+    final circle =
+        joined
+            .where((item) => item.familyId == preferredFamilyId)
+            .firstOrNull ??
+        joined.firstOrNull;
     if (circle == null || circle.familyId == null) {
       // Đã nhận lời mời, chờ Bố/Mẹ xác nhận lần cuối (INV-04 → CIR-WAIT).
       _local.applyServerCircle();

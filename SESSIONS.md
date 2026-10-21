@@ -921,3 +921,162 @@ Các mục 001–005 được **ghi bù ngày 2026-10-11** từ hội thoại hi
 - Bằng chứng: app `make check` EXIT 0 (analyze sạch, 781 test; mới: care_remote CARE-03 series, settings_remote phone change + support). Backend `npm run check` EXIT 0 (unit 272, e2e 35, compiled); `npx eslint --max-warnings=0 src test` EXIT 0; `generate:services`/`generate:persistence --check` EXIT 0; `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT 0 (56 suite, 465 test). Chưa chạy Redis/BullMQ/FCM thật, chưa chạy simulator, chưa seed catalog template v5 vào DB.
 - Còn lại: seed catalog thông báo v5 (BILLING) theo quy trình riêng; đặt `SUPPORT_ENCRYPTION_KEY` khi triển khai; CSKH trả lời/route kiểm duyệt cần admin auth (Admin CMS); app xem/nhắn tiếp ticket, tải tệp SUPPORT; app đọc `statusBanner`; liên kết Apple/Google; ghi âm VOICE; MEM-18 nháp từ tài khoản; FAM-08, múi giờ FAM-07.
 - Trạng thái: Hoàn thành (còn các phần nêu ở “Còn lại”; tiêu đề nêu ghi âm/nháp tài khoản nhưng hai phần này chưa làm).
+
+## BF-20261020-001 — Đăng nhập/liên kết Apple & Google + IAP (SUB-01/02/04, store notifications) (2 Codex) + app tiếp tục nháp, thẻ recap tuần, giới hạn gói, múi giờ (Claude)
+
+- Ngày làm: 2026-10-20T18:56:25+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp task tiếp theo đi"
+- Liên quan: BF-20261019-010.
+- Role: ORCHESTRATOR (chọn mục MVP, chia việc, tích hợp), BACKEND (Codex A: đăng nhập/liên kết Apple & Google; Codex B: IAP + nâng cấp + webhook Store; Claude: đăng ký DI/worker, biến mẫu `.env.example`), MOBILE (Claude), TESTER, QUALITY (Claude rà handoff, chạy toàn bộ kiểm tra). Báo cáo Codex: `baby-backend/docs/handoffs/BF-20261020-001-A.md`, `-B.md`.
+- Phân tích: backend dùng schema có sẵn (`AuthIdentity`, `PurchaseIntent`/`SubscriptionTransaction`/`Subscription`), không migration. Claude đăng ký `SocialAuthController`, `SignInMethodsController`, `IapBillingController`, `IapWebhookController` và provider ở API; worker thêm IAP providers + `CatalogQueryRepository`/`FamilyBillingService` + `IapBillingQueueWorker`. App: MEM-18 mở nháp trên tài khoản ở chế độ sửa của trình soạn (`draftId`) → `PATCH` rồi `POST /memories/:id/publish`; nháp được phản chiếu vào kho nhưng ẩn khỏi danh sách ký ức (`remoteStatus: DRAFT`); thẻ recap tuần mới nhất (`WEEKLY_RECAP` của `/timeline`) chèn vào dòng thời gian cả nhà, mở màn Recap tuần; SUB-05 sheet giới hạn theo mã `QUOTA_*` (lưu nháp / nâng cấp); phương thức đăng nhập đọc từ `/me/sign-in-methods`, chế độ server không giả lập liên kết Apple/Google. Không thêm SDK Apple/Google/`in_app_purchase` (cần cấu hình gốc + client id/sản phẩm Store) và không làm FAM-07 múi giờ (đã đổi kế hoạch so với tiêu đề).
+- Kết quả: checklist tick 4 dòng (MEM-18, thẻ recap/chương trên timeline, SUB-05, store notifications) → 128/165; cập nhật Apple, Google, liên kết đăng nhập, SUB-01/02, SUB-04 (BE ✅, App ❌/🟡). `docs/api.md` mục BF-20261020-001.
+- Bằng chứng: app `make check` EXIT 0 (analyze sạch, 784 test; mới: subject_memory_remote +2 (đăng nháp, recap tuần), settings_remote +1 (phương thức đăng nhập)). Backend `npm run check` EXIT 0 (unit 314, e2e 35, compiled); `npx eslint --max-warnings=0 src test` EXIT 0; `generate:services`/`generate:persistence --check` EXIT 0; `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT 0 (58 suite, 496 test). Chưa gọi Apple/Google/Store thật, chưa chạy BullMQ/Redis, chưa chạy simulator; sheet SUB-05 chưa có widget test.
+- Còn lại: app SDK Sign in with Apple/Google, liên kết/gỡ trên app; app `in_app_purchase` cho SUB-01/02/04; Play publisher production, Apple OCSP, đổi mã/revoke token Apple; cấu hình env Store/Apple/Google khi triển khai; FAM-07 múi giờ, FAM-08, ghi âm, ticket hỗ trợ chi tiết.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Còn lại”; tiêu đề nêu múi giờ nhưng phần này chưa làm).
+
+## BF-20261021-001 — CI app + giám sát production, ghi âm VOICE + chuyển gia đình FAM-08 + danh mục múi giờ (2 Codex) + app ghi âm, chuyển gia đình, múi giờ (Claude)
+
+- Ngày làm: 2026-10-21T10:24:27+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp task tiếp theo đi"
+- Liên quan: BF-20261020-001.
+- Role: ORCHESTRATOR (chọn mục, chia việc, tích hợp), BACKEND (Codex A: CI app + log JSON/`/metrics`/hook báo lỗi; Codex B: VOICE, FAM-08, danh mục múi giờ; Claude: đăng ký DI, sửa hồi quy), MOBILE (Claude), TESTER, QUALITY (Claude). Báo cáo Codex: `baby-backend/docs/handoffs/BF-20261021-001-A.md`, `-B.md`.
+- Phân tích: Codex A tự nối `ObservabilityModule` vào `AppModule`; Claude đăng ký `MeFamiliesController`, `TimezoneCatalogController` + 3 provider, thêm biến mẫu vào `.env.example`. QUALITY phát hiện và sửa 3 hồi quy: (1) validator múi giờ mới từ chối `Etc/GMT+7` (unit cũ) → nhận mọi zone ICU dạng Area/Location; (2) `X-Request-Id` bị siết thành chỉ UUID, vỡ contract e2e cũ → khôi phục `[a-zA-Z0-9_-]{1,100}`; (3) chạy toàn bộ integration hết heap 4 GB (mỗi spec ~1.3 GB RSS, cộng dồn trong một tiến trình `--runInBand`; spec cũ cũng vậy, 4 suite mới đẩy vượt ngưỡng) → `--maxWorkers=1` + `workerIdleMemoryLimit: 1536MB` (vẫn tuần tự). App: ghi âm thật (`record` 7.1.2, quyền `RECORD_AUDIO`, `IVoiceRecorderRepository` + `IVoiceRecordingService`, bản mẫu giữ đoạn 12 giây), tải `AUDIO` + chờ `GET /media/:id` READY rồi tạo VOICE, phản chiếu `durationSec`/`urls.a`, `PlayableVoiceCard` (video_player) trên dòng thời gian; FAM-08 `memberships()` từ `/me/families`, `switchFamily` → `PUT /me/default-family` + `ISessionService.changeFamily` (reseed bản phản chiếu, đồng bộ lại theo gia đình đã chọn, Parent ↔ người thân), xoá cache của dịch vụ ký ức khi đổi gia đình; FAM-07 chọn múi giờ từ `/catalog/timezones` (tìm kiếm, `PATCH {timezone}`).
+- Kết quả: checklist tick 3 dòng (FAM-08, VOICE, FAM-07) → 131/165; cập nhật CI và logging/monitoring 🟡. `docs/api.md` mục BF-20261021-001.
+- Bằng chứng: app `make check` EXIT 0 (analyze sạch, 789 test; mới: family_remote +2, session_remote +1 (FAM-08), subject_memory_remote +2 (VOICE)). Backend `npm run check` EXIT 0 (unit 325, e2e 35, compiled); `npx eslint --max-warnings=0 src test` EXIT 0; `generate:services`/`generate:persistence --check` EXIT 0; `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT 0 (62 suite, 515 test) sau khi đổi cấu hình worker (lần đầu EXIT 134 hết heap — đã ghi ở trên). Chưa chạy GitHub Actions, chưa thử ghi âm/nghe trên máy thật, chưa có widget test cho màn chọn múi giờ/chuyển gia đình.
+- Còn lại: chạy CI thật; Sentry/cảnh báo và observability cho worker; thử ghi âm trên thiết bị; app SDK Apple/Google + `in_app_purchase`; ticket hỗ trợ chi tiết; staging.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Còn lại”).
+
+## BF-20261021-002 — Admin backend (xác thực admin, kiểm duyệt, khoá license, CSKH, catalog) + người/địa điểm ký ức, email giao dịch, outbox consumer (2 Codex) + app nhật ký, người/địa điểm, ticket hỗ trợ (Claude)
+
+- Ngày làm: 2026-10-21T10:49:41+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp task tiếp theo đi"
+- Liên quan: BF-20261021-001.
+- Role: ORCHESTRATOR (chọn mục, chia việc, tích hợp), BACKEND (Codex A: Admin CMS; Codex B: người/địa điểm, email giao dịch, rà outbox — cả hai hết quota lúc ~11:01, mở lại 15:25; theo lựa chọn trước đây của người dùng, Claude tự hoàn thiện thay vì chờ), MOBILE (Claude), TESTER, QUALITY (Claude).
+- Phân tích: Codex đã viết gần đủ code + spec nhưng chưa đăng ký DI và không có handoff. Claude chạy từng spec mới, sửa: spec email (fixture `callName` 27 ký tự > cột 20; dọn Mailpit sai route → `DELETE /api/v1/messages {IDs}`), truy vấn thùng rác chọn nhầm `joinedAt` (vỡ `memory-api`), spec admin chạy chung bị 429 do bộ đếm đăng nhập theo IP lưu trong `admin_audit_events` (spec xoá mềm lượt thử cũ trên DB test), unit relay cập nhật danh sách claim gồm `OUTBOX_NO_CONSUMER`. Đăng ký 4 controller + guard + 8 provider admin ở API; worker thêm `MailService`, `TransactionalMailService/Repository`, `TransactionalMailQueueWorker`, `MemoryHeartAwardService/Repository` (bật Hearts ký ức theo `docs/outbox.md`); loại `admin/v1/*` khỏi prefix `api/v1`; thêm `ADMIN_CMS_TOTP_ENCRYPTION_KEY`, `ADMIN_CMS_TOKEN_SECRET` vào `environment.ts`/`.env.example`. App: “Ai ở đó”/cảm xúc/địa điểm trong trình soạn (gửi `people:[{displayName}]`, `feeling`, `locationLabel`; phản chiếu + hiển thị ở chi tiết), nhật ký tự lưu nháp trên máy (debounce 2 giây, cập nhật cùng nháp, mở lại điền đủ; nháp mẫu demo không bị điền), ticket hỗ trợ chi tiết + nhắn thêm.
+- Kết quả: checklist tick 4 dòng (outbox consumer, người/địa điểm/cảm xúc, MEM-13, email giao dịch) → 135/165; cập nhật các dòng Admin (BE ✅/🟡, web ❌). `docs/api.md` mục BF-20261021-002.
+- Bằng chứng: app `make check` EXIT 0 (analyze sạch, 792 test; mới: mock_services +1 (nháp), settings_remote +1 (ticket), subject_memory_remote +1 (người/cảm xúc/địa điểm)). Backend `npm run check` EXIT 0 (unit 325, e2e 35, compiled); `npx eslint --max-warnings=0 src test` EXIT 0; generators `--check` EXIT 0; `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT 0 (68 suite, 552 test). Lượt đầu có lỗi (FMT/CHECK/INT) đã sửa như trên. Chưa chạy SMTP production, chưa có web admin, chưa thử trên thiết bị.
+- Còn lại: web `baby-admin/`; sửa catalog có version qua admin; app dùng `people-suggestions` và gửi `memberId`; FAQ Trợ giúp; SDK Apple/Google + IAP trên app; CI thật, cảnh báo, staging.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Còn lại”).
+
+## BF-20261021-003 — US-01 bản server không hiện câu hỏi mẫu + Trợ giúp/FAQ và Giới thiệu từ server (Claude; Codex hết quota tới 15:25)
+
+- Ngày làm: 2026-10-21T11:43:03+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp task tiếp theo đi"
+- Liên quan: BF-20261021-002.
+- Role: ORCHESTRATOR, BACKEND, MOBILE, TESTER, QUALITY — Claude làm toàn bộ (Codex hết quota tới 15:25; không giao Codex đợt này).
+- Phân tích: US-01 — lời cảm ơn đã đi qua server; chỉ “câu hỏi hôm nay” còn lấy từ dữ liệu mẫu và hiện cả ở bản server → `UsRemoteServiceImp.coupleToday` bỏ câu hỏi khi có gia đình server (câu hỏi kết nối là 1.1, dòng riêng). SET-11/12 — backend `HelpCenterController` → `IHelpCenterService` (catalog FAQ có version vi/en trong config, liên hệ/đường dẫn pháp lý từ biến môi trường tuỳ chọn, không bịa email/hotline), đăng ký DI, thêm biến vào `environment.ts`/`.env.example`; app `IAccountRemoteRepository.helpCenter`, `SettingsRemoteServiceImp.help()` (không hiện số báo cáo mẫu), Trợ giúp chạm câu hỏi xem câu trả lời, email/hotline mở bằng `mailto:`/`tel:` và ẩn khi chưa cấu hình, Giới thiệu mở điều khoản/quyền riêng tư theo URL server.
+- Kết quả: checklist tick 2 dòng (US-01, Trợ giúp/giới thiệu) → 137/165. `docs/api.md` mục SET-11/12.
+- Bằng chứng: app `make check` EXIT 0 (analyze sạch, 793 test; mới: couple_remote kiểm không có câu hỏi mẫu, settings_remote +1 help center). Backend `npm run check` EXIT 0 (unit 328 gồm help-center 3, e2e 35, compiled); `npx eslint --max-warnings=0 src test` EXIT 0 (lượt đầu 1 lỗi `no-unnecessary-type-assertion` đã sửa); generators `--check` EXIT 0; `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT 0 (68 suite, 552 test). Chưa có nội dung điều khoản/quyền riêng tư thật (cần pháp chế cung cấp URL).
+- Còn lại: URL điều khoản/quyền riêng tư và email/hotline thật khi triển khai; web admin; SDK Apple/Google + IAP trên app; catalog nhiệm vụ 90 ngày; CI thật, cảnh báo, staging.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Còn lại”).
+
+## BF-20261021-004 — Bộ kiểm thử bất biến bảo mật §6.4 (release blocker) (Claude; Codex hết quota tới 15:25)
+
+- Ngày làm: 2026-10-21T11:57:44+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp task tiếp theo đi"
+- Liên quan: BF-20261021-003.
+- Role: ORCHESTRATOR, BACKEND, TESTER (chủ trì), QUALITY — Claude làm toàn bộ (Codex hết quota tới 15:25).
+- Phân tích: đối chiếu 10 bất biến §6.4 với test hiện có — 5, 6, 8, 9, 10 đã có test chuyên biệt; thiếu phép quét hệ thống cho 1, 2, 3, 4, 7. Viết `test/integration/security-invariants.spec.ts` (AppModule thật, fixture gia đình A: Bố, Mẹ, người thân chỉ được cấp một bé, người ngoài): (1) người ngoài quét 53 route GET với UUID thật → chỉ 404/400; (2) Circle không tới được `/us/*`, nhiệm vụ, Hearts, huy hiệu, `purchase-intents`; (3) Circle không thấy bé chưa cấp quyền ở chi tiết/thống kê/cột mốc/thư/ký ức/today-story/timeline/feed/media-grid/search/on-this-day (kèm kiểm bé được cấp vẫn xem được để phép thử không rỗng); (4) bị gỡ → feed và presign bị từ chối; (7) Bố/Mẹ B quét mọi route không thấy Hearts của A (A vẫn thấy Hearts của mình). Phép quét tìm ra lỗi thật: lịch và chi tiết sự kiện trả 403 `FAMILY_ACCESS_DENIED` cho người ngoài → sửa thành 404; `missions/templates?childId=` bé lạ → 404. Lập `baby-backend/docs/security-invariants.md` (bảng bất biến → test, phần 1.1 chưa có route).
+- Kết quả: checklist tick dòng “Kiểm thử bất biến bảo mật §6.4” → 138/165. Không đổi app. `docs/api.md` ghi thay đổi mã lỗi.
+- Bằng chứng: `security-invariants.spec.ts` 5/5 (lần đầu 1 fail chính là lỗi lịch 403); `calendar-api` 10/10, `mission-board-api` 21/21, `event-reminder` 11/11 sau sửa; `npm run check` EXIT 0 (unit 328, e2e 35, compiled); `npx eslint --max-warnings=0 src test` EXIT 0 (lượt đầu 1 lỗi `no-unexpected-multiline` trong spec mới, đã sửa); generators `--check` EXIT 0; `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT 0 (69 suite, 557 test). Chưa có pentest bên ngoài.
+- Còn lại: route mới phải thêm vào danh sách quét; bất biến phần 1.1 khi có route; pentest.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Còn lại”).
+
+## BF-20261021-005 — Catalog nhiệm vụ đủ ≥ 90 ngày nội dung mỗi giai đoạn (bổ sung mẫu + test chứng minh) (Claude; Codex hết quota tới 15:25)
+
+- Ngày làm: 2026-10-21T12:20:16+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp task tiếp theo đi"
+- Liên quan: BF-20261019-003, BF-20261021-004.
+- Role: ORCHESTRATOR, BACKEND, PRODUCT/CONTENT (viết mẫu), TESTER, QUALITY — Claude làm toàn bộ (Codex hết quota tới 15:25).
+- Phân tích: mức mặc định MEDIUM = 3 việc/Bố-Mẹ/ngày + 1 việc “Cùng nhau”, cửa sổ không lặp 14 ngày ⇒ mỗi giai đoạn cần ≥ 84 mẫu cho Bố/Mẹ (≥ 42 mỗi người) và ≥ 14 “Cùng nhau”; catalog cũ chỉ có 16–48 mẫu Bố/Mẹ mỗi giai đoạn và 12 “Cùng nhau” khi có con. Viết thêm 158 mẫu song ngữ (4 đợt, chỉ thêm mới, không sửa mẫu đã publish). Phép quét đầy đủ (mọi tuần 1–42, mọi tuổi 0–2190 ngày) lộ khoảng thiếu mà lấy mẫu bỏ sót (tuần 21–23, bé 91–119 ngày); mô phỏng 90 ngày bằng bộ sinh thật lộ thêm hai ràng buộc: người mang thai/vừa sinh ≤ 42 ngày bắt buộc 1 việc SELF/ngày (cần mẫu SELF riêng cho họ) và mẫu thai kỳ phạm vi `CHILD` không dùng được khi chưa có bé — đây là lỗi bộ sinh có sẵn (gia đình chỉ đang mang thai có thể nhận `MISSION_BOARD_POOL_INSUFFICIENT`, và gia đình có con lớn bị gán nhầm việc thai kỳ cho con). Sửa `MissionBoardRepository.generate`: mẫu `PREGNANCY` lưu ở phạm vi gia đình, mẫu `CHILD` khác chỉ vào pool khi có bé phù hợp. Mẫu thai kỳ mới dùng phạm vi `FAMILY`. Xoá 18 bản nháp mẫu thai kỳ cũ chỉ nằm trong DB test (không còn nhiệm vụ tham chiếu). Sửa test chập chờn có sẵn của `notification-inbox-api` (regex `999` khớp nhầm UUID).
+- Kết quả: catalog 268 mẫu; checklist tick dòng “Catalog nhiệm vụ (≥ 90 ngày)” → 139/165. Không đổi app. `docs/api.md` mục catalog.
+- Bằng chứng: `mission-catalog-coverage` unit 3/3; `mission-catalog-90-days` 9/9 chạy 3 lần liên tiếp đều đạt (lượt đầu thất bại — chính là các lỗi nêu trên); `mission-board-api` 21/21, `care-progress-api` 11/11, `calendar-api` 10/10; `npm run check` EXIT 0 (unit 331, e2e 35, compiled); `npx eslint --max-warnings=0 src test` EXIT 0; generators `--check` EXIT 0; `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` 69/70 suite đạt, 1 lỗi là test chập chờn của `notification-inbox-api` — đã sửa và chạy lại riêng 19/19. Nội dung chưa được người dùng/chuyên gia nội dung duyệt.
+- Còn lại: duyệt nội dung (văn phong, y khoa an toàn); mức HEAVY (4 việc/người) và trẻ trên 6 tuổi chưa được chứng minh; DB thật cần chạy `npm run db:seed` để có mẫu mới; mẫu thai kỳ cũ phạm vi `CHILD` nên đổi qua quy trình publish version khi có.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Còn lại”).
+
+## BF-20261021-006 — Web Admin CMS `baby-admin/` (đăng nhập, kiểm duyệt, khoá license, CSKH, catalog) (Claude; Codex hết quota tới 15:25)
+
+- Ngày làm: 2026-10-21T16:02:38+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp task tiếp theo đi" (và "Try again" khi lượt trước bị ngắt).
+- Liên quan: BF-20261021-002.
+- Role: ORCHESTRATOR, FRONTEND (web admin), BACKEND (đối chiếu contract), TESTER, QUALITY — Claude làm toàn bộ (Codex hết quota tới 15:25).
+- Phân tích: `baby-admin/` trống; theo tài liệu kỹ thuật §24 chọn React 18 + Vite 5 + TypeScript + Ant Design 5 (phiên bản pin cố định). Đọc contract thật của 4 controller admin (BF-20261021-002). Cấu trúc: `src/api/client.ts` (envelope `{data}`, lỗi `{error:{code}}`, Bearer admin, 401 → xoá phiên, phiên chỉ ở `sessionStorage`), `src/api/admin.ts` (hàm có kiểu cho từng route), trang `LoginPage` (email + mật khẩu + TOTP), `CasesPage` (lọc trạng thái, chi tiết báo cáo, xem nội dung bắt buộc lý do, đổi trạng thái, ẩn nội dung), `LicensePage` (mã lý do + ghi chú, xác nhận), `TicketsPage` (metadata, mở nội dung với `SUPPORT_REQUEST`, trả lời, đổi trạng thái), `CatalogPage` (5 loại, chỉ đọc). Menu ẩn theo vai trò, quyền thật vẫn ở backend. Dev proxy `/admin/v1` → backend (không mở CORS). Thêm `README.md`, `.github/workflows/admin-ci.yml` (cùng phiên bản action/Node với workflow sẵn có).
+- Kết quả: checklist tick 2 dòng (Admin CMS web; xử lý báo cáo/khoá license có audit) → 141/165; dòng catalog/gói cập nhật Admin 🟡 (chỉ xem).
+- Bằng chứng: `npm run check` trong `baby-admin` EXIT 0 (typecheck, vitest 6/6: client envelope/401/phiên hết hạn, phân quyền menu, đăng nhập gửi đủ TOTP, danh sách ca; `vite build` đạt, cảnh báo bundle > 500 kB). Chạy thật: backend build từ mã nguồn ở cổng 3100 nối DB `baby_family_test` (không đụng Docker stack đang chạy — container API hiện tại là bản cũ, route admin trả 404), tạo admin QA bằng `npm run admin:create` với khoá sinh tạm (chỉ lưu ở scratchpad, không vào repo), đăng nhập TOTP thành công, xem danh sách/chi tiết ca, đổi một ca sang IN_REVIEW (audit hiển thị), xem catalog nhiệm vụ, mở màn hỗ trợ. Chưa chạy GitHub Actions.
+- Còn lại: tạo/publish phiên bản catalog, tra cứu người dùng/gia đình (ADM-03), audit log (ADM-17), cấu hình/flags; tách bundle (code-splitting); build lại container API để có route admin; đổi TOTP/mật khẩu admin.
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Còn lại”).
+
+## BF-20261021-007 — Publish phiên bản catalog qua Admin (Codex) + app mua gói IAP và đăng nhập/liên kết Apple & Google (Claude)
+
+- Ngày làm: 2026-10-21T16:11:43+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp task tiếp theo đi"
+- Liên quan: BF-20261020-001, BF-20261021-006.
+- Role: ORCHESTRATOR, BACKEND + FRONTEND admin (Codex: publish catalog), MOBILE (Claude: IAP, Apple/Google), TESTER, QUALITY. Giữa task người dùng nhắn hướng tiếp theo: sau task này tập trung luồng sử dụng chính; media (ảnh/video) do client nén/xử lý, server chỉ trả phiên upload presigned, client upload thẳng lên S3 — đã ghi nhận (bộ nhớ dự án) để làm ở task sau.
+- Phân tích: Codex làm backend + `baby-admin` cho tạo nháp → publish → ngừng dùng (nhiệm vụ, phiên bản gói, chính sách dùng thử). Claude đăng ký DI, và sửa lưu ý vận hành của Codex: seed nhiệm vụ bỏ qua các trường vòng đời (`status`, `rolloutPct`) để mẫu seed đã bị admin ngừng dùng không làm `db:seed` lỗi. App: `IStorePurchaseRepository` (bọc `in_app_purchase` 3.3.1, StoreKit 2 mặc định — `serverVerificationData` là JWS) + `FamilyRemoteServiceImp.purchasePlan` (purchase-intent với mã gói server → mua với appAccountToken/obfuscatedAccountId → verify → hoàn tất giao dịch → đồng bộ gói); `ISocialCredentialRepository` (`sign_in_with_apple` 8.2.0 với nonce gốc/SHA-256, `google_sign_in` 7.2.0 với client id qua `--dart-define`) + `SessionRemoteServiceImp.signIn` dùng chung bước sau đăng nhập với OTP; kiểu `UserCancelled` để huỷ ở Store/Apple/Google không hiện lỗi.
+- Kết quả: checklist tick “Quản lý gói/plan version/trial policy” → 142/165; Apple, Google, SUB-01/02, SUB-04 cập nhật App 🟡 (mã đã nối, chưa cấu hình/thử thật); catalog nhiệm vụ BE/Admin 🟡.
+- Bằng chứng: app `make check` EXIT 0 (analyze sạch, 797 test; mới: family_remote +2 IAP (mua, huỷ), session_remote +2 Apple/Google (đăng nhập, huỷ)). Backend `npm run check` EXIT 0 (unit 331, e2e 35, compiled); generators `--check` EXIT 0; `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT 0 (71 suite, 580 test). `baby-admin` `npm run check` EXIT 0 (15 test, build). Chưa thử Store sandbox, chưa bật capability Sign in with Apple, chưa có client id Google thật.
+- Còn lại: cấu hình sản phẩm Store + sandbox, capability/entitlement Apple, client id + URL scheme Google; liên kết/gỡ Apple/Google trong Cài đặt (cần màn xác thực lại); version cho cột mốc/mẫu thông báo; luồng media phía client (task tiếp theo theo yêu cầu).
+- Trạng thái: Hoàn thành (còn các phần nêu ở “Còn lại”).
+
+## BF-20261021-008 — Luồng media mới: client nén/tạo biến thể ảnh–video, server chỉ cấp phiên upload presigned, client upload thẳng S3 (Codex backend + Claude app)
+
+- Ngày làm: 2026-10-21T16:48:34+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm luồng media theo hướng mới: client nén/xử lý ảnh, video; server chỉ cấp phiên upload presigned, client upload thẳng lên S3."
+- Liên quan: BF-20261021-007 (hướng người dùng chốt giữa task đó).
+- Câu hỏi bổ sung giữa task:
+  1. "ưu tiên hiển thị video ảnh của user tồn tại ở gallary … nếu 2 file đó trùng nhau thì ưu tiên hiển thị ảnh ở local trước … cơ chế check trùng như thế nào (tôi nghĩ dùng hash file name không biết có ổn không)".
+  2. "ghi lại … thiết kế hệ thống data ở dưới local và đồng bộ với server … app ưu tiên user sử dụng được khi không có mạng".
+- Role:
+  - ORCHESTRATOR.
+  - BACKEND (Codex: phiên upload presigned + HEAD verify; Claude: trường `source`).
+  - MOBILE (Claude: nén/biến thể, local-first).
+  - ARCHITECT (thiết kế offline-first).
+  - TESTER, QUALITY.
+- Phân tích — backend (Codex, handoff `BF-20261021-008-A.md`):
+  - Client khai báo `variants` (IMAGE `m1080`/`t320`, VIDEO `poster`/`t320`, AUDIO không có). Server presign file chính + từng biến thể; `complete` HEAD kiểm size/MIME → READY ngay.
+  - `MEDIA_SERVER_PROCESSING=disabled` mặc định; avatar tài khoản dùng bảng `user_asset_variants`.
+  - Claude thêm `source {sha256, key, capturedAt}` của file gốc: migration DDL `20261021120000_asset_client_source` (`source_sha256`, `source_key`), DTO intent, hash idempotency, projection media/ký ức.
+- Phân tích — app:
+  - `processImage`/`processVideo` (`flutter_image_compress`, `video_compress`, `exif`); `MediaUploader` upload file chính + biến thể thẳng S3. Avatar đi cùng đường qua `uploadAvatar`.
+  - Picker ký ức không resize nữa, để giữ bytes gốc.
+- Cơ chế check trùng (trả lời người dùng): **không dùng hash tên file**, vì tên file không ổn định (iOS `IMG_xxxx` lặp lại, picker đổi tên, Android đặt lại tên). Dùng SHA-256 **nội dung file gốc** làm định danh thật, có lọc trước để không phải băm cả thư viện:
+  1. Chỉ mục đã lưu (assetId → id thư viện, mã hoá, xoá khi đăng xuất).
+  2. Ứng viên cùng khoá metadata (`kind|cạnh ngắn x cạnh dài|giây`) + thời điểm chụp ±2 s.
+  3. Băm SHA-256 tối đa 10 ứng viên, có cache.
+  4. Picker đổi định dạng (HEIC → JPEG) nên SHA khác: chỉ nhận khi đúng một ứng viên cùng khoá + thời điểm chụp.
+  5. Không khớp: thử lại sau 1 ngày.
+
+  Ảnh đã xoá khỏi thư viện thì quay lại ảnh server. Quyền thư viện được xin khi người dùng chọn ảnh để đăng.
+- Offline-first: viết `docs/04_THIET_KE_OFFLINE_FIRST.md` gồm:
+  - Hiện trạng: MockStore RAM, offline snapshot, hàng đợi MEM-06.
+  - Đích: local DB bền vững + outbox (client id, Idempotency-Key) + SyncEngine push/pull.
+  - Quy tắc xung đột, phân loại offline/online-only, việc backend cần bổ sung, lộ trình, cách kiểm chứng.
+
+  Đây mới là **thiết kế, chưa triển khai**.
+- Kết quả:
+  - Checklist: cập nhật ghi chú Upload video, MEM-08 và dòng "Đang làm"; tổng giữ 142/165, không có dòng mới đủ điều kiện tick.
+  - Tài liệu: thêm `docs/media-client-processing.md` (mục `source`), api.md, `baby-family-app/SESSION.md`.
+- Bằng chứng:
+  - App `make check` EXIT 0 (analyze sạch, 806 test). Test mới: `local_media_test` 6; memory_library_remote +1 (ảnh trong máy thay URL server); subject_memory_remote MEM-04/MEM-08 client nén + biến thể; settings_remote avatar có biến thể.
+  - Backend `npm run check` EXIT 0 (unit 331, e2e 35, compiled; sau khi sinh lại `generate:services`); `npx eslint --max-warnings=0 src test` EXIT 0; `generate:persistence -- --check` EXIT 0.
+  - Backend `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT 0 (71 suite, 596 test; gồm media-api +1 cho `source`).
+  - Migration chỉ áp dụng lên `baby_family_test`.
+  - Chưa thử trên máy thật: nén video, `photo_manager`, quyền thư viện iOS/Android.
+- Còn lại:
+  - Thử trên máy thật: nén video, thời gian băm file lớn, quyền thư viện giới hạn của iOS.
+  - Deploy 2 migration mới trước API.
+  - Video local: hiện vẫn dùng poster của server cho thẻ, chỉ thay file phát.
+  - Triển khai offline-first theo lộ trình trong tài liệu.
+  - Commit các vòng BF-20261020-001 … BF-20261021-008 khi người dùng yêu cầu.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Còn lại").
+
+## BF-20261021-009 — Commit các thay đổi BF-20261020-001 → BF-20261021-008 thẳng vào main
+
+- Ngày làm: 2026-10-21T17:19:36+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Commit tất cả thay đổi BF-20261020-001 đến BF-20261021-008 thẳng vào main."
+- Role: ORCHESTRATOR, QUALITY (rà working tree trước commit).
+- Phân tích: working tree chỉ gồm thay đổi của các vòng BF-20261020-001 … BF-20261021-008 (backend, app, `baby-admin/`, CI workflow, tài liệu, nhật ký). Không có secret, `.env`, node_modules/dist hay log. Các phiên liên kết khác đang idle, không có ghi chú bàn giao mới. Bỏ `.DS_Store` (file hệ thống macOS).
+- Kết quả: một commit trên `main`, không push (người dùng không yêu cầu push).
+- Bằng chứng: các check ở BF-20261021-008 (app `make check` 806 pass; backend `npm run check`, eslint, generators, integration 71 suite/596 test đều EXIT 0); `git status` sau commit chỉ còn `.DS_Store`.
+- Còn lại: push khi người dùng yêu cầu.
+- Trạng thái: Hoàn thành.

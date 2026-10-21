@@ -121,10 +121,13 @@ class ProfileSettingsMobileView extends HookConsumerWidget {
                     kValueUseRemoteSession && method.method == AuthMethod.phone
                     ? l10n.setChangePhone
                     : null,
-                onToggle:
-                    kValueUseRemoteSession && method.method == AuthMethod.phone
+                // Liên kết/gỡ Apple/Google cần SDK đăng nhập gốc — bản server
+                // chỉ hiện trạng thái thật, chưa đổi được.
+                onToggle: !kValueUseRemoteSession
+                    ? () => controller.toggleLink(method.method)
+                    : method.method == AuthMethod.phone
                     ? () => context.router.push(const ChangePhoneRoute())
-                    : () => controller.toggleLink(method.method),
+                    : () => showComingSoonSnackBar(context),
               ),
           ],
         ),

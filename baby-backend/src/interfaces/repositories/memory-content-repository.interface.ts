@@ -1,3 +1,5 @@
+import type { MemoryPersonView } from '../../models/memory-view.model';
+import type { MemoryPersonInputDto } from '../../dto/memory/memory-people.dto';
 import type { TimelineFilter } from '../../dto/memory/timeline-query.dto';
 import type {
   MemoryGridAsset,
@@ -16,6 +18,7 @@ import type {
 export const MEMORY_CONTENT_REPOSITORY = Symbol('MEMORY_CONTENT_REPOSITORY');
 
 export interface CreateMemoryCommand {
+  people?: MemoryPersonInputDto[];
   authorRole?: 'PARENT' | 'CIRCLE';
   status?: 'DRAFT' | 'PENDING_REVIEW';
   unlockAt?: Date | null;
@@ -72,6 +75,7 @@ export interface MemoryFeedFilter {
 }
 
 export interface UpdateMemoryCommand {
+  people?: MemoryPersonInputDto[];
   assets?: { assetId: string; sortOrder: number; isCover: boolean }[];
   assetQuota?: number;
 
@@ -120,6 +124,10 @@ export interface RestoreMemoryCommand {
 
 /** Memory create/read/trash persistence (spec §6.3, §7.8.3, §11.5). */
 export interface IMemoryContentRepository {
+  peopleSuggestions(
+    familyId: string,
+    userId: string,
+  ): Promise<MemoryPersonView[]>;
   readableSubjects(
     familyId: string,
     userId: string,

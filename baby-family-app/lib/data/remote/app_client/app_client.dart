@@ -61,6 +61,20 @@ sealed class AppClient {
     @Body() Map<String, dynamic> body,
   );
 
+  /// AUTH-01: `{identityToken, nonce, fullName?}` (Apple) → cặp token.
+  @POST(Api.authApple)
+  @Extra({RequestOptionsExtra.deviceReq: true})
+  Future<AuthCertificateRespond> signInWithApple(
+    @Body() Map<String, dynamic> body,
+  );
+
+  /// AUTH-01: `{idToken}` (Google) → cặp token.
+  @POST(Api.authGoogle)
+  @Extra({RequestOptionsExtra.deviceReq: true})
+  Future<AuthCertificateRespond> signInWithGoogle(
+    @Body() Map<String, dynamic> body,
+  );
+
   /// Hồ sơ + gia đình + tiến độ onboarding (SPL-01).
   @GET(Api.me)
   @Extra({RequestOptionsExtra.requiresAuth: true})
@@ -182,6 +196,11 @@ sealed class AppClient {
     @Header('Idempotency-Key') String idempotencyKey,
     @Body() Map<String, dynamic> body,
   );
+
+  /// Trạng thái asset (`{assetId, status}`) — chờ READY trước khi tạo VOICE.
+  @GET(Api.mediaAsset)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<UploadStatusRespond> getMediaAsset(@Path('assetId') String assetId);
 
   @POST(Api.mediaComplete)
   @Extra({RequestOptionsExtra.requiresAuth: true})
@@ -566,6 +585,11 @@ sealed class AppClient {
   @GET(Api.meDrafts)
   @Extra({RequestOptionsExtra.requiresAuth: true})
   Future<MemoryFeedRespond> getDrafts(@Query('familyId') String familyId);
+
+  /// MEM-18: đăng nháp (DRAFT → PROCESSING/PUBLISHED).
+  @POST(Api.memoryPublish)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<MemoryRecordRespond> publishMemory(@Path('memoryId') String memoryId);
 
   /// MEM-17 “Xoá vĩnh viễn” (204).
   @DELETE(Api.memoryPurge)
@@ -992,6 +1016,30 @@ sealed class AppClient {
   @Extra({RequestOptionsExtra.requiresAuth: true})
   Future<void> verifyPhoneChange(@Body() Map<String, dynamic> body);
 
+  /// FAM-08: mọi gia đình của tôi (Parent + người thân).
+  @GET(Api.meFamilies)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<MyFamilyListRespond> getMyFamilies();
+
+  /// FAM-08: gia đình mở mặc định (`{familyId}`).
+  @PUT(Api.meDefaultFamily)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<void> setDefaultFamily(@Body() Map<String, dynamic> body);
+
+  /// FAM-07: danh mục múi giờ (`locale` vi | en).
+  @GET(Api.catalogTimezones)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<TimezoneCatalogRespond> getTimezones(@Query('locale') String locale);
+
+  /// Phương thức đăng nhập đã liên kết (Apple/Google/số điện thoại).
+  @GET(Api.meSignInMethods)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<SignInMethodListRespond> getSignInMethods();
+
+  /// SET-11/12: câu hỏi thường gặp, liên hệ, đường dẫn pháp lý (công khai).
+  @GET(Api.supportHelpCenter)
+  Future<HelpCenterRespond> getHelpCenter(@Query('locale') String locale);
+
   /// Hỗ trợ khách hàng: danh mục yêu cầu (catalog có version).
   @GET(Api.supportCategories)
   @Extra({RequestOptionsExtra.requiresAuth: true})
@@ -1001,6 +1049,21 @@ sealed class AppClient {
   @POST(Api.supportTickets)
   @Extra({RequestOptionsExtra.requiresAuth: true})
   Future<SupportTicketRespond> createSupportTicket(
+    @Body() Map<String, dynamic> body,
+  );
+
+  /// Chi tiết yêu cầu của tôi + trao đổi với CSKH.
+  @GET(Api.supportTicket)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<SupportTicketDetailRespond> getSupportTicket(
+    @Path('ticketId') String ticketId,
+  );
+
+  /// Nhắn thêm vào yêu cầu (`{body}`).
+  @POST(Api.supportTicketMessages)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<void> sendSupportMessage(
+    @Path('ticketId') String ticketId,
     @Body() Map<String, dynamic> body,
   );
 
@@ -1047,6 +1110,23 @@ sealed class AppClient {
   @GET(Api.billingPlans)
   @Extra({RequestOptionsExtra.requiresAuth: true})
   Future<BillingCatalogRespond> getBillingPlans();
+
+  /// SUB-01/04: tạo lần mua (Idempotency-Key) → productId + account token.
+  @POST(Api.familyPurchaseIntents)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<PurchaseIntentRespond> createPurchaseIntent(
+    @Path('familyId') String familyId,
+    @Header('Idempotency-Key') String idempotencyKey,
+    @Body() Map<String, dynamic> body,
+  );
+
+  /// SUB-02: server xác minh giao dịch Store → billing mới của gia đình.
+  @POST(Api.familyPurchaseVerify)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<FamilyBillingRespond> verifyPurchase(
+    @Path('familyId') String familyId,
+    @Body() Map<String, dynamic> body,
+  );
 
   /// SUB-03/06/07: quyền lợi + usage của gia đình (đọc được khi hết hạn).
   @GET(Api.familyBilling)

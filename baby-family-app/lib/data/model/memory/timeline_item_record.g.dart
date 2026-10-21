@@ -20,6 +20,7 @@ _TimelineItemRecord _$TimelineItemRecordFromJson(Map<String, dynamic> json) =>
       coverUrl: json['coverUrl'] as String?,
       memoryCount: (json['memoryCount'] as num?)?.toInt(),
       firstsCount: (json['firstsCount'] as num?)?.toInt(),
+      periodStart: json['periodStart'] as String?,
     );
 
 Map<String, dynamic> _$TimelineItemRecordToJson(_TimelineItemRecord instance) =>
@@ -34,4 +35,5 @@ Map<String, dynamic> _$TimelineItemRecordToJson(_TimelineItemRecord instance) =>
       'coverUrl': instance.coverUrl,
       'memoryCount': instance.memoryCount,
       'firstsCount': instance.firstsCount,
+      'periodStart': instance.periodStart,
     };

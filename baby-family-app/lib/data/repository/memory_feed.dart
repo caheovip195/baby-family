@@ -105,4 +105,7 @@ abstract class IMemoryFeedRepository extends IBaseRepository {
 
   /// `GET /v1/me/drafts?familyId` — nháp đã lưu trên tài khoản (MEM-18).
   Future<List<MemoryRecord>> drafts(String familyId);
+
+  /// `POST /v1/memories/{id}/publish` — đăng nháp của tôi.
+  Future<MemoryRecord?> publish(String memoryId);
 }

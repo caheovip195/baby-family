@@ -5,6 +5,15 @@ import type {
 } from '../common/database.enums';
 import type { Memory } from './memory.model';
 
+/** A person permitted by the readable memory's family context. */
+export class MemoryPersonView {
+  constructor(
+    readonly memberId: string | null,
+    readonly userId: string | null,
+    readonly displayName: string,
+  ) {}
+}
+
 /** Asset attached to a memory, in display order. */
 export interface MemoryAssetRef {
   readonly assetId: string;
@@ -29,6 +38,7 @@ export class MemoryView {
       userId: string;
       type: ReactionType;
     }[] = [],
+    readonly people: readonly MemoryPersonView[] = [],
   ) {}
 
   /** Active reactions per type. */
@@ -83,6 +93,9 @@ export interface MemoryCreationContext {
   readonly assets: readonly {
     id: string;
     uploaderUserId: string;
+    /** Processed server metadata; optional for legacy non-audio contexts. */
+    kind?: AssetKind;
+    durationMs?: number | null;
     purpose: string;
     status: AssetStatus;
     /** Another Parent's asset the actor already sees via the family ACL (spec §6.3). */

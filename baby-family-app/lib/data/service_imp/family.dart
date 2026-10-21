@@ -6,6 +6,7 @@ import 'package:baby_family/data/model/family/invite_info.dart';
 import 'package:baby_family/data/model/family/member.dart';
 import 'package:baby_family/data/model/family/plan_details.dart';
 import 'package:baby_family/data/model/family/plan_offer.dart';
+import 'package:baby_family/data/model/family/timezone_catalog.dart';
 import 'package:baby_family/data/repository/family.dart';
 import 'package:baby_family/data/service/family.dart';
 import 'package:baby_family/data/service_imp/mock_service.dart';
@@ -304,6 +305,9 @@ class FamilyServiceImp extends MockServiceImp implements IFamilyService {
   Future<void> switchFamily(String familyId) async {
     await ready();
   }
+
+  @override
+  Future<List<TimezoneOption>> timezones() async => const [];
 
   @override
   Future<List<InviteInfo>> relativeInvites() async {

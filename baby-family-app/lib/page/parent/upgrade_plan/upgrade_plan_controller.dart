@@ -4,6 +4,7 @@ import 'package:baby_family/data/model/family/plan_details.dart';
 import 'package:baby_family/data/model/family/plan_offer.dart';
 import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/provider/mock_store.dart';
+import 'package:baby_family/data/repository/store_purchase.dart';
 import 'package:baby_family/data/service/family.dart';
 import 'package:baby_family/page/application_base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
@@ -86,7 +87,13 @@ class UpgradePlanController extends BaseNotifier {
     notifyListeners();
   }
 
-  Future<void> upgrade() async {
-    await whileLoading(() => familyService.purchasePlan(PlanState.family));
+  /// `false` khi người dùng huỷ ở bảng thanh toán của Store.
+  Future<bool> upgrade() async {
+    try {
+      await whileLoading(() => familyService.purchasePlan(PlanState.family));
+    } on StorePurchaseCancelled {
+      return false;
+    }
+    return true;
   }
 }

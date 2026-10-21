@@ -22,7 +22,11 @@ class _HomeAppBar extends StatelessWidget {
     if (picked == null || picked.current || !context.mounted) {
       return;
     }
-    await controller.switchFamily(picked.familyId);
+    final session = await controller.switchFamily(picked.familyId);
+    if (kValueUseRemoteSession && context.mounted) {
+      await context.router.replaceAll([routeForSession(session)]);
+      return;
+    }
     if (context.mounted) {
       final current = memberships.where((m) => m.current).firstOrNull;
       showAppSnackBar(

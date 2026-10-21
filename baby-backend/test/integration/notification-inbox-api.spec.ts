@@ -938,7 +938,7 @@ describe('Notification inbox API (focused module, PostgreSQL + ES256)', () => {
         priority,
       });
       expect(JSON.stringify(notifications[0]!.payloadReference)).not.toMatch(
-        /secret|hearts|999/,
+        /secret|hearts|\b999\b/,
       );
     }
     expect(

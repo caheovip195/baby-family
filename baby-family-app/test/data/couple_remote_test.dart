@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:baby_family/data/dto/processed_media.dart';
 import 'package:baby_family/data/model/memory/upload_instruction.dart';
 import 'package:baby_family/data/model/memory/upload_intent.dart';
 import 'package:baby_family/data/model/memory/upload_status.dart';
@@ -33,6 +34,26 @@ import '../helpers/design_qa.dart';
 
 /// Kho media giả: ghi lại mục đích của ảnh tải lên.
 class _FakeMedia extends Fake implements IMediaRepository {
+  /// Client nén ảnh (BF-20261021-008): bản JPEG + biến thể giả.
+  @override
+  Future<ProcessedMedia> processImage(String path) async => ProcessedMedia(
+    kind: 'IMAGE',
+    mime: 'image/jpeg',
+    bytes: Uint8List.fromList(path.codeUnits),
+    variants: [
+      MediaVariantFile(
+        code: 'm1080',
+        mime: 'image/jpeg',
+        bytes: Uint8List.fromList([1]),
+      ),
+      MediaVariantFile(
+        code: 't320',
+        mime: 'image/jpeg',
+        bytes: Uint8List.fromList([2]),
+      ),
+    ],
+  );
+
   final purposes = <String>[];
 
   @override
@@ -334,6 +355,8 @@ void main() {
         ),
       );
       final today = await us.coupleToday();
+      // Câu hỏi kết nối (1.1) chưa có API: không hiện câu hỏi mẫu.
+      expect(today.question, isNull);
       expect(today.partnerCheckin?.mood, MoodCode.tired);
       expect(today.partnerCheckin?.needs, [CoupleNeed.childcare]);
 

@@ -6144,6 +6144,78 @@ abstract class AppLocalizations {
   /// **'Đã ghi âm · {duration}'**
   String memVoiceRecorded(String duration);
 
+  /// MEM-04 ghi âm
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang ghi… chạm để dừng'**
+  String get memVoiceRecording;
+
+  /// MEM-04 ghi âm
+  ///
+  /// In vi, this message translates to:
+  /// **'Cần quyền micro để ghi âm — bật trong Cài đặt của máy'**
+  String get memVoiceMicDenied;
+
+  /// MEM-05 nâng cao: ai ở đó, cảm xúc, địa điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Ai ở đó'**
+  String get memPeopleLabel;
+
+  /// MEM-05 nâng cao: ai ở đó, cảm xúc, địa điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn người'**
+  String get memPeopleChoose;
+
+  /// MEM-05 nâng cao: ai ở đó, cảm xúc, địa điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm tên'**
+  String get memPeopleAddName;
+
+  /// MEM-05 nâng cao: ai ở đó, cảm xúc, địa điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Cảm xúc của khoảnh khắc'**
+  String get memFeelingLabel;
+
+  /// MEM-05 nâng cao: ai ở đó, cảm xúc, địa điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn cảm xúc'**
+  String get memFeelingChoose;
+
+  /// MEM-05 nâng cao: ai ở đó, cảm xúc, địa điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Không chọn'**
+  String get memFeelingNone;
+
+  /// MEM-05 nâng cao: ai ở đó, cảm xúc, địa điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'{feeling, select, love{Thương yêu} joy{Vui vẻ} touched{Xúc động} surprised{Bất ngờ} peaceful{Bình yên} proud{Tự hào} other{{feeling}}}'**
+  String memFeeling(String feeling);
+
+  /// MEM-05 nâng cao: ai ở đó, cảm xúc, địa điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Địa điểm'**
+  String get memLocationLabel;
+
+  /// MEM-05 nâng cao: ai ở đó, cảm xúc, địa điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm địa điểm'**
+  String get memLocationAdd;
+
+  /// MEM-05 nâng cao: ai ở đó, cảm xúc, địa điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Ví dụ: Nhà bà nội, Biển Vũng Tàu'**
+  String get memLocationHint;
+
   /// MEM-05 (kỷ vật) — gợi ý tên
   ///
   /// In vi, this message translates to:
@@ -7344,6 +7416,12 @@ abstract class AppLocalizations {
   /// **'Múi giờ gia đình'**
   String get famSettingsTimezone;
 
+  /// FAM-07 chọn múi giờ
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm thành phố hoặc múi giờ'**
+  String get famTimezoneSearch;
+
   /// FAM-07 toggle
   ///
   /// In vi, this message translates to:
@@ -8387,6 +8465,42 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'{status, select, OPEN{Đã tiếp nhận} IN_PROGRESS{Đang xử lý} WAITING_USER{Chờ bạn phản hồi} RESOLVED{Đã giải quyết} other{Đã đóng}}'**
   String supportStatus(String status);
+
+  /// SET-11 chi tiết yêu cầu hỗ trợ
+  ///
+  /// In vi, this message translates to:
+  /// **'Trao đổi'**
+  String get supportThread;
+
+  /// SET-11 chi tiết yêu cầu hỗ trợ
+  ///
+  /// In vi, this message translates to:
+  /// **'Đội hỗ trợ sẽ trả lời tại đây.'**
+  String get supportNoReply;
+
+  /// SET-11 chi tiết yêu cầu hỗ trợ
+  ///
+  /// In vi, this message translates to:
+  /// **'Đội hỗ trợ'**
+  String get supportTeam;
+
+  /// SET-11 chi tiết yêu cầu hỗ trợ
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhắn thêm'**
+  String get supportReply;
+
+  /// SET-11 chi tiết yêu cầu hỗ trợ
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi'**
+  String get supportSendReply;
+
+  /// SET-11 chi tiết yêu cầu hỗ trợ
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu này đã đóng. Gửi yêu cầu mới nếu bạn cần thêm trợ giúp.'**
+  String get supportClosedHint;
 
   /// SET-11
   ///
@@ -10367,6 +10481,24 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Đã cắt video còn {max} phút'**
   String subLimitTrimmed(int max);
+
+  /// SUB-05 giới hạn gói theo mã lỗi server
+  ///
+  /// In vi, this message translates to:
+  /// **'{reason, select, QUOTA_STORAGE_EXCEEDED{Đã dùng hết dung lượng của gói} QUOTA_PHOTOS_PER_MEMORY{Quá số ảnh cho một ký ức} other{Đã đạt số ký ức của gói}}'**
+  String subLimitQuotaTitle(String reason);
+
+  /// SUB-05 giới hạn gói theo mã lỗi server
+  ///
+  /// In vi, this message translates to:
+  /// **'{reason, select, QUOTA_PHOTOS_PER_MEMORY{{plan} giới hạn số ảnh mỗi ký ức. Bớt vài ảnh rồi lưu lại, hoặc nâng cấp để thêm nhiều ảnh hơn.} other{{plan} đã chạm giới hạn này. Giữ bản đang soạn làm nháp, hoặc nâng cấp để lưu tiếp.}}'**
+  String subLimitQuotaBody(String reason, String plan);
+
+  /// SUB-05 giới hạn gói theo mã lỗi server
+  ///
+  /// In vi, this message translates to:
+  /// **'Lưu thành nháp'**
+  String get subLimitKeepDraft;
 
   /// SUB-06 banner title
   ///

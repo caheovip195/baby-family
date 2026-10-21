@@ -196,6 +196,29 @@ class LocalStore {
     }
   }
 
+  /// Chỉ mục ảnh/video trong thư viện máy đã khớp với asset server (id thư
+  /// viện, SHA-256 đã tính) — trong hộp auth nên xoá khi đăng xuất.
+  Future saveLocalMediaIndex(Map<String, dynamic> index) async {
+    final box = await _getBox(boxName: LocalStoreKey.authBoxName);
+    await box.put(
+      LocalStoreKey.localMediaIndexKey,
+      encryptData(jsonEncode(index)),
+    );
+  }
+
+  Future<Map<String, dynamic>> getLocalMediaIndex() async {
+    try {
+      final box = await _getBox(boxName: LocalStoreKey.authBoxName);
+      final raw = box.get(LocalStoreKey.localMediaIndexKey);
+      if (raw is! String || raw.isEmpty) {
+        return {};
+      }
+      return Map<String, dynamic>.from(jsonDecode(decryptData(raw)) as Map);
+    } catch (e) {
+      return {};
+    }
+  }
+
   /// Đăng xuất / xoá tài khoản: xoá toàn bộ dữ liệu người dùng trên máy.
   Future clearAll() async {
     final authBox = await _getBox(boxName: LocalStoreKey.authBoxName);

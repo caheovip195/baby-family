@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:baby_family/data/dto/result.dart';
 import 'package:baby_family/data/model/child/child.dart';
 import 'package:baby_family/data/model/family/family.dart';
@@ -10,6 +12,7 @@ import 'package:baby_family/data/provider/memory.dart';
 import 'package:baby_family/data/service/child.dart';
 import 'package:baby_family/data/service/family.dart';
 import 'package:baby_family/data/service/memory.dart';
+import 'package:baby_family/data/service/voice_recording.dart';
 import 'package:baby_family/page/application_base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
@@ -31,6 +34,12 @@ class MemoryComposerController extends BaseNotifier {
   IMemoryService get memoryService => ref.read(memoryServiceProvider);
   IChildService get childService => ref.read(childServiceProvider);
   IFamilyService get familyService => ref.read(familyServiceProvider);
+  IVoiceRecordingService get voiceRecording =>
+      ref.read(voiceRecordingServiceProvider);
+
+  /// Xin quyền thư viện (một lần) để ưu tiên hiển thị bản gốc trong máy.
+  Future<void> enableLocalMedia() =>
+      ref.read(localMediaServiceProvider).enable();
 
   final caption = TextEditingController();
   final title = TextEditingController();
@@ -51,6 +60,20 @@ class MemoryComposerController extends BaseNotifier {
   String? milestoneTitle;
   DateTime? sealedUntil;
   int? voiceDurationSec;
+
+  /// Tệp ghi âm trên máy (rỗng ở bản mẫu); gửi lên như asset audio của VOICE.
+  String? voicePath;
+
+  /// Đang ghi âm.
+  bool recording = false;
+
+  /// Người dùng từ chối quyền micro ở lần bấm gần nhất.
+  bool micDenied = false;
+
+  /// “Nâng cao” (đặc tả 7.8.2): ai ở đó, cảm xúc của khoảnh khắc, địa điểm.
+  List<String> people = [];
+  String? feeling;
+  String? locationLabel;
   int? monthIndex;
 
   /// Lỗi của lần lưu gần nhất (server từ chối, mất mạng…) để màn báo lại.
@@ -60,6 +83,9 @@ class MemoryComposerController extends BaseNotifier {
   Memory? editing;
 
   bool get isEditing => editing != null;
+
+  /// MEM-18: [editing] là nháp trên tài khoản — lưu xong thì đăng.
+  bool publishOnSave = false;
 
   /// MEM-09: chỉ tác giả sửa chú thích, tiêu đề và ngày.
   bool canEditContent = true;
@@ -86,7 +112,12 @@ class MemoryComposerController extends BaseNotifier {
     String? kindName,
     String? childId, {
     String? memoryId,
+    String? draftId,
   }) async {
+    if (draftId != null) {
+      publishOnSave = true;
+      return _initEdit(draftId);
+    }
     if (memoryId != null) {
       return _initEdit(memoryId);
     }
@@ -236,14 +267,61 @@ class MemoryComposerController extends BaseNotifier {
     notifyListeners();
   }
 
+  /// Tên gợi ý cho “Ai ở đó”: thành viên gia đình (tên gọi trong nhà).
+  List<String> get peopleSuggestions => [
+    for (final member in members)
+      if (member.callName.isEmpty ? member.displayName : member.callName
+          case final name when name.trim().isNotEmpty)
+        name,
+  ];
+
+  void togglePerson(String name) {
+    final value = name.trim();
+    if (value.isEmpty) {
+      return;
+    }
+    people = people.contains(value)
+        ? [
+            for (final person in people)
+              if (person != value) person,
+          ]
+        : [...people, value];
+    notifyListeners();
+  }
+
+  void setFeeling(String? value) {
+    feeling = value;
+    notifyListeners();
+  }
+
+  void setLocation(String? value) {
+    final text = value?.trim();
+    locationLabel = text == null || text.isEmpty ? null : text;
+    notifyListeners();
+  }
+
   void setSealedUntil(DateTime? value) {
     sealedUntil = value;
     notifyListeners();
   }
 
-  void toggleVoice() {
-    voiceDurationSec = voiceDurationSec == null ? 12 : null;
-    notifyListeners();
+  /// Bấm mic: bắt đầu → dừng (giữ bản ghi) → bấm lại để ghi lại từ đầu.
+  Future<void> toggleVoice() async {
+    if (recording) {
+      final result = await voiceRecording.stop();
+      recording = false;
+      voiceDurationSec = result?.durationSec;
+      voicePath = result?.path;
+    } else if (voiceDurationSec != null) {
+      voiceDurationSec = null;
+      voicePath = null;
+    } else {
+      micDenied = !await voiceRecording.start();
+      recording = !micDenied;
+    }
+    if (!isDisposed) {
+      notifyListeners();
+    }
   }
 
   /// SUB-05: giới hạn độ dài video (phút) của gói đang dùng và gói hiện tại
@@ -348,9 +426,14 @@ class MemoryComposerController extends BaseNotifier {
               childIds: ids.toList(),
               title: heading.isEmpty ? null : heading,
               body: text.isEmpty ? null : text,
-              mediaAssets: mediaAssets,
+              mediaAssets: kind == MemoryKind.voice && voicePath != ''
+                  ? [?voicePath]
+                  : mediaAssets,
               visibility: visibility,
               occurredAt: occurredAt,
+              people: people,
+              feeling: feeling,
+              locationLabel: locationLabel,
               milestoneCode: milestoneCode,
               milestoneTitle: milestoneTitle,
               voiceDurationSec: voiceDurationSec,
@@ -418,6 +501,20 @@ class MemoryComposerController extends BaseNotifier {
       saveError = error;
       return null;
     }
+    if (publishOnSave) {
+      final published = await callFuture(
+        memoryService.publishDraft(original.id),
+      );
+      if (isDisposed) {
+        return null;
+      }
+      if (published case Failure(:final error)) {
+        saveError = error;
+        return null;
+      }
+      saveError = null;
+      return published.dataOrThrow ?? result.dataOrThrow;
+    }
     saveError = null;
     return result.dataOrThrow;
   }
@@ -428,6 +525,9 @@ class MemoryComposerController extends BaseNotifier {
 
   @override
   void dispose() {
+    if (recording) {
+      unawaited(voiceRecording.cancel());
+    }
     caption.dispose();
     title.dispose();
     super.dispose();

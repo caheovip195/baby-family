@@ -1,3 +1,6 @@
+import { ERROR_REPORTER } from '../../interfaces/services/error-reporter.interface';
+import type { IErrorReporter } from '../../interfaces/services/error-reporter.interface';
+import { safeRoute } from '../observability/http-logging';
 import {
   ArgumentsHost,
   Catch,
@@ -25,6 +28,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
     @Optional()
     @Inject(REQUEST_LOCALE_SERVICE)
     private readonly locales?: IRequestLocaleService,
+    @Optional()
+    @Inject(ERROR_REPORTER)
+    private readonly errorReporter?: IErrorReporter,
   ) {}
 
   async catch(exception: unknown, host: ArgumentsHost): Promise<void> {
@@ -59,11 +65,15 @@ export class HttpExceptionFilter implements ExceptionFilter {
         }
       }
     }
-    if (status >= 500)
-      this.logger.error(
-        { err: exception, requestId: request.id },
-        'Request failed',
-      );
+    if (status >= 500) {
+      const metadata = {
+        requestId: request.id,
+        route: safeRoute(request),
+        status,
+      };
+      if (this.errorReporter) this.errorReporter.report(metadata);
+      else this.logger.error(metadata, 'Request failed');
+    }
     const locale = this.locales
       ? await this.locales.resolve(request)
       : (request[REQUEST_LOCALE] ??

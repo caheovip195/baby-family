@@ -709,6 +709,9 @@ class SessionServiceImp extends MockServiceImp implements ISessionService {
   Future<void> signOut() => reseed(DemoSeed.fresh);
 
   @override
+  Future<AppSession> changeFamily(String familyId) async => current;
+
+  @override
   Future<void> reseed(DemoSeed seed, {String? actor}) =>
       sessionRepository.reseed(seed, actor: actor);
 

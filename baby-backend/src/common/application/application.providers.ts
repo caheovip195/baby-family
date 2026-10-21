@@ -292,8 +292,79 @@ import { SUBSCRIPTION_REMINDER_SERVICE } from '../../interfaces/services/subscri
 import { SubscriptionReminderService } from '../../services/subscription-reminder.service';
 import { SUBSCRIPTION_REMINDER_REPOSITORY } from '../../interfaces/repositories/subscription-reminder-repository.interface';
 import { SubscriptionReminderRepository } from '../../repositories/subscription-reminder.repository';
+import { SOCIAL_IDENTITY_REPOSITORY } from '../../interfaces/repositories/social-identity-repository.interface';
+import { SOCIAL_IDENTITY_SERVICE } from '../../interfaces/services/social-identity-service.interface';
+import { EXTERNAL_IDENTITY_VERIFIER } from '../../interfaces/services/external-identity-verifier.interface';
+import { SocialIdentityRepository } from '../../repositories/social-identity.repository';
+import { SocialIdentityService } from '../../services/social-identity.service';
+import { ExternalIdentityVerifierService } from '../../services/external-identity-verifier.service';
+import { SocialAuthController } from '../../controllers/social-auth.controller';
+import { SignInMethodsController } from '../../controllers/sign-in-methods.controller';
+import { IapBillingController } from '../../controllers/iap-billing.controller';
+import { IapWebhookController } from '../../controllers/iap-webhook.controller';
+import {
+  IAP_BILLING_CONFIG,
+  createIapBillingConfig,
+} from '../../config/iap-billing-policy';
+import { IAP_BILLING_REPOSITORY } from '../../interfaces/repositories/iap-billing-repository.interface';
+import { IapBillingRepository } from '../../repositories/iap-billing.repository';
+import { IAP_BILLING_SERVICE } from '../../interfaces/services/iap-billing-service.interface';
+import { IapBillingService } from '../../services/iap-billing.service';
+import { STORE_PUBLISHER } from '../../interfaces/services/store-publisher.interface';
+import { StorePublisherService } from '../../services/store-publisher.service';
+import { STORE_VERIFIER } from '../../interfaces/services/store-verifier.interface';
+import { StoreVerifierService } from '../../services/store-verifier.service';
+import { MeFamiliesController } from '../../controllers/me-families.controller';
+import { TimezoneCatalogController } from '../../controllers/timezone-catalog.controller';
+import { ME_FAMILIES_SERVICE } from '../../interfaces/services/me-families-service.interface';
+import { ME_FAMILIES_REPOSITORY } from '../../interfaces/repositories/me-families-repository.interface';
+import { TIMEZONE_CATALOG_SERVICE } from '../../interfaces/services/timezone-catalog-service.interface';
+import { MeFamiliesService } from '../../services/me-families.service';
+import { MeFamiliesRepository } from '../../repositories/me-families.repository';
+import { TimezoneCatalogService } from '../../services/timezone-catalog.service';
+import { AdminCmsAuthController } from '../../controllers/admin-cms-auth.controller';
+import { AdminCmsCatalogController } from '../../controllers/admin-cms-catalog.controller';
+import { AdminCmsHelpdeskController } from '../../controllers/admin-cms-helpdesk.controller';
+import { AdminCmsOperationsController } from '../../controllers/admin-cms-operations.controller';
+import { AdminCmsGuard } from '../../common/auth/admin-cms.guard';
+import { ADMIN_CMS_AUTH_SERVICE } from '../../interfaces/services/admin-cms-auth-service.interface';
+import { AdminCmsAuthService } from '../../services/admin-cms-auth.service';
+import { ADMIN_CMS_AUTH_REPOSITORY } from '../../interfaces/repositories/admin-cms-auth-repository.interface';
+import { AdminCmsAuthRepository } from '../../repositories/admin-cms-auth.repository';
+import { ADMIN_CMS_OPERATIONS_SERVICE } from '../../interfaces/services/admin-cms-operations-service.interface';
+import { AdminCmsOperationsService } from '../../services/admin-cms-operations.service';
+import { ADMIN_CMS_OPERATIONS_REPOSITORY } from '../../interfaces/repositories/admin-cms-operations-repository.interface';
+import { AdminCmsOperationsRepository } from '../../repositories/admin-cms-operations.repository';
+import { ADMIN_CMS_HELPDESK_SERVICE } from '../../interfaces/services/admin-cms-helpdesk-service.interface';
+import { AdminCmsHelpdeskService } from '../../services/admin-cms-helpdesk.service';
+import { ADMIN_CMS_HELPDESK_REPOSITORY } from '../../interfaces/repositories/admin-cms-helpdesk-repository.interface';
+import { AdminCmsHelpdeskRepository } from '../../repositories/admin-cms-helpdesk.repository';
+import { ADMIN_CMS_CATALOG_SERVICE } from '../../interfaces/services/admin-cms-catalog-service.interface';
+import { AdminCmsCatalogService } from '../../services/admin-cms-catalog.service';
+import { ADMIN_CMS_CATALOG_REPOSITORY } from '../../interfaces/repositories/admin-cms-catalog-repository.interface';
+import { AdminCmsCatalogRepository } from '../../repositories/admin-cms-catalog.repository';
+import { HelpCenterController } from '../../controllers/help-center.controller';
+import { HELP_CENTER_SERVICE } from '../../interfaces/services/help-center-service.interface';
+import { HelpCenterService } from '../../services/help-center.service';
+import { AdminCmsCatalogPublishingController } from '../../controllers/admin-cms-catalog-publishing.controller';
+import { ADMIN_CMS_CATALOG_PUBLISHING_SERVICE } from '../../interfaces/services/admin-cms-catalog-publishing-service.interface';
+import { AdminCmsCatalogPublishingService } from '../../services/admin-cms-catalog-publishing.service';
+import { ADMIN_CMS_CATALOG_PUBLISHING_REPOSITORY } from '../../interfaces/repositories/admin-cms-catalog-publishing-repository.interface';
+import { AdminCmsCatalogPublishingRepository } from '../../repositories/admin-cms-catalog-publishing.repository';
 
 export const APPLICATION_CONTROLLERS: Type[] = [
+  AdminCmsCatalogPublishingController,
+  HelpCenterController,
+  AdminCmsAuthController,
+  AdminCmsCatalogController,
+  AdminCmsHelpdeskController,
+  AdminCmsOperationsController,
+  MeFamiliesController,
+  TimezoneCatalogController,
+  IapBillingController,
+  IapWebhookController,
+  SocialAuthController,
+  SignInMethodsController,
   SupportHelpdeskController,
   MissionController,
   MissionBoardController,
@@ -349,6 +420,50 @@ export const APPLICATION_CONTROLLERS: Type[] = [
 ];
 
 export const APPLICATION_PROVIDERS: Provider[] = [
+  {
+    provide: ADMIN_CMS_CATALOG_PUBLISHING_SERVICE,
+    useClass: AdminCmsCatalogPublishingService,
+  },
+  {
+    provide: ADMIN_CMS_CATALOG_PUBLISHING_REPOSITORY,
+    useClass: AdminCmsCatalogPublishingRepository,
+  },
+  { provide: HELP_CENTER_SERVICE, useClass: HelpCenterService },
+  AdminCmsGuard,
+  { provide: ADMIN_CMS_AUTH_SERVICE, useClass: AdminCmsAuthService },
+  { provide: ADMIN_CMS_AUTH_REPOSITORY, useClass: AdminCmsAuthRepository },
+  {
+    provide: ADMIN_CMS_OPERATIONS_SERVICE,
+    useClass: AdminCmsOperationsService,
+  },
+  {
+    provide: ADMIN_CMS_OPERATIONS_REPOSITORY,
+    useClass: AdminCmsOperationsRepository,
+  },
+  { provide: ADMIN_CMS_HELPDESK_SERVICE, useClass: AdminCmsHelpdeskService },
+  {
+    provide: ADMIN_CMS_HELPDESK_REPOSITORY,
+    useClass: AdminCmsHelpdeskRepository,
+  },
+  { provide: ADMIN_CMS_CATALOG_SERVICE, useClass: AdminCmsCatalogService },
+  {
+    provide: ADMIN_CMS_CATALOG_REPOSITORY,
+    useClass: AdminCmsCatalogRepository,
+  },
+  { provide: ME_FAMILIES_SERVICE, useClass: MeFamiliesService },
+  { provide: ME_FAMILIES_REPOSITORY, useClass: MeFamiliesRepository },
+  { provide: TIMEZONE_CATALOG_SERVICE, useClass: TimezoneCatalogService },
+  { provide: IAP_BILLING_CONFIG, useFactory: createIapBillingConfig },
+  { provide: IAP_BILLING_REPOSITORY, useClass: IapBillingRepository },
+  { provide: IAP_BILLING_SERVICE, useClass: IapBillingService },
+  { provide: STORE_PUBLISHER, useClass: StorePublisherService },
+  { provide: STORE_VERIFIER, useClass: StoreVerifierService },
+  { provide: SOCIAL_IDENTITY_REPOSITORY, useClass: SocialIdentityRepository },
+  { provide: SOCIAL_IDENTITY_SERVICE, useClass: SocialIdentityService },
+  {
+    provide: EXTERNAL_IDENTITY_VERIFIER,
+    useClass: ExternalIdentityVerifierService,
+  },
   {
     provide: SUBSCRIPTION_REMINDER_REPOSITORY,
     useClass: SubscriptionReminderRepository,

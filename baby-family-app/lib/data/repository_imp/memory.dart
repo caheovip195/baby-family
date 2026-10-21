@@ -10,8 +10,12 @@ class MemoryRepositoryImp extends MockRepositoryImp
   MemoryRepositoryImp(super.store);
 
   @override
-  List<JsonMap> memories(String familyId) =>
-      rows('memories', (row) => row['familyId'] == familyId);
+  List<JsonMap> memories(String familyId) => rows(
+    'memories',
+    // Nháp trên tài khoản (MEM-18) chỉ mở qua [memory] để soạn tiếp, không
+    // hiện trong dòng thời gian / album / thống kê.
+    (row) => row['familyId'] == familyId && row['remoteStatus'] != 'DRAFT',
+  );
 
   @override
   JsonMap? memory(String id) => row('memories', id);
@@ -159,6 +163,9 @@ class MemoryRepositoryImp extends MockRepositoryImp
 
   @override
   JsonMap addDraft(JsonMap draft) => insert('drafts', draft);
+
+  @override
+  void updateDraft(String id, JsonMap patch) => this.patch('drafts', id, patch);
 
   @override
   List<JsonMap> pendingPosts(String familyId) =>

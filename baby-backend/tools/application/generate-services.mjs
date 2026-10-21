@@ -27,7 +27,9 @@ const schema = await readFile(path.join(root, 'prisma/schema.prisma'), 'utf8');
 const snake = (name) =>
   name.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase();
 const models = [...schema.matchAll(/^model\s+(\w+)\s*\{([\s\S]*?)^\}/gm)]
-  .filter(([, name]) => !manualModels.has(name))
+  .filter(
+    ([, name, body]) => !manualModels.has(name) && !body.includes('@@ignore'),
+  )
   .map(([, name, body]) => ({
     name,
     file: snake(name).replaceAll('_', '-'),

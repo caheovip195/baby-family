@@ -883,6 +883,19 @@ Map<String, dynamic> _$BillingCatalogRespondToJson(
   BillingCatalogRespond instance,
 ) => <String, dynamic>{'data': instance.catalog, 'runtimeType': instance.$type};
 
+PurchaseIntentRespond _$PurchaseIntentRespondFromJson(
+  Map<String, dynamic> json,
+) => PurchaseIntentRespond(
+  intent: json['data'] == null
+      ? null
+      : PurchaseIntentRecord.fromJson(json['data'] as Map<String, dynamic>),
+  $type: json['runtimeType'] as String?,
+);
+
+Map<String, dynamic> _$PurchaseIntentRespondToJson(
+  PurchaseIntentRespond instance,
+) => <String, dynamic>{'data': instance.intent, 'runtimeType': instance.$type};
+
 FamilyBillingRespond _$FamilyBillingRespondFromJson(
   Map<String, dynamic> json,
 ) => FamilyBillingRespond(
@@ -1119,6 +1132,33 @@ Map<String, dynamic> _$SupportTicketRespondToJson(
   SupportTicketRespond instance,
 ) => <String, dynamic>{'data': instance.ticket, 'runtimeType': instance.$type};
 
+HelpCenterRespond _$HelpCenterRespondFromJson(Map<String, dynamic> json) =>
+    HelpCenterRespond(
+      helpCenter: json['data'] == null
+          ? null
+          : HelpCenterRecord.fromJson(json['data'] as Map<String, dynamic>),
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$HelpCenterRespondToJson(HelpCenterRespond instance) =>
+    <String, dynamic>{
+      'data': instance.helpCenter,
+      'runtimeType': instance.$type,
+    };
+
+SupportTicketDetailRespond _$SupportTicketDetailRespondFromJson(
+  Map<String, dynamic> json,
+) => SupportTicketDetailRespond(
+  ticket: json['data'] == null
+      ? null
+      : SupportTicketDetail.fromJson(json['data'] as Map<String, dynamic>),
+  $type: json['runtimeType'] as String?,
+);
+
+Map<String, dynamic> _$SupportTicketDetailRespondToJson(
+  SupportTicketDetailRespond instance,
+) => <String, dynamic>{'data': instance.ticket, 'runtimeType': instance.$type};
+
 SupportTicketListRespond _$SupportTicketListRespondFromJson(
   Map<String, dynamic> json,
 ) => SupportTicketListRespond(
@@ -1131,3 +1171,43 @@ SupportTicketListRespond _$SupportTicketListRespondFromJson(
 Map<String, dynamic> _$SupportTicketListRespondToJson(
   SupportTicketListRespond instance,
 ) => <String, dynamic>{'data': instance.list, 'runtimeType': instance.$type};
+
+SignInMethodListRespond _$SignInMethodListRespondFromJson(
+  Map<String, dynamic> json,
+) => SignInMethodListRespond(
+  methods:
+      (json['data'] as List<dynamic>?)
+          ?.map((e) => SignInMethodRecord.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const <SignInMethodRecord>[],
+  $type: json['runtimeType'] as String?,
+);
+
+Map<String, dynamic> _$SignInMethodListRespondToJson(
+  SignInMethodListRespond instance,
+) => <String, dynamic>{'data': instance.methods, 'runtimeType': instance.$type};
+
+MyFamilyListRespond _$MyFamilyListRespondFromJson(Map<String, dynamic> json) =>
+    MyFamilyListRespond(
+      list: json['data'] == null
+          ? null
+          : MyFamilyList.fromJson(json['data'] as Map<String, dynamic>),
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$MyFamilyListRespondToJson(
+  MyFamilyListRespond instance,
+) => <String, dynamic>{'data': instance.list, 'runtimeType': instance.$type};
+
+TimezoneCatalogRespond _$TimezoneCatalogRespondFromJson(
+  Map<String, dynamic> json,
+) => TimezoneCatalogRespond(
+  catalog: json['data'] == null
+      ? null
+      : TimezoneCatalog.fromJson(json['data'] as Map<String, dynamic>),
+  $type: json['runtimeType'] as String?,
+);
+
+Map<String, dynamic> _$TimezoneCatalogRespondToJson(
+  TimezoneCatalogRespond instance,
+) => <String, dynamic>{'data': instance.catalog, 'runtimeType': instance.$type};

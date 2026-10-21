@@ -19,6 +19,7 @@ import 'package:baby_family/data/model/memory/week_summary.dart';
 import 'package:baby_family/data/model/pregnancy/name_candidate.dart';
 import 'package:baby_family/data/model/pregnancy/prep_item.dart';
 import 'package:baby_family/data/model/pregnancy/prep_summary.dart';
+import 'package:baby_family/data/model/session/app_session.dart';
 import 'package:baby_family/data/provider/app_setting.dart';
 import 'package:baby_family/data/provider/care.dart';
 import 'package:baby_family/data/provider/child.dart';
@@ -27,6 +28,7 @@ import 'package:baby_family/data/provider/memory.dart';
 import 'package:baby_family/data/provider/mock_store.dart';
 import 'package:baby_family/data/provider/notification.dart';
 import 'package:baby_family/data/provider/pregnancy.dart';
+import 'package:baby_family/data/provider/session.dart';
 import 'package:baby_family/data/provider/us.dart';
 import 'package:baby_family/page/application_base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
@@ -151,8 +153,12 @@ class HomeTabController extends BaseNotifier {
   Future<List<FamilyMembership>> memberships() =>
       ref.read(familyServiceProvider).memberships();
 
-  Future<void> switchFamily(String familyId) =>
-      ref.read(familyServiceProvider).switchFamily(familyId);
+  /// FAM-08: ghi nhớ gia đình được chọn rồi đồng bộ lại phiên theo nhà đó;
+  /// trả phiên mới để điều hướng.
+  Future<AppSession> switchFamily(String familyId) async {
+    await ref.read(familyServiceProvider).switchFamily(familyId);
+    return ref.read(sessionServiceProvider).changeFamily(familyId);
+  }
 
   Future<void> load({bool silent = false}) async {
     final revision = ++_revision;

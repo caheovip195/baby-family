@@ -1,8 +1,9 @@
+import { verifyClientUpload } from './client-media-upload';
 import type { JobContext } from '../interfaces/services/job-runner-service.interface';
 import path from 'node:path';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ConflictError } from '../common/errors/domain.error';
+import { ConflictError, DomainError } from '../common/errors/domain.error';
 import type { Environment } from '../config/environment';
 import { JOBS, MEDIA_MAINTENANCE } from '../config/jobs';
 import { MEDIA_POLICY, maxAcceptedSize } from '../config/media-policy';
@@ -37,7 +38,7 @@ export class MediaMaintenanceService implements IMediaMaintenanceService {
     @Inject(OBJECT_STORAGE_SERVICE)
     private readonly storage: IObjectStorageService,
     @Inject(JOB_QUEUE_SERVICE) private readonly queue: IJobQueueService,
-    config: ConfigService<Environment, true>,
+    private readonly config: ConfigService<Environment, true>,
     @Inject(PROFILE_IMAGE_CLEANUP_SERVICE)
     private readonly profileImages: IProfileImageCleanupService,
   ) {
@@ -50,24 +51,28 @@ export class MediaMaintenanceService implements IMediaMaintenanceService {
   async purgeOrphans(
     now: Date,
     context?: JobContext,
+    familyId?: string,
   ): Promise<Record<string, number>> {
     const stats = {
       stalled: await this.media.failStaleProcessing(
         new Date(now.getTime() - STALLED_PROCESSING_MS),
+        familyId,
       ),
-      expired: await this.retire('EXPIRED_UPLOAD', now),
+      expired: await this.retire('EXPIRED_UPLOAD', now, familyId),
       failed: await this.retire(
         'FAILED',
         new Date(now.getTime() - MEDIA_MAINTENANCE.failedRetentionMs),
+        familyId,
       ),
       // Memories purged from the trash leave their assets without any link.
-      detached: await this.retire('DETACHED', now),
+      detached: await this.retire('DETACHED', now, familyId),
       unattached:
         this.unattachedAfterMs === null
           ? 0
           : await this.retire(
               'UNATTACHED',
               new Date(now.getTime() - this.unattachedAfterMs),
+              familyId,
             ),
       objectsPurged: 0,
     };
@@ -75,22 +80,62 @@ export class MediaMaintenanceService implements IMediaMaintenanceService {
     // objects are gone, so a crash or storage outage is retried by the next run.
     for (const asset of await this.media.findAssetsAwaitingObjectPurge(
       MEDIA_MAINTENANCE.batchSize,
+      familyId,
     )) {
       if (await this.purgeObjects(asset)) stats.objectsPurged++;
     }
-    return { ...stats, ...(await this.profileImages.purge(now, context)) };
+    return {
+      ...stats,
+      ...(familyId ? {} : await this.profileImages.purge(now, context)),
+    };
   }
 
-  async reconcileUploads(now: Date): Promise<Record<string, number>> {
+  async reconcileUploads(
+    now: Date,
+    familyId?: string,
+  ): Promise<Record<string, number>> {
     const stats = { confirmed: 0, rejected: 0, waiting: 0, requeued: 0 };
     for (const upload of await this.media.findUncompletedUploads(
       new Date(now.getTime() - MEDIA_MAINTENANCE.reconcileAfterMs),
       BigInt(MEDIA_POLICY.multipartThresholdBytes),
       MEDIA_MAINTENANCE.batchSize,
+      familyId,
     )) {
       const bucket = this.storage.bucketOf(upload.asset.storageBucket);
       if (!bucket) continue;
       const location = { bucket, key: upload.asset.storageKey };
+      if (upload.variants.length) {
+        try {
+          const sizes = await verifyClientUpload(
+            this.storage,
+            upload,
+            location,
+          );
+          const primary = upload.variants.find(
+            (v) => v.storageKey === upload.asset.storageKey,
+          )!;
+          await this.media.confirmUpload(
+            upload.asset.id,
+            sizes.get(primary.variantCode)!,
+            sizes,
+          );
+          stats.confirmed++;
+        } catch (error) {
+          // A missing object can still be in flight; completion/expiry owns rejection.
+          if (error instanceof DomainError && error.statusCode === 422) {
+            stats.waiting++;
+            continue;
+          }
+          if (!(error instanceof ConflictError)) throw error;
+        }
+        continue;
+      }
+      if (
+        this.config.get('MEDIA_SERVER_PROCESSING', { infer: true }) !== 'legacy'
+      ) {
+        stats.waiting++;
+        continue;
+      }
       const stored = await this.storage.headObject(location);
       if (!stored) {
         stats.waiting++;
@@ -117,11 +162,16 @@ export class MediaMaintenanceService implements IMediaMaintenanceService {
     }
     // Queue jobs can be lost (attempts used up during an outage, Valkey data loss):
     // PostgreSQL is the source of truth, so idle assets are enqueued again.
+    if (
+      this.config.get('MEDIA_SERVER_PROCESSING', { infer: true }) !== 'legacy'
+    )
+      return stats;
     const period = Math.floor(now.getTime() / REQUEUE_AFTER_MS);
     for (const asset of await this.media.findStuckProcessing(
       new Date(now.getTime() - REQUEUE_AFTER_MS),
       `${JOBS.processAsset.name}:`,
       MEDIA_MAINTENANCE.batchSize,
+      familyId,
     )) {
       await this.queue.enqueue(
         JOBS.processAsset,
@@ -135,12 +185,17 @@ export class MediaMaintenanceService implements IMediaMaintenanceService {
     return stats;
   }
 
-  private async retire(rule: PurgeRule, cutoff: Date): Promise<number> {
+  private async retire(
+    rule: PurgeRule,
+    cutoff: Date,
+    familyId?: string,
+  ): Promise<number> {
     let retired = 0;
     for (const id of await this.media.findPurgeCandidates(
       rule,
       cutoff,
       MEDIA_MAINTENANCE.batchSize,
+      familyId,
     ))
       if (await this.media.retireAsset(id, rule, cutoff)) retired++;
     return retired;

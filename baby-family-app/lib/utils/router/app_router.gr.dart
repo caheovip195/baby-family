@@ -1584,6 +1584,7 @@ class MemoryComposerRoute extends PageRouteInfo<MemoryComposerRouteArgs> {
     String? kind,
     String? childId,
     String? memoryId,
+    String? draftId,
     Key? key,
     List<PageRouteInfo>? children,
   }) : super(
@@ -1592,12 +1593,14 @@ class MemoryComposerRoute extends PageRouteInfo<MemoryComposerRouteArgs> {
            kind: kind,
            childId: childId,
            memoryId: memoryId,
+           draftId: draftId,
            key: key,
          ),
          rawQueryParams: {
            'kind': kind,
            'childId': childId,
            'memoryId': memoryId,
+           'draftId': draftId,
          },
          initialChildren: children,
        );
@@ -1613,12 +1616,14 @@ class MemoryComposerRoute extends PageRouteInfo<MemoryComposerRouteArgs> {
           kind: queryParams.optString('kind'),
           childId: queryParams.optString('childId'),
           memoryId: queryParams.optString('memoryId'),
+          draftId: queryParams.optString('draftId'),
         ),
       );
       return MemoryComposerPage(
         kind: args.kind,
         childId: args.childId,
         memoryId: args.memoryId,
+        draftId: args.draftId,
         key: args.key,
       );
     },
@@ -1630,6 +1635,7 @@ class MemoryComposerRouteArgs {
     this.kind,
     this.childId,
     this.memoryId,
+    this.draftId,
     this.key,
   });
 
@@ -1639,11 +1645,13 @@ class MemoryComposerRouteArgs {
 
   final String? memoryId;
 
+  final String? draftId;
+
   final Key? key;
 
   @override
   String toString() {
-    return 'MemoryComposerRouteArgs{kind: $kind, childId: $childId, memoryId: $memoryId, key: $key}';
+    return 'MemoryComposerRouteArgs{kind: $kind, childId: $childId, memoryId: $memoryId, draftId: $draftId, key: $key}';
   }
 
   @override
@@ -1653,12 +1661,17 @@ class MemoryComposerRouteArgs {
     return kind == other.kind &&
         childId == other.childId &&
         memoryId == other.memoryId &&
+        draftId == other.draftId &&
         key == other.key;
   }
 
   @override
   int get hashCode =>
-      kind.hashCode ^ childId.hashCode ^ memoryId.hashCode ^ key.hashCode;
+      kind.hashCode ^
+      childId.hashCode ^
+      memoryId.hashCode ^
+      draftId.hashCode ^
+      key.hashCode;
 }
 
 /// generated route for
@@ -3058,6 +3071,58 @@ class SupportRequestRoute extends PageRouteInfo<void> {
       return const SupportRequestPage();
     },
   );
+}
+
+/// generated route for
+/// [SupportTicketPage]
+class SupportTicketRoute extends PageRouteInfo<SupportTicketRouteArgs> {
+  SupportTicketRoute({
+    String? ticketId,
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
+         SupportTicketRoute.name,
+         args: SupportTicketRouteArgs(ticketId: ticketId, key: key),
+         rawQueryParams: {'ticketId': ticketId},
+         initialChildren: children,
+       );
+
+  static const String name = 'SupportTicketRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final queryParams = data.queryParams;
+      final args = data.argsAs<SupportTicketRouteArgs>(
+        orElse: () =>
+            SupportTicketRouteArgs(ticketId: queryParams.optString('ticketId')),
+      );
+      return SupportTicketPage(ticketId: args.ticketId, key: args.key);
+    },
+  );
+}
+
+class SupportTicketRouteArgs {
+  const SupportTicketRouteArgs({this.ticketId, this.key});
+
+  final String? ticketId;
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'SupportTicketRouteArgs{ticketId: $ticketId, key: $key}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! SupportTicketRouteArgs) return false;
+    return ticketId == other.ticketId && key == other.key;
+  }
+
+  @override
+  int get hashCode => ticketId.hashCode ^ key.hashCode;
 }
 
 /// generated route for

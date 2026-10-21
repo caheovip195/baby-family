@@ -6,6 +6,7 @@ import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/plan_text.dart';
+import 'package:baby_family/utils/helper/server_error_message.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
 import 'package:baby_family/utils/widget/app_pill_button.dart';
@@ -66,8 +67,16 @@ class UpgradePlanMobileView extends HookConsumerWidget {
       if (!confirmed || !context.mounted) {
         return;
       }
-      await controller.upgrade();
-      if (!context.mounted) {
+      final bool purchased;
+      try {
+        purchased = await controller.upgrade();
+      } on Object catch (error) {
+        if (context.mounted) {
+          showAppSnackBar(context, actionErrorMessage(error));
+        }
+        return;
+      }
+      if (!purchased || !context.mounted) {
         return;
       }
       showAppSnackBar(

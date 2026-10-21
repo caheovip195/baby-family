@@ -5,24 +5,29 @@ import 'package:baby_family/data/model/billing/family_billing_record.dart';
 import 'package:baby_family/data/model/circle/circle_invite_record.dart';
 import 'package:baby_family/data/model/circle/circle_member_record.dart';
 import 'package:baby_family/data/model/family/family.dart';
+import 'package:baby_family/data/model/family/family_membership.dart';
 import 'package:baby_family/data/model/family/family_settings.dart';
 import 'package:baby_family/data/model/family/family_settings_record.dart';
 import 'package:baby_family/data/model/family/invite_info.dart';
 import 'package:baby_family/data/model/family/member.dart';
 import 'package:baby_family/data/model/family/plan_details.dart';
 import 'package:baby_family/data/model/family/plan_offer.dart';
+import 'package:baby_family/data/model/family/timezone_catalog.dart';
 import 'package:baby_family/data/repository/base.dart';
 import 'package:baby_family/data/repository/child.dart';
 import 'package:baby_family/data/repository/family.dart';
 import 'package:baby_family/data/repository/family_remote.dart';
 import 'package:baby_family/data/repository/session.dart';
+import 'package:baby_family/data/repository/store_purchase.dart';
 import 'package:baby_family/data/service_imp/family.dart';
 import 'package:baby_family/data/service_imp/media_uploader.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/helper/app_clock.dart';
+import 'package:baby_family/utils/helper/app_l10n.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
+import 'package:uuid/uuid.dart';
 
 /// ONB-08 / FAM-07 qua server (BF-20261018-015): quyền riêng tư mặc định của
 /// gia đình (`/families/:fid/settings`) và tên gia đình (`PATCH /families/:fid`).
@@ -36,6 +41,7 @@ class FamilyRemoteServiceImp extends FamilyServiceImp {
     this._remote,
     this._children, [
     this._uploader,
+    this._storePurchase,
   ]) : super(sessionRepository, clock, _repository);
 
   final IFamilyRepository _repository;
@@ -44,6 +50,12 @@ class FamilyRemoteServiceImp extends FamilyServiceImp {
 
   /// FAM-07 tải ảnh bìa (null → ảnh bìa chỉ trên máy).
   final MediaUploader? _uploader;
+
+  /// Store của máy (SUB-01/02/04); null trong test không cần mua.
+  final IStorePurchaseRepository? _storePurchase;
+
+  /// Mã gói server theo gói của app (từ catalog `/billing/plans`).
+  final _serverPlanCodes = <PlanState, String>{};
 
   String? get _serverFamilyId =>
       sessionRepository.session()[kValueSessionKeyServerFamilyId] as String?;
@@ -60,10 +72,66 @@ class FamilyRemoteServiceImp extends FamilyServiceImp {
       _remote.family(serverFamilyId),
     ).wait;
     final merged = record == null ? local : _merge(local, record);
+    final timezone = family?.timezone;
     return merged.copyWith(
       coverAsset: family?.coverUrl ?? merged.coverAsset,
       contentLanguage: family?.contentLocale ?? merged.contentLanguage,
+      timezoneId: timezone ?? merged.timezoneId,
+      timezoneLabel: timezone == null
+          ? merged.timezoneLabel
+          : _timezoneLabels[timezone] ?? timezone,
     );
+  }
+
+  /// Nhãn đã dịch của lần đọc danh mục gần nhất (id IANA → nhãn).
+  var _timezoneLabels = <String, String>{};
+
+  @override
+  Future<List<TimezoneOption>> timezones() async {
+    if (_serverFamilyId == null) {
+      return super.timezones();
+    }
+    final catalog = await _remote.timezones(
+      currentL10n().localeName == 'en' ? 'en' : 'vi',
+    );
+    final items = catalog?.items ?? const <TimezoneOption>[];
+    _timezoneLabels = {for (final item in items) item.id: item.label};
+    return items;
+  }
+
+  /// FAM-08: danh sách gia đình của tôi từ server; gia đình đang mở đánh dấu
+  /// [FamilyMembership.current].
+  @override
+  Future<List<FamilyMembership>> memberships() async {
+    final serverFamilyId = _serverFamilyId;
+    if (serverFamilyId == null) {
+      return super.memberships();
+    }
+    final myRole = FamilyRole.values
+        .asNameMap()[sessionRepository.session()['role']];
+    final parentRole = myRole == FamilyRole.relative || myRole == null
+        ? FamilyRole.mother
+        : myRole;
+    return [
+      for (final record in await _remote.myFamilies())
+        if (record.familyId != null)
+          FamilyMembership(
+            familyId: record.familyId!,
+            familyName: record.name ?? '',
+            role: record.role == 'CIRCLE' ? FamilyRole.relative : parentRole,
+            current: record.familyId == serverFamilyId,
+          ),
+    ];
+  }
+
+  /// FAM-08: ghi nhớ gia đình mở mặc định trên server; phiên đồng bộ lại theo
+  /// gia đình mới ở [ISessionService.changeFamily].
+  @override
+  Future<void> switchFamily(String familyId) async {
+    if (_serverFamilyId == null) {
+      return super.switchFamily(familyId);
+    }
+    await _remote.setDefaultFamily(familyId);
   }
 
   @override
@@ -92,6 +160,9 @@ class FamilyRemoteServiceImp extends FamilyServiceImp {
     }
     final cover = settings.coverAsset;
     final family = <String, dynamic>{
+      if (settings.timezoneId != null &&
+          settings.timezoneId != before.timezoneId)
+        'timezone': settings.timezoneId,
       if (settings.name.trim().isNotEmpty && settings.name != before.name)
         'name': settings.name.trim(),
       if (settings.contentLanguage != before.contentLanguage)
@@ -544,6 +615,11 @@ class FamilyRemoteServiceImp extends FamilyServiceImp {
       Logger().w('Không đọc được catalog gói: ${error.message}');
       return local;
     }
+    for (final plan in plans) {
+      if (_planOf(plan.code) case final code?) {
+        _serverPlanCodes[code] = plan.code!;
+      }
+    }
     final store = {for (final offer in local) offer.code: offer};
     final sorted = [...plans]
       ..sort((a, b) => a.displayOrder.compareTo(b.displayOrder));
@@ -554,6 +630,53 @@ class FamilyRemoteServiceImp extends FamilyServiceImp {
           _offerOf(code, plan, store[code]),
     ];
     return offers.isEmpty ? local : offers;
+  }
+
+  /// SUB-01/02/04: server tạo lần mua (mã sản phẩm + token gắn tài khoản) →
+  /// mua trên Store → server xác minh giao dịch rồi mới đổi quyền lợi. Người
+  /// dùng huỷ ở Store → [StorePurchaseCancelled] (không đổi gì).
+  @override
+  Future<void> purchasePlan(PlanState plan) async {
+    final serverFamilyId = _serverFamilyId;
+    final storePurchase = _storePurchase;
+    if (serverFamilyId == null || storePurchase == null) {
+      return super.purchasePlan(plan);
+    }
+    final store = storePurchase.store;
+    if (store == null) {
+      throw UnsupportedError('Store purchases are not available here');
+    }
+    if (_serverPlanCodes.isEmpty) {
+      await planOffers();
+    }
+    final planCode = _serverPlanCodes[plan] ?? plan.name.toUpperCase();
+    final intent = await _remote.purchaseIntent(
+      serverFamilyId,
+      const Uuid().v4(),
+      planCode: planCode,
+      store: store,
+    );
+    final intentId = intent?.intentId;
+    final productId = intent?.productId;
+    final token = intent?.appAccountToken ?? intent?.obfuscatedAccountId;
+    if (intentId == null || productId == null || token == null) {
+      throw StateError('Purchase intent is incomplete');
+    }
+    final purchase = await storePurchase.buy(
+      productId: productId,
+      accountToken: token,
+    );
+    await _remote.verifyPurchase(serverFamilyId, {
+      'store': purchase.store,
+      'intentId': intentId,
+      if (purchase.store == 'APP_STORE')
+        'signedTransaction': purchase.credential
+      else
+        'purchaseToken': purchase.credential,
+    });
+    // Chỉ hoàn tất với Store sau khi server đã ghi nhận giao dịch.
+    await storePurchase.complete(purchase);
+    await _syncBilling(force: true);
   }
 
   Future<void> _syncBilling({bool force = false}) async {

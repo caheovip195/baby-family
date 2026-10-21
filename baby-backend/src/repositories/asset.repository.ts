@@ -42,6 +42,9 @@ function mapAsset(row: AssetRow): Asset {
     durationMs: row.durationMs,
     sha256: row.sha256 === null ? null : new Uint8Array(row.sha256),
     capturedAt: row.capturedAt,
+    sourceSha256:
+      row.sourceSha256 === null ? null : new Uint8Array(row.sourceSha256),
+    sourceKey: row.sourceKey,
     blurhash: row.blurhash,
     keepOriginal: row.keepOriginal,
     failureReason: row.failureReason,
@@ -92,6 +95,15 @@ export class AssetRepository implements IAssetRepository {
       ...(input.capturedAt === undefined
         ? {}
         : { capturedAt: input.capturedAt }),
+      ...(input.sourceSha256 === undefined
+        ? {}
+        : {
+            sourceSha256:
+              input.sourceSha256 === null
+                ? null
+                : new Uint8Array(input.sourceSha256),
+          }),
+      ...(input.sourceKey === undefined ? {} : { sourceKey: input.sourceKey }),
       ...(input.blurhash === undefined ? {} : { blurhash: input.blurhash }),
       ...(input.keepOriginal === undefined
         ? {}
@@ -187,6 +199,8 @@ export class AssetRepository implements IAssetRepository {
       'durationMs',
       'sha256',
       'capturedAt',
+      'sourceSha256',
+      'sourceKey',
       'blurhash',
       'keepOriginal',
       'failureReason',
@@ -217,6 +231,15 @@ export class AssetRepository implements IAssetRepository {
       ...(input.capturedAt === undefined
         ? {}
         : { capturedAt: input.capturedAt }),
+      ...(input.sourceSha256 === undefined
+        ? {}
+        : {
+            sourceSha256:
+              input.sourceSha256 === null
+                ? null
+                : new Uint8Array(input.sourceSha256),
+          }),
+      ...(input.sourceKey === undefined ? {} : { sourceKey: input.sourceKey }),
       ...(input.blurhash === undefined ? {} : { blurhash: input.blurhash }),
       ...(input.keepOriginal === undefined
         ? {}

@@ -3,8 +3,10 @@ import 'package:baby_family/page/general/help/help_controller.dart';
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
+import 'package:baby_family/utils/helper/external_launcher.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
+import 'package:baby_family/utils/widget/app_bottom_sheet.dart';
 import 'package:baby_family/utils/widget/app_caps_label.dart';
 import 'package:baby_family/utils/widget/app_grouped_list.dart';
 import 'package:baby_family/utils/widget/app_settings_row.dart';
@@ -51,21 +53,39 @@ class HelpMobileView extends HookConsumerWidget {
           gap,
           AppGroupedList(
             children: [
-              for (final question in info.faqs)
+              for (final (index, question) in info.faqs.indexed)
                 AppSettingsRow(
                   title: question,
                   titleSize: 14,
                   minHeight: 52,
+                  onTap: index < info.faqAnswers.length
+                      ? () => showAppBottomSheet<void>(
+                          context,
+                          builder: (_) => AppBottomSheet(
+                            title: question,
+                            children: [
+                              Text(
+                                info.faqAnswers[index],
+                                style: AppTypography.adapt(
+                                  context,
+                                  AppTypography.body,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : comingSoon,
+                ),
+              // Bản server trả đủ câu hỏi + câu trả lời trên màn này.
+              if (info.faqAnswers.isEmpty)
+                AppSettingsRow(
+                  title: l10n.setFaqAll,
+                  titleSize: 14,
+                  titleWeight: FontWeight.w600,
+                  titleColor: kColorPrimary600C2513F,
+                  minHeight: 48,
                   onTap: comingSoon,
                 ),
-              AppSettingsRow(
-                title: l10n.setFaqAll,
-                titleSize: 14,
-                titleWeight: FontWeight.w600,
-                titleColor: kColorPrimary600C2513F,
-                minHeight: 48,
-                onTap: comingSoon,
-              ),
             ],
           ),
           gap,
@@ -100,20 +120,22 @@ class HelpMobileView extends HookConsumerWidget {
           gap,
           AppGroupedList(
             children: [
-              AppSettingsRow(
-                icon: LucideIcons.mail,
-                title: info.email,
-                subtitle: l10n.setEmailSupport,
-                showChevron: false,
-                onTap: comingSoon,
-              ),
-              AppSettingsRow(
-                icon: LucideIcons.phone,
-                title: info.hotline,
-                subtitle: l10n.setHotline,
-                showChevron: false,
-                onTap: comingSoon,
-              ),
+              if (info.email.isNotEmpty)
+                AppSettingsRow(
+                  icon: LucideIcons.mail,
+                  title: info.email,
+                  subtitle: l10n.setEmailSupport,
+                  showChevron: false,
+                  onTap: () => launchExternalUrl('mailto:${info.email}'),
+                ),
+              if (info.hotline.isNotEmpty)
+                AppSettingsRow(
+                  icon: LucideIcons.phone,
+                  title: info.hotline,
+                  subtitle: l10n.setHotline,
+                  showChevron: false,
+                  onTap: () => launchPhoneCall(info.hotline),
+                ),
             ],
           ),
         ],

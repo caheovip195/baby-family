@@ -6,8 +6,10 @@ import 'package:baby_family/data/provider/mock_store.dart';
 import 'package:baby_family/data/provider/session.dart';
 import 'package:baby_family/data/repository/family.dart';
 import 'package:baby_family/data/repository/family_remote.dart';
+import 'package:baby_family/data/repository/store_purchase.dart';
 import 'package:baby_family/data/repository_imp/family.dart';
 import 'package:baby_family/data/repository_imp/family_remote.dart';
+import 'package:baby_family/data/repository_imp/store_purchase.dart';
 import 'package:baby_family/data/service/family.dart';
 import 'package:baby_family/data/service_imp/family.dart';
 import 'package:baby_family/data/service_imp/family_remote.dart';
@@ -25,6 +27,11 @@ final familyRemoteRepositoryProvider = Provider<IFamilyRemoteRepository>(
 
 /// Bản thật (`BABY_FAMILY_API_URL`): cài đặt quyền riêng tư + tên gia đình qua
 /// server (BF-20261018-015).
+/// Store của máy (IAP) — chỉ dùng ở bản chạy với server.
+final storePurchaseRepositoryProvider = Provider<IStorePurchaseRepository>(
+  (ref) => StorePurchaseRepositoryImp(),
+);
+
 final familyServiceProvider = Provider<IFamilyService>(
   (ref) => kValueUseRemoteSession
       ? FamilyRemoteServiceImp(
@@ -34,6 +41,7 @@ final familyServiceProvider = Provider<IFamilyService>(
           ref.watch(familyRemoteRepositoryProvider),
           ref.watch(childRepositoryProvider),
           MediaUploader(ref.watch(mediaRepositoryProvider)),
+          ref.watch(storePurchaseRepositoryProvider),
         )
       : FamilyServiceImp(
           ref.watch(sessionRepositoryProvider),

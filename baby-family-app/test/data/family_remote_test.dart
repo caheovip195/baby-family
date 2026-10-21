@@ -7,12 +7,16 @@ import 'package:baby_family/data/model/circle/circle_invite_record.dart';
 import 'package:baby_family/data/model/circle/circle_member_record.dart';
 import 'package:baby_family/data/model/family/family_record.dart';
 import 'package:baby_family/data/model/family/family_settings_record.dart';
+import 'package:baby_family/data/model/family/my_family_record.dart';
+import 'package:baby_family/data/model/family/purchase_intent_record.dart';
+import 'package:baby_family/data/model/family/timezone_catalog.dart';
 import 'package:baby_family/data/provider/child.dart';
 import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/provider/mock_store.dart';
 import 'package:baby_family/data/provider/session.dart';
 import 'package:baby_family/data/repository/base.dart';
 import 'package:baby_family/data/repository/family_remote.dart';
+import 'package:baby_family/data/repository/store_purchase.dart';
 import 'package:baby_family/data/service_imp/family_remote.dart';
 import 'package:baby_family/data/service_imp/media_uploader.dart';
 import 'package:baby_family/utils/constants/enum.dart';
@@ -63,6 +67,32 @@ class _FakeFamily implements IFamilyRemoteRepository {
   @override
   Future<void> patchFamily(String familyId, JsonMap patch) async =>
       familyPatches.add(patch);
+
+  final defaults = <String>[];
+
+  @override
+  Future<List<MyFamilyRecord>> myFamilies() async => const [
+    MyFamilyRecord(familyId: 'srv-family', name: 'Nhà mình', role: 'PARENT'),
+    MyFamilyRecord(familyId: 'srv-grand', name: 'Nhà ông bà', role: 'CIRCLE'),
+  ];
+
+  @override
+  Future<void> setDefaultFamily(String familyId) async =>
+      defaults.add(familyId);
+
+  @override
+  Future<TimezoneCatalog?> timezones(String locale) async =>
+      const TimezoneCatalog(
+        version: '1',
+        items: [
+          TimezoneOption(
+            id: 'Asia/Ho_Chi_Minh',
+            label: 'Hà Nội, TP.HCM',
+            offsetMinutes: 420,
+          ),
+          TimezoneOption(id: 'Asia/Tokyo', label: 'Tokyo', offsetMinutes: 540),
+        ],
+      );
   final circleCalls = <String>[];
   List<CircleMemberRecord> members = const [];
   List<CircleInviteRecord> invites = const [];
@@ -141,6 +171,68 @@ class _FakeFamily implements IFamilyRemoteRepository {
     billingReads++;
     return billing;
   }
+
+  final purchaseCalls = <String>[];
+
+  @override
+  Future<PurchaseIntentRecord?> purchaseIntent(
+    String familyId,
+    String idempotencyKey, {
+    required String planCode,
+    required String store,
+  }) async {
+    purchaseCalls.add('intent $planCode $store');
+    return const PurchaseIntentRecord(
+      intentId: 'intent-1',
+      productId: 'vn.babyfamily.family.yearly',
+      appAccountToken: 'acct-1',
+    );
+  }
+
+  @override
+  Future<FamilyBillingRecord?> verifyPurchase(
+    String familyId,
+    JsonMap body,
+  ) async {
+    purchaseCalls.add(
+      'verify ${body['intentId']} ${body['signedTransaction']}',
+    );
+    billing = const FamilyBillingRecord(
+      accessPhase: 'PAID',
+      plan: BillingPlanRecord(code: 'FAMILY'),
+    );
+    return billing;
+  }
+}
+
+class _FakeStore implements IStorePurchaseRepository {
+  _FakeStore(this.calls, {this.cancel = false});
+
+  final List<String> calls;
+  final bool cancel;
+
+  @override
+  String? get store => 'APP_STORE';
+
+  @override
+  Future<StorePurchase> buy({
+    required String productId,
+    required String accountToken,
+  }) async {
+    calls.add('buy $productId $accountToken');
+    if (cancel) {
+      throw const StorePurchaseCancelled();
+    }
+    return StorePurchase(
+      store: 'APP_STORE',
+      productId: productId,
+      credential: 'jws-1',
+    );
+  }
+
+  @override
+  Future<void> complete(StorePurchase purchase) async =>
+      calls.add('complete ${purchase.productId}');
 }
 
 class _FakeUploader extends Fake implements MediaUploader {
@@ -180,6 +272,83 @@ void main() {
     container.read(familyRepositoryProvider),
     remote,
     container.read(childRepositoryProvider),
+  );
+
+  test(
+    'FAM-08: my families come from the server; switching saves it',
+    () async {
+      final family = service();
+      final memberships = await family.memberships();
+      expect(memberships.map((m) => m.familyId), ['srv-family', 'srv-grand']);
+      expect(memberships.first.current, isTrue);
+      expect(memberships.last.role, FamilyRole.relative);
+      await family.switchFamily('srv-grand');
+      expect(remote.defaults, ['srv-grand']);
+    },
+  );
+
+  test('FAM-07: time zone from the catalog; a new pick is patched', () async {
+    remote.familyRecord = remote.familyRecord.copyWith(
+      timezone: 'Asia/Ho_Chi_Minh',
+    );
+    final family = service();
+    final options = await family.timezones();
+    final settings = await family.familySettings();
+    expect(settings.timezoneId, 'Asia/Ho_Chi_Minh');
+    expect(settings.timezoneLabel, 'Hà Nội, TP.HCM');
+    await family.saveFamilySettings(
+      settings.copyWith(
+        timezoneId: options.last.id,
+        timezoneLabel: options.last.label,
+      ),
+    );
+    expect(remote.familyPatches.single, {'timezone': 'Asia/Tokyo'});
+  });
+
+  test(
+    'SUB-01/02: buy via the Store; the server verifies before the plan changes',
+    () async {
+      final family = FamilyRemoteServiceImp(
+        container.read(sessionRepositoryProvider),
+        container.read(appClockProvider),
+        container.read(familyRepositoryProvider),
+        remote,
+        container.read(childRepositoryProvider),
+        null,
+        _FakeStore(remote.purchaseCalls),
+      );
+      await family.purchasePlan(PlanState.family);
+      expect(remote.purchaseCalls, [
+        'intent FAMILY APP_STORE',
+        'buy vn.babyfamily.family.yearly acct-1',
+        'verify intent-1 jws-1',
+        'complete vn.babyfamily.family.yearly',
+      ]);
+      expect((await family.currentFamily())?.plan.state, PlanState.family);
+    },
+  );
+
+  test(
+    'SUB-02: cancelling at the Store changes nothing on the server',
+    () async {
+      final family = FamilyRemoteServiceImp(
+        container.read(sessionRepositoryProvider),
+        container.read(appClockProvider),
+        container.read(familyRepositoryProvider),
+        remote,
+        container.read(childRepositoryProvider),
+        null,
+        _FakeStore(remote.purchaseCalls, cancel: true),
+      );
+      await expectLater(
+        family.purchasePlan(PlanState.family),
+        throwsA(isA<StorePurchaseCancelled>()),
+      );
+      expect(
+        remote.purchaseCalls.where((c) => c.startsWith('verify')),
+        isEmpty,
+      );
+    },
   );
 
   test('SUB-01/04: plan quotas come from the server catalog', () async {

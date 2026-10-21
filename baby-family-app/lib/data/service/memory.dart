@@ -58,7 +58,8 @@ abstract class IMemoryService extends IBaseService {
     List<String>? mediaAssets,
   });
 
-  /// MEM-05/23 (+ QC-01). `monthlyPhoto` thay ảnh tháng cũ cùng bé + tháng
+  /// MEM-05/23 (+ QC-01). [people] “Ai ở đó” (tên thành viên hoặc tên gõ),
+  /// [feeling] mã cảm xúc của khoảnh khắc, [locationLabel] địa điểm gõ chữ. `monthlyPhoto` thay ảnh tháng cũ cùng bé + tháng
   /// (ảnh cũ thành ký ức thường — BR-072).
   Future<Memory> create({
     required MemoryKind kind,
@@ -71,6 +72,7 @@ abstract class IMemoryService extends IBaseService {
     DateTime? occurredAt,
     String? feeling,
     List<String> people = const [],
+    String? locationLabel,
     String? milestoneCode,
     String? milestoneTitle,
     int? monthIndex,
@@ -215,6 +217,10 @@ abstract class IMemoryService extends IBaseService {
   /// REC-02: tổng kết tuần này.
   Future<WeeklyRecap?> weeklyRecap();
 
+  /// Ngày đầu tuần của bản tổng kết tuần mới nhất có trên dòng thời gian (thẻ
+  /// recap, mở [weeklyRecap]); null khi chưa có. Đọc sau [timeline].
+  Future<DateTime?> latestRecapWeek();
+
   // --- Batch 3 ---
 
   /// MEM-17: ký ức đã xoá (giữ 30 ngày), mới xoá trước.
@@ -238,13 +244,20 @@ abstract class IMemoryService extends IBaseService {
 
   Future<void> deleteDraft(String draftId);
 
+  /// MEM-18: đăng nháp đã lưu trên tài khoản (sau khi sửa trong trình soạn).
+  Future<Memory?> publishDraft(String draftId);
+
   /// MEM-05 đóng giữa chừng → lưu nháp trên máy (MEM-18 “Trên máy này”).
+  /// [draftId] của nháp trên máy đang soạn → cập nhật thay vì tạo mới (tự
+  /// lưu MEM-13); [body] là nội dung đầy đủ để mở lại soạn tiếp.
   Future<MemoryDraftItem> saveDraft({
     required MemoryKind kind,
     String title = '',
+    String? body,
     List<String> childIds = const [],
     List<String> mediaAssets = const [],
     int? voiceDurationSec,
+    String? draftId,
   });
 
   /// MEM-19: ảnh người thân đăng chờ duyệt, mới nhất trước.

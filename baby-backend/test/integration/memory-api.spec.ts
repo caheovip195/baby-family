@@ -229,6 +229,7 @@ describeStack('Memory create/feed (PostgreSQL + ES256)', () => {
     keys = await generateKeyPair('ES256');
     const configuration = new ConfigService({
       ...validateEnvironment({ ...process.env, ...s3 }),
+      MEDIA_SERVER_PROCESSING: 'legacy',
       AUTH_JWT_PUBLIC_KEY: await exportSPKI(keys.publicKey),
     });
     const { AppModule } = await import('../../src/app.module.js');

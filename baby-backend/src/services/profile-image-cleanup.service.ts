@@ -45,8 +45,20 @@ export class ProfileImageCleanupService implements IProfileImageCleanupService {
         throw new ServiceUnavailableError(
           'Avatar storage bucket is not configured.',
         );
-      await this.storage.eraseObjectVersions({ bucket, key: asset.storageKey });
+      const variantKeys = await this.repository.variantKeys(asset.id);
+      // Client uploads keep their original; only unattached/retired uploads are erased.
+      if (asset.status === 'DELETED' || !variantKeys.length)
+        await this.storage.eraseObjectVersions({
+          bucket,
+          key: asset.storageKey,
+        });
+      if (asset.status === 'DELETED')
+        for (const key of variantKeys)
+          await this.storage.eraseObjectVersions({ bucket, key });
       if (asset.status === 'DELETED') {
+        const prefix = `usr/${asset.ownerUserId}/avatar/${asset.id}/`;
+        for (const key of await this.storage.listKeys(bucket, prefix))
+          await this.storage.eraseObjectVersions({ bucket, key });
         await this.storage.eraseObjectVersions({
           bucket,
           key: `${asset.storageKey}/avatar.webp`,

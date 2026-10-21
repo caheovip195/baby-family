@@ -20,8 +20,25 @@ abstract class MediaAssetRecord with _$MediaAssetRecord {
     @Default(<String, String>{})
     Map<String, String> urls,
     @JsonKey(name: 'urlsExpireAt') DateTime? urlsExpireAt,
+
+    /// Dấu vết file gốc trong thư viện máy (BF-20261021-008) — để ưu tiên bản
+    /// local khi máy còn file đó.
+    @JsonKey(name: 'source') MediaSourceRecord? source,
   }) = _MediaAssetRecord;
 
   factory MediaAssetRecord.fromJson(Map<String, dynamic> json) =>
       _$MediaAssetRecordFromJson(json);
+}
+
+@Freezed(when: FreezedWhenOptions.none)
+abstract class MediaSourceRecord with _$MediaSourceRecord {
+  @JsonSerializable(explicitToJson: true)
+  const factory MediaSourceRecord({
+    @JsonKey(name: 'sha256') String? sha256,
+    @JsonKey(name: 'key') String? key,
+    @JsonKey(name: 'capturedAt') DateTime? capturedAt,
+  }) = _MediaSourceRecord;
+
+  factory MediaSourceRecord.fromJson(Map<String, dynamic> json) =>
+      _$MediaSourceRecordFromJson(json);
 }

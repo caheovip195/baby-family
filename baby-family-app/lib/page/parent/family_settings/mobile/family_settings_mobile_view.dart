@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/data/model/family/family_settings.dart';
+import 'package:baby_family/data/model/family/timezone_catalog.dart';
 import 'package:baby_family/page/parent/family_settings/family_settings_controller.dart';
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/enum.dart';
@@ -10,9 +11,11 @@ import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:baby_family/utils/helper/memory_text.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
+import 'package:baby_family/utils/widget/app_bottom_sheet.dart';
 import 'package:baby_family/utils/widget/app_caps_label.dart';
 import 'package:baby_family/utils/widget/app_family_cover.dart';
 import 'package:baby_family/utils/widget/app_grouped_list.dart';
+import 'package:baby_family/utils/widget/app_radio_mark.dart';
 import 'package:baby_family/utils/widget/app_settings_row.dart';
 import 'package:baby_family/utils/widget/app_text_field.dart';
 import 'package:baby_family/utils/widget/app_top_bar.dart';
@@ -20,6 +23,7 @@ import 'package:baby_family/utils/widget/base_scaffold.dart';
 import 'package:baby_family/utils/widget/error_state.dart';
 import 'package:baby_family/utils/widget/memory_visibility_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
@@ -128,7 +132,7 @@ class FamilySettingsMobileView extends HookConsumerWidget {
               AppSettingsRow(
                 title: l10n.famSettingsTimezone,
                 value: settings.timezoneLabel,
-                onTap: comingSoon,
+                onTap: () => _pickTimezone(context, controller),
               ),
               AppSettingsRow.toggle(
                 title: l10n.famSettingsLunar,
@@ -191,5 +195,104 @@ Future<void> _pickCover(FamilySettingsController controller) async {
   );
   if (picked != null) {
     await controller.update((s) => s.copyWith(coverAsset: picked.path));
+  }
+}
+
+/// FAM-07: chọn múi giờ từ danh mục server (tìm theo tên/mã IANA).
+Future<void> _pickTimezone(
+  BuildContext context,
+  FamilySettingsController controller,
+) async {
+  final options = await controller.timezones();
+  if (!context.mounted) {
+    return;
+  }
+  if (options.isEmpty) {
+    showComingSoonSnackBar(context);
+    return;
+  }
+  final picked = await showAppBottomSheet<TimezoneOption>(
+    context,
+    builder: (sheetContext) => _TimezoneSheet(
+      options: options,
+      selectedId: controller.settings?.timezoneId,
+    ),
+  );
+  if (picked != null) {
+    await controller.setTimezone(picked);
+  }
+}
+
+class _TimezoneSheet extends HookWidget {
+  const _TimezoneSheet({required this.options, this.selectedId});
+
+  final List<TimezoneOption> options;
+  final String? selectedId;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final query = useState('');
+    final needle = query.value.trim().toLowerCase();
+    final shown = [
+      for (final option in options)
+        if (needle.isEmpty ||
+            option.label.toLowerCase().contains(needle) ||
+            option.id.toLowerCase().contains(needle))
+          option,
+    ];
+    String offset(int minutes) {
+      final sign = minutes < 0 ? '-' : '+';
+      final abs = minutes.abs();
+      return 'UTC$sign${abs ~/ 60}'
+          '${abs % 60 == 0 ? '' : ':${(abs % 60).toString().padLeft(2, '0')}'}';
+    }
+
+    return SizedBox(
+      height: MediaQuery.sizeOf(context).height * 0.7,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.screen,
+          AppSpacing.itemGap,
+          AppSpacing.screen,
+          0,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              l10n.famSettingsTimezone,
+              style: AppTypography.adapt(context, AppTypography.h3),
+            ),
+            const SizedBox(height: AppSpacing.itemGap),
+            AppTextField(
+              hint: l10n.famTimezoneSearch,
+              onChanged: (value) => query.value = value,
+            ),
+            const SizedBox(height: AppSpacing.s2),
+            Expanded(
+              child: ListView.builder(
+                itemCount: shown.length,
+                itemBuilder: (_, index) {
+                  final option = shown[index];
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(option.label),
+                    subtitle: Text(
+                      '${offset(option.offsetMinutes)} · ${option.id}',
+                    ),
+                    trailing: AppRadioMark(
+                      selected: option.id == selectedId,
+                      size: 22,
+                    ),
+                    onTap: () => Navigator.of(context).pop(option),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

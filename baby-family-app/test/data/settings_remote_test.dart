@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:baby_family/data/dto/processed_media.dart';
 import 'package:baby_family/data/model/account/data_export_record.dart';
 import 'package:baby_family/data/model/account/deletion_preview_record.dart';
 import 'package:baby_family/data/model/account/export_download_record.dart';
@@ -11,8 +12,11 @@ import 'package:baby_family/data/model/privacy/family_deletion_record.dart';
 import 'package:baby_family/data/model/privacy/privacy_overview_record.dart';
 import 'package:baby_family/data/model/safety/blocked_user_record.dart';
 import 'package:baby_family/data/model/settings/ai_settings_record.dart';
+import 'package:baby_family/data/model/settings/help_center_record.dart';
 import 'package:baby_family/data/model/settings/notification_settings_record.dart';
+import 'package:baby_family/data/model/settings/sign_in_method_record.dart';
 import 'package:baby_family/data/model/settings/support_ticket.dart';
+import 'package:baby_family/data/model/settings/support_ticket_detail.dart';
 import 'package:baby_family/data/provider/child.dart';
 import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/provider/mock_store.dart';
@@ -140,10 +144,20 @@ class _FakeAccount implements IAccountRemoteRepository {
     JsonMap body,
   ) async {
     avatarIntents.add(body);
-    return const UploadIntent(
+    return UploadIntent(
       assetId: 'avatar-1',
       status: 'PENDING_UPLOAD',
-      upload: UploadInstruction(mode: 'single', url: 'https://s3/avatar'),
+      upload: const UploadInstruction(mode: 'single', url: 'https://s3/avatar'),
+      variantUploads: [
+        for (final variant in (body['variants'] as List?) ?? const [])
+          VariantUpload(
+            code: (variant as Map)['code'] as String,
+            upload: UploadInstruction(
+              mode: 'single',
+              url: 'https://s3/avatar/${variant['code']}',
+            ),
+          ),
+      ],
     );
   }
 
@@ -212,7 +226,48 @@ class _FakeAccount implements IAccountRemoteRepository {
   Future<void> verifyPhoneChange(String phone, String code) async =>
       phoneCalls.add('verify:$phone:$code');
 
+  @override
+  Future<List<SignInMethodRecord>> signInMethods() async => const [
+    SignInMethodRecord(provider: 'PHONE', maskedHint: '***1234'),
+    SignInMethodRecord(provider: 'GOOGLE', maskedHint: 'a***@example.com'),
+  ];
+
+  @override
+  Future<HelpCenterRecord?> helpCenter(String locale) async =>
+      const HelpCenterRecord(
+        version: 1,
+        faqs: [
+          HelpFaqRecord(id: 'trial', question: 'Dùng thử?', answer: 'Có.'),
+        ],
+        contact: HelpContactRecord(email: 'help@example.test'),
+        legal: HelpLegalRecord(termsUrl: 'https://example.test/terms'),
+      );
+
   final supportBodies = <JsonMap>[];
+  final supportReplies = <String>[];
+
+  @override
+  Future<SupportTicketDetail?> supportTicket(String ticketId) async =>
+      SupportTicketDetail(
+        id: ticketId,
+        code: 'HT-1',
+        status: 'WAITING_USER',
+        subject: 'Gia hạn',
+        body: 'Không gia hạn được',
+        messages: [
+          const SupportMessage(
+            id: 'm-1',
+            sender: 'SUPPORT',
+            body: 'Bạn thử lại nhé',
+          ),
+          for (final reply in supportReplies)
+            SupportMessage(id: 'r-$reply', sender: 'USER', body: reply),
+        ],
+      );
+
+  @override
+  Future<void> sendSupportMessage(String ticketId, String body) async =>
+      supportReplies.add(body);
 
   @override
   Future<List<String>> supportCategories() async => ['ACCOUNT', 'BILLING'];
@@ -273,6 +328,28 @@ class _FakeMedia extends Fake implements IMediaRepository {
     uploaded.add(bytes.length);
     return const [];
   }
+
+  /// Client nén avatar (BF-20261021-008): bản JPEG + 2 biến thể.
+  @override
+  Future<ProcessedMedia> processImage(String path) async => ProcessedMedia(
+    kind: 'IMAGE',
+    mime: 'image/jpeg',
+    bytes: Uint8List.fromList(path.codeUnits),
+    width: 2048,
+    height: 2048,
+    variants: [
+      MediaVariantFile(
+        code: 'm1080',
+        mime: 'image/jpeg',
+        bytes: Uint8List.fromList([1, 2]),
+      ),
+      MediaVariantFile(
+        code: 't320',
+        mime: 'image/jpeg',
+        bytes: Uint8List.fromList([3]),
+      ),
+    ],
+  );
 }
 
 void main() {
@@ -346,8 +423,16 @@ void main() {
       await settings.saveProfileSettings(
         before.copyWith(avatarAsset: '/tmp/me.png'),
       );
-      expect(remote.avatarIntents.single, containsPair('mime', 'image/png'));
-      expect(media.uploaded, hasLength(1));
+      final intent = remote.avatarIntents.single;
+      expect(intent, containsPair('mime', 'image/jpeg'));
+      expect(intent, containsPair('purpose', 'AVATAR'));
+      expect(intent.containsKey('familyId'), isFalse);
+      expect((intent['variants'] as List).map((v) => (v as Map)['code']), [
+        'm1080',
+        't320',
+      ]);
+      // File chính + 2 biến thể đi thẳng lên S3.
+      expect(media.uploaded, hasLength(3));
       expect(remote.avatarCompleted, ['avatar-1']);
       expect(remote.mePatches.single, {'avatarAssetId': 'avatar-1'});
       expect((await settings.profileSettings()).avatarAsset, '/tmp/me.png');
@@ -410,6 +495,40 @@ void main() {
       expect((await settings.supportTickets()).single.code, 'HT-0');
     },
   );
+
+  test('Support: a ticket thread loads and a reply is sent', () async {
+    final settings = service();
+    final ticket = await settings.supportTicket('t-1');
+    expect(ticket?.messages.single.sender, 'SUPPORT');
+    await settings.sendSupportMessage('t-1', 'Đã được rồi, cảm ơn');
+    expect(remote.supportReplies, ['Đã được rồi, cảm ơn']);
+    final updated = await settings.supportTicket('t-1');
+    expect(updated?.messages.last.body, 'Đã được rồi, cảm ơn');
+  });
+
+  test(
+    'SET-11/12: FAQ answers, contact and legal links come from the server',
+    () async {
+      final help = await service().help();
+      expect(help.faqs, ['Dùng thử?']);
+      expect(help.faqAnswers, ['Có.']);
+      expect(help.email, 'help@example.test');
+      // Chưa cấu hình → không hiện số mẫu.
+      expect(help.hotline, isEmpty);
+      expect(help.openReports, 0);
+      expect(help.termsUrl, 'https://example.test/terms');
+      expect(help.privacyUrl, isNull);
+    },
+  );
+
+  test('Sign-in methods mirror the server list', () async {
+    final methods = (await service().profileSettings()).signInMethods;
+    final byMethod = {for (final item in methods) item.method: item};
+    expect(byMethod[AuthMethod.phone]?.linked, isTrue);
+    expect(byMethod[AuthMethod.phone]?.maskedAccount, '***1234');
+    expect(byMethod[AuthMethod.google]?.linked, isTrue);
+    expect(byMethod[AuthMethod.apple]?.linked, isFalse);
+  });
 
   test('§7.25: family deletion needs reauth and both parents', () async {
     final settings = service();

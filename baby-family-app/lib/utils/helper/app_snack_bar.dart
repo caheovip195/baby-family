@@ -1,5 +1,6 @@
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/server_error_message.dart';
+import 'package:baby_family/utils/helper/user_cancelled.dart';
 import 'package:flutter/material.dart';
 
 /// Thông báo nhẹ, không chặn thao tác (theme `snackBarTheme` floating).
@@ -23,6 +24,8 @@ Future<bool> runWithErrorSnackBar(
   try {
     await action();
     return true;
+  } on UserCancelled {
+    return false;
   } on Object catch (error) {
     if (context.mounted) {
       showAppSnackBar(context, actionErrorMessage(error));

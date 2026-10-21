@@ -1,0 +1,36 @@
+name: Admin CI
+
+on:
+  push:
+    paths:
+      - baby-admin/**
+      - .github/workflows/admin-ci.yml
+  pull_request:
+    paths:
+      - baby-admin/**
+      - .github/workflows/admin-ci.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: admin-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: baby-admin
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26.11.1
+          cache: npm
+          cache-dependency-path: baby-admin/package-lock.json
+      - run: npm ci
+      - run: npm run check

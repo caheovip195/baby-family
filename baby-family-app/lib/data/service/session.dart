@@ -100,6 +100,10 @@ abstract class ISessionService extends IBaseService {
   /// Đăng xuất: dữ liệu mẫu trở về seed `fresh`.
   Future<void> signOut();
 
+  /// FAM-08: mở gia đình [familyId] (id server) — bản phản chiếu trên máy làm
+  /// lại theo gia đình mới. Bản mẫu chỉ có một gia đình nên không đổi gì.
+  Future<AppSession> changeFamily(String familyId);
+
   /// Dev tools: nạp lại một seed (`fresh|active|pregnant|circle|expired`).
   Future<void> reseed(DemoSeed seed, {String? actor});
 }

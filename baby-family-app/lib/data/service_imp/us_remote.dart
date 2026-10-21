@@ -121,7 +121,18 @@ class UsRemoteServiceImp extends UsServiceImp {
   @override
   Future<CoupleToday> coupleToday() async {
     await _sync();
-    return super.coupleToday();
+    final today = await super.coupleToday();
+    // Câu hỏi kết nối hằng ngày là bản 1.1 (chưa có API): bản server không
+    // hiện câu hỏi mẫu cho gia đình thật.
+    if (_serverFamilyId == null) {
+      return today;
+    }
+    return CoupleToday(
+      myCheckin: today.myCheckin,
+      partnerCheckin: today.partnerCheckin,
+      openRequests: today.openRequests,
+      recentThanks: today.recentThanks,
+    );
   }
 
   @override

@@ -1,3 +1,7 @@
+import {
+  activeMemoryPeopleMembers,
+  replaceMemoryPeople,
+} from './memory-people.persistence';
 import { memoryContentScope } from './memory-content-visibility';
 import { memoryExclusionWhere, viewerExclusions } from './viewer-exclusions';
 import type {
@@ -15,6 +19,7 @@ import type {
   Memory as MemoryRow,
   MemoryAsset as MemoryAssetRow,
   MemoryChild as MemoryChildRow,
+  MemoryPerson as MemoryPersonRow,
 } from '../generated/prisma/client';
 import { PrismaService } from '../database/prisma.service';
 import type { ReactionType } from '../common/database.enums';
@@ -29,13 +34,31 @@ import type {
   UpdateMemoryCommand,
 } from '../interfaces/repositories/memory-content-repository.interface';
 import { Memory } from '../models/memory.model';
-import { MemoryView } from '../models/memory-view.model';
+import { MemoryView, MemoryPersonView } from '../models/memory-view.model';
 import type { MemoryCreationContext } from '../models/memory-view.model';
 import { parentSharedAssetSql } from './parent-asset-visibility.sql';
 
 type Transaction = Prisma.TransactionClient;
 type MemoryWithRelations = MemoryRow & {
   memoryChildren: MemoryChildRow[];
+  memoryPeople: (MemoryPersonRow & {
+    usersMemoryPeopleUserIdTousers: {
+      status: string;
+      deletedAt: Date | null;
+      familyParent: {
+        id: string;
+        familyId: string;
+        joinedAt: Date;
+        callName: string;
+      }[];
+      circleMembersCircleMembersUserIdTousers: {
+        id: string;
+        familyId: string;
+        joinedAt: Date;
+        displayName: string;
+      }[];
+    } | null;
+  })[];
   memoryAsset: (MemoryAssetRow & { asset: AssetRow })[];
   reactionsReactionsMemoryIdTomemories: {
     userId: string;
@@ -50,6 +73,36 @@ const TRANSACTION_OPTIONS = {
 const CREATE_OPERATION = 'memory.create';
 const STORED_STATUSES = ['UPLOADED', 'PROCESSING', 'READY'];
 const RELATIONS = {
+  memoryPeople: {
+    where: { deletedAt: null },
+    orderBy: { sortOrder: 'asc' },
+    include: {
+      usersMemoryPeopleUserIdTousers: {
+        select: {
+          status: true,
+          deletedAt: true,
+          familyParent: {
+            where: { status: 'ACTIVE', deletedAt: null, leftAt: null },
+            select: {
+              id: true,
+              familyId: true,
+              joinedAt: true,
+              callName: true,
+            },
+          },
+          circleMembersCircleMembersUserIdTousers: {
+            where: { status: 'ACTIVE', deletedAt: null, endedAt: null },
+            select: {
+              id: true,
+              familyId: true,
+              joinedAt: true,
+              displayName: true,
+            },
+          },
+        },
+      },
+    },
+  },
   memoryChildren: { where: { deletedAt: null } },
   memoryAsset: {
     where: { deletedAt: null },
@@ -71,6 +124,47 @@ const RELATIONS = {
 @Injectable()
 export class MemoryContentRepository implements IMemoryContentRepository {
   constructor(private readonly prisma: PrismaService) {}
+
+  async peopleSuggestions(familyId: string, userId: string) {
+    const members = await activeMemoryPeopleMembers(this.prisma, familyId);
+    const exclusions = await viewerExclusions(this.prisma, familyId, userId);
+    const scope = await memoryContentScope(this.prisma, familyId, userId);
+    const tagged = await this.prisma.memoryPerson.groupBy({
+      by: ['displayName'],
+      where: {
+        familyId,
+        deletedAt: null,
+        userId: null,
+        displayName: { not: null },
+        memory: {
+          familyId,
+          deletedAt: null,
+          status: 'PUBLISHED',
+          AND: [
+            { OR: parentVisibility(userId, ['PUBLISHED']) },
+            scope.where,
+            memoryExclusionWhere(exclusions),
+            {
+              OR: [
+                { unlockAt: null },
+                { unlockAt: { lte: new Date() } },
+                { authorUserId: userId },
+              ],
+            },
+          ],
+        },
+      },
+      _count: { displayName: true },
+      orderBy: [{ _count: { displayName: 'desc' } }, { displayName: 'asc' }],
+      take: 30,
+    });
+    return [
+      ...members,
+      ...tagged.map(
+        (person) => new MemoryPersonView(null, null, person.displayName!),
+      ),
+    ];
+  }
 
   async readableSubjects(
     familyId: string,
@@ -246,6 +340,8 @@ export class MemoryContentRepository implements IMemoryContentRepository {
         .map((asset) => ({
           id: asset.id,
           uploaderUserId: asset.uploaderUserId,
+          kind: asset.kind,
+          durationMs: asset.durationMs,
           purpose: asset.purpose,
           status: asset.status,
           sharedWithActor: sharedIds.has(asset.id),
@@ -673,6 +769,14 @@ export class MemoryContentRepository implements IMemoryContentRepository {
           );
         throw new NotFoundError('Memory was not found.');
       }
+      if (command.people !== undefined)
+        await replaceMemoryPeople(
+          tx,
+          command.familyId,
+          command.memoryId,
+          command.actorUserId,
+          command.people,
+        );
       if (command.assets) {
         const current = await tx.memory.findUniqueOrThrow({
           where: { id: command.memoryId },
@@ -1096,6 +1200,14 @@ export class MemoryContentRepository implements IMemoryContentRepository {
         commentsEnabled: command.commentsEnabled,
       },
     });
+    if (command.people !== undefined)
+      await replaceMemoryPeople(
+        tx,
+        command.familyId,
+        memory.id,
+        command.authorUserId,
+        command.people,
+      );
     if (command.children.length)
       await tx.memoryChild.createMany({
         data: command.children.map((child) => ({
@@ -1325,5 +1437,28 @@ function mapView(
         blurhash: link.asset.blurhash,
       })),
     row.reactionsReactionsMemoryIdTomemories,
+    row.memoryPeople.map((person) => {
+      const user = person.usersMemoryPeopleUserIdTousers;
+      const member =
+        user?.status === 'ACTIVE' && user.deletedAt === null
+          ? [
+              ...user.familyParent,
+              ...user.circleMembersCircleMembersUserIdTousers,
+            ].find(
+              (m) => m.familyId === row.familyId && m.joinedAt <= new Date(),
+            )
+          : undefined;
+      return new MemoryPersonView(
+        member?.id ?? null,
+        member ? person.userId : null,
+        member
+          ? 'callName' in member
+            ? member.callName
+            : member.displayName
+          : person.userId
+            ? 'Người dùng đã rời'
+            : (person.displayName ?? 'Người dùng đã rời'),
+      );
+    }),
   );
 }

@@ -43,6 +43,7 @@ import 'package:baby_family/page/general/security_settings/security_settings_pag
 import 'package:baby_family/page/general/settings/settings_page.dart';
 import 'package:baby_family/page/general/splash/splash_page.dart';
 import 'package:baby_family/page/general/support_request/support_request_page.dart';
+import 'package:baby_family/page/general/support_ticket/support_ticket_page.dart';
 import 'package:baby_family/page/general/welcome/welcome_page.dart';
 import 'package:baby_family/page/parent/album_detail/album_detail_page.dart';
 import 'package:baby_family/page/parent/albums/albums_page.dart';
@@ -481,6 +482,10 @@ class AppRouter extends RootStackRouter {
     AutoRouteCustom(
       page: SupportRequestRoute.page,
       path: '/settings/help/request',
+    ).route(),
+    AutoRouteCustom(
+      page: SupportTicketRoute.page,
+      path: '/settings/help/ticket',
     ).route(),
   ];
 }

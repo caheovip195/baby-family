@@ -1,5 +1,8 @@
 import { createHash } from 'node:crypto';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import type { Environment } from '../config/environment';
+import { validateClientMedia, verifyClientUpload } from './client-media-upload';
 import { z } from 'zod';
 import type { AuthPrincipal } from '../common/auth/auth-principal';
 import {
@@ -46,7 +49,11 @@ import type {
   ObjectLocation,
 } from '../interfaces/services/object-storage-service.interface';
 import type { Asset } from '../models/asset.model';
-import type { MediaAssetView, MediaUpload } from '../models/media-upload.model';
+import {
+  mediaSourceJson,
+  type MediaAssetView,
+  type MediaUpload,
+} from '../models/media-upload.model';
 
 const quotaSchema = z.looseObject({
   storageBytes: z.number().int().nonnegative(),
@@ -65,6 +72,7 @@ export class MediaService implements IMediaService {
     @Inject(MEDIA_REPOSITORY) private readonly media: IMediaRepository,
     @Inject(OBJECT_STORAGE_SERVICE)
     private readonly storage: IObjectStorageService,
+    @Optional() private readonly config?: ConfigService<Environment, true>,
   ) {}
 
   async createUploadIntent(
@@ -91,6 +99,15 @@ export class MediaService implements IMediaService {
       throw mediaError('File type is not supported.', 'MEDIA_TYPE_UNSUPPORTED');
     if (input.size > kind.maxBytes)
       throw mediaError('File is too large.', 'MEDIA_TOO_LARGE');
+    if (
+      input.variants === undefined &&
+      this.config?.get('MEDIA_SERVER_PROCESSING', { infer: true }) !== 'legacy'
+    )
+      throw mediaError(
+        'Client variants are required.',
+        'MEDIA_VARIANTS_REQUIRED',
+      );
+    validateClientMedia(input);
     const quotas = await this.quotasOf(actor, input.familyId, isParent);
     if (kind.durationQuota) {
       const maxSeconds = quotas[kind.durationQuota];
@@ -102,13 +119,14 @@ export class MediaService implements IMediaService {
         throw new DomainError(
           'Duration exceeds the current plan.',
           'MEDIA_DURATION_EXCEEDED',
-          402,
+          422,
         );
     }
     this.requireStorage();
     const sha256 = input.sha256.toLowerCase();
     const declaredSize = BigInt(input.size);
     const result = await this.media.reserveUpload({
+      variants: input.variants,
       familyId: input.familyId,
       allowSharedCopy: isParent,
       uploaderUserId: actor.userId,
@@ -122,6 +140,29 @@ export class MediaService implements IMediaService {
             mime,
             input.size,
             sha256,
+            input.width,
+            input.height,
+            input.durationMs,
+            input.variants
+              ?.map((v) => ({
+                code: v.code,
+                mime: v.mime.toLowerCase(),
+                size: v.size,
+                sha256: v.sha256.toLowerCase(),
+                width: v.width,
+                height: v.height,
+              }))
+              .sort((a, b) => a.code.localeCompare(b.code)),
+            // Appended only when declared so earlier request hashes stay valid.
+            ...(input.source
+              ? [
+                  {
+                    sha256: input.source.sha256.toLowerCase(),
+                    key: input.source.key,
+                    capturedAt: input.source.capturedAt ?? null,
+                  },
+                ]
+              : []),
           ]),
         )
         .digest(),
@@ -133,11 +174,25 @@ export class MediaService implements IMediaService {
       width: input.width ?? null,
       height: input.height ?? null,
       durationMs: input.durationMs ?? null,
+      source: input.source
+        ? {
+            sha256: Buffer.from(input.source.sha256, 'hex'),
+            key: input.source.key,
+            capturedAt: input.source.capturedAt
+              ? new Date(input.source.capturedAt)
+              : null,
+          }
+        : null,
       storageBucket: this.storage.bucketName(purpose.bucket),
       storageKey: (assetId) => mediaStorageKey(input.familyId, assetId),
       privateOwnerUserId:
         'private' in purpose && purpose.private ? actor.userId : null,
-      reservedBytes: maxAcceptedSize(declaredSize),
+      reservedBytes:
+        maxAcceptedSize(declaredSize) +
+        (input.variants ?? []).reduce(
+          (sum, v) => sum + maxAcceptedSize(BigInt(v.size)),
+          0n,
+        ),
       storageLimitBytes: BigInt(quotas.storageBytes),
       checksumVerifiedMaxBytes: BigInt(MEDIA_POLICY.multipartThresholdBytes),
       reservationExpiresAt: new Date(
@@ -159,7 +214,36 @@ export class MediaService implements IMediaService {
     // A replay of a finished, failed or expired upload only reports its state:
     // signing again would let the client overwrite stored or rejected content.
     if (!upload.isPending() || upload.isExpired(new Date())) return response;
-    return { ...response, upload: await this.uploadInstruction(upload) };
+    const variantUploads = await Promise.all(
+      upload.variants
+        .filter((v) => v.storageKey !== upload.asset.storageKey)
+        .map(async (v) => {
+          const signed = await this.storage.createUploadUrl({
+            ...this.locationOf(upload.asset),
+            key: v.storageKey,
+            contentType: v.mime,
+            sha256Base64: v.checksumSha256
+              ? Buffer.from(v.checksumSha256).toString('base64')
+              : undefined,
+            expiresInSeconds: MEDIA_POLICY.uploadUrlTtlSeconds,
+          });
+          return {
+            code: v.variantCode,
+            upload: {
+              mode: 'single' as const,
+              method: 'PUT' as const,
+              url: signed.url,
+              headers: signed.headers,
+              expiresAt: signed.expiresAt,
+            },
+          };
+        }),
+    );
+    return {
+      ...response,
+      upload: await this.uploadInstruction(upload),
+      ...(upload.variants.length ? { variantUploads } : {}),
+    };
   }
 
   async signUploadParts(
@@ -205,6 +289,14 @@ export class MediaService implements IMediaService {
     }
     if (upload.isExpired(new Date()))
       throw mediaError('Upload window has expired.', 'UPLOAD_EXPIRED', 409);
+    if (
+      !upload.variants.length &&
+      this.config?.get('MEDIA_SERVER_PROCESSING', { infer: true }) !== 'legacy'
+    )
+      throw mediaError(
+        'Client variants are required.',
+        'MEDIA_VARIANTS_REQUIRED',
+      );
     const location = this.locationOf(asset);
     if (isMultipart(upload)) {
       const partCount = upload.partCount(MEDIA_POLICY.partSizeBytes);
@@ -231,6 +323,30 @@ export class MediaService implements IMediaService {
       throw new ValidationError('Single uploads do not take parts.');
     }
 
+    if (upload.variants.length) {
+      try {
+        const sizes = await verifyClientUpload(this.storage, upload, location);
+        const primary = upload.variants.find(
+          (v) => v.storageKey === asset.storageKey,
+        )!;
+        const confirmed = await this.media.confirmUpload(
+          assetId,
+          sizes.get(primary.variantCode)!,
+          sizes,
+        );
+        return { assetId, status: confirmed.status };
+      } catch (error) {
+        if (error instanceof DomainError && error.statusCode === 422) {
+          await this.media.failUpload(assetId, error.code);
+          for (const key of new Set([
+            asset.storageKey,
+            ...upload.variants.map((v) => v.storageKey),
+          ]))
+            await this.storage.deleteObject({ ...location, key });
+        }
+        throw error;
+      }
+    }
     // Presigned PUT does not bound the size: verify the stored object (spec §10.2).
     const stored = await this.storage.headObject(location);
     if (!stored)
@@ -503,6 +619,7 @@ export class MediaService implements IMediaService {
       height: asset.height,
       durationMs: asset.durationMs,
       blurhash: asset.blurhash,
+      source: mediaSourceJson(asset),
       urls,
       urlsExpireAt,
     };

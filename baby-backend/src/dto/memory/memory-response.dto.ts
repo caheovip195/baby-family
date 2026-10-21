@@ -1,3 +1,4 @@
+import { MemoryPersonResponseDto } from './memory-people.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { MediaAssetResponseDto } from '../media/media-response.dto';
 
@@ -23,6 +24,8 @@ export class MemoryResponseDto {
   @ApiProperty({ type: String, format: 'uuid', nullable: true })
   pregnancyId!: string | null;
   @ApiProperty({ type: Number, nullable: true }) pregnancyWeek!: number | null;
+  @ApiProperty({ type: [MemoryPersonResponseDto] })
+  people?: MemoryPersonResponseDto[];
   @ApiProperty({ type: String, nullable: true }) feeling!: string | null;
   @ApiProperty({ type: String, nullable: true }) locationLabel!: string | null;
   @ApiProperty({ type: String, nullable: true }) quoteContext!: string | null;
@@ -55,6 +58,13 @@ export class MemoryResponseDto {
     description: 'In display order; `urls` filled once the asset is READY.',
   })
   assets!: MediaAssetResponseDto[];
+  @ApiProperty({
+    type: Number,
+    nullable: true,
+    description:
+      'Trusted audio duration in seconds for VOICE; null for other kinds.',
+  })
+  durationSec?: number | null;
   @ApiProperty({ format: 'date-time' }) createdAt!: string;
   @ApiProperty({ type: String, format: 'date-time', nullable: true })
   publishedAt!: string | null;

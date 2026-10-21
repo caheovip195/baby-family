@@ -9,6 +9,7 @@ import 'package:baby_family/data/repository_imp/auth.dart';
 import 'package:baby_family/data/repository_imp/offline_snapshot.dart';
 import 'package:baby_family/data/repository_imp/onboarding.dart';
 import 'package:baby_family/data/repository_imp/session.dart';
+import 'package:baby_family/data/repository_imp/social_credential.dart';
 import 'package:baby_family/data/service/session.dart';
 import 'package:baby_family/data/service_imp/session.dart';
 import 'package:baby_family/data/service_imp/session_remote.dart';
@@ -42,6 +43,7 @@ final sessionServiceProvider = Provider<ISessionService>((ref) {
     ref.watch(onboardingRepositoryProvider),
     ref.watch(childRepositoryProvider),
     OfflineSnapshotRepositoryImp(),
+    SocialCredentialRepositoryImp(),
   );
 });
 

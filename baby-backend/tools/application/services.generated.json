@@ -10,7 +10,7 @@
     "src/interfaces/services/asset-variant-service.interface.ts": "2e3730a799122533a575c9d45def8a4463531c9da7dd5d3965f14301d607c5d9",
     "src/services/asset-variant.service.ts": "18b03da94a9930e27272ded669f69abf0e2be5e90afdd81efa93c3d52919d990",
     "src/interfaces/services/asset-service.interface.ts": "15b8f5e33f0d156a02d118a7cac487d2b3ad098be43af605e1d2a91acf4e2d31",
-    "src/services/asset.service.ts": "6ebf2330bf91cc020ca74aca3de4cef1383142d849baa4ae44002c8aa29a27ba",
+    "src/services/asset.service.ts": "1759a740f0412d22255196c5d9c01ade03cf08ee55518b353c46d8bad799c0c2",
     "src/interfaces/services/auth-identity-service.interface.ts": "09fc9b434140f646558bc0e05ed87632888ad7764f2dbb3c30ec81ddbb4b6269",
     "src/services/auth-identity.service.ts": "b9dc81a104cc471512b2099795029d63372d7f3d78393c3a0e0bdda4b574d382",
     "src/interfaces/services/badge-service.interface.ts": "be28892adef5c5228f5e6ab68fd57af17cdbc939a645ef652f41b7528edd0ed1",

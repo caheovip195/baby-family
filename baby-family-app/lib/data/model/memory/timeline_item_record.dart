@@ -21,6 +21,9 @@ abstract class TimelineItemRecord with _$TimelineItemRecord {
     @JsonKey(name: 'coverUrl') String? coverUrl,
     @JsonKey(name: 'memoryCount') int? memoryCount,
     @JsonKey(name: 'firstsCount') int? firstsCount,
+
+    /// Thẻ `RECAP/WEEKLY_RECAP`: ngày đầu tuần của bản tổng kết (YYYY-MM-DD).
+    @JsonKey(name: 'periodStart') String? periodStart,
   }) = _TimelineItemRecord;
 
   factory TimelineItemRecord.fromJson(Map<String, dynamic> json) =>

@@ -185,4 +185,8 @@ class MemoryFeedRepositoryImp extends BaseRepositoryImp
     final rs = await client!.getDrafts(familyId);
     return rs.memories;
   }
+
+  @override
+  Future<MemoryRecord?> publish(String memoryId) async =>
+      (await client!.publishMemory(memoryId)).memory;
 }

@@ -441,6 +441,34 @@ void main() {
     });
   });
 
+  test('MEM-13/18: a device draft is updated in place and reopened', () async {
+    final memories = _container().read(memoryServiceProvider);
+    final first = await memories.saveDraft(
+      kind: MemoryKind.diary,
+      title: 'Ngày đầu đi học',
+      body: 'Con khóc một chút.',
+    );
+    final second = await memories.saveDraft(
+      kind: MemoryKind.diary,
+      title: 'Ngày đầu đi học',
+      body: 'Con khóc một chút.\n\nRồi con cười.',
+      draftId: first.id,
+    );
+    expect(second.id, first.id);
+    final diaries = (await memories.drafts()).where(
+      (draft) => draft.kind == MemoryKind.diary,
+    );
+    expect(diaries.where((draft) => draft.id == first.id), hasLength(1));
+    final reopened = await memories.draft(MemoryKind.diary);
+    expect(reopened?.id, first.id);
+    expect(reopened?.body, 'Con khóc một chút.\n\nRồi con cười.');
+    await memories.clearDraft(MemoryKind.diary);
+    expect(
+      (await memories.drafts()).where((draft) => draft.id == first.id),
+      isEmpty,
+    );
+  });
+
   group('batch 3 data (Pencil frames)', () {
     test('bridge, safety, couple week (US-08…14)', () async {
       final us = _container().read(usServiceProvider);

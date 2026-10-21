@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:convert';
 
 import 'package:baby_family/data/dto/memory_grid_photo.dart';
@@ -20,6 +22,7 @@ import 'package:baby_family/data/repository/media.dart';
 import 'package:baby_family/data/repository/memory.dart';
 import 'package:baby_family/data/repository/memory_feed.dart';
 import 'package:baby_family/data/repository/session.dart';
+import 'package:baby_family/data/service/local_media.dart';
 import 'package:baby_family/data/service_imp/child.dart';
 import 'package:baby_family/data/service_imp/media_uploader.dart';
 import 'package:baby_family/data/service_imp/memory.dart';
@@ -71,6 +74,8 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
     // BF-20261019-002: cột mốc (MEM-11) và thư gửi con (MEM-14).
     MemoryKind.milestone: 'MILESTONE',
     MemoryKind.letter: 'LETTER',
+    // BF-20261021-001: ghi âm (asset audio, server tính thời lượng).
+    MemoryKind.voice: 'VOICE',
   };
 
   static const _appKinds = {
@@ -115,8 +120,22 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
   String _keyFor(String fingerprint) =>
       _pendingKeys[fingerprint] ??= _uuid.v4();
 
-  String? get _serverFamilyId =>
-      sessionRepository.session()[kValueSessionKeyServerFamilyId] as String?;
+  String? get _serverFamilyId {
+    final id =
+        sessionRepository.session()[kValueSessionKeyServerFamilyId] as String?;
+    if (id != _cachedFamilyId) {
+      // FAM-08: đổi gia đình → bỏ mốc đồng bộ/bộ nhớ đệm của nhà cũ.
+      _cachedFamilyId = id;
+      _timelineSyncedAt.clear();
+      _photoCache.clear();
+      _syncedAt = null;
+      _latestRecapWeek = null;
+      _cloudDrafts = const {};
+    }
+    return id;
+  }
+
+  String? _cachedFamilyId;
 
   @override
   Future<List<Memory>> memories({
@@ -193,6 +212,7 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
           childId != null &&
           _children.child(childId)?['kind'] == ChildKind.pregnancy.name;
       final chapters = <String, JsonMap>{};
+      String? recapWeek;
       try {
         String? cursor;
         for (var page = 0; page < kValueRemoteFeedMaxPages; page++) {
@@ -210,6 +230,12 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
           // liệu + ảnh bìa của server (đúng quyền xem) cho thẻ chương trên máy.
           result.items.map((item) => item.memory).nonNulls.forEach(_mirror);
           for (final item in result.items) {
+            final week = item.periodStart;
+            if (item.kind == _weeklyRecapKind &&
+                week != null &&
+                (recapWeek == null || week.compareTo(recapWeek) > 0)) {
+              recapWeek = week;
+            }
             if (item.kind == 'CHAPTER' &&
                 item.childId != null &&
                 item.monthIndex != null) {
@@ -230,6 +256,11 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
           cursor = next;
         }
         _timelineSyncedAt[childId] = now;
+        if (childId == null) {
+          _latestRecapWeek = recapWeek == null
+              ? null
+              : DateTime.tryParse(recapWeek);
+        }
         chapters.forEach((id, months) {
           if (_children.child(id) != null) {
             _children.updateChild(id, {kValueChildKeyServerChapters: months});
@@ -298,7 +329,11 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
   /// Nháp điền sẵn của bản mock là dữ liệu mẫu theo thiết kế (ảnh trong app,
   /// tên bé mẫu) — không dùng với dữ liệu thật.
   @override
-  Future<Memory?> draft(MemoryKind kind) async => null;
+  Future<Memory?> draft(MemoryKind kind) async {
+    // Chỉ nháp trên máy của người dùng (không điền nội dung mẫu).
+    await ready();
+    return deviceDraft(kind);
+  }
 
   @override
   Future<Memory> create({
@@ -312,6 +347,7 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
     DateTime? occurredAt,
     String? feeling,
     List<String> people = const [],
+    String? locationLabel,
     String? milestoneCode,
     String? milestoneTitle,
     int? monthIndex,
@@ -335,6 +371,7 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
         occurredAt: occurredAt,
         feeling: feeling,
         people: people,
+        locationLabel: locationLabel,
         milestoneCode: milestoneCode,
         milestoneTitle: milestoneTitle,
         monthIndex: monthIndex,
@@ -359,6 +396,7 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
           occurredAt: occurredAt,
           feeling: feeling,
           people: people,
+          locationLabel: locationLabel,
           milestoneCode: milestoneCode,
           milestoneTitle: milestoneTitle,
           monthIndex: monthIndex,
@@ -379,6 +417,7 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
           'mediaAssets': mediaAssets,
           'visibility': visibility.name,
           'people': people,
+          'locationLabel': ?locationLabel,
           'uploadTotal': mediaAssets.length,
         },
       );
@@ -411,6 +450,13 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
       'occurredAt': at.toUtc().toIso8601String(),
       'visibility': _serverVisibility(visibility),
       if (_feelings.contains(serverFeeling)) 'feeling': serverFeeling,
+      if (people.isNotEmpty)
+        'people': [
+          for (final name in people)
+            if (name.trim().isNotEmpty) {'displayName': name.trim()},
+        ],
+      if (locationLabel != null && locationLabel.trim().isNotEmpty)
+        'locationLabel': locationLabel.trim(),
       if (kind == MemoryKind.quote) 'quoteContext': ?quoteContext,
       if (kind == MemoryKind.milestone)
         'milestone': {
@@ -574,6 +620,10 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
       idempotencyKey: _keyFor(fingerprint),
       bytes: bytes,
     );
+    if (MediaUploader.isAudio(path)) {
+      // VOICE: server cần audio READY (đã đo thời lượng) khi tạo ký ức.
+      await MediaUploader(_media).waitReady(assetId);
+    }
     _pendingKeys.remove(fingerprint);
     return assetId;
   }
@@ -873,7 +923,6 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
             ..._fieldsOf(record),
             'id': record.id,
             'mediaAssets': _urlsOf(record),
-            'people': const <String>[],
             'deletedAt': record.trashedAt?.toLocal().toIso8601String(),
             'deletedByUserId': _localUserId(record.trashedBy),
           }),
@@ -1215,6 +1264,8 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
       return local;
     }
     _cloudDrafts = {for (final record in records) ?record.id};
+    // Bản sao để trình soạn mở nháp ở chế độ sửa (ẩn khỏi danh sách ký ức).
+    records.forEach(_mirror);
     return [
       ...local.where((draft) => draft.location == DraftLocation.device),
       for (final record in records)
@@ -1234,6 +1285,30 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
     await _feed.trashMemory(draftId);
     await _feed.purgeMemory(draftId);
     _cloudDrafts = {..._cloudDrafts}..remove(draftId);
+    _memories.removeMemory(draftId);
+  }
+
+  /// Tuần của thẻ `WEEKLY_RECAP` mới nhất (dòng thời gian cả nhà).
+  DateTime? _latestRecapWeek;
+
+  static const _weeklyRecapKind = 'WEEKLY_RECAP';
+
+  @override
+  Future<DateTime?> latestRecapWeek() async =>
+      _serverFamilyId == null ? super.latestRecapWeek() : _latestRecapWeek;
+
+  @override
+  Future<Memory?> publishDraft(String draftId) async {
+    if (!_isServerMemory(draftId)) {
+      return super.publishDraft(draftId);
+    }
+    final record = await _feed.publish(draftId);
+    if (record == null) {
+      return null;
+    }
+    _mirror(record);
+    _cloudDrafts = {..._cloudDrafts}..remove(draftId);
+    return memory(draftId);
   }
 
   MemoryDraftItem _draftOf(MemoryRecord record) {
@@ -1338,11 +1413,91 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
   @protected
   void mirrorRecord(MemoryRecord record) => _mirror(record);
 
+  /// Ưu tiên ảnh/video còn trong thư viện máy (BF-20261021-008); null = tắt.
+  ILocalMediaService? localMedia;
+
+  /// assetId → file trong thư viện máy đã khớp (cùng nội dung gốc).
+  final _localPaths = <String, String>{};
+  final _localTried = <String>{};
+  final _localPending = <String, MemoryRecord>{};
+  bool _resolvingLocal = false;
+
+  /// Gom các asset có dấu vết file gốc để khớp với thư viện máy (chạy nền).
+  void _queueLocal(MemoryRecord record) {
+    final id = record.id;
+    if (localMedia == null || id == null) {
+      return;
+    }
+    final fresh = record.assets.any(
+      (asset) =>
+          asset.source?.sha256 != null &&
+          asset.assetId != null &&
+          !_localTried.contains(asset.assetId),
+    );
+    if (!fresh) {
+      return;
+    }
+    _localPending[id] = record;
+    if (!_resolvingLocal) {
+      _resolvingLocal = true;
+      unawaited(_resolveLocal());
+    }
+  }
+
+  Future<void> _resolveLocal() async {
+    try {
+      while (_localPending.isNotEmpty) {
+        final records = [..._localPending.values];
+        _localPending.clear();
+        final refs = [
+          for (final record in records)
+            for (final asset in record.assets)
+              if ((asset.assetId, asset.source?.sha256, asset.source?.key)
+                  case (final String id, final String sha, final String key)
+                  when _localTried.add(id))
+                RemoteMediaRef(
+                  assetId: id,
+                  sha256: sha,
+                  key: key,
+                  capturedAt: asset.source?.capturedAt,
+                ),
+        ];
+        final found = await localMedia!.resolve(refs);
+        if (found.isEmpty) {
+          continue;
+        }
+        _localPaths.addAll(found);
+        for (final record in records) {
+          if (record.assets.any((a) => found.containsKey(a.assetId))) {
+            _writeMedia(record);
+          }
+        }
+      }
+    } on Object catch (error) {
+      Logger().w('Không khớp được ảnh trong máy: $error');
+    } finally {
+      _resolvingLocal = false;
+    }
+  }
+
+  /// Ghi lại ảnh/video của một ký ức (sau khi tìm thấy bản trong máy).
+  void _writeMedia(MemoryRecord record) {
+    final id = record.id;
+    if (id == null || _memories.memory(id) == null) {
+      return;
+    }
+    _memories.updateMemory(id, {
+      'mediaAssets': _urlsOf(record),
+      'mediaVideos': _videoUrlsOf(record),
+    });
+  }
+
   void _mirror(MemoryRecord record) {
     final id = record.id;
     if (id == null) {
       return;
     }
+    _queueLocal(record);
     _trackProcessing(id, record.status);
     final urls = _urlsOf(record);
     final ready = urls.isNotEmpty && urls.length == record.assets.length;
@@ -1369,7 +1524,6 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
         'id': id,
         ...fields,
         ...media,
-        'people': const <String>[],
         ChildServiceImp.localKey: true,
       });
       return;
@@ -1392,27 +1546,33 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
     }
   }
 
-  /// Ảnh hiển thị của một asset: biến thể ảnh lớn nhất đã ký; video dùng
-  /// ảnh poster (MEM-08 phát bản `v1080` từ [_videoUrlsOf]).
-  static String? _displayUrl(MediaAssetRecord asset) => asset.kind == 'VIDEO'
+  /// Ảnh hiển thị của một asset: bản trong thư viện máy nếu có, không thì
+  /// biến thể ảnh lớn nhất đã ký; video dùng ảnh poster của server (MEM-08
+  /// phát bản local hoặc `v1080` từ [_videoUrlsOf]).
+  String? _displayUrl(MediaAssetRecord asset) => asset.kind == 'VIDEO'
       ? asset.urls['poster'] ?? asset.urls['t320']
-      : asset.urls['m1080'] ?? asset.urls['l2048'] ?? asset.urls['t320'];
+      : _localPaths[asset.assetId] ??
+            asset.urls['m1080'] ??
+            asset.urls['l2048'] ??
+            asset.urls['t320'];
 
   /// Asset id cùng thứ tự với [_urlsOf] (MEM-09 đổi ảnh).
-  static List<String> _assetIdsOf(MemoryRecord record) => [
+  List<String> _assetIdsOf(MemoryRecord record) => [
     for (final asset in record.assets)
       if (_displayUrl(asset) != null) ?asset.assetId,
   ];
 
   /// Ảnh hiển thị của một ký ức server (cùng thứ tự với [_videoUrlsOf]).
-  static List<String> _urlsOf(MemoryRecord record) =>
+  List<String> _urlsOf(MemoryRecord record) =>
       [for (final asset in record.assets) _displayUrl(asset)].nonNulls.toList();
 
   /// URL phát video theo từng ảnh của [_urlsOf]; ảnh tĩnh → null.
-  static List<String?> _videoUrlsOf(MemoryRecord record) => [
+  List<String?> _videoUrlsOf(MemoryRecord record) => [
     for (final asset in record.assets)
       if (_displayUrl(asset) != null)
-        asset.kind == 'VIDEO' ? asset.urls['v1080'] : null,
+        asset.kind == 'VIDEO'
+            ? _localPaths[asset.assetId] ?? asset.urls['v1080']
+            : null,
   ];
 
   /// Trường của ký ức server theo dạng kho trên máy (id người dùng của máy).
@@ -1434,7 +1594,19 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
     'reactions': _emojiReactions(record.reactions),
     'myReaction': _emojiOf(record.myReaction),
     'pregnancyWeek': ?_pregnancyWeekOf(record),
+    'feeling': record.feeling?.toLowerCase(),
+    'people': [for (final person in record.people) person.displayName],
+    'locationLabel': record.locationLabel,
+    // VOICE: thời lượng server đo + URL nghe của asset audio.
+    'voiceDurationSec': ?record.durationSec?.round(),
+    'voiceUrl': ?_audioUrlOf(record),
   };
+
+  static String? _audioUrlOf(MemoryRecord record) => record.assets
+      .where((asset) => asset.kind == 'AUDIO')
+      .map((asset) => asset.urls['a'])
+      .nonNulls
+      .firstOrNull;
 
   /// PREG-02/03: tuần thai lúc chụp, theo ngày dự sinh của thai kỳ trên máy.
   int? _pregnancyWeekOf(MemoryRecord record) {

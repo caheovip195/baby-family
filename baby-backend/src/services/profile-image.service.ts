@@ -2,7 +2,8 @@ import { createHash } from 'node:crypto';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 import type { AuthPrincipal } from '../common/auth/auth-principal';
 import {
   DomainError,
@@ -43,6 +44,7 @@ export class ProfileImageService implements IProfileImageService {
     private readonly images: IImageProcessorService,
     @Inject(APPLICATION_ACCESS_SERVICE)
     private readonly access: IApplicationAccessService,
+    @Optional() private readonly config?: ConfigService,
   ) {}
   async createIntent(
     actor: AuthPrincipal,
@@ -64,8 +66,65 @@ export class ProfileImageService implements IProfileImageService {
       input.size > POLICY.maxBytes
     )
       throw new DomainError('Avatar is too large.', 'MEDIA_TOO_LARGE', 422);
+    const client = Array.isArray(input.variants);
+    if (!client && !this.legacy())
+      throw new DomainError(
+        'Client variants are required.',
+        'MEDIA_VARIANTS_REQUIRED',
+        422,
+      );
+    if (
+      client &&
+      (!(MEDIA_POLICY.client.mainMimes.IMAGE as readonly string[]).includes(
+        input.mime.toLowerCase(),
+      ) ||
+        Math.max(input.width ?? 0, input.height ?? 0) >
+          MEDIA_POLICY.client.imageMaxEdge)
+    )
+      throw new DomainError(
+        'Invalid client avatar image.',
+        'MEDIA_VARIANT_INVALID',
+        422,
+      );
+    const codes = input.variants?.map((v) => v.code) ?? [];
+    if (
+      client &&
+      (MEDIA_POLICY.client.required.IMAGE.some(
+        (code) => !codes.includes(code),
+      ) ||
+        new Set(codes).size !== codes.length)
+    )
+      throw new DomainError(
+        'Avatar requires m1080 and t320 variants.',
+        'MEDIA_VARIANTS_REQUIRED',
+        422,
+      );
+    for (const variant of input.variants ?? []) {
+      const limit =
+        MEDIA_POLICY.client.variants[
+          variant.code as keyof typeof MEDIA_POLICY.client.variants
+        ];
+      if (
+        !(MEDIA_POLICY.client.allowed.IMAGE as readonly string[]).includes(
+          variant.code,
+        ) ||
+        !limit ||
+        !(MEDIA_POLICY.client.imageMimes as readonly string[]).includes(
+          variant.mime,
+        ) ||
+        variant.size < 1 ||
+        variant.size > Math.min(POLICY.maxBytes, limit.maxBytes) ||
+        (variant.width ?? 0) > limit.maxEdge ||
+        (variant.height ?? 0) > limit.maxEdge
+      )
+        throw new DomainError(
+          'Invalid avatar variant.',
+          'MEDIA_VARIANT_INVALID',
+          422,
+        );
+    }
     this.requireStorage();
-    // Owner-scoped deterministic UUID gives retries a durable key without schema changes.
+    // Owner-scoped deterministic UUID gives retries a durable request key.
     const hex = createHash('sha256')
       .update(`avatar:v1:${actor.userId}:${key}`)
       .digest('hex');
@@ -79,6 +138,28 @@ export class ProfileImageService implements IProfileImageService {
       storageBucket: this.storage.bucketName('userMedia'),
       storageKey: `usr/${actor.userId}/avatar/${id}/raw`,
       purgeAfter: new Date(Date.now() + POLICY.reservationTtlMs),
+      variants: client
+        ? [
+            {
+              code: 'orig',
+              mime: input.mime.toLowerCase(),
+              size: input.size,
+              sha256: input.sha256,
+              width: input.width,
+              height: input.height,
+            },
+            ...input.variants!,
+          ].map((v) => ({
+            variantCode: v.code,
+            storageBucket: this.storage.bucketName('userMedia'),
+            storageKey: `usr/${actor.userId}/avatar/${id}/${v.code === 'orig' ? 'raw' : v.code}`,
+            mime: v.mime,
+            sizeBytes: BigInt(v.size),
+            checksumSha256: Buffer.from(v.sha256, 'hex'),
+            width: v.width ?? null,
+            height: v.height ?? null,
+          }))
+        : [],
     });
     if (asset.status !== 'PENDING_UPLOAD' || this.expired(asset))
       return { assetId: id, status: asset.status };
@@ -97,6 +178,35 @@ export class ProfileImageService implements IProfileImageService {
     return {
       assetId: id,
       status: asset.status,
+      variantUploads: client
+        ? await Promise.all(
+            (input.variants ?? []).map(async (v) => {
+              const upload = await this.storage.createUploadUrl({
+                bucket: this.location(asset).bucket,
+                key: `usr/${actor.userId}/avatar/${id}/${v.code}`,
+                contentType: v.mime,
+                sha256Base64: Buffer.from(v.sha256, 'hex').toString('base64'),
+                expiresInSeconds: Math.max(
+                  1,
+                  Math.min(
+                    POLICY.uploadTtlSeconds,
+                    Math.floor(
+                      (asset.purgeAfter!.getTime() - Date.now()) / 1000,
+                    ),
+                  ),
+                ),
+              });
+              return {
+                code: v.code,
+                upload: {
+                  ...upload,
+                  mode: 'single' as const,
+                  method: 'PUT' as const,
+                },
+              };
+            }),
+          )
+        : undefined,
       upload: {
         mode: 'single' as const,
         method: 'PUT' as const,
@@ -111,8 +221,10 @@ export class ProfileImageService implements IProfileImageService {
     if (!asset) throw new NotFoundError('Avatar upload was not found.');
     this.requireStorage();
     const location = this.location(asset);
+    const variants = await this.repository.variants(actor.userId, assetId);
+    const client = variants.length > 0;
     if (asset.status === 'READY') {
-      await this.storage.eraseObjectVersions(location);
+      if (!client) await this.storage.eraseObjectVersions(location);
       return { assetId, status: 'READY' };
     }
     if (
@@ -124,6 +236,58 @@ export class ProfileImageService implements IProfileImageService {
         'UPLOAD_EXPIRED',
         409,
       );
+    if (!client && !this.legacy())
+      throw new DomainError(
+        'Client variants are required.',
+        'MEDIA_VARIANTS_REQUIRED',
+        422,
+      );
+    if (client) {
+      let total = 0n;
+      const verifiedVariants: { code: string; size: bigint }[] = [];
+      for (const variant of variants) {
+        const head = await this.storage.headObject({
+          ...location,
+          key: variant.storageKey,
+        });
+        const tolerance =
+          maxAcceptedSize(variant.sizeBytes) - variant.sizeBytes;
+        const difference = head ? BigInt(head.size) - variant.sizeBytes : 0n;
+        const code = !head
+          ? 'UPLOAD_VARIANT_MISSING'
+          : head.size < 1 || difference > tolerance || difference < -tolerance
+            ? 'UPLOAD_VARIANT_SIZE_MISMATCH'
+            : head.contentType?.split(';')[0]?.trim().toLowerCase() !==
+                variant.mime
+              ? 'UPLOAD_VARIANT_METADATA_MISMATCH'
+              : null;
+        if (code) {
+          await this.repository.fail(actor.userId, assetId);
+          for (const v of variants)
+            await this.storage.eraseObjectVersions({
+              ...location,
+              key: v.storageKey,
+            });
+          throw new DomainError(
+            'Uploaded avatar variant differs from intent.',
+            code,
+            422,
+          );
+        }
+        total += BigInt(head!.size);
+        verifiedVariants.push({
+          code: variant.variantCode,
+          size: BigInt(head!.size),
+        });
+      }
+      await this.repository.ready(
+        actor.userId,
+        assetId,
+        total,
+        verifiedVariants,
+      );
+      return { assetId, status: 'READY' };
+    }
     const head = await this.storage.headObject(location);
     if (!head)
       throw new DomainError(
@@ -206,10 +370,14 @@ export class ProfileImageService implements IProfileImageService {
   async userAvatar(userId: string) {
     const asset = await this.repository.avatar(userId);
     if (!asset) return { avatarUrl: null, avatarUrlExpiresAt: null };
-    const signed = await this.sign({
-      storageBucket: asset.storageBucket,
-      storageKey: this.readyKey(asset),
-    });
+    const variants = await this.repository.variants(userId, asset.id);
+    const thumbnail = variants.find((v) => v.variantCode === 't320');
+    const signed = await this.sign(
+      thumbnail ?? {
+        storageBucket: asset.storageBucket,
+        storageKey: this.readyKey(asset),
+      },
+    );
     return {
       avatarUrl: signed?.url ?? null,
       avatarUrlExpiresAt: signed?.expiresAt ?? null,
@@ -271,6 +439,9 @@ export class ProfileImageService implements IProfileImageService {
       key: location.storageKey,
       expiresInSeconds: MEDIA_POLICY.viewUrlTtlSeconds,
     });
+  }
+  private legacy() {
+    return this.config?.get<string>('MEDIA_SERVER_PROCESSING') === 'legacy';
   }
   private readyKey(asset: UserAsset) {
     return `${asset.storageKey}/avatar.webp`;

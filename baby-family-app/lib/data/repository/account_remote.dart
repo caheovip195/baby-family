@@ -7,8 +7,11 @@ import 'package:baby_family/data/model/privacy/family_deletion_record.dart';
 import 'package:baby_family/data/model/privacy/privacy_overview_record.dart';
 import 'package:baby_family/data/model/safety/blocked_user_record.dart';
 import 'package:baby_family/data/model/settings/ai_settings_record.dart';
+import 'package:baby_family/data/model/settings/help_center_record.dart';
 import 'package:baby_family/data/model/settings/notification_settings_record.dart';
+import 'package:baby_family/data/model/settings/sign_in_method_record.dart';
 import 'package:baby_family/data/model/settings/support_ticket.dart';
+import 'package:baby_family/data/model/settings/support_ticket_detail.dart';
 import 'package:baby_family/data/repository/base.dart';
 
 /// Tài khoản trên server (mục 7.25): xác thực lại bằng OTP, xoá tài khoản có
@@ -86,12 +89,22 @@ abstract class IAccountRemoteRepository extends IBaseRepository {
 
   Future<void> verifyPhoneChange(String phone, String code);
 
+  /// `GET /v1/me/sign-in-methods`.
+  Future<List<SignInMethodRecord>> signInMethods();
+
+  /// SET-11/12 `GET /v1/support/help-center`.
+  Future<HelpCenterRecord?> helpCenter(String locale);
+
   /// Hỗ trợ khách hàng (`/v1/support/*`).
   Future<List<String>> supportCategories();
 
   Future<SupportTicket?> createSupportTicket(JsonMap body);
 
   Future<List<SupportTicket>> supportTickets({int limit = 50});
+
+  Future<SupportTicketDetail?> supportTicket(String ticketId);
+
+  Future<void> sendSupportMessage(String ticketId, String body);
 
   /// SET-04 `GET /v1/families/{fid}/privacy-overview`.
   Future<PrivacyOverviewRecord?> privacyOverview(String familyId);

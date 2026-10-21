@@ -5,6 +5,9 @@ import 'package:baby_family/data/model/circle/circle_invite_record.dart';
 import 'package:baby_family/data/model/circle/circle_member_record.dart';
 import 'package:baby_family/data/model/family/family_record.dart';
 import 'package:baby_family/data/model/family/family_settings_record.dart';
+import 'package:baby_family/data/model/family/my_family_record.dart';
+import 'package:baby_family/data/model/family/purchase_intent_record.dart';
+import 'package:baby_family/data/model/family/timezone_catalog.dart';
 import 'package:baby_family/data/repository/base.dart';
 import 'package:baby_family/data/repository/family_remote.dart';
 import 'package:baby_family/data/repository_imp/base.dart';
@@ -91,4 +94,33 @@ class FamilyRemoteRepositoryImp extends BaseRepositoryImp
     final rs = await client!.getFamilyBilling(familyId);
     return rs.billing;
   }
+
+  @override
+  Future<List<MyFamilyRecord>> myFamilies() async =>
+      (await client!.getMyFamilies()).list?.items ?? const [];
+
+  @override
+  Future<void> setDefaultFamily(String familyId) =>
+      client!.setDefaultFamily({'familyId': familyId});
+
+  @override
+  Future<TimezoneCatalog?> timezones(String locale) async =>
+      (await client!.getTimezones(locale)).catalog;
+
+  @override
+  Future<PurchaseIntentRecord?> purchaseIntent(
+    String familyId,
+    String idempotencyKey, {
+    required String planCode,
+    required String store,
+  }) async => (await client!.createPurchaseIntent(familyId, idempotencyKey, {
+    'planCode': planCode,
+    'store': store,
+  })).intent;
+
+  @override
+  Future<FamilyBillingRecord?> verifyPurchase(
+    String familyId,
+    JsonMap body,
+  ) async => (await client!.verifyPurchase(familyId, body)).billing;
 }

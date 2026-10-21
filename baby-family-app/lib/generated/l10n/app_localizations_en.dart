@@ -4119,6 +4119,54 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get memVoiceRecording => 'Recording… tap to stop';
+
+  @override
+  String get memVoiceMicDenied =>
+      'Microphone access is needed — enable it in your phone Settings';
+
+  @override
+  String get memPeopleLabel => 'Who was there';
+
+  @override
+  String get memPeopleChoose => 'Choose people';
+
+  @override
+  String get memPeopleAddName => 'Add a name';
+
+  @override
+  String get memFeelingLabel => 'How it felt';
+
+  @override
+  String get memFeelingChoose => 'Choose a feeling';
+
+  @override
+  String get memFeelingNone => 'None';
+
+  @override
+  String memFeeling(String feeling) {
+    String _temp0 = intl.Intl.selectLogic(feeling, {
+      'love': 'Loving',
+      'joy': 'Joyful',
+      'touched': 'Touched',
+      'surprised': 'Surprised',
+      'peaceful': 'Peaceful',
+      'proud': 'Proud',
+      'other': '$feeling',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get memLocationLabel => 'Place';
+
+  @override
+  String get memLocationAdd => 'Add a place';
+
+  @override
+  String get memLocationHint => 'e.g. Grandma\'s house, the beach';
+
+  @override
   String get memKeepsakeTitleHint => 'Keepsake name';
 
   @override
@@ -5029,6 +5077,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get famSettingsTimezone => 'Family time zone';
 
   @override
+  String get famTimezoneSearch => 'Search a city or time zone';
+
+  @override
   String get famSettingsLunar => 'Show lunar calendar';
 
   @override
@@ -5674,6 +5725,25 @@ class AppLocalizationsEn extends AppLocalizations {
     });
     return '$_temp0';
   }
+
+  @override
+  String get supportThread => 'Conversation';
+
+  @override
+  String get supportNoReply => 'Our support team will reply here.';
+
+  @override
+  String get supportTeam => 'Support team';
+
+  @override
+  String get supportReply => 'Add a message';
+
+  @override
+  String get supportSendReply => 'Send';
+
+  @override
+  String get supportClosedHint =>
+      'This request is closed. Send a new one if you need more help.';
 
   @override
   String get setMyReports => 'My reports';
@@ -7023,6 +7093,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String subLimitTrimmed(int max) {
     return 'Video trimmed to $max minutes';
   }
+
+  @override
+  String subLimitQuotaTitle(String reason) {
+    String _temp0 = intl.Intl.selectLogic(reason, {
+      'QUOTA_STORAGE_EXCEEDED': 'Your plan storage is full',
+      'QUOTA_PHOTOS_PER_MEMORY': 'Too many photos for one memory',
+      'other': 'Memory limit of your plan reached',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String subLimitQuotaBody(String reason, String plan) {
+    String _temp0 = intl.Intl.selectLogic(reason, {
+      'QUOTA_PHOTOS_PER_MEMORY':
+          '$plan limits photos per memory. Remove a few and save again, or upgrade for more.',
+      'other':
+          '$plan has reached this limit. Keep what you wrote as a draft, or upgrade to keep saving.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get subLimitKeepDraft => 'Save as draft';
 
   @override
   String get subIssueTitle => 'Renewal payment didn’t go through';

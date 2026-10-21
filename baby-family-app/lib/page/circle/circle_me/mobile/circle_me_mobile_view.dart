@@ -2,10 +2,12 @@ import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/page/circle/circle_me/circle_me_controller.dart';
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/enum.dart';
+import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/relative_text.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
+import 'package:baby_family/utils/router/session_route.dart';
 import 'package:baby_family/utils/widget/app_radio_mark.dart';
 import 'package:baby_family/utils/widget/app_relative_avatar.dart';
 import 'package:baby_family/utils/widget/base_scaffold.dart';
@@ -39,8 +41,15 @@ class CircleMeMobileView extends HookConsumerWidget {
         context,
         memberships: memberships,
       );
-      if (familyId != null) {
-        await controller.switchFamily(familyId);
+      final picked = memberships
+          .where((m) => m.familyId == familyId)
+          .firstOrNull;
+      if (picked == null || picked.current) {
+        return;
+      }
+      final session = await controller.switchFamily(picked.familyId);
+      if (kValueUseRemoteSession && context.mounted) {
+        await context.router.replaceAll([routeForSession(session)]);
       }
     }
 

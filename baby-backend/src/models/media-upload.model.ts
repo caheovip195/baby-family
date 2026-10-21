@@ -13,6 +13,7 @@ export class MediaUpload {
   constructor(
     readonly asset: Asset,
     readonly reservation: MediaUploadReservation | null,
+    readonly variants: readonly AssetVariant[] = [],
   ) {}
 
   isPending(): boolean {
@@ -51,6 +52,31 @@ export class MediaUpload {
 }
 
 /** An asset the viewer may see, with its processed variants. */
+/**
+ * Fingerprint of the original file on the uploader's device, declared by the
+ * client (BF-20261021-008) so the app can show its own gallery copy first.
+ * Not verified by the server; never used for access or dedup decisions.
+ */
+export interface MediaSource {
+  /** SHA-256 of the original bytes before client processing. */
+  readonly sha256: Uint8Array;
+  /** Client metadata key (`kind|shortxlong|seconds`), see the app. */
+  readonly key: string;
+  readonly capturedAt: Date | null;
+}
+
+/** Response shape of {@link MediaSource}; null when not declared. */
+export function mediaSourceJson(
+  asset: Pick<Asset, 'sourceSha256' | 'sourceKey' | 'capturedAt'>,
+): { sha256: string; key: string; capturedAt: string | null } | null {
+  if (asset.sourceSha256 === null || asset.sourceKey === null) return null;
+  return {
+    sha256: Buffer.from(asset.sourceSha256).toString('hex'),
+    key: asset.sourceKey,
+    capturedAt: asset.capturedAt?.toISOString() ?? null,
+  };
+}
+
 export class MediaAssetView {
   constructor(
     readonly asset: Asset,

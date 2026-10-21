@@ -1,3 +1,4 @@
+import { MEDIA_POLICY } from '../config/media-policy';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '../generated/prisma/client';
 import type {
@@ -27,6 +28,7 @@ import { parentSharedAssetSql } from './parent-asset-visibility.sql';
 type Transaction = Prisma.TransactionClient;
 type AssetWithReservation = AssetRow & {
   storageReservation: StorageReservationRow[];
+  assetVariants?: AssetVariantRow[];
 };
 
 const TRANSACTION_OPTIONS = {
@@ -70,7 +72,10 @@ export class MediaRepository implements IMediaRepository {
   async findUpload(assetId: string): Promise<MediaUpload | null> {
     const row = await this.prisma.asset.findFirst({
       where: { id: assetId, deletedAt: null },
-      include: { storageReservation: { where: { deletedAt: null } } },
+      include: {
+        storageReservation: { where: { deletedAt: null } },
+        assetVariants: { where: { deletedAt: null } },
+      },
     });
     return row ? mapUpload(row) : null;
   }
@@ -98,7 +103,11 @@ export class MediaRepository implements IMediaRepository {
     return row.multipartUploadId;
   }
 
-  confirmUpload(assetId: string, sizeBytes: bigint): Promise<Asset> {
+  confirmUpload(
+    assetId: string,
+    sizeBytes: bigint,
+    variantSizes?: ReadonlyMap<string, bigint>,
+  ): Promise<Asset> {
     return this.prisma.$transaction(async (tx) => {
       const familyId = await this.lockFamilyOfAsset(tx, assetId);
       const asset = await tx.asset.findFirst({
@@ -110,34 +119,64 @@ export class MediaRepository implements IMediaRepository {
         where: { assetId, deletedAt: null, status: 'RESERVED' },
       });
       if (!reservation) throw new ConflictError('Upload reservation expired.');
+      const variants = await tx.assetVariant.findMany({
+        where: { assetId, deletedAt: null },
+      });
+      const client = variants.length > 0;
+      if (
+        client &&
+        (!variantSizes ||
+          variants.some((v) => !variantSizes.has(v.variantCode)))
+      )
+        throw new ConflictError(
+          'All client variants must be verified before confirmation.',
+        );
+      const totalBytes = client
+        ? variants.reduce(
+            (sum, v) => sum + variantSizes!.get(v.variantCode)!,
+            0n,
+          )
+        : sizeBytes;
       const now = new Date();
+      if (client)
+        for (const variant of variants)
+          await tx.assetVariant.update({
+            where: { id: variant.id },
+            data: { sizeBytes: variantSizes!.get(variant.variantCode)! },
+          });
       const updated = await tx.asset.update({
         where: { id: assetId },
-        data: { status: 'UPLOADED', sizeBytes },
+        data: {
+          status: client ? 'READY' : 'UPLOADED',
+          sizeBytes: totalBytes,
+          ...(client ? { readyAt: now, keepOriginal: true } : {}),
+        },
       });
       await tx.storageReservation.update({
         where: { id: reservation.id },
         data: {
           status: 'CONFIRMED',
-          consumedBytes: sizeBytes,
+          consumedBytes: totalBytes,
           confirmedAt: now,
         },
       });
       await tx.$executeRaw`
         UPDATE billing.family_usage
         SET reserved_storage_bytes = GREATEST(reserved_storage_bytes - ${reservation.reservedBytes}, 0),
-            storage_bytes = storage_bytes + ${sizeBytes},
+            storage_bytes = storage_bytes + ${totalBytes},
             version = version + 1
         WHERE family_id = ${familyId}::uuid`;
       // Transactional outbox (spec §3.3): the media worker consumes this event.
-      await tx.outboxEvent.create({
-        data: {
-          eventType: 'media.asset_uploaded',
-          aggregateId: assetId,
-          familyId,
-          payload: { assetId, familyId, kind: asset.kind, mime: asset.mime },
-        },
-      });
+      if (client) await this.publishReadyMemories(tx, assetId, familyId);
+      else
+        await tx.outboxEvent.create({
+          data: {
+            eventType: 'media.asset_uploaded',
+            aggregateId: assetId,
+            familyId,
+            payload: { assetId, familyId, kind: asset.kind, mime: asset.mime },
+          },
+        });
       return mapAsset(updated);
     }, TRANSACTION_OPTIONS);
   }
@@ -190,7 +229,11 @@ export class MediaRepository implements IMediaRepository {
     if (visible.length === 0) return [];
     const rows = await this.prisma.asset.findMany({
       where: { id: { in: visible.map((row) => row.id) } },
-      include: { assetVariants: { where: { deletedAt: null } } },
+      include: {
+        assetVariants: {
+          where: { deletedAt: null, variantCode: { not: 'orig' } },
+        },
+      },
     });
     return rows.map(
       (row) =>
@@ -238,6 +281,9 @@ export class MediaRepository implements IMediaRepository {
         id: assetId,
         deletedAt: null,
         status: { in: ['UPLOADED', 'PROCESSING'] },
+        assetVariants: {
+          none: { deletedAt: null, storageKey: { endsWith: '/orig' } },
+        },
       },
       data: { status: 'PROCESSING' },
     });
@@ -345,11 +391,12 @@ export class MediaRepository implements IMediaRepository {
     }, TRANSACTION_OPTIONS);
   }
 
-  async failStaleProcessing(before: Date): Promise<number> {
+  async failStaleProcessing(before: Date, familyId?: string): Promise<number> {
     const updated = await this.prisma.asset.updateMany({
       where: {
         deletedAt: null,
         status: 'PROCESSING',
+        ...(familyId ? { familyId } : {}),
         updatedAt: { lte: before },
       },
       data: { status: 'FAILED', failureReason: 'PROCESSING_STALLED' },
@@ -361,12 +408,14 @@ export class MediaRepository implements IMediaRepository {
     before: Date,
     runKeyPrefix: string,
     limit: number,
+    familyId?: string,
   ): Promise<Asset[]> {
     const ids = await this.prisma.$queryRaw<{ id: string }[]>`
       SELECT a.id FROM app.assets a
       LEFT JOIN ops.job_runs r
         ON r.idempotency_key = ${runKeyPrefix} || a.id::text AND r.deleted_at IS NULL
       WHERE a.deleted_at IS NULL AND a.status IN ('UPLOADED', 'PROCESSING')
+        AND (${familyId ?? null}::uuid IS NULL OR a.family_id = ${familyId ?? null}::uuid)
         AND a.updated_at <= ${before}
         AND (r.id IS NULL
              OR r.status IN ('PENDING', 'RETRY_WAIT')
@@ -384,10 +433,12 @@ export class MediaRepository implements IMediaRepository {
     rule: PurgeRule,
     cutoff: Date,
     limit: number,
+    familyId?: string,
   ): Promise<string[]> {
     const rows = await this.prisma.$queryRaw<{ id: string }[]>`
       SELECT a.id FROM app.assets a
       WHERE a.deleted_at IS NULL AND ${purgePredicate(rule, cutoff)}
+        AND (${familyId ?? null}::uuid IS NULL OR a.family_id = ${familyId ?? null}::uuid)
       ORDER BY a.created_at
       LIMIT ${limit}`;
     return rows.map((row) => row.id);
@@ -397,12 +448,14 @@ export class MediaRepository implements IMediaRepository {
     before: Date,
     maxDeclaredBytes: bigint,
     limit: number,
+    familyId?: string,
   ): Promise<MediaUpload[]> {
     const rows = await this.prisma.asset.findMany({
       where: {
         deletedAt: null,
         status: 'PENDING_UPLOAD',
         createdAt: { lte: before },
+        ...(familyId ? { familyId } : {}),
         declaredSize: { lte: maxDeclaredBytes },
         storageReservation: {
           some: {
@@ -412,7 +465,10 @@ export class MediaRepository implements IMediaRepository {
           },
         },
       },
-      include: { storageReservation: { where: { deletedAt: null } } },
+      include: {
+        storageReservation: { where: { deletedAt: null } },
+        assetVariants: { where: { deletedAt: null } },
+      },
       orderBy: { createdAt: 'asc' },
       take: limit,
     });
@@ -436,7 +492,10 @@ export class MediaRepository implements IMediaRepository {
       if (!locked) return false;
       const asset = await tx.asset.findUniqueOrThrow({
         where: { id: assetId },
-        include: { storageReservation: { where: { deletedAt: null } } },
+        include: {
+          storageReservation: { where: { deletedAt: null } },
+          assetVariants: { where: { deletedAt: null } },
+        },
       });
       const now = new Date();
       await this.releaseReservation(
@@ -473,11 +532,15 @@ export class MediaRepository implements IMediaRepository {
     }, TRANSACTION_OPTIONS);
   }
 
-  async findAssetsAwaitingObjectPurge(limit: number): Promise<Asset[]> {
+  async findAssetsAwaitingObjectPurge(
+    limit: number,
+    familyId?: string,
+  ): Promise<Asset[]> {
     const rows = await this.prisma.asset.findMany({
       where: {
         deletedAt: { not: null },
         status: 'DELETED',
+        ...(familyId ? { familyId } : {}),
         purgeAfter: { lte: new Date() },
       },
       orderBy: { purgeAfter: 'asc' },
@@ -583,7 +646,10 @@ export class MediaRepository implements IMediaRepository {
         sha256: Buffer.from(input.sha256),
         deletedAt: null,
       },
-      include: { storageReservation: { where: { deletedAt: null } } },
+      include: {
+        storageReservation: { where: { deletedAt: null } },
+        assetVariants: { where: { deletedAt: null } },
+      },
     });
     // Private assets are never reused from someone else's copy.
     if (
@@ -664,8 +730,47 @@ export class MediaRepository implements IMediaRepository {
         width: input.width,
         height: input.height,
         durationMs: input.durationMs,
+        capturedAt: input.source?.capturedAt ?? null,
+        sourceSha256: input.source ? Buffer.from(input.source.sha256) : null,
+        sourceKey: input.source?.key ?? null,
       },
     });
+    const variants: AssetVariantRow[] = [];
+    if (input.variants !== undefined) {
+      const primaryCode = MEDIA_POLICY.client.primaryCode[input.kind];
+      for (const v of [
+        {
+          code: primaryCode,
+          mime: input.mime,
+          size: Number(input.declaredSize),
+          sha256: Buffer.from(input.sha256).toString('hex'),
+          width: input.width,
+          height: input.height,
+        },
+        ...input.variants,
+      ]) {
+        variants.push(
+          await tx.assetVariant.create({
+            data: {
+              familyId: input.familyId,
+              assetId: id,
+              variantCode: v.code,
+              storageBucket: input.storageBucket,
+              storageKey:
+                v.code === primaryCode
+                  ? input.storageKey(id)
+                  : `fam/${input.familyId}/a/${id}/${v.code}`,
+              mime: v.mime.toLowerCase(),
+              sizeBytes: BigInt(v.size),
+              width: v.width ?? null,
+              height: v.height ?? null,
+              durationMs: v.code === primaryCode ? input.durationMs : null,
+              checksumSha256: Buffer.from(v.sha256, 'hex'),
+            },
+          }),
+        );
+      }
+    }
     const reservation = await tx.storageReservation.create({
       data: {
         familyId: input.familyId,
@@ -684,7 +789,11 @@ export class MediaRepository implements IMediaRepository {
     await this.remember(tx, input, id, false);
     return {
       outcome: 'created',
-      upload: mapUpload({ ...asset, storageReservation: [reservation] }),
+      upload: mapUpload({
+        ...asset,
+        storageReservation: [reservation],
+        assetVariants: variants,
+      }),
     };
   }
 
@@ -723,7 +832,10 @@ export class MediaRepository implements IMediaRepository {
     const asset = record.resultEntityId
       ? await tx.asset.findFirst({
           where: { id: record.resultEntityId, deletedAt: null },
-          include: { storageReservation: { where: { deletedAt: null } } },
+          include: {
+            storageReservation: { where: { deletedAt: null } },
+            assetVariants: { where: { deletedAt: null } },
+          },
         })
       : null;
     if (!asset) throw new ConflictError('The uploaded file no longer exists.');
@@ -857,6 +969,7 @@ function mapUpload(row: AssetWithReservation): MediaUpload {
           idempotencyKey: reservation.idempotencyKey,
         }
       : null,
+    row.assetVariants?.map(mapVariant) ?? [],
   );
 }
 
@@ -878,6 +991,9 @@ function mapAsset(row: AssetRow): Asset {
     durationMs: row.durationMs,
     sha256: row.sha256 === null ? null : new Uint8Array(row.sha256),
     capturedAt: row.capturedAt,
+    sourceSha256:
+      row.sourceSha256 === null ? null : new Uint8Array(row.sourceSha256),
+    sourceKey: row.sourceKey,
     blurhash: row.blurhash,
     keepOriginal: row.keepOriginal,
     failureReason: row.failureReason,

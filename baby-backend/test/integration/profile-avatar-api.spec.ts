@@ -1,4 +1,3 @@
-import { ServiceUnavailableError } from '../../src/common/errors/domain.error';
 import { createHash, randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import type { Server } from 'node:http';
@@ -31,7 +30,6 @@ import { USER_SERVICE } from '../../src/interfaces/services/user-service.interfa
 import { AccountRepository } from '../../src/repositories/account.repository';
 import { ProfileImageRepository } from '../../src/repositories/profile-image.repository';
 import { UserRepository } from '../../src/repositories/user.repository';
-import { ImageProcessorService } from '../../src/services/image-processor.service';
 import { ObjectStorageService } from '../../src/services/object-storage.service';
 import { ProfileImageService } from '../../src/services/profile-image.service';
 import { UserService } from '../../src/services/user.service';
@@ -39,6 +37,7 @@ import { UserService } from '../../src/services/user.service';
 interface Intent {
   assetId: string;
   status: string;
+  variantUploads?: { code: string; upload: NonNullable<Intent['upload']> }[];
   upload?: {
     mode: string;
     method: string;
@@ -56,6 +55,8 @@ describe('AUTH-04 account avatar (focused Nest + PostgreSQL + MinIO)', () => {
   let prisma: PrismaService;
   let storage: IObjectStorageService;
   let image: Buffer;
+  let thumbnail: Buffer;
+  const processImage = jest.fn();
   const userId = randomUUID(),
     otherId = randomUUID();
   const configValues = parse(
@@ -77,6 +78,16 @@ describe('AUTH-04 account avatar (focused Nest + PostgreSQL + MinIO)', () => {
         mime,
         size: bytes.length,
         sha256: createHash('sha256').update(bytes).digest('hex'),
+        width: 20,
+        height: 20,
+        variants: ['m1080', 't320'].map((code) => ({
+          code,
+          mime: 'image/webp',
+          size: thumbnail.length,
+          sha256: createHash('sha256').update(thumbnail).digest('hex'),
+          width: 20,
+          height: 20,
+        })),
       });
   const complete = (id: string, user = userId) =>
     request(app.getHttpServer())
@@ -95,6 +106,11 @@ describe('AUTH-04 account avatar (focused Nest + PostgreSQL + MinIO)', () => {
       body: new Uint8Array(bytes),
     });
     expect(result.status).toBe(200);
+  }
+  async function uploadAll(value: Intent, bytes = image) {
+    await put(value.upload!, bytes);
+    for (const variant of value.variantUploads ?? [])
+      await put(variant.upload, thumbnail);
   }
   beforeAll(async () => {
     if (
@@ -136,7 +152,10 @@ describe('AUTH-04 account avatar (focused Nest + PostgreSQL + MinIO)', () => {
         { provide: PROFILE_IMAGE_SERVICE, useClass: ProfileImageService },
         { provide: PROFILE_IMAGE_REPOSITORY, useClass: ProfileImageRepository },
         { provide: OBJECT_STORAGE_SERVICE, useClass: ObjectStorageService },
-        { provide: IMAGE_PROCESSOR_SERVICE, useClass: ImageProcessorService },
+        {
+          provide: IMAGE_PROCESSOR_SERVICE,
+          useValue: { process: processImage },
+        },
         { provide: USER_SERVICE, useClass: UserService },
         { provide: USER_REPOSITORY, useClass: UserRepository },
         { provide: ACCOUNT_REPOSITORY, useClass: AccountRepository },
@@ -167,6 +186,7 @@ describe('AUTH-04 account avatar (focused Nest + PostgreSQL + MinIO)', () => {
       .png()
       .withMetadata({ exif: { IFD0: { Artist: 'Synthetic metadata' } } })
       .toBuffer();
+    thumbnail = await sharp(image).webp().toBuffer();
   });
   afterAll(async () => {
     if (prisma) {
@@ -183,6 +203,7 @@ describe('AUTH-04 account avatar (focused Nest + PostgreSQL + MinIO)', () => {
         ))
           await storage.eraseObjectVersions({ bucket: 'userMedia', key });
       }
+      await prisma.$executeRaw`DELETE FROM app.user_asset_variants WHERE owner_user_id IN (${userId}::uuid, ${otherId}::uuid)`;
       await prisma.userAsset.deleteMany({
         where: { ownerUserId: { in: [userId, otherId] } },
       });
@@ -192,42 +213,22 @@ describe('AUTH-04 account avatar (focused Nest + PostgreSQL + MinIO)', () => {
     }
     await app?.close();
   });
-  it('uploads without family, completes idempotently, attaches and serves stripped avatar; clears with null', async () => {
+  it('uploads client variants without family, completes idempotently and serves client thumbnail', async () => {
     const key = randomUUID();
-    const first = await intent(key).expect(201),
-      value = data<Intent>(first);
+    const value = data<Intent>(await intent(key).expect(201));
     expect(value.status).toBe('PENDING_UPLOAD');
-    expect(value.upload?.mode).toBe('single');
-    expect(errorCode(await complete(value.assetId).expect(409))).toBe(
-      'UPLOAD_NOT_FOUND',
-    );
+    expect(value.variantUploads?.map((v) => v.code)).toEqual(['m1080', 't320']);
     expect(data<Intent>(await intent(key).expect(201)).assetId).toBe(
       value.assetId,
     );
-    expect(
-      errorCode(await patch({ avatarAssetId: value.assetId }).expect(422)),
-    ).toBe('AVATAR_ASSET_INVALID');
-    await put(value.upload!, image);
+    await patch({ avatarAssetId: value.assetId }).expect(422);
+    await uploadAll(value);
     expect(data<Intent>(await complete(value.assetId).expect(200)).status).toBe(
       'READY',
     );
     await complete(value.assetId).expect(200);
-    // Reusing the still-valid PUT can only recreate raw, never replace the served rendition.
-    await put(value.upload!, image);
-    expect(
-      await storage.headObject({
-        bucket: 'userMedia',
-        key: `usr/${userId}/avatar/${value.assetId}/raw`,
-      }),
-    ).not.toBeNull();
-    await complete(value.assetId).expect(200);
-    expect(
-      await storage.headObject({
-        bucket: 'userMedia',
-        key: `usr/${userId}/avatar/${value.assetId}/raw`,
-      }),
-    ).toBeNull();
     expect(data<Intent>(await intent(key).expect(201)).upload).toBeUndefined();
+    expect(processImage).not.toHaveBeenCalled();
     const updated = data<{
       avatarAssetId: string;
       avatarUrl: string;
@@ -262,7 +263,7 @@ describe('AUTH-04 account avatar (focused Nest + PostgreSQL + MinIO)', () => {
     );
     expect(me.avatarAssetId).toBe(value.assetId);
     expect(me.displayName).toBe('Avatar profile updated');
-    expect(me.avatarUrl).toContain('/avatar.webp');
+    expect(me.avatarUrl).toContain('/t320');
     const cleared = data<{ avatarAssetId: null; avatarUrl: null }>(
       await patch({ avatarAssetId: null }).expect(200),
     );
@@ -271,7 +272,7 @@ describe('AUTH-04 account avatar (focused Nest + PostgreSQL + MinIO)', () => {
   });
   it('rejects another account avatar and completion, unknown/deleted/support assets and expired upload', async () => {
     const first = data<Intent>(await intent().expect(201));
-    await put(first.upload!, image);
+    await uploadAll(first);
     await complete(first.assetId).expect(200);
     expect(
       errorCode(
@@ -307,31 +308,83 @@ describe('AUTH-04 account avatar (focused Nest + PostgreSQL + MinIO)', () => {
       'UPLOAD_EXPIRED',
     );
   });
-  it('recovers when raw deletion fails after the READY commit', async () => {
+  it('fails and removes all uploaded objects when a required variant is absent', async () => {
     const value = data<Intent>(await intent().expect(201));
     await put(value.upload!, image);
-    const erase = jest
-      .spyOn(storage, 'eraseObjectVersions')
-      .mockRejectedValueOnce(
-        new ServiceUnavailableError('Synthetic storage outage.'),
-      );
-    try {
-      await complete(value.assetId).expect(503);
-      const stored = await prisma.userAsset.findUniqueOrThrow({
-        where: { id: value.assetId },
-      });
-      expect(stored.status).toBe('READY');
-      expect(stored.purgeAfter).not.toBeNull();
-      await complete(value.assetId).expect(200);
+    expect(errorCode(await complete(value.assetId).expect(422))).toBe(
+      'UPLOAD_VARIANT_MISSING',
+    );
+    expect(
+      (
+        await prisma.userAsset.findUniqueOrThrow({
+          where: { id: value.assetId },
+        })
+      ).status,
+    ).toBe('FAILED');
+    expect(
+      await storage.headObject({
+        bucket: 'userMedia',
+        key: `usr/${userId}/avatar/${value.assetId}/raw`,
+      }),
+    ).toBeNull();
+  });
+  it('fails variant size mismatches and rejects changed variant declarations on replay', async () => {
+    const key = randomUUID();
+    const body = {
+      purpose: 'AVATAR',
+      mime: 'image/png',
+      size: image.length,
+      sha256: createHash('sha256').update(image).digest('hex'),
+      variants: ['m1080', 't320'].map((code) => ({
+        code,
+        mime: 'image/webp',
+        size: thumbnail.length * 2,
+        sha256: createHash('sha256').update(thumbnail).digest('hex'),
+      })),
+    };
+    const post = (value: object) =>
+      request(app.getHttpServer())
+        .post('/api/v1/me/avatar/upload-intents')
+        .set('Authorization', auth())
+        .set('Idempotency-Key', key)
+        .send(value);
+    const value = data<Intent>(await post(body).expect(201));
+    await post({
+      ...body,
+      variants: body.variants.map((v) => ({ ...v, size: v.size + 1 })),
+    }).expect(409);
+    await uploadAll(value);
+    expect(errorCode(await complete(value.assetId).expect(422))).toBe(
+      'UPLOAD_VARIANT_SIZE_MISMATCH',
+    );
+    expect(
+      (
+        await prisma.userAsset.findUniqueOrThrow({
+          where: { id: value.assetId },
+        })
+      ).status,
+    ).toBe('FAILED');
+    for (const variant of value.variantUploads ?? [])
       expect(
         await storage.headObject({
           bucket: 'userMedia',
-          key: stored.storageKey,
+          key: `usr/${userId}/avatar/${value.assetId}/${variant.code}`,
         }),
       ).toBeNull();
-    } finally {
-      erase.mockRestore();
-    }
+  });
+  it('rejects old avatar intents by default', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/me/avatar/upload-intents')
+      .set('Authorization', auth())
+      .set('Idempotency-Key', randomUUID())
+      .send({
+        purpose: 'AVATAR',
+        mime: 'image/png',
+        size: image.length,
+        sha256: createHash('sha256').update(image).digest('hex'),
+      })
+      .expect(422);
+    expect(errorCode(response)).toBe('MEDIA_VARIANTS_REQUIRED');
   });
   it('validates intent/replay and rejects non-images with unchanged profile', async () => {
     const key = randomUUID();
@@ -346,12 +399,6 @@ describe('AUTH-04 account avatar (focused Nest + PostgreSQL + MinIO)', () => {
         ),
       ),
     ).toBe('MEDIA_TYPE_UNSUPPORTED');
-    const bytes = Buffer.from('invalid image payload');
-    const invalid = data<Intent>(await intent(randomUUID(), bytes).expect(201));
-    await put(invalid.upload!, bytes);
-    expect(errorCode(await complete(invalid.assetId).expect(422))).toBe(
-      'AVATAR_IMAGE_INVALID',
-    );
     await patch({ avatarAssetId: 'invalid' }).expect(400);
     await request(app.getHttpServer()).get('/api/v1/me').expect(401);
   });

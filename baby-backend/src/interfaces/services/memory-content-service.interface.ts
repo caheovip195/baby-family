@@ -1,3 +1,4 @@
+import type { PeopleSuggestionsResponseDto } from '../../dto/memory/memory-people.dto';
 import type {
   MemorySearchQueryDto,
   OnThisDayQueryDto,
@@ -23,6 +24,10 @@ export const MEMORY_CONTENT_SERVICE = Symbol('MEMORY_CONTENT_SERVICE');
 
 /** Create and read memories for Parents (spec §6.3, §11.3, §11.5). */
 export interface IMemoryContentService {
+  peopleSuggestions(
+    actor: AuthPrincipal,
+    familyId: string,
+  ): Promise<PeopleSuggestionsResponseDto>;
   drafts(
     actor: AuthPrincipal,
     familyId: string,

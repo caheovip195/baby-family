@@ -1,4 +1,5 @@
 import { completedPhotoMonths } from '../common/time/monthly-photo-age';
+import { mediaSourceJson } from '../models/media-upload.model';
 import {
   TIMELINE_CARD_REPOSITORY,
   type ITimelineCardRepository,
@@ -71,6 +72,7 @@ import type {
 const planSchema = z.object({
   quotas: z.looseObject({
     photosPerMemory: z.number().int().nonnegative(),
+    audioMaxSec: z.number().int().nonnegative().optional(),
     // Catalog semantic: an absent quota key means the plan sets no limit.
     memoryCount: z.number().int().nonnegative().optional(),
   }),
@@ -105,6 +107,13 @@ export class MemoryContentService implements IMemoryContentService {
     @Inject(TIMELINE_CARD_REPOSITORY)
     private readonly timelineCards?: ITimelineCardRepository,
   ) {}
+
+  async peopleSuggestions(actor: AuthPrincipal, familyId: string) {
+    await this.access.requireParent(actor, familyId, 'read');
+    return {
+      items: await this.repository.peopleSuggestions(familyId, actor.userId),
+    };
+  }
 
   async create(
     actor: AuthPrincipal,
@@ -264,13 +273,22 @@ export class MemoryContentService implements IMemoryContentService {
           'LETTER_RELEASE_INVALID',
         );
     }
-    if (assetIds.length > plan.data.quotas.photosPerMemory)
+    if (
+      input.kind !== 'VOICE' &&
+      assetIds.length > plan.data.quotas.photosPerMemory
+    )
       throw new DomainError(
         'Too many photos for one memory on this plan.',
         'QUOTA_PHOTOS_PER_MEMORY',
         402,
       );
     this.assertAssets(actor, context, assetIds);
+    this.assertVoice(
+      input.kind,
+      context,
+      assetIds,
+      plan.data.quotas.audioMaxSec,
+    );
     if (
       !scope.isParent &&
       context.assets.some((a) => a.uploaderUserId !== actor.userId)
@@ -289,6 +307,7 @@ export class MemoryContentService implements IMemoryContentService {
 
     const localDate = localDateIn(occurredAt, context.timezone);
     const view = await this.repository.create({
+      people: input.people,
       authorRole: scope.isParent ? 'PARENT' : 'CIRCLE',
       status:
         !scope.isParent &&
@@ -412,7 +431,16 @@ export class MemoryContentService implements IMemoryContentService {
       context,
       view.assets.map((a) => a.assetId),
     );
-    if (view.assets.length > plan.quotas.photosPerMemory)
+    this.assertVoice(
+      view.memory.kind,
+      context,
+      view.assets.map((a) => a.assetId),
+      plan.quotas.audioMaxSec,
+    );
+    if (
+      view.memory.kind !== 'VOICE' &&
+      view.assets.length > plan.quotas.photosPerMemory
+    )
       throw new DomainError('Too many photos.', 'QUOTA_PHOTOS_PER_MEMORY', 402);
     if (
       view.memory.occurredAt.getTime() >
@@ -999,7 +1027,11 @@ export class MemoryContentService implements IMemoryContentService {
     const context = await this.repository.findCreationContext(
       familyId,
       actor.userId,
-      { childIds, pregnancyId, assetIds: add },
+      {
+        childIds,
+        pregnancyId,
+        assetIds: current.kind === 'VOICE' ? finalAssetIds : add,
+      },
     );
     if (!context) throw new NotFoundError('Family was not found.');
     const plan = await this.planOf(familyId, actor.userId);
@@ -1020,9 +1052,18 @@ export class MemoryContentService implements IMemoryContentService {
         body,
       );
     }
-    if (finalAssetIds.length > plan.quotas.photosPerMemory)
+    if (
+      current.kind !== 'VOICE' &&
+      finalAssetIds.length > plan.quotas.photosPerMemory
+    )
       throw new DomainError('Too many photos.', 'QUOTA_PHOTOS_PER_MEMORY', 402);
     this.assertAssets(actor, context, add);
+    this.assertVoice(
+      current.kind,
+      context,
+      finalAssetIds,
+      plan.quotas.audioMaxSec,
+    );
     this.assertSubjects(context, childIds, pregnancyId, familyMoment);
     const localDate = localDateIn(occurredAt, context.timezone);
     const updated = await this.repository.update({
@@ -1030,6 +1071,7 @@ export class MemoryContentService implements IMemoryContentService {
       memoryId,
       actorUserId: actor.userId,
       expectedVersion,
+      people: input.people,
       title,
       body,
       occurredAt,
@@ -1069,7 +1111,7 @@ export class MemoryContentService implements IMemoryContentService {
             isCover: assetId === cover,
           }))
         : undefined,
-      assetQuota: plan.quotas.photosPerMemory,
+      assetQuota: current.kind === 'VOICE' ? 1 : plan.quotas.photosPerMemory,
       changedFields: changed,
     });
     return this.projectOne(actor, updated);
@@ -1243,6 +1285,45 @@ export class MemoryContentService implements IMemoryContentService {
     }
   }
 
+  /** Only READY assets carry trusted worker-probed duration (never request metadata). */
+  private assertVoice(
+    kind: MemoryKind,
+    context: MemoryCreationContext,
+    assetIds: readonly string[],
+    audioMaxSec: number | undefined,
+  ): void {
+    if (kind !== 'VOICE') return;
+    if (assetIds.length !== 1)
+      throw memoryError(
+        'A voice memory requires exactly one audio asset.',
+        'MEMORY_VOICE_ASSET_REQUIRED',
+      );
+    const asset = context.assets.find((a) => a.id === assetIds[0]);
+    if (
+      asset?.kind !== 'AUDIO' ||
+      asset.status !== 'READY' ||
+      asset.durationMs == null ||
+      !Number.isFinite(asset.durationMs) ||
+      asset.durationMs <= 0
+    )
+      throw memoryError(
+        'A voice memory requires processed audio with a valid duration.',
+        'MEMORY_VOICE_ASSET_INVALID',
+      );
+    // A missing duration capability never grants unlimited audio.
+    if (audioMaxSec === undefined)
+      throw new DomainError(
+        'The family plan does not allow audio.',
+        'SUBSCRIPTION_REQUIRED',
+        402,
+      );
+    if (asset.durationMs > audioMaxSec * 1000)
+      throw memoryError(
+        'Audio duration exceeds the family plan quota.',
+        'QUOTA_AUDIO_DURATION_EXCEEDED',
+      );
+  }
+
   private assertAssets(
     actor: AuthPrincipal,
     context: MemoryCreationContext,
@@ -1357,6 +1438,7 @@ export class MemoryContentService implements IMemoryContentService {
           height: asset.height,
           durationMs: asset.durationMs,
           blurhash: asset.blurhash,
+          source: mediaSourceJson(asset),
           urls,
           urlsExpireAt: expiresAt,
         });
@@ -1414,6 +1496,10 @@ export class MemoryContentService implements IMemoryContentService {
         memory.kind === 'LETTER' &&
         memory.unlockAt !== null &&
         memory.authorUserId !== actor.userId;
+      const voiceDurationMs =
+        memory.kind === 'VOICE'
+          ? view.assets.find((a) => a.kind === 'AUDIO')?.durationMs
+          : null;
       return {
         id: memory.id,
         familyId: memory.familyId,
@@ -1432,6 +1518,7 @@ export class MemoryContentService implements IMemoryContentService {
         childIds: sealed ? [] : [...view.childIds],
         pregnancyId: sealed ? null : memory.pregnancyId,
         pregnancyWeek: sealed ? null : memory.pregnancyWeek,
+        people: sealed ? [] : [...view.people],
         feeling: sealed ? null : memory.feeling,
         locationLabel: sealed ? null : memory.locationLabel,
         quoteContext: sealed ? null : memory.quoteContext,
@@ -1444,6 +1531,7 @@ export class MemoryContentService implements IMemoryContentService {
         sealed,
         unlockAt: memory.unlockAt?.toISOString() ?? null,
         coverAssetId: sealed ? null : view.coverAssetId,
+        durationSec: voiceDurationMs == null ? null : voiceDurationMs / 1000,
         assets: sealed
           ? []
           : view.assets.map(

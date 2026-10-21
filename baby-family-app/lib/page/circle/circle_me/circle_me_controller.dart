@@ -2,9 +2,11 @@ import 'package:baby_family/data/dto/circle_view.dart';
 import 'package:baby_family/data/model/child/child.dart';
 import 'package:baby_family/data/model/circle/circle_preferences.dart';
 import 'package:baby_family/data/model/family/family_membership.dart';
+import 'package:baby_family/data/model/session/app_session.dart';
 import 'package:baby_family/data/provider/app_setting.dart';
 import 'package:baby_family/data/provider/circle.dart';
 import 'package:baby_family/data/provider/family.dart';
+import 'package:baby_family/data/provider/session.dart';
 import 'package:baby_family/data/service/circle.dart';
 import 'package:baby_family/page/application_base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
@@ -91,6 +93,10 @@ class CircleMeController extends BaseNotifier {
   Future<List<FamilyMembership>> memberships() =>
       ref.read(familyServiceProvider).memberships();
 
-  Future<void> switchFamily(String familyId) =>
-      ref.read(familyServiceProvider).switchFamily(familyId);
+  /// FAM-08: ghi nhớ gia đình được chọn rồi đồng bộ lại phiên theo nhà đó;
+  /// trả phiên mới để điều hướng.
+  Future<AppSession> switchFamily(String familyId) async {
+    await ref.read(familyServiceProvider).switchFamily(familyId);
+    return ref.read(sessionServiceProvider).changeFamily(familyId);
+  }
 }

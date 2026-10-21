@@ -1,8 +1,11 @@
+import { TRANSACTIONAL_MAIL_JOBS } from './transactional-mail-policy';
+
 /**
  * Queue, job and outbox routing definitions (spec §9). Retry policies are declared
  * per job type (docs/jobs.md); BullMQ attempts equal the PostgreSQL run maxAttempts.
  */
 export const QUEUES = {
+  transactionalMail: 'transactional-mail',
   push: 'push',
   care: 'care',
   memory: 'memory',
@@ -14,6 +17,7 @@ export const QUEUES = {
   maintenance: 'maintenance',
   familyDeletion: 'family-deletion',
   subscriptionReminders: 'subscription-reminders',
+  storeNotifications: 'store-notifications',
 } as const;
 export type QueueName = (typeof QUEUES)[keyof typeof QUEUES];
 
@@ -29,6 +33,20 @@ export interface JobPolicy {
 }
 
 export const JOBS = {
+  processStoreNotification: {
+    queue: QUEUES.storeNotifications,
+    name: 'billing.process-store-notification',
+    maxAttempts: 3,
+    backoffMs: 10000,
+    leaseMs: 120000,
+  },
+  reconcileStoreNotifications: {
+    queue: QUEUES.storeNotifications,
+    name: 'billing.reconcile-store-notifications',
+    maxAttempts: 3,
+    backoffMs: 10000,
+    leaseMs: 120000,
+  },
   prepareMissionBoards: {
     queue: QUEUES.missions,
     name: 'mission.prepare-boards',
@@ -142,9 +160,14 @@ export const SCHEDULES = [
   { job: JOBS.purgeTrash, everyMs: 60 * 60 * 1000 },
 ] as const;
 
-/** Outbox event type → queued job. Unknown types stay unpublished for their consumer. */
+/** Primary consumer. Unknown event types remain unpublished for investigation. */
 export const OUTBOX_ROUTES = {
+  'mail.transactional': TRANSACTIONAL_MAIL_JOBS.deliver,
+  'billing.store-notification': JOBS.processStoreNotification,
   'mission.changed': JOBS.awardBadges,
+  'memory.created': JOBS.awardBadges,
+  'memory.restored': JOBS.awardBadges,
+  'memory.perspective.changed': JOBS.awardBadges,
   'event.changed': JOBS.planEventReminders,
   'media.asset_uploaded': JOBS.processAsset,
   'memory.published': JOBS.dispatchNotification,
@@ -164,6 +187,70 @@ export const OUTBOX_ROUTES = {
   'us.appreciation.created': JOBS.dispatchNotification,
 } as const satisfies Record<string, JobPolicy>;
 export type OutboxEventType = keyof typeof OUTBOX_ROUTES;
+
+/** Fan-out consumers use distinct durable queue IDs; retry replays all safely. */
+export const OUTBOX_ADDITIONAL_ROUTES: Readonly<
+  Record<string, readonly JobPolicy[]>
+> = {
+  'us.request.done': [JOBS.awardBadges],
+  'memory.published': [JOBS.awardBadges],
+  'us.appreciation.created': [JOBS.awardBadges],
+};
+
+/** Audited terminal events: no asynchronous consumer is required (docs/outbox.md). */
+export const OUTBOX_NO_CONSUMER: Readonly<Record<string, string>> = {
+  'auth.email_verified':
+    'Persistent email-verification proof; acknowledge delivery but retain row until identity revocation/account erasure.',
+  FamilyCreated: 'Family and initial license are persisted atomically.',
+  PartnerLinked: 'Membership and access version are persisted atomically.',
+  TrialStarted: 'Trial grant is persisted atomically; reminders scan grants.',
+  'badge.earned': 'Award and private recipient inbox are persisted atomically.',
+  'memory.changed':
+    'Feed, search, recap and timeline read PostgreSQL directly.',
+  'memory.updated': 'Read projections query current memory and ACL directly.',
+  'memory.trashed': 'Reads filter state; restore retains this outbox audit.',
+  'memory.purged': 'Purge already completed; no search cache to invalidate.',
+  'memory.letter.released':
+    'Release persists visibility; reads expose due letters directly; no configured release notification template.',
+  'memory.original.downloaded':
+    'Download audit only; signed link already issued.',
+  'comment.deleted': 'Reads query current comment state directly.',
+  'child.order_changed': 'Ordering is persisted; no materialized feed cache.',
+  'child.status_changed': 'Status and access version are persisted atomically.',
+  'child.profile_changed': 'Reads query current profile directly.',
+  'pregnancy.profile_changed': 'Reads query current profile directly.',
+  'pregnancy.status_changed': 'Status and ACL are persisted atomically.',
+  'pregnancy.birth_converted':
+    'Conversion and new child are persisted atomically.',
+  'pregnancy.prep.changed': 'Preparation state is read directly.',
+  'family.settings.changed':
+    'Settings and access version are persisted atomically.',
+  'family.entitlement.changed': 'Billing projection is persisted atomically.',
+  'family.entitlement.recompute':
+    'License belongs to family; lifecycle gates access after parent departure.',
+  'family.deletion_scheduled':
+    'Deletion and transactional mail reconciliation scan scheduled requests.',
+  'family.deletion_cancelled':
+    'Cancellation is persisted; scanners recheck request state.',
+  'family.deleted': 'Erasure executor already completed business effects.',
+  'us.request.reminder_set':
+    'Reminder preference is persisted; no recipient notification required.',
+  'us.request.seen': 'Read receipt persisted; no notification template.',
+  'us.request.cancel': 'Cancellation persisted; lists read current state.',
+  'us.request.expired':
+    'Expiry is persisted; request lists read current state.',
+  'us.journal.created': 'Private journal remains private; no fan-out.',
+  'us.journal.deleted': 'Private journal state is persisted; no fan-out.',
+  'us.journal.shared': 'Shared projection is queried under couple ACL.',
+  'us.appreciation.reacted':
+    'Reaction is persisted; no configured notification template.',
+  'us.appreciation.share_requested':
+    'Approval state is queried under couple ACL.',
+  'us.appreciation.share_approved':
+    'Family memory emits its own created and published events.',
+  'us.appreciation.share_rejected':
+    'Rejection state is queried under couple ACL.',
+};
 
 export const OUTBOX_RELAY = {
   batchSize: 50,

@@ -7,8 +7,11 @@ import 'package:baby_family/data/model/privacy/family_deletion_record.dart';
 import 'package:baby_family/data/model/privacy/privacy_overview_record.dart';
 import 'package:baby_family/data/model/safety/blocked_user_record.dart';
 import 'package:baby_family/data/model/settings/ai_settings_record.dart';
+import 'package:baby_family/data/model/settings/help_center_record.dart';
 import 'package:baby_family/data/model/settings/notification_settings_record.dart';
+import 'package:baby_family/data/model/settings/sign_in_method_record.dart';
 import 'package:baby_family/data/model/settings/support_ticket.dart';
+import 'package:baby_family/data/model/settings/support_ticket_detail.dart';
 import 'package:baby_family/data/repository/account_remote.dart';
 import 'package:baby_family/data/repository/base.dart';
 import 'package:baby_family/data/repository_imp/base.dart';
@@ -158,12 +161,28 @@ class AccountRemoteRepositoryImp extends BaseRepositoryImp
       client!.verifyPhoneChange({'phone': phone, 'code': code});
 
   @override
+  Future<List<SignInMethodRecord>> signInMethods() async =>
+      (await client!.getSignInMethods()).methods;
+
+  @override
+  Future<HelpCenterRecord?> helpCenter(String locale) async =>
+      (await client!.getHelpCenter(locale)).helpCenter;
+
+  @override
   Future<List<String>> supportCategories() async =>
       (await client!.getSupportCategories()).catalog?.categories ?? const [];
 
   @override
   Future<SupportTicket?> createSupportTicket(JsonMap body) async =>
       (await client!.createSupportTicket(body)).ticket;
+
+  @override
+  Future<SupportTicketDetail?> supportTicket(String ticketId) async =>
+      (await client!.getSupportTicket(ticketId)).ticket;
+
+  @override
+  Future<void> sendSupportMessage(String ticketId, String body) =>
+      client!.sendSupportMessage(ticketId, {'body': body});
 
   @override
   Future<List<SupportTicket>> supportTickets({int limit = 50}) async =>

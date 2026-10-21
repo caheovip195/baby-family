@@ -1,4 +1,5 @@
 import 'package:baby_family/data/dto/memory_grid_photo.dart';
+import 'package:baby_family/data/dto/recap_week_entry.dart';
 import 'package:baby_family/data/model/child/child.dart';
 import 'package:baby_family/data/model/family/member.dart';
 import 'package:baby_family/data/model/memory/album.dart';
@@ -49,6 +50,9 @@ class MemoriesTabController extends BaseNotifier {
   /// MEM-02: ảnh của bé/cả nhà (chế độ server lấy từ lưới ảnh của server).
   List<MemoryGridPhoto> photos = const [];
   List<ChapterSummary> chapters = const [];
+
+  /// Thẻ recap tuần mới nhất (dòng thời gian cả nhà, chế độ server).
+  RecapWeekEntry? recapWeek;
   ChildMemoryStats? stats;
   Map<String, Member> _membersByUser = const {};
   List<CollectionSummary> collections = const [];
@@ -122,6 +126,10 @@ class MemoriesTabController extends BaseNotifier {
       final born = child != null && !child.isPregnancy;
       stats = child == null ? null : await childService.stats(child.id);
       chapters = born ? await childService.chapters(child.id) : const [];
+      final week = subjectId == null
+          ? await memoryService.latestRecapWeek()
+          : null;
+      recapWeek = week == null ? null : RecapWeekEntry(week);
       monthlyChild = born
           ? child
           : children.where((c) => !c.isPregnancy).lastOrNull;
@@ -160,8 +168,24 @@ class MemoriesTabController extends BaseNotifier {
     }).toList();
   }
 
-  /// Dòng thời gian: chương tháng ([ChapterSummary]) xen ký ức ([Memory]).
+  /// Dòng thời gian: chương tháng ([ChapterSummary]) xen ký ức ([Memory]);
+  /// thẻ recap tuần ([RecapWeekEntry]) đứng trước ký ức cũ hơn cuối tuần đó.
   List<Object> get timeline {
+    final entries = _timelineEntries;
+    final week = recapWeek;
+    if (week == null || filter != MemoryFilter.all) {
+      return entries;
+    }
+    final after = week.weekStart.add(const Duration(days: 7));
+    final index = entries.indexWhere(
+      (entry) =>
+          (entry is Memory && entry.occurredAt.isBefore(after)) ||
+          entry is ChapterSummary,
+    );
+    return [...entries]..insert(index < 0 ? entries.length : index, week);
+  }
+
+  List<Object> get _timelineEntries {
     final items = timelineMemories;
     if (chapters.isEmpty) {
       return items;

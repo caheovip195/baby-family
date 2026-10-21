@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:baby_family/data/dto/processed_media.dart';
 import 'package:baby_family/data/model/memory/album_record.dart';
 import 'package:baby_family/data/model/memory/download_url_record.dart';
 import 'package:baby_family/data/model/memory/letter_record.dart';
@@ -23,6 +24,7 @@ import 'package:baby_family/data/repository/base.dart';
 import 'package:baby_family/data/repository/media.dart';
 import 'package:baby_family/data/repository/memory_feed.dart';
 import 'package:baby_family/data/repository/memory_library_remote.dart';
+import 'package:baby_family/data/service/local_media.dart';
 import 'package:baby_family/data/service_imp/memory_library_remote.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
@@ -223,7 +225,40 @@ class _FakeFeed extends Fake implements IMemoryFeedRepository {
       records.where((record) => record.id == memoryId).firstOrNull;
 }
 
+class _FakeLocalMedia implements ILocalMediaService {
+  final asked = <List<String>>[];
+
+  @override
+  Future<void> enable() async {}
+
+  @override
+  Future<Map<String, String>> resolve(List<RemoteMediaRef> refs) async {
+    asked.add([for (final ref in refs) ref.assetId]);
+    return {for (final ref in refs) ref.assetId: '/gallery/${ref.sha256}.jpg'};
+  }
+}
+
 class _FakeMedia extends Fake implements IMediaRepository {
+  /// Client nén ảnh (BF-20261021-008): bản JPEG + biến thể giả.
+  @override
+  Future<ProcessedMedia> processImage(String path) async => ProcessedMedia(
+    kind: 'IMAGE',
+    mime: 'image/jpeg',
+    bytes: Uint8List.fromList(path.codeUnits),
+    variants: [
+      MediaVariantFile(
+        code: 'm1080',
+        mime: 'image/jpeg',
+        bytes: Uint8List.fromList([1]),
+      ),
+      MediaVariantFile(
+        code: 't320',
+        mime: 'image/jpeg',
+        bytes: Uint8List.fromList([2]),
+      ),
+    ],
+  );
+
   @override
   Future<Uint8List> readLocalFile(String path) async =>
       Uint8List.fromList(path.codeUnits);
@@ -465,6 +500,51 @@ void main() {
     expect(recap?.highlights.map((memory) => memory.id), ['srv-top']);
     expect(recap?.heroAssets, ['https://cdn/top.jpg']);
   });
+
+  test(
+    'BF-20261021-008: a gallery copy is shown before the server image',
+    () async {
+      final local = _FakeLocalMedia();
+      final memories = service()..localMedia = local;
+      feed.records = [
+        MemoryRecord(
+          id: 'srv-local',
+          kind: 'MOMENT',
+          status: 'PUBLISHED',
+          authorUserId: 'srv-me',
+          childIds: [childId],
+          occurredAt: DateTime.utc(2026, 10, 14),
+          assets: [
+            MediaAssetRecord(
+              assetId: 'a-local',
+              kind: 'IMAGE',
+              urls: const {'m1080': 'https://cdn/local.jpg'},
+              source: MediaSourceRecord(
+                sha256: 'sha-1',
+                key: 'IMAGE|3024x4032|0',
+                capturedAt: DateTime.utc(2026, 10, 14, 8),
+              ),
+            ),
+            const MediaAssetRecord(
+              assetId: 'a-remote',
+              kind: 'IMAGE',
+              urls: {'m1080': 'https://cdn/remote.jpg'},
+            ),
+          ],
+        ),
+      ];
+      await memories.memories(childId: childId);
+      await pumpEventQueue();
+      expect(local.asked, [
+        ['a-local'],
+      ]);
+      final memory = await memories.memory('srv-local');
+      expect(memory?.mediaAssets, [
+        '/gallery/sha-1.jpg',
+        'https://cdn/remote.jpg',
+      ]);
+    },
+  );
 
   test('MEM-19: relatives\' posts are reviewed on the server', () async {
     library.pending = [

@@ -15,7 +15,9 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UploadIntent {
 
-@JsonKey(name: 'assetId') String? get assetId;@JsonKey(name: 'status') String? get status;@JsonKey(name: 'deduplicated') bool get deduplicated;@JsonKey(name: 'upload') UploadInstruction? get upload;
+@JsonKey(name: 'assetId') String? get assetId;@JsonKey(name: 'status') String? get status;@JsonKey(name: 'deduplicated') bool get deduplicated;@JsonKey(name: 'upload') UploadInstruction? get upload;/// Phiên upload nhiều biến thể (BF-20261021-008): PUT riêng từng biến thể
+/// client đã tạo.
+@JsonKey(name: 'variantUploads') List<VariantUpload> get variantUploads;
 /// Create a copy of UploadIntent
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +30,16 @@ $UploadIntentCopyWith<UploadIntent> get copyWith => _$UploadIntentCopyWithImpl<U
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UploadIntent&&(identical(other.assetId, assetId) || other.assetId == assetId)&&(identical(other.status, status) || other.status == status)&&(identical(other.deduplicated, deduplicated) || other.deduplicated == deduplicated)&&(identical(other.upload, upload) || other.upload == upload));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UploadIntent&&(identical(other.assetId, assetId) || other.assetId == assetId)&&(identical(other.status, status) || other.status == status)&&(identical(other.deduplicated, deduplicated) || other.deduplicated == deduplicated)&&(identical(other.upload, upload) || other.upload == upload)&&const DeepCollectionEquality().equals(other.variantUploads, variantUploads));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,assetId,status,deduplicated,upload);
+int get hashCode => Object.hash(runtimeType,assetId,status,deduplicated,upload,const DeepCollectionEquality().hash(variantUploads));
 
 @override
 String toString() {
-  return 'UploadIntent(assetId: $assetId, status: $status, deduplicated: $deduplicated, upload: $upload)';
+  return 'UploadIntent(assetId: $assetId, status: $status, deduplicated: $deduplicated, upload: $upload, variantUploads: $variantUploads)';
 }
 
 
@@ -48,7 +50,7 @@ abstract mixin class $UploadIntentCopyWith<$Res>  {
   factory $UploadIntentCopyWith(UploadIntent value, $Res Function(UploadIntent) _then) = _$UploadIntentCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'assetId') String? assetId,@JsonKey(name: 'status') String? status,@JsonKey(name: 'deduplicated') bool deduplicated,@JsonKey(name: 'upload') UploadInstruction? upload
+@JsonKey(name: 'assetId') String? assetId,@JsonKey(name: 'status') String? status,@JsonKey(name: 'deduplicated') bool deduplicated,@JsonKey(name: 'upload') UploadInstruction? upload,@JsonKey(name: 'variantUploads') List<VariantUpload> variantUploads
 });
 
 
@@ -65,13 +67,14 @@ class _$UploadIntentCopyWithImpl<$Res>
 
 /// Create a copy of UploadIntent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? assetId = freezed,Object? status = freezed,Object? deduplicated = null,Object? upload = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? assetId = freezed,Object? status = freezed,Object? deduplicated = null,Object? upload = freezed,Object? variantUploads = null,}) {
   return _then(_self.copyWith(
 assetId: freezed == assetId ? _self.assetId : assetId // ignore: cast_nullable_to_non_nullable
 as String?,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String?,deduplicated: null == deduplicated ? _self.deduplicated : deduplicated // ignore: cast_nullable_to_non_nullable
 as bool,upload: freezed == upload ? _self.upload : upload // ignore: cast_nullable_to_non_nullable
-as UploadInstruction?,
+as UploadInstruction?,variantUploads: null == variantUploads ? _self.variantUploads : variantUploads // ignore: cast_nullable_to_non_nullable
+as List<VariantUpload>,
   ));
 }
 /// Create a copy of UploadIntent
@@ -163,13 +166,24 @@ return $default(_that);case _:
 
 @JsonSerializable(explicitToJson: true)
 class _UploadIntent implements UploadIntent {
-  const _UploadIntent({@JsonKey(name: 'assetId') this.assetId, @JsonKey(name: 'status') this.status, @JsonKey(name: 'deduplicated') this.deduplicated = false, @JsonKey(name: 'upload') this.upload});
+  const _UploadIntent({@JsonKey(name: 'assetId') this.assetId, @JsonKey(name: 'status') this.status, @JsonKey(name: 'deduplicated') this.deduplicated = false, @JsonKey(name: 'upload') this.upload, @JsonKey(name: 'variantUploads') final  List<VariantUpload> variantUploads = const <VariantUpload>[]}): _variantUploads = variantUploads;
   factory _UploadIntent.fromJson(Map<String, dynamic> json) => _$UploadIntentFromJson(json);
 
 @override@JsonKey(name: 'assetId') final  String? assetId;
 @override@JsonKey(name: 'status') final  String? status;
 @override@JsonKey(name: 'deduplicated') final  bool deduplicated;
 @override@JsonKey(name: 'upload') final  UploadInstruction? upload;
+/// Phiên upload nhiều biến thể (BF-20261021-008): PUT riêng từng biến thể
+/// client đã tạo.
+ final  List<VariantUpload> _variantUploads;
+/// Phiên upload nhiều biến thể (BF-20261021-008): PUT riêng từng biến thể
+/// client đã tạo.
+@override@JsonKey(name: 'variantUploads') List<VariantUpload> get variantUploads {
+  if (_variantUploads is EqualUnmodifiableListView) return _variantUploads;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_variantUploads);
+}
+
 
 /// Create a copy of UploadIntent
 /// with the given fields replaced by the non-null parameter values.
@@ -184,16 +198,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UploadIntent&&(identical(other.assetId, assetId) || other.assetId == assetId)&&(identical(other.status, status) || other.status == status)&&(identical(other.deduplicated, deduplicated) || other.deduplicated == deduplicated)&&(identical(other.upload, upload) || other.upload == upload));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UploadIntent&&(identical(other.assetId, assetId) || other.assetId == assetId)&&(identical(other.status, status) || other.status == status)&&(identical(other.deduplicated, deduplicated) || other.deduplicated == deduplicated)&&(identical(other.upload, upload) || other.upload == upload)&&const DeepCollectionEquality().equals(other._variantUploads, _variantUploads));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,assetId,status,deduplicated,upload);
+int get hashCode => Object.hash(runtimeType,assetId,status,deduplicated,upload,const DeepCollectionEquality().hash(_variantUploads));
 
 @override
 String toString() {
-  return 'UploadIntent(assetId: $assetId, status: $status, deduplicated: $deduplicated, upload: $upload)';
+  return 'UploadIntent(assetId: $assetId, status: $status, deduplicated: $deduplicated, upload: $upload, variantUploads: $variantUploads)';
 }
 
 
@@ -204,7 +218,7 @@ abstract mixin class _$UploadIntentCopyWith<$Res> implements $UploadIntentCopyWi
   factory _$UploadIntentCopyWith(_UploadIntent value, $Res Function(_UploadIntent) _then) = __$UploadIntentCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'assetId') String? assetId,@JsonKey(name: 'status') String? status,@JsonKey(name: 'deduplicated') bool deduplicated,@JsonKey(name: 'upload') UploadInstruction? upload
+@JsonKey(name: 'assetId') String? assetId,@JsonKey(name: 'status') String? status,@JsonKey(name: 'deduplicated') bool deduplicated,@JsonKey(name: 'upload') UploadInstruction? upload,@JsonKey(name: 'variantUploads') List<VariantUpload> variantUploads
 });
 
 
@@ -221,17 +235,247 @@ class __$UploadIntentCopyWithImpl<$Res>
 
 /// Create a copy of UploadIntent
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? assetId = freezed,Object? status = freezed,Object? deduplicated = null,Object? upload = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? assetId = freezed,Object? status = freezed,Object? deduplicated = null,Object? upload = freezed,Object? variantUploads = null,}) {
   return _then(_UploadIntent(
 assetId: freezed == assetId ? _self.assetId : assetId // ignore: cast_nullable_to_non_nullable
 as String?,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String?,deduplicated: null == deduplicated ? _self.deduplicated : deduplicated // ignore: cast_nullable_to_non_nullable
 as bool,upload: freezed == upload ? _self.upload : upload // ignore: cast_nullable_to_non_nullable
-as UploadInstruction?,
+as UploadInstruction?,variantUploads: null == variantUploads ? _self._variantUploads : variantUploads // ignore: cast_nullable_to_non_nullable
+as List<VariantUpload>,
   ));
 }
 
 /// Create a copy of UploadIntent
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UploadInstructionCopyWith<$Res>? get upload {
+    if (_self.upload == null) {
+    return null;
+  }
+
+  return $UploadInstructionCopyWith<$Res>(_self.upload!, (value) {
+    return _then(_self.copyWith(upload: value));
+  });
+}
+}
+
+
+/// @nodoc
+mixin _$VariantUpload {
+
+@JsonKey(name: 'code') String? get code;@JsonKey(name: 'upload') UploadInstruction? get upload;
+/// Create a copy of VariantUpload
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$VariantUploadCopyWith<VariantUpload> get copyWith => _$VariantUploadCopyWithImpl<VariantUpload>(this as VariantUpload, _$identity);
+
+  /// Serializes this VariantUpload to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VariantUpload&&(identical(other.code, code) || other.code == code)&&(identical(other.upload, upload) || other.upload == upload));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,code,upload);
+
+@override
+String toString() {
+  return 'VariantUpload(code: $code, upload: $upload)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $VariantUploadCopyWith<$Res>  {
+  factory $VariantUploadCopyWith(VariantUpload value, $Res Function(VariantUpload) _then) = _$VariantUploadCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'code') String? code,@JsonKey(name: 'upload') UploadInstruction? upload
+});
+
+
+$UploadInstructionCopyWith<$Res>? get upload;
+
+}
+/// @nodoc
+class _$VariantUploadCopyWithImpl<$Res>
+    implements $VariantUploadCopyWith<$Res> {
+  _$VariantUploadCopyWithImpl(this._self, this._then);
+
+  final VariantUpload _self;
+  final $Res Function(VariantUpload) _then;
+
+/// Create a copy of VariantUpload
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? code = freezed,Object? upload = freezed,}) {
+  return _then(_self.copyWith(
+code: freezed == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
+as String?,upload: freezed == upload ? _self.upload : upload // ignore: cast_nullable_to_non_nullable
+as UploadInstruction?,
+  ));
+}
+/// Create a copy of VariantUpload
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UploadInstructionCopyWith<$Res>? get upload {
+    if (_self.upload == null) {
+    return null;
+  }
+
+  return $UploadInstructionCopyWith<$Res>(_self.upload!, (value) {
+    return _then(_self.copyWith(upload: value));
+  });
+}
+}
+
+
+/// Adds pattern-matching-related methods to [VariantUpload].
+extension VariantUploadPatterns on VariantUpload {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _VariantUpload value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _VariantUpload() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _VariantUpload value)  $default,){
+final _that = this;
+switch (_that) {
+case _VariantUpload():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _VariantUpload value)?  $default,){
+final _that = this;
+switch (_that) {
+case _VariantUpload() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+@JsonSerializable(explicitToJson: true)
+class _VariantUpload implements VariantUpload {
+  const _VariantUpload({@JsonKey(name: 'code') this.code, @JsonKey(name: 'upload') this.upload});
+  factory _VariantUpload.fromJson(Map<String, dynamic> json) => _$VariantUploadFromJson(json);
+
+@override@JsonKey(name: 'code') final  String? code;
+@override@JsonKey(name: 'upload') final  UploadInstruction? upload;
+
+/// Create a copy of VariantUpload
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$VariantUploadCopyWith<_VariantUpload> get copyWith => __$VariantUploadCopyWithImpl<_VariantUpload>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$VariantUploadToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VariantUpload&&(identical(other.code, code) || other.code == code)&&(identical(other.upload, upload) || other.upload == upload));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,code,upload);
+
+@override
+String toString() {
+  return 'VariantUpload(code: $code, upload: $upload)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$VariantUploadCopyWith<$Res> implements $VariantUploadCopyWith<$Res> {
+  factory _$VariantUploadCopyWith(_VariantUpload value, $Res Function(_VariantUpload) _then) = __$VariantUploadCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'code') String? code,@JsonKey(name: 'upload') UploadInstruction? upload
+});
+
+
+@override $UploadInstructionCopyWith<$Res>? get upload;
+
+}
+/// @nodoc
+class __$VariantUploadCopyWithImpl<$Res>
+    implements _$VariantUploadCopyWith<$Res> {
+  __$VariantUploadCopyWithImpl(this._self, this._then);
+
+  final _VariantUpload _self;
+  final $Res Function(_VariantUpload) _then;
+
+/// Create a copy of VariantUpload
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? code = freezed,Object? upload = freezed,}) {
+  return _then(_VariantUpload(
+code: freezed == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
+as String?,upload: freezed == upload ? _self.upload : upload // ignore: cast_nullable_to_non_nullable
+as UploadInstruction?,
+  ));
+}
+
+/// Create a copy of VariantUpload
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')

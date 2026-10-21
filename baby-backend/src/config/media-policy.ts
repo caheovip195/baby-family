@@ -48,6 +48,34 @@ export const MEDIA_POLICY = {
     // US-07 private journal photos (BF-20261019-004): separate bucket, owner only.
     JOURNAL: { kinds: ['IMAGE'], bucket: 'userMedia', private: true },
   } satisfies Record<string, MediaPurposePolicy>,
+  client: {
+    imageMimes: ['image/jpeg', 'image/webp'],
+    mainMimes: {
+      IMAGE: ['image/jpeg', 'image/webp', 'image/png'],
+      VIDEO: ['video/mp4'],
+      AUDIO: ['audio/mp4', 'audio/x-m4a'],
+    },
+    imageMaxEdge: 4096,
+    videoMaxShortEdge: 1080,
+    videoMaxLongEdge: 1920,
+    variants: {
+      m1080: { maxBytes: 5 * MIB, maxEdge: 1080 },
+      t320: { maxBytes: 5 * MIB, maxEdge: 320 },
+      l2048: { maxBytes: 10 * MIB, maxEdge: 2048 },
+      poster: { maxBytes: 5 * MIB, maxEdge: 1920 },
+    },
+    required: {
+      IMAGE: ['m1080', 't320'],
+      VIDEO: ['poster', 't320'],
+      AUDIO: [],
+    },
+    allowed: {
+      IMAGE: ['m1080', 't320', 'l2048'],
+      VIDEO: ['poster', 't320'],
+      AUDIO: [],
+    },
+    primaryCode: { IMAGE: 'orig', VIDEO: 'v1080', AUDIO: 'a' },
+  },
   uploadUrlTtlSeconds: 15 * 60,
   partUrlTtlSeconds: 60 * 60,
   viewUrlTtlSeconds: 60 * 60,

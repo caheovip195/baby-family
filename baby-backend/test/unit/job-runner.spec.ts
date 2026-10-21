@@ -5,7 +5,7 @@ import {
   PermanentJobError,
 } from '../../src/common/errors/job.error';
 import type { Environment } from '../../src/config/environment';
-import { JOBS, OUTBOX_ROUTES } from '../../src/config/jobs';
+import { JOBS, OUTBOX_NO_CONSUMER, OUTBOX_ROUTES } from '../../src/config/jobs';
 import type { IJobExecutionRepository } from '../../src/interfaces/repositories/job-execution-repository.interface';
 import type { IJobQueueService } from '../../src/interfaces/services/job-queue-service.interface';
 import type { IOutboxRelayRepository } from '../../src/interfaces/repositories/outbox-relay-repository.interface';
@@ -152,9 +152,10 @@ describe('OutboxRelayService', () => {
   it('enqueues by event id and marks events published', async () => {
     outbox.claim.mockResolvedValueOnce([delivery('asset-1')]);
     await expect(relay.relayBatch()).resolves.toBe(1);
-    // Every routed event type is claimed (media + notification consumer).
+    // Routed event types plus audited ones acknowledged without a consumer
+    // (docs/outbox.md).
     expect(outbox.claim).toHaveBeenCalledWith(
-      Object.keys(OUTBOX_ROUTES),
+      [...Object.keys(OUTBOX_ROUTES), ...Object.keys(OUTBOX_NO_CONSUMER)],
       expect.any(String),
       expect.any(Number),
       expect.any(Number),

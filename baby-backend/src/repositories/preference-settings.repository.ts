@@ -46,9 +46,6 @@ export class PreferenceSettingsRepository implements IPreferenceSettingsReposito
     patch: PreferenceSettingsPatch,
   ): Promise<UserSetting | null> {
     const data = {
-      ...(patch.notificationPrefs === undefined
-        ? {}
-        : { notificationPrefs: patch.notificationPrefs as object }),
       ...(patch.quietStart === undefined
         ? {}
         : { quietStart: time(patch.quietStart) }),
@@ -70,14 +67,29 @@ export class PreferenceSettingsRepository implements IPreferenceSettingsReposito
         : { aiFeatures: patch.aiFeatures as object }),
       updatedAt: new Date(),
     };
-    const result = await this.prisma.userSetting.updateMany({
-      where: { userId, deletedAt: null },
-      data,
+    return this.prisma.$transaction(async (tx) => {
+      const result = await tx.userSetting.updateMany({
+        where: { userId, deletedAt: null },
+        data,
+      });
+      if (!result.count) return null;
+      if (patch.notificationPrefs !== undefined) {
+        // Preserve FAM-08 context even if notification settings were read
+        // before a concurrent default-family selection committed.
+        await tx.$executeRaw`
+          UPDATE app.user_settings
+          SET notification_prefs = (${JSON.stringify(patch.notificationPrefs)}::jsonb - 'familyContext')
+            || CASE WHEN notification_prefs ? 'familyContext'
+              THEN jsonb_build_object('familyContext', notification_prefs->'familyContext')
+              ELSE '{}'::jsonb END,
+            updated_at = now()
+          WHERE user_id = ${userId}::uuid AND deleted_at IS NULL
+        `;
+      }
+      const row = await tx.userSetting.findFirst({
+        where: { userId, deletedAt: null },
+      });
+      return row ? mapSettings(row) : null;
     });
-    if (!result.count) return null;
-    const row = await this.prisma.userSetting.findFirst({
-      where: { userId, deletedAt: null },
-    });
-    return row ? mapSettings(row) : null;
   }
 }

@@ -364,3 +364,78 @@ Triển khai 2026-10-20, BF-20261019-010 (Codex A: support + kiểm duyệt; Cod
 - **SUB-06/07**: `GET /families/:fid/billing` thêm `statusBanner {kind: TRIAL|GRACE|EXPIRED|BLOCKED, serverTime, expiresAt, remainingSeconds, reminderOffsetsSeconds, policyCode, policyVersion, nextReminderAt, dismissible}` hoặc null. Worker `billing.subscription-reminders` (mỗi giờ, sau 09:00 giờ gia đình) gửi một thông báo inbox + push mỗi mốc (5 template BILLING vi/en — seed catalog v5 chạy riêng).
 - App (BF-20261019-010): đổi số điện thoại (`/me/phone/otp|verify` sau xác thực lại); CARE-03 danh sách chuỗi lặp lại trong Cài đặt nhiệm vụ (`GET /families/:fid/mission-series`, tạm dừng 1 tuần `POST /mission-series/:id/pause`, dừng `DELETE /mission-series/:id`); gửi yêu cầu hỗ trợ + danh sách yêu cầu đã gửi.
 - Chưa làm: CSKH trả lời/đổi trạng thái (admin), tải tệp đính kèm SUPPORT, xem chi tiết/nhắn tiếp trong ticket trên app, app chưa đọc `statusBanner` (banner vẫn tính từ các trường billing cũ).
+
+## Đăng nhập/liên kết Apple & Google, mua gói IAP, nâng cấp, webhook Store (§5, §7.1, §9.1, §9.11; SUB-01/02/04)
+
+Triển khai 2026-10-20, BF-20261020-001 (Codex A: Apple/Google; Codex B: IAP + webhook; Claude: đăng ký DI/worker, app). Chi tiết contract: `docs/handoffs/BF-20261020-001-A.md`, `…-B.md`.
+
+- **Apple/Google** (`SocialAuthController`, `SignInMethodsController`): `POST /auth/apple {identityToken, nonce?, fullName?}`, `POST /auth/google {idToken}` → cùng shape đăng nhập OTP + `isNewUser`; JWT kiểm chữ ký JWKS/iss/aud/exp (+ SHA-256 nonce Apple), không gộp tài khoản theo email. `POST /auth/reauth/{apple|google}` → `{reauthToken, expiresAt}`. `GET /me/sign-in-methods` → `[{provider: APPLE|GOOGLE|PHONE, linkedAt, maskedHint}]`; `POST /me/identities/{apple|google}` (+ `reauthToken`) liên kết, `DELETE /me/identities/{apple|google} {reauthToken}` gỡ (204). Lỗi: 401 `AUTH_IDENTITY_INVALID`, 403 `AUTH_ACCOUNT_UNAVAILABLE`, 409 `IDENTITY_IN_USE|IDENTITY_PROVIDER_ALREADY_LINKED|LAST_SIGN_IN_METHOD`, 503 `AUTH_PROVIDER_UNAVAILABLE` (thiếu `AUTH_{APPLE|GOOGLE}_{JWKS_URL,ISSUER,CLIENT_ID}`).
+- **IAP**: `POST /families/:fid/purchase-intents {planCode, store: APP_STORE|PLAY}` + `Idempotency-Key` → 201 `{intentId, productId, appAccountToken | obfuscatedAccountId}` (Parent, gia đình ACTIVE, hạn 30 phút); `POST /families/:fid/purchases/verify {store, intentId, signedTransaction | purchaseToken}` → payload `/billing` mới (dedup theo transaction, thu hồi phần trial còn lại, không cộng dồn); `GET /families/:fid/billing/upgrade-options` (SUB-04, theo `entitlementRank` của catalog, không theo tên gói).
+- **Webhook**: `POST /webhooks/app-store {signedPayload}` (ASSN v2, xác minh chuỗi x5c bằng root Apple cấu hình), `POST /webhooks/play` (RTDN, `Authorization: Bearer PLAY_WEBHOOK_TOKEN`) → lưu mã hoá (`IAP_PAYLOAD_ENCRYPTION_KEY`) + outbox `billing.store-notification`; worker `store-notifications` (`IapBillingQueueWorker`, quét mỗi phút, tối đa 3 lần thử) xử lý gia hạn, ân hạn, hết hạn, huỷ tự gia hạn, hoàn tiền/thu hồi (khoá license).
+- App (BF-20261020-001): MEM-18 soạn tiếp + đăng nháp trên tài khoản (`PATCH` rồi `POST /memories/:id/publish`); thẻ recap tuần trên dòng thời gian từ thẻ `WEEKLY_RECAP`; SUB-05 sheet giới hạn gói theo mã `QUOTA_*` khi lưu ký ức; phương thức đăng nhập đọc từ `/me/sign-in-methods`.
+- Chưa làm: app chưa có SDK Sign in with Apple/Google và `in_app_purchase` (chưa gọi các route trên); Play publisher production (trả 503), Apple OCSP, đổi mã/revoke token Apple; chưa thử Store sandbox/credential thật.
+
+## Ghi âm VOICE, chuyển gia đình FAM-08, danh mục múi giờ FAM-07, giám sát (`/metrics`, log JSON), CI app
+
+Triển khai 2026-10-21, BF-20261021-001 (Codex A: CI app + observability; Codex B: VOICE, FAM-08, múi giờ; Claude: đăng ký DI, sửa hồi quy, app). Chi tiết: `docs/handoffs/BF-20261021-001-A.md`, `…-B.md`, `docs/observability.md`.
+
+- **VOICE**: `POST /memories {kind: VOICE, assetIds: [một asset AUDIO đã READY], body?, childIds…}` — thời lượng lấy từ asset do worker đo (client không gửi); vượt `audioMaxSec` của gói → 422 `QUOTA_AUDIO_DURATION_EXCEEDED`; sai asset → 422 `MEMORY_VOICE_ASSET_REQUIRED|MEMORY_VOICE_ASSET_INVALID`; gói không có `audioMaxSec` → 402. Ký ức/feed/timeline trả `durationSec` và `assets[].urls.a` (URL nghe đã ký, 1 giờ). Client tải lên `kind: AUDIO` (`audio/mp4`…), chờ `GET /media/:id` READY rồi mới tạo ký ức.
+- **FAM-08**: `GET /me/families` → `{items:[{familyId, name, role: PARENT|CIRCLE, status:{family, membership}, coverUrl, isDefault}]}` (không trả bé/nội dung); `PUT /me/default-family {familyId}` → `{familyId}` (lưu trong user settings JSON, không đổi tư cách — BR-057). 404 nếu không còn thuộc gia đình đó.
+- **FAM-07**: `GET /catalog/timezones?locale=vi|en` (public) → `{version, items:[{id (IANA), label, offsetMinutes}]}` (thị trường mục tiêu trước, rồi toàn bộ IANA của runtime); `PATCH /families/:fid {timezone}` dùng cùng validator (IANA/`Etc/GMT±N`/UTC; từ chối offset `+07:00`, viết tắt `EST`).
+- **Giám sát**: log JSON có cấu trúc (`LOG_FORMAT=json|pretty`, `LOG_LEVEL`; chỉ requestId/route mẫu/status/durationMs, không log header/body/token); `X-Request-Id` giữ quy tắc cũ `[a-zA-Z0-9_-]{1,100}`. `GET /metrics` (Prometheus, `Authorization: Bearer METRICS_TOKEN`; không cấu hình → không mở) đếm request theo route/status, histogram thời gian, job FAILED/TIMED_OUT và backlog outbox/job. Báo lỗi qua `IErrorReporter` (`ERROR_REPORTING_DSN`). Worker chưa áp logger/hook mới.
+- **CI**: `.github/workflows/app-ci.yml` (Flutter theo `.fvmrc`: pub get, gen-l10n, kiểm format/codegen, analyze, test). Integration backend chạy `--maxWorkers=1` + `workerIdleMemoryLimit` (cùng thứ tự tuần tự như `--runInBand`, tái tạo worker khi vượt ~1.5 GB để tránh hết heap khi chạy toàn bộ suite).
+- App (BF-20261021-001): ghi âm thật bằng micro (gói `record`, m4a) + nghe lại trên dòng thời gian; chuyển gia đình (danh sách từ server, đồng bộ lại phiên theo gia đình đã chọn); chọn múi giờ gia đình từ danh mục server.
+- Chưa làm: Sentry/OTel đầy đủ, giám sát worker; chưa chạy GitHub Actions thật; ghi âm chưa thử trên thiết bị thật.
+
+## Admin CMS backend, “Ai ở đó”/địa điểm/cảm xúc, email giao dịch, rà outbox consumer
+
+Triển khai 2026-10-21, BF-20261021-002 (Codex A/B viết phần lớn rồi hết quota giữa chừng; Claude rà, sửa spec email, đăng ký DI/worker, tách prefix admin, app). Không có handoff Codex cho đợt này; tài liệu nằm ở mục này, `docs/outbox.md`, `src/config/admin-cms-auth-policy.ts`, `src/config/transactional-mail-policy.ts`.
+
+- **Admin CMS** (bề mặt riêng `/admin/v1/*`, không qua prefix `api/v1`, xác thực tách khỏi app — `AdminCmsGuard`, phiên 15 phút, khoá theo số lần sai/15 phút): `POST /admin/v1/auth/login`, `POST /admin/v1/auth/logout`; kiểm duyệt `GET /admin/v1/moderation/cases`, `GET …/cases/:id`, `POST …/cases/:id/content` (xem nội dung bị báo cáo — có audit), `PATCH …/cases/:id/status`, `POST …/cases/:id/actions`; license `POST /admin/v1/families/:id/license/block|unblock` (có lý do + audit, app nhận `LICENSE_BLOCKED`); CSKH `GET /admin/v1/support/tickets`, `GET …/:id`, `POST …/:id/messages` (sender SUPPORT), `PATCH …/:id/status`; catalog chỉ đọc `GET /admin/v1/catalog/:kind`. Mọi thao tác ghi `AdminAuditEvent`. Tạo admin đầu tiên: `ADMIN_CREATE_EMAIL=… ADMIN_CREATE_PASSWORD=… [ADMIN_CREATE_TOTP_SECRET] [ADMIN_CREATE_ROLES] npm run admin:create` (không seed tự động).
+- **“Ai ở đó”, địa điểm, cảm xúc**: `POST/PATCH /memories` nhận `people: [{memberId? | userId? | displayName (≤ 40)}]`, `feeling` (`LOVE|JOY|TOUCHED|SURPRISED|PEACEFUL|PROUD`), `locationLabel`; projection (create/feed/timeline/detail) trả `people: [{memberId, userId, displayName}]`, `feeling`, `locationLabel` theo ACL. `GET /families/:fid/people-suggestions` → `{items:[…]}` (thành viên + tên hay gắn).
+- **Email giao dịch**: outbox `mail.transactional` → worker `transactional-mail` (`TransactionalMailQueueWorker`, JobRunner, idempotent) gửi qua adapter SMTP hiện có (`MAIL_*`/`SMTP_*`; dev Mailpit) 7 mẫu có version vi/en: xuất dữ liệu sẵn sàng (link ký ngắn hạn), hẹn xoá tài khoản/xoá gia đình + nhắc, đổi số điện thoại, thêm phương thức đăng nhập. Chỉ gửi khi có email đã xác minh (Apple/Google), kiểm lại huỷ/hết hạn/quyền trước khi ký link hoặc gửi; không chứa tên bé/nội dung ký ức.
+- **Outbox**: `OUTBOX_ROUTES` + `OUTBOX_ADDITIONAL_ROUTES` + `OUTBOX_NO_CONSUMER` (lý do cho event không cần consumer) — xem `docs/outbox.md`; thêm Hearts cho ký ức/góc nhìn qua `care.award-badges` (`MemoryHeartAwardService`, +2, tối đa 5 lần/người/ngày, trần ngày chung).
+- App (BF-20261021-002): trình soạn ký ức có “Ai ở đó” (thành viên hoặc gõ tên), cảm xúc, địa điểm; chi tiết ký ức hiển thị địa điểm; nhật ký tự lưu nháp trên máy và mở lại soạn tiếp; xem/nhắn tiếp ticket hỗ trợ.
+- Chưa làm: web `baby-admin/`; TOTP bắt buộc/đổi mật khẩu admin; sửa catalog có version qua admin; app gửi `memberId` cho người là thành viên (hiện gửi tên); `people-suggestions` chưa dùng trên app.
+
+## Trợ giúp & Giới thiệu (SET-11/12)
+
+Triển khai 2026-10-21, BF-20261021-003 (Claude; Codex hết quota).
+
+- `GET /support/help-center?locale=vi|en` (công khai, không cần token) → `{version, faqs:[{id, category, question, answer}], contact:{email, hotline}, legal:{termsUrl, privacyUrl, licensesUrl}}`. FAQ là catalog có version trong `src/config/help-center.ts`; liên hệ/đường dẫn lấy từ `SUPPORT_CONTACT_EMAIL`, `SUPPORT_CONTACT_HOTLINE`, `LEGAL_TERMS_URL`, `LEGAL_PRIVACY_URL`, `LEGAL_LICENSES_URL` (chưa đặt → `null`, app ẩn dòng tương ứng). 400 `VALIDATION_ERROR` với locale khác.
+- App: Trợ giúp hiển thị FAQ + câu trả lời, mở email/hotline; Giới thiệu mở điều khoản/quyền riêng tư khi đã cấu hình. US-01 bản server không hiện “câu hỏi hôm nay” mẫu (câu hỏi kết nối là bản 1.1).
+
+## Bất biến bảo mật §6.4 (BF-20261021-004)
+
+- Người không thuộc gia đình gọi `GET /families/:fid/calendar`, `GET /events/:id`, `GET /missions/templates?childId=` nay nhận `404 NOT_FOUND` (trước đây `403 FAMILY_ACCESS_DENIED`, lộ sự tồn tại gia đình). Thành viên không đổi hành vi.
+- Bảng bao phủ và phép quét route: `docs/security-invariants.md`, `test/integration/security-invariants.spec.ts` — thêm route GET mới vào danh sách quét.
+
+## Catalog nhiệm vụ ≥ 90 ngày (BF-20261021-005)
+
+- `prisma/seeds/missions.json`: 110 → 268 mẫu (chỉ thêm mới, mẫu đã publish giữ nguyên; seed vẫn là lệnh riêng `npm run db:seed`, không tự chạy). Mã mới: `ANY-25…80`, `PG-29…60`, `NB-13…54`, `IN-25…30`, `PS-01…22` (2,5–6 tuổi).
+- Bộ sinh bảng: mẫu giai đoạn `PREGNANCY` không còn bị gán cho bé đang có (lưu ở phạm vi gia đình); mẫu phạm vi `CHILD` khác chỉ vào pool khi có bé phù hợp — trước đây gia đình đang mang thai, chưa có bé có thể nhận `409 MISSION_BOARD_POOL_INSUFFICIENT` khi bốc trúng mẫu thai kỳ phạm vi `CHILD`.
+- Chứng minh: `test/unit/mission-catalog-coverage.spec.ts` (đủ mẫu cho cửa sổ 14 ngày ở mọi tuần thai/tuổi 0–6 năm, gồm SELF cho người mang thai/vừa sinh), `test/integration/mission-catalog-90-days.spec.ts` (90 bảng liên tiếp, 9 giai đoạn, không mẫu nào lặp trong 14 ngày).
+
+## Web Admin CMS (BF-20261021-006)
+
+- `baby-admin/` (React + Vite + TS + Ant Design) gọi `/admin/v1/*` (không qua prefix `api/v1`). Không đổi API backend trong đợt này. Hướng dẫn chạy: `baby-admin/README.md`.
+
+## Publish phiên bản catalog qua Admin (BF-20261021-007)
+
+- `AdminCmsCatalogPublishingController` (Codex): nhiệm vụ, phiên bản gói, chính sách dùng thử — tạo bản nháp → publish (gói/dùng thử có `availableFrom`) → ngừng dùng; không sửa bản đã publish; lý do bắt buộc, RBAC, `AdminAuditEvent`. Route/JSON chi tiết: `docs/handoffs/BF-20261021-007-A.md`. Cột mốc và mẫu thông báo chưa có version.
+- Seed nhiệm vụ (`npm run db:seed`) không còn từ chối khi admin đã đổi vòng đời (`status`, `rolloutPct`) của mẫu seed; nội dung đã publish vẫn phải giữ nguyên.
+- App (BF-20261021-007): mua gói qua `purchase-intents` → Store → `purchases/verify`; đăng nhập `POST /auth/apple|google`.
+
+## Media do client xử lý, upload thẳng S3 (BF-20261021-008)
+
+- `POST /media/upload-intents` nhận `variants[]` do client tạo:
+  - IMAGE: `m1080` + `t320`, `l2048` tuỳ chọn.
+  - VIDEO: `poster` + `t320`.
+  - AUDIO: không có biến thể.
+
+  Response thêm `variantUploads[{code, upload}]`. `complete` HEAD kiểm từng object rồi chuyển READY ngay.
+
+- Mặc định `MEDIA_SERVER_PROCESSING=disabled`; `legacy` bật lại worker cũ.
+- `POST /me/avatar/upload-intents` dùng cùng manifest IMAGE (bảng `user_asset_variants`).
+- `source {sha256, key, capturedAt}` của file gốc trên máy: nhận ở intent, trả trên projection media/ký ức.
+- Chi tiết: `docs/media-client-processing.md`, `docs/handoffs/BF-20261021-008-A.md`.

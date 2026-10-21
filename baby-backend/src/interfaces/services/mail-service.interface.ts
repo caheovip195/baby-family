@@ -5,6 +5,8 @@ export interface MailMessage {
   subject: string;
   text: string;
   html?: string;
+  /** Stable RFC Message-ID for transactional delivery reconciliation. */
+  messageId?: string;
 }
 
 export interface SentMail {

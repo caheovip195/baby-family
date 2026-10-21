@@ -1,3 +1,4 @@
+import { enqueueTransactionalMail } from './transactional-mail-outbox';
 import { Injectable } from '@nestjs/common';
 import { DomainError } from '../common/errors/domain.error';
 import { JOBS } from '../config/jobs';
@@ -414,6 +415,12 @@ export class DataExportRepository implements IDataExportRepository {
           'EXPORT_ACCESS_REVOKED',
           403,
         );
+      await enqueueTransactionalMail(
+        tx,
+        'EXPORT_READY',
+        job.requesterId,
+        job.id,
+      );
     });
   }
   async fail(id: string, code: string, lease: JobLease): Promise<void> {

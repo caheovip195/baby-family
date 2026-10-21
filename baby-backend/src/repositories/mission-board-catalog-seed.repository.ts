@@ -104,6 +104,8 @@ const missionCatalogSchema = z
     }
   });
 
+const LIFECYCLE_FIELDS = new Set(['status', 'rolloutPct']);
+
 export class MissionBoardCatalogSeedRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
@@ -126,8 +128,12 @@ export class MissionBoardCatalogSeedRepository {
           });
           // Published template content is preserved, including soft-delete state.
           // Changed content needs an explicit catalog/version publication workflow.
-          const matches = Object.entries(item).every(([key, value]) =>
-            isDeepStrictEqual(existing[key as keyof typeof existing], value),
+          // Lifecycle (status, rollout) is owned by the Admin CMS publishing
+          // workflow after release; only published content must stay equal.
+          const matches = Object.entries(item).every(
+            ([key, value]) =>
+              LIFECYCLE_FIELDS.has(key) ||
+              isDeepStrictEqual(existing[key as keyof typeof existing], value),
           );
           if (!matches) {
             throw new Error(

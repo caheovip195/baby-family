@@ -58,6 +58,14 @@ export class MemoryController {
     private readonly service: IMemoryContentService,
   ) {}
 
+  @Get('families/:familyId/people-suggestions')
+  peopleSuggestions(
+    @CurrentActor() actor: AuthPrincipal,
+    @Param('familyId', new ParseUUIDPipe()) familyId: string,
+  ) {
+    return this.service.peopleSuggestions(actor, familyId);
+  }
+
   @Get('families/:familyId/timeline')
   @ApiOkResponse({ type: TimelineResponseDto })
   timeline(

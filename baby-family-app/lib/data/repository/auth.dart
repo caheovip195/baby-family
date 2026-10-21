@@ -24,6 +24,16 @@ abstract class IAuthRepository extends IBaseRepository {
     required JsonMap device,
   });
 
+  /// `POST /v1/auth/apple` — JWT Apple + nonce gốc.
+  Future<AuthCertificate> signInWithApple({
+    required String identityToken,
+    required String nonce,
+    String? fullName,
+  });
+
+  /// `POST /v1/auth/google` — idToken Google.
+  Future<AuthCertificate> signInWithGoogle(String idToken);
+
   /// `GET /v1/me` — hồ sơ + gia đình + tiến độ onboarding.
   Future<MeProfile?> getMeProfile();
 

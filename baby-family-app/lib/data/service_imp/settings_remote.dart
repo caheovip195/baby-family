@@ -6,13 +6,18 @@ import 'package:baby_family/data/model/settings/blocked_person.dart';
 import 'package:baby_family/data/model/settings/data_export_info.dart';
 import 'package:baby_family/data/model/settings/data_export_job.dart';
 import 'package:baby_family/data/model/settings/delete_account_info.dart';
+import 'package:baby_family/data/model/settings/help_center_record.dart';
+import 'package:baby_family/data/model/settings/help_info.dart';
 import 'package:baby_family/data/model/settings/login_device.dart';
 import 'package:baby_family/data/model/settings/notification_settings.dart';
 import 'package:baby_family/data/model/settings/notification_settings_record.dart';
 import 'package:baby_family/data/model/settings/privacy_settings.dart';
 import 'package:baby_family/data/model/settings/profile_settings.dart';
 import 'package:baby_family/data/model/settings/security_settings.dart';
+import 'package:baby_family/data/model/settings/sign_in_method.dart';
+import 'package:baby_family/data/model/settings/sign_in_method_record.dart';
 import 'package:baby_family/data/model/settings/support_ticket.dart';
+import 'package:baby_family/data/model/settings/support_ticket_detail.dart';
 import 'package:baby_family/data/repository/account_remote.dart';
 import 'package:baby_family/data/repository/base.dart';
 import 'package:baby_family/data/repository/child.dart';
@@ -26,7 +31,8 @@ import 'package:baby_family/data/service_imp/settings.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/helper/app_clock.dart';
-import 'package:crypto/crypto.dart';
+import 'package:baby_family/utils/helper/app_l10n.dart';
+import 'package:dio/dio.dart';
 import 'package:uuid/uuid.dart';
 
 /// SET-08/09 qua server thật (BF-20261018-013, mục 7.25):
@@ -67,6 +73,36 @@ class SettingsRemoteServiceImp extends SettingsServiceImp {
   /// tên gọi trong gia đình, ảnh đại diện, múi giờ vẫn trên máy.
   /// AUTH-04: ảnh mới chọn trên máy tải lên kho ảnh tài khoản rồi gắn bằng
   /// `PATCH /me {avatarAssetId}`; bỏ ảnh gửi null.
+  /// Phương thức đăng nhập theo server (`/me/sign-in-methods`); lỗi mạng giữ
+  /// bản trên máy.
+  @override
+  Future<ProfileSettings> profileSettings() async {
+    final local = await super.profileSettings();
+    if (!_remoteOn) {
+      return local;
+    }
+    final List<SignInMethodRecord> records;
+    try {
+      records = await _remote.signInMethods();
+    } on DioException {
+      return local;
+    }
+    final byMethod = {
+      for (final record in records)
+        ?AuthMethod.values.asNameMap()[record.provider?.toLowerCase()]: record,
+    };
+    return local.copyWith(
+      signInMethods: [
+        for (final method in AuthMethod.values)
+          SignInMethod(
+            method: method,
+            linked: byMethod.containsKey(method),
+            maskedAccount: byMethod[method]?.maskedHint,
+          ),
+      ],
+    );
+  }
+
   @override
   Future<void> saveProfileSettings(ProfileSettings settings) async {
     if (_remoteOn) {
@@ -88,24 +124,14 @@ class SettingsRemoteServiceImp extends SettingsServiceImp {
     await super.saveProfileSettings(settings);
   }
 
-  Future<String> _uploadAvatar(String path) async {
-    final bytes = await _media.readLocalFile(path);
-    final intent = await _remote.createAvatarIntent(const Uuid().v4(), {
-      'purpose': 'AVATAR',
-      'mime': MediaUploader.mimeOf(path),
-      'size': bytes.length,
-      'sha256': sha256.convert(bytes).toString(),
-    });
-    final assetId = intent?.assetId;
-    if (assetId == null) {
-      throw StateError('Avatar upload intent without asset');
-    }
-    final upload = intent?.upload;
-    if (intent?.status == 'PENDING_UPLOAD' && upload != null) {
-      await _media.uploadBytes(upload, bytes);
-      await _remote.completeAvatar(assetId);
-    }
-    return assetId;
+  /// Client nén + tạo biến thể, upload thẳng S3 (BF-20261021-008).
+  Future<String> _uploadAvatar(String path) {
+    final key = const Uuid().v4();
+    return MediaUploader(_media).uploadAvatar(
+      path,
+      create: (body) => _remote.createAvatarIntent(key, body),
+      complete: _remote.completeAvatar,
+    );
   }
 
   // ------------------------------------------------ SET-03 thông báo
@@ -317,6 +343,34 @@ class SettingsRemoteServiceImp extends SettingsServiceImp {
 
   // ------------------------------------------------ hỗ trợ khách hàng
 
+  /// SET-11/12 từ server (nội dung có version). Số báo cáo đang mở chưa có
+  /// API nên không hiện số mẫu; lỗi mạng giữ bản trên máy.
+  @override
+  Future<HelpInfo> help() async {
+    if (!_remoteOn) {
+      return super.help();
+    }
+    final HelpCenterRecord? record;
+    try {
+      record = await _remote.helpCenter(
+        currentL10n().localeName == 'en' ? 'en' : 'vi',
+      );
+    } on DioException {
+      return super.help();
+    }
+    if (record == null) {
+      return super.help();
+    }
+    return HelpInfo(
+      faqs: [for (final faq in record.faqs) faq.question],
+      faqAnswers: [for (final faq in record.faqs) faq.answer],
+      email: record.contact?.email ?? '',
+      hotline: record.contact?.hotline ?? '',
+      termsUrl: record.legal?.termsUrl,
+      privacyUrl: record.legal?.privacyUrl,
+    );
+  }
+
   @override
   Future<List<String>> supportCategories() async {
     if (!_remoteOn) {
@@ -348,6 +402,22 @@ class SettingsRemoteServiceImp extends SettingsServiceImp {
       'familyId': serverFamilyId,
     });
     return ticket ?? const SupportTicket();
+  }
+
+  @override
+  Future<SupportTicketDetail?> supportTicket(String ticketId) async {
+    if (!_remoteOn) {
+      return super.supportTicket(ticketId);
+    }
+    return _remote.supportTicket(ticketId);
+  }
+
+  @override
+  Future<void> sendSupportMessage(String ticketId, String body) async {
+    if (!_remoteOn) {
+      return super.sendSupportMessage(ticketId, body);
+    }
+    await _remote.sendSupportMessage(ticketId, body);
   }
 
   @override

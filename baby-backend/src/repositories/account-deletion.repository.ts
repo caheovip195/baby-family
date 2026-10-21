@@ -1,3 +1,4 @@
+import { enqueueTransactionalMail } from './transactional-mail-outbox';
 import { Injectable } from '@nestjs/common';
 import { cloneDatabaseJson } from '../common/database.types';
 import { DomainError } from '../common/errors/domain.error';
@@ -120,6 +121,12 @@ export class AccountDeletionRepository implements IAccountDeletionRepository {
         where: { id: command.userId },
         data: { status: 'DELETION_PENDING', tokenVersion: { increment: 1 } },
       });
+      await enqueueTransactionalMail(
+        tx,
+        'ACCOUNT_DELETION_SCHEDULED',
+        command.userId,
+        row.id,
+      );
       return model(row);
     });
   }

@@ -27,6 +27,9 @@ import 'package:baby_family/data/model/circle/circle_member_list.dart';
 import 'package:baby_family/data/model/circle/my_circle_list.dart';
 import 'package:baby_family/data/model/family/family_record.dart';
 import 'package:baby_family/data/model/family/family_settings_record.dart';
+import 'package:baby_family/data/model/family/my_family_record.dart';
+import 'package:baby_family/data/model/family/purchase_intent_record.dart';
+import 'package:baby_family/data/model/family/timezone_catalog.dart';
 import 'package:baby_family/data/model/memory/album_list.dart';
 import 'package:baby_family/data/model/memory/album_record.dart';
 import 'package:baby_family/data/model/memory/comment_record.dart';
@@ -67,9 +70,12 @@ import 'package:baby_family/data/model/session/partner_invite_issued.dart';
 import 'package:baby_family/data/model/session/partner_invite_status.dart';
 import 'package:baby_family/data/model/settings/ai_settings_record.dart';
 import 'package:baby_family/data/model/settings/display_settings_record.dart';
+import 'package:baby_family/data/model/settings/help_center_record.dart';
 import 'package:baby_family/data/model/settings/notification_settings_record.dart';
+import 'package:baby_family/data/model/settings/sign_in_method_record.dart';
 import 'package:baby_family/data/model/settings/support_category_catalog.dart';
 import 'package:baby_family/data/model/settings/support_ticket.dart';
+import 'package:baby_family/data/model/settings/support_ticket_detail.dart';
 import 'package:baby_family/data/model/settings/support_ticket_list.dart';
 import 'package:baby_family/data/model/us/appreciation_record.dart';
 import 'package:baby_family/data/model/us/appreciation_wall.dart';
@@ -413,6 +419,10 @@ sealed class BaseRespond with _$BaseRespond {
     @JsonKey(name: 'data') BillingCatalog? catalog,
   }) = BillingCatalogRespond;
 
+  factory BaseRespond.purchaseIntentRespond({
+    @JsonKey(name: 'data') PurchaseIntentRecord? intent,
+  }) = PurchaseIntentRespond;
+
   factory BaseRespond.familyBillingRespond({
     @JsonKey(name: 'data') FamilyBillingRecord? billing,
   }) = FamilyBillingRespond;
@@ -487,9 +497,31 @@ sealed class BaseRespond with _$BaseRespond {
     @JsonKey(name: 'data') SupportTicket? ticket,
   }) = SupportTicketRespond;
 
+  factory BaseRespond.helpCenterRespond({
+    @JsonKey(name: 'data') HelpCenterRecord? helpCenter,
+  }) = HelpCenterRespond;
+
+  factory BaseRespond.supportTicketDetailRespond({
+    @JsonKey(name: 'data') SupportTicketDetail? ticket,
+  }) = SupportTicketDetailRespond;
+
   factory BaseRespond.supportTicketListRespond({
     @JsonKey(name: 'data') SupportTicketList? list,
   }) = SupportTicketListRespond;
+
+  factory BaseRespond.signInMethodListRespond({
+    @JsonKey(name: 'data')
+    @Default(<SignInMethodRecord>[])
+    List<SignInMethodRecord> methods,
+  }) = SignInMethodListRespond;
+
+  factory BaseRespond.myFamilyListRespond({
+    @JsonKey(name: 'data') MyFamilyList? list,
+  }) = MyFamilyListRespond;
+
+  factory BaseRespond.timezoneCatalogRespond({
+    @JsonKey(name: 'data') TimezoneCatalog? catalog,
+  }) = TimezoneCatalogRespond;
 
   factory BaseRespond.fromJson(Map<String, dynamic> json) =>
       _$BaseRespondFromJson(json);

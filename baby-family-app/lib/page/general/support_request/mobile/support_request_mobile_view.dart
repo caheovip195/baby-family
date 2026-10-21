@@ -1,9 +1,11 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/page/general/support_request/support_request_controller.dart';
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/server_error_message.dart';
 import 'package:baby_family/utils/helper/theme.dart';
+import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
 import 'package:baby_family/utils/widget/app_caps_label.dart';
 import 'package:baby_family/utils/widget/app_card.dart';
@@ -16,6 +18,7 @@ import 'package:baby_family/utils/widget/loading_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:lucide_flutter/lucide_flutter.dart';
 
 /// Gửi yêu cầu hỗ trợ (danh mục · tiêu đề · nội dung) + yêu cầu đã gửi.
 class SupportRequestMobileView extends HookConsumerWidget {
@@ -125,6 +128,12 @@ class SupportRequestMobileView extends HookConsumerWidget {
                 children: [
                   for (final ticket in controller.tickets)
                     ListTile(
+                      onTap: ticket.id == null
+                          ? null
+                          : () => context.router
+                                .push(SupportTicketRoute(ticketId: ticket.id))
+                                .then((_) => controller.load()),
+                      trailing: const Icon(LucideIcons.chevronRight, size: 18),
                       title: Text(
                         ticket.code ?? '',
                         maxLines: 1,

@@ -10,6 +10,7 @@ import 'package:baby_family/data/model/settings/privacy_settings.dart';
 import 'package:baby_family/data/model/settings/profile_settings.dart';
 import 'package:baby_family/data/model/settings/security_settings.dart';
 import 'package:baby_family/data/model/settings/support_ticket.dart';
+import 'package:baby_family/data/model/settings/support_ticket_detail.dart';
 import 'package:baby_family/data/repository/child.dart';
 import 'package:baby_family/data/repository/family.dart';
 import 'package:baby_family/data/repository/settings.dart';
@@ -347,10 +348,45 @@ class SettingsServiceImp extends MockServiceImp implements ISettingsService {
       createdAt: createdAt,
     );
     _supportTickets.insert(0, ticket);
+    _supportContent[ticket.id!] = (subject, body);
     return ticket;
   }
 
   @override
   Future<List<SupportTicket>> supportTickets() async =>
       List.unmodifiable(_supportTickets);
+
+  /// Bản trên máy: chưa có CSKH trả lời — chỉ nội dung đã gửi.
+  final _supportThreads = <String, List<SupportMessage>>{};
+  final _supportContent = <String, (String, String)>{};
+
+  @override
+  Future<SupportTicketDetail?> supportTicket(String ticketId) async {
+    final ticket = _supportTickets.where((t) => t.id == ticketId).firstOrNull;
+    if (ticket == null) {
+      return null;
+    }
+    final (subject, body) = _supportContent[ticketId] ?? ('', '');
+    return SupportTicketDetail(
+      id: ticket.id,
+      code: ticket.code,
+      status: ticket.status,
+      createdAt: ticket.createdAt,
+      subject: subject,
+      body: body,
+      messages: _supportThreads[ticketId] ?? const [],
+    );
+  }
+
+  @override
+  Future<void> sendSupportMessage(String ticketId, String body) async {
+    (_supportThreads[ticketId] ??= []).add(
+      SupportMessage(
+        id: '${DateTime.now().microsecondsSinceEpoch}',
+        sender: kValueSupportSenderUser,
+        body: body,
+        createdAt: DateTime.now(),
+      ),
+    );
+  }
 }

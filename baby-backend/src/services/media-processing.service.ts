@@ -3,7 +3,9 @@ import { createReadStream } from 'node:fs';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import type { Environment } from '../config/environment';
 import { z } from 'zod';
 import {
   ConflictError,
@@ -70,12 +72,22 @@ export class MediaProcessingService implements IMediaProcessingService {
     private readonly images: IImageProcessorService,
     @Inject(MEDIA_TRANSCODER_SERVICE)
     private readonly transcoder: IMediaTranscoderService,
+    @Optional() private readonly config?: ConfigService<Environment, true>,
   ) {}
 
   async processAsset(
     assetId: string,
     context: JobContext,
   ): Promise<Record<string, number>> {
+    if (
+      this.config?.get('MEDIA_SERVER_PROCESSING', { infer: true }) !== 'legacy'
+    )
+      return { skipped: 1 };
+    const existing = await this.media.findUpload(assetId);
+    if (
+      existing?.variants.some((v) => v.storageKey === existing.asset.storageKey)
+    )
+      return { skipped: 1 };
     const asset = await this.media.startProcessing(assetId);
     if (!asset) {
       // Committed before a crash: finish the post-commit cleanup only.

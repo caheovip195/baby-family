@@ -74,12 +74,9 @@ export class CalendarService implements ICalendarService {
       throw new NotFoundError('Family was not found.');
     }
 
+    // §6.4.1: a non-member must not learn that the family exists.
     if (!ctx.isParent && !ctx.isCircle) {
-      throw new DomainError(
-        'Family access denied.',
-        'FAMILY_ACCESS_DENIED',
-        403,
-      );
+      throw new NotFoundError('Family was not found.');
     }
 
     if (ctx.isParent) {
@@ -237,7 +234,8 @@ export class CalendarService implements ICalendarService {
       return this.toEventResponseDto(event);
     }
 
-    throw new DomainError('Family access denied.', 'FAMILY_ACCESS_DENIED', 403);
+    // §6.4.1: same answer as a missing event for non-members.
+    throw new NotFoundError('Event was not found.');
   }
 
   async updateEvent(

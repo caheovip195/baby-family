@@ -12,8 +12,8 @@ Tạo 2026-10-18 (BF-20261018-001). Nguồn: [đặc tả nghiệp vụ](01_DAC_
 
 ## Tiến độ
 
-- Tổng: 124 / 165 dòng đã xong (riêng MVP: 124 / 153).
-- Đang làm: —. Xong gần nhất: BF-20261019-010 — support ticket, gom ca kiểm duyệt, allowlist §6.5, nhắc gia hạn SUB-06/07, chuỗi nhiệm vụ lặp lại, đổi số điện thoại trên app. Còn: FAM-08 chuyển gia đình, múi giờ FAM-07, thẻ recap trên dòng thời gian, liên kết Apple/Google, ghi âm (VOICE), xem/nhắn tiếp ticket hỗ trợ trên app
+- Tổng: 142 / 165 dòng đã xong (riêng MVP: 142 / 153).
+- Đang làm: —. Xong gần nhất: BF-20261021-008 — media do client nén/tạo biến thể, server chỉ cấp phiên presigned + HEAD kiểm khi complete; app hiển thị ảnh/video còn trong thư viện máy trước. Thiết kế offline-first: `docs/04_THIET_KE_OFFLINE_FIRST.md` (chưa triển khai)
 - Thứ tự đề xuất tiếp theo (MVP, theo vòng lặp Ký ức → Gia đình → Nhiệm vụ):
   1. Upload video, ghi âm, multipart trên app (MEM-04/06).
   2. Timeline + lưới ảnh + lọc theo bé (MEM-01/02).
@@ -32,10 +32,10 @@ Tạo 2026-10-18 (BF-20261018-001). Nguồn: [đặc tả nghiệp vụ](01_DAC_
 - [x] Worker xử lý media + job/outbox có lịch sử chạy (BF-20261015-010)
 - [x] Envelope response `{data}`, lỗi `error.code` (BF-20261015-012)
 - [x] App Flutter: kiến trúc Page → Controller → Service → Repository, l10n vi/en, Design System (2026-10-07)
-- [ ] Outbox relay → consumer (thông báo, feed, Hearts) — BE 🟡 (consumer thông báo trong app có, BF-20261018-010; chưa gửi push, chưa consumer khác)
-- [ ] CI build/test tự động — ❌
+- [x] Outbox relay → consumer (thông báo, feed, Hearts) — BE ✅ (rà toàn bộ event: route chính/bổ sung + danh sách “không cần consumer” có lý do, Hearts ký ức/góc nhìn qua `care.award-badges`, email giao dịch; feed đọc trực tiếp PostgreSQL nên không cần consumer, `docs/outbox.md`, BF-20261021-002)
+- [ ] CI build/test tự động — 🟡 (`backend-ci.yml` + `app-ci.yml` (Flutter: format, codegen, analyze, test), BF-20261021-001, Codex; chưa chạy trên GitHub Actions)
 - [ ] Môi trường staging + deploy — ❌
-- [ ] Logging/monitoring production, cảnh báo sự cố — ❌
+- [ ] Logging/monitoring production, cảnh báo sự cố — BE 🟡 (log JSON có cấu trúc, `/metrics` Prometheus có token, hook báo lỗi, `docs/observability.md`, BF-20261021-001, Codex; chưa nối Sentry/cảnh báo thật, worker chưa áp)
 
 ## 2. Tài khoản & đăng nhập (§7.1, §9.1)
 
@@ -43,10 +43,10 @@ Tạo 2026-10-18 (BF-20261018-001). Nguồn: [đặc tả nghiệp vụ](01_DAC_
 - [x] Đăng nhập số điện thoại + OTP (AUTH-02/03) — UI ✅ · BE ✅ · App ✅ (BF-20261015-012)
 - [x] Hồ sơ cơ bản + đồng ý điều khoản (AUTH-04) — UI ✅ · BE ✅ · App ✅ (BF-20261015-012)
 - [x] Refresh token xoay vòng, đăng xuất — BE ✅ · App ✅ (BF-20261015-012)
-- [ ] Đăng nhập Apple — UI ✅ · BE ❌ · App ❌
-- [ ] Đăng nhập Google — UI ✅ · BE ❌ · App ❌
+- [ ] Đăng nhập Apple — UI ✅ · BE ✅ (`POST /auth/apple`, BF-20261020-001) · App 🟡 (`sign_in_with_apple` + nonce SHA-256, phiên qua server, BF-20261021-007; chưa bật capability Sign in with Apple trong Xcode, chưa thử máy thật)
+- [ ] Đăng nhập Google — UI ✅ · BE ✅ (`POST /auth/google`, BF-20261020-001) · App 🟡 (`google_sign_in` 7, client id qua `--dart-define GOOGLE_CLIENT_ID/GOOGLE_SERVER_CLIENT_ID`, BF-20261021-007; chưa cấu hình client id/URL scheme thật, chưa thử máy thật)
 - [x] Avatar hồ sơ (upload ảnh AUTH-04) — UI ✅ · BE ✅ (`/me/avatar/*`, `PATCH /me {avatarAssetId}`, `avatarUrl`, BF-20261019-007, Codex) · App ✅ (BF-20261019-007)
-- [ ] Liên kết/đổi số điện thoại, quản lý phương thức đăng nhập (SET bảo mật) — UI 🟡 (màn đổi số: xác thực lại → số mới → OTP, BF-20261019-010; chưa có liên kết Apple/Google) · BE 🟡 (đổi số `/me/phone/*` BF-20261018-015, Codex; liên kết Apple/Google ❌) · App 🟡 (đổi số qua server, BF-20261019-010)
+- [ ] Liên kết/đổi số điện thoại, quản lý phương thức đăng nhập (SET bảo mật) — UI 🟡 (màn đổi số: xác thực lại → số mới → OTP, BF-20261019-010) · BE ✅ (đổi số `/me/phone/*` BF-20261018-015; `/me/sign-in-methods`, liên kết/gỡ Apple/Google, reauth bằng Apple/Google, BF-20261020-001, Codex) · App 🟡 (đổi số; trạng thái liên kết thật từ server, BF-20261020-001; liên kết/gỡ Apple/Google cần SDK)
 - [x] Danh sách thiết bị/phiên đăng nhập, đăng xuất thiết bị khác — UI ✅ · BE ✅ (`/me/sessions*`, BF-20261018-015, Codex) · App ✅ (BF-20261018-015)
 
 ## 3. Vai trò, tạo gia đình & kích hoạt (§7.2, §7.3, §9.2)
@@ -63,7 +63,7 @@ Tạo 2026-10-18 (BF-20261018-001). Nguồn: [đặc tả nghiệp vụ](01_DAC_
 - [x] ONB-09 Ký ức đầu tiên — UI ✅ · BE ✅ · App ✅ (hoàn tất thiết lập trên server + composer ký ức bản server; xác nhận BF-20261018-015)
 - [x] ONB-10 Bật thông báo (pre-permission + đăng ký push token) — UI ✅ · BE ✅ (`/me/devices`) · App ✅ (FCM token + gửi lại khi đổi, BF-20261018-014)
 - [x] FAM-02 Mời lại bạn đời từ màn Gia đình — UI ✅ · BE ✅ · App ✅ (lời mời server, thu hồi = cấp mã mới, BF-20261018-015)
-- [ ] FAM-08 Chuyển gia đình — UI ✅ · BE ❌ · App ❌
+- [x] FAM-08 Chuyển gia đình — UI ✅ · BE ✅ (`/me/families`, `PUT /me/default-family`, BF-20261021-001, Codex) · App ✅ (danh sách từ server, đồng bộ lại phiên theo gia đình đã chọn, BF-20261021-001)
 - [x] Gia đình `PARTNER_LEFT` (US-00, chỉ đọc + mời bạn đời mới) — UI ✅ · BE ✅ (rà lại US-00; lời mời bạn đời mới có tên các bé, BF-20261019-009) · App ✅ (phản chiếu trạng thái BF-20261018-015; xem trước lời mời có tên bé, BF-20261019-009)
 - [x] Mất mạng khi mở app vẫn giữ phiên (cache bootstrap) — App ✅ (bản chụp mã hoá phiên/gia đình/bé/300 ký ức, nạp khi mở app nguội mà server không phản hồi, BF-20261019-009)
 
@@ -98,27 +98,27 @@ Tạo 2026-10-18 (BF-20261018-001). Nguồn: [đặc tả nghiệp vụ](01_DAC_
 - [x] MEM-09 Sửa ký ức (chú thích, tiêu đề, ngày, bé, người xem; If-Match) — UI ✅ · BE ✅ · App ✅ (BF-20261018-002)
 - [x] Đổi ảnh khi sửa ký ức (thêm/bớt, đổi ảnh bìa) — UI ✅ (BF-20261019-007) · BE ✅ (`PATCH /memories/:id` add/remove/cover, BF-20261019-002, Codex) · App ✅ (BF-20261019-007)
 - [x] Xoá ký ức → thùng rác; MEM-17 Thùng rác (khôi phục, xoá vĩnh viễn, tự xoá hẳn sau 30 ngày) — UI ✅ · BE ✅ · App ✅ (BF-20261018-001)
-- [ ] MEM-18 Nháp — UI ✅ · BE ✅ (`status: DRAFT`, `/me/drafts`, `/publish`, BF-20261019-002, Codex) · App 🟡 (danh sách + xoá nháp trên tài khoản, BF-20261019-006; tiếp tục soạn nháp từ tài khoản chưa có)
-- [x] Upload video (thời lượng theo gói) — UI ✅ · BE ✅ · App ✅ (chọn ảnh + video, kiểm giới hạn gói, gửi `durationMs`, BF-20261019-007)
-- [ ] Ghi âm giọng nói (VOICE) — UI ✅ · BE 🟡 (worker audio có) · App ❌
+- [x] MEM-18 Nháp — UI ✅ · BE ✅ (`status: DRAFT`, `/me/drafts`, `/publish`, BF-20261019-002, Codex) · App ✅ (danh sách + xoá nháp trên tài khoản BF-20261019-006; soạn tiếp nháp trên tài khoản rồi đăng, BF-20261020-001)
+- [x] Upload video (thời lượng theo gói) — UI ✅ · BE ✅ · App ✅ (chọn ảnh + video, kiểm giới hạn gói, gửi `durationMs`, BF-20261019-007; client nén ≤ 1080p + poster/t320, upload thẳng S3, BF-20261021-008)
+- [x] Ghi âm giọng nói (VOICE) — UI ✅ · BE ✅ (VOICE: một asset AUDIO READY, thời lượng server đo, `audioMaxSec`, BF-20261021-001, Codex) · App ✅ (ghi bằng micro qua `record`, tải AUDIO + chờ READY, nghe lại trên dòng thời gian, BF-20261021-001; chưa thử trên máy thật)
 - [x] Upload multipart (> 20 MiB) trên app; MEM-06 Đang tải lên — UI ✅ (BF-20261019-008) · BE ✅ · App ✅ (multipart + ETag BF-20261019-007; tải nền, tiến độ, thử lại/huỷ, giữ nháp khi mất việc tải, BF-20261019-008)
 - [x] MEM-01 Dòng thời gian (timeline theo ngày xảy ra, chương theo tháng tuổi dựng trên app) — UI ✅ · BE ✅ · App ✅ (BF-20261018-005/006)
-- [ ] Thẻ chương tháng/ảnh tháng/recap từ server trên timeline — BE ✅ (thẻ `CHAPTER`, `WEEKLY_RECAP` trên `/timeline`, BF-20261019-008, Codex) · App 🟡 (thẻ chương lấy số liệu + ảnh bìa từ `/timeline`, BF-20261019-009; thẻ recap tuần trên dòng thời gian chưa có)
+- [x] Thẻ chương tháng/ảnh tháng/recap từ server trên timeline — BE ✅ (thẻ `CHAPTER`, `WEEKLY_RECAP` trên `/timeline`, BF-20261019-008, Codex) · App ✅ (thẻ chương từ `/timeline` BF-20261019-009; thẻ recap tuần mới nhất trên dòng thời gian cả nhà, BF-20261020-001)
 - [x] MEM-02 Lưới ảnh (media grid) — UI ✅ · BE ✅ · App ✅ (BF-20261018-005/006)
 - [x] MEM-03 Album, tạo/sửa album — UI ✅ · BE ✅ (`/albums`, BF-20261019-002, Codex) · App ✅ (album tự động vẫn trên máy, BF-20261019-002)
 - [x] MEM-22 Bộ sưu tập — UI ✅ · BE ✅ (yêu thích riêng từng người, BF-20261019-002) · App ✅ (đồng bộ yêu thích, BF-20261019-002)
-- [x] MEM-08 Xem ảnh/video toàn màn hình — UI ✅ · App ✅ (phát video `v1080`, poster cho thẻ, video vừa chọn trên máy, BF-20261019-009)
+- [x] MEM-08 Xem ảnh/video toàn màn hình — UI ✅ · App ✅ (phát video `v1080`, poster cho thẻ, video vừa chọn trên máy, BF-20261019-009; ưu tiên bản còn trong thư viện máy khi khớp SHA-256 file gốc, BF-20261021-008)
 - [x] Tải về bản gốc (`download-urls`) & chia sẻ ra ngoài — UI ✅ · BE ✅ (BF-20261019-002, Codex) · App ✅ (nút Tải về mở bản gốc, BF-20261019-002)
 - [x] MEM-24 Kể cùng nhau — góc nhìn thứ hai — UI ✅ · BE ✅ (BF-20261019-002, Codex) · App ✅ (chữ; ghi âm góc nhìn chưa, BF-20261019-002)
 - [x] MEM-20/21 Ảnh tháng & “Con lớn từng tháng”, collage — UI ✅ · BE ✅ (`/children/:id/monthly-photos`, BF-20261019-008, Codex) · App ✅ (BF-20261019-008; collage ghép trên app)
 - [x] Gợi ý ghi lại (memory prompts) — UI ✅ · BE ✅ (catalog + bỏ qua, BF-20261019-002) · App ✅ (BF-20261019-002)
 - [x] MEM-25 Hôm nay của bé (trình chiếu) — UI ✅ · BE ✅ (`/children/:id/today-story`, BF-20261019-009) · App ✅ (BF-20261019-009; “đã xem” lưu trên máy)
-- [ ] “Ai ở đó” (people), địa điểm, cảm xúc đầy đủ — UI ✅ · BE 🟡 · App 🟡
+- [x] “Ai ở đó” (people), địa điểm, cảm xúc đầy đủ — UI ✅ (mục nâng cao trong trình soạn, BF-20261021-002) · BE ✅ (`people` qua `memory_people`, `feeling`, `locationLabel`, `/people-suggestions`, BF-20261021-002, Codex) · App ✅ (gửi/hiển thị người, cảm xúc, địa điểm, BF-20261021-002; gợi ý người từ server chưa dùng)
 - [x] Quota `memoryCount`: đếm, chặn, trừ khi xoá, kiểm lại khi khôi phục — BE ✅ (BF-20261017-001, BF-20261018-001)
 
 ## 7. Nhật ký, thư gửi con, cột mốc (§7.9, §7.11)
 
-- [ ] MEM-13 Viết nhật ký (chữ dài) — UI ✅ · BE 🟡 (kind DIARY) · App 🟡
+- [x] MEM-13 Viết nhật ký (chữ dài) — UI ✅ · BE ✅ (kind DIARY) · App ✅ (lưu lên server; tự lưu nháp trên máy sau 2 giây và mở lại soạn tiếp, BF-20261021-002)
 - [x] MEM-14 Thư gửi con + time capsule (niêm phong tới ngày mở) — UI ✅ · BE ✅ (thư + job mở thư, BF-20261019-002, Codex) · App ✅ (tạo thư niêm phong qua server, BF-20261019-002)
 - [x] MEM-11 Chọn cột mốc (catalog, cả truyền thống VN) — UI ✅ · BE ✅ (`/milestone-templates`, BF-20261019-002) · App ✅ (BF-20261019-002)
 - [x] MEM-12 Những lần đầu — UI ✅ · BE ✅ (`/children/:id/milestones`, BF-20261019-002) · App ✅ (trạng thái đã ghi từ server, BF-20261019-002)
@@ -132,7 +132,7 @@ Tạo 2026-10-18 (BF-20261018-001). Nguồn: [đặc tả nghiệp vụ](01_DAC_
 
 ## 9. Nhiệm vụ hằng ngày (§7.13, §9.7)
 
-- [ ] Catalog nhiệm vụ (≥ 90 ngày nội dung), seed — BE 🟡 (110 mẫu vi/en, không lặp trong 14 ngày khi đủ mẫu, thiếu thì lùi 7 ngày, BF-20261019-003; chưa chứng minh đủ 90 ngày không trùng cho mọi độ tuổi)
+- [x] Catalog nhiệm vụ (≥ 90 ngày nội dung), seed — BE ✅ (268 mẫu vi/en, +158 mẫu mới: chung mọi giai đoạn, thai kỳ, sơ sinh/sau sinh, 2–5 tháng, mẫu giáo 2,5–6 tuổi; unit chứng minh mọi tuần thai 1–42 và mọi tuổi 0–6 năm đủ mẫu cho cửa sổ không lặp 14 ngày + SELF cho người mang thai/vừa sinh; integration mô phỏng 90 ngày bằng bộ sinh thật cho 9 giai đoạn không lặp trong 14 ngày; sửa bộ sinh gán nhầm mẫu thai kỳ cho bé, BF-20261021-005)
 - [x] Job bày bảng nhiệm vụ mỗi ngày, chia đều 2 Parent — BE ✅ (job `mission.prepare-boards` mỗi giờ, 5:00 giờ địa phương, không trùng, BF-20261019-003)
 - [x] CARE-01 Hôm nay (tab Của tôi / Cùng nhau / Bạn đời) — UI ✅ · BE ✅ · App ✅ (BF-20261018-006/007)
 - [x] CARE-02 Chi tiết nhiệm vụ — UI ✅ · BE ✅ · App ✅ (BF-20261018-007)
@@ -155,7 +155,7 @@ Tạo 2026-10-18 (BF-20261018-001). Nguồn: [đặc tả nghiệp vụ](01_DAC_
 
 ## 11. Papa & Mama Space (§7.16, §9.8)
 
-- [ ] US-01 Trang chính Papa & Mama — UI ✅ · BE 🟡 · App 🟡 (check-in + lời nhờ từ server; câu hỏi/cảm ơn còn trên máy, BF-20261018-005)
+- [x] US-01 Trang chính Papa & Mama — UI ✅ · BE ✅ (check-in, lời nhờ, cảm ơn) · App ✅ (check-in + lời nhờ BF-20261018-005, cảm ơn từ server; bản server không hiện câu hỏi mẫu — câu hỏi kết nối là bản 1.1 ở dòng riêng, BF-20261021-003)
 - [x] US-02 Check-in cảm xúc — UI ✅ · BE ✅ · App ✅ (BF-20261018-003/005)
 - [x] US-03/04 Lời nhờ (gửi, nhận, nhắc, hoàn thành, tối đa 5 đang mở) — UI ✅ · BE ✅ · App ✅ (BF-20261018-004/005)
 - [x] US-05/06 Lời cảm ơn, bức tường cảm ơn — UI ✅ · BE ✅ · App ✅ (BF-20261018-007/009)
@@ -173,7 +173,7 @@ Tạo 2026-10-18 (BF-20261018-001). Nguồn: [đặc tả nghiệp vụ](01_DAC_
 - [x] FAM-03 Mời người thân (wizard 5 bước, quyền theo từng bé) — UI ✅ · BE ✅ (`/invites/circle`, BF-20261019-004, Codex) · App ✅ (BF-20261019-004)
 - [x] FAM-04/06 Chi tiết, sửa quyền, gỡ người thân — UI ✅ · BE ✅ (`/circle-members/*`, BF-20261019-004) · App ✅ (tắt thông báo còn trên máy, BF-20261019-004)
 - [x] FAM-05 Lời mời đang chờ — UI ✅ · BE ✅ (thu hồi/gia hạn, BF-20261019-004) · App ✅ (BF-20261019-004)
-- [ ] FAM-07 Cài đặt gia đình — UI ✅ · BE ✅ (`PATCH /families` + `contentLocale`, `coverAssetId`/`coverUrl`, BF-20261019-009) · App 🟡 (tên, quyền riêng tư, ảnh bìa, ngôn ngữ nội dung qua server, BF-20261019-009; múi giờ còn trên máy)
+- [x] FAM-07 Cài đặt gia đình — UI ✅ · BE ✅ (`PATCH /families` + `contentLocale`, `coverAssetId`/`coverUrl` BF-20261019-009; danh mục múi giờ `/catalog/timezones` BF-20261021-001) · App ✅ (tên, quyền riêng tư, ảnh bìa, ngôn ngữ nội dung BF-20261019-009; múi giờ từ danh mục server BF-20261021-001)
 - [x] CIR-WAIT, CIR-01…06 App của người thân — UI ✅ · BE ✅ (lời mời CIRCLE, `/me/circles` có quyền theo bé, Circle tải ảnh lên, BF-20261019-005) · App ✅ (nhận lời mời, chờ duyệt, bảng tin, lời chúc/thả tim, đăng ảnh chờ duyệt, BF-20261019-005; tuỳ chọn thông báo CIR-06 còn trên máy)
 - [x] Lọc ký ức theo quyền Circle (ACL §6.3) — BE ✅ (mọi đường đọc + media + cột mốc/thống kê hồ sơ khi bé gắn lẫn, BF-20261019-004/BF-20261019-005)
 - [x] MEM-19 Duyệt ảnh người thân đăng — UI ✅ · BE ✅ (`pending-review`, approve/reject, BF-20261019-004, Codex) · App ✅ (BF-20261019-004)
@@ -197,7 +197,7 @@ Tạo 2026-10-18 (BF-20261018-001). Nguồn: [đặc tả nghiệp vụ](01_DAC_
 - [ ] Push notification (APNs/FCM), đăng ký token — BE ✅ (worker gửi FCM, giờ yên tĩnh, trần 3/ngày, BF-20261018-014, Codex) · App ✅ (đăng ký token, BF-20261018-014) · 🟡 chưa thử FCM/APNs thật trên thiết bị
 - [x] NOTI-01 Hộp thông báo (trong app) — UI ✅ · BE ✅ · App ✅ (BF-20261018-010/011)
 - [x] Giờ yên tĩnh, ẩn nội dung, cài đặt từng loại — UI ✅ · BE ✅ (`/me/notification-settings`, BF-20261019-006) · App ✅ (BF-20261019-006; nhóm nhiệm vụ/cầu nối/cột mốc/recap/gói còn trên máy)
-- [ ] Email giao dịch (OTP qua mail chỉ dùng dev) — BE 🟡
+- [x] Email giao dịch (OTP qua mail chỉ dùng dev) — BE ✅ (outbox `mail.transactional` → worker riêng, 7 mẫu vi/en: xuất dữ liệu, hẹn xoá tài khoản/gia đình + nhắc, đổi số, thêm phương thức đăng nhập; chỉ email đã xác minh, BF-20261021-002, Codex; chưa thử SMTP production)
 
 ## 16. Tìm kiếm (§7.22)
 
@@ -216,11 +216,11 @@ Tạo 2026-10-18 (BF-20261018-001). Nguồn: [đặc tả nghiệp vụ](01_DAC_
 - [x] Trial 7 ngày theo policy catalog — BE ✅ · App ✅ (BF-20261015-002, BF-20261015-012)
 - [x] Catalog gói `GET /billing/plans` trên app — UI ✅ · BE ✅ · App ✅ (quota/feature từ server, giá Store còn trên máy, BF-20261019-006)
 - [x] SUB-03 Gói của gia đình `GET /families/:fid/billing` — UI ✅ · BE ✅ · App ✅ (BF-20261019-006)
-- [ ] SUB-01/02 Paywall + mua IAP (App Store / Google Play), xác minh receipt — UI ✅ · BE ❌ · App ❌
-- [ ] SUB-04 Nâng cấp House → Family — UI ✅ · BE ❌ · App ❌
-- [ ] SUB-05 Đạt giới hạn (photos/memory/storage) dùng mã lỗi server — UI ✅ · BE ✅ · App 🟡
+- [ ] SUB-01/02 Paywall + mua IAP (App Store / Google Play), xác minh receipt — UI ✅ · BE ✅ (BF-20261020-001) · App 🟡 (`in_app_purchase` StoreKit 2/Play: purchase-intent → Store → `purchases/verify` → hoàn tất giao dịch, huỷ không báo lỗi, BF-20261021-007; chưa cấu hình sản phẩm Store và chưa thử sandbox)
+- [ ] SUB-04 Nâng cấp House → Family — UI ✅ · BE ✅ (`/billing/upgrade-options`, BF-20261020-001) · App 🟡 (mua Family qua cùng luồng IAP, BF-20261021-007; chưa thử sandbox)
+- [x] SUB-05 Đạt giới hạn (photos/memory/storage) dùng mã lỗi server — UI ✅ · BE ✅ · App ✅ (sheet giới hạn theo `QUOTA_MEMORY_COUNT_EXCEEDED|QUOTA_STORAGE_EXCEEDED|QUOTA_PHOTOS_PER_MEMORY` khi lưu ký ức, lưu nháp/nâng cấp, BF-20261020-001)
 - [x] SUB-06/07 Banner trạng thái, hết hạn/EXPIRED phản chiếu vào app — UI ✅ · BE ✅ (`statusBanner` trong `/billing`, worker nhắc trước hạn/ân hạn/hết hạn theo mốc, 5 template BILLING, BF-20261019-010, Codex) · App ✅ (gói/hạn/dung lượng/ân hạn từ `/billing`, BF-20261019-006)
-- [ ] Store server notifications, ân hạn, hoàn tiền — BE ❌
+- [x] Store server notifications, ân hạn, hoàn tiền — BE ✅ (`/webhooks/app-store`, `/webhooks/play`, worker `store-notifications`: gia hạn/ân hạn/hết hạn/huỷ tự gia hạn/hoàn tiền/thu hồi, BF-20261020-001, Codex; chưa thử Store thật)
 - [x] Đọc dữ liệu khi gói hết hạn (allowlist §6.5) — BE ✅ (allowlist cụ thể: bootstrap, billing, đọc ký ức, media-grid, tải gốc, xuất dữ liệu; còn lại 402/403; đóng các đường đọc rộng cũ, BF-20261019-010, Codex)
 
 ## 19. Cài đặt cá nhân (§9.12)
@@ -228,7 +228,7 @@ Tạo 2026-10-18 (BF-20261018-001). Nguồn: [đặc tả nghiệp vụ](01_DAC_
 - [x] SET hồ sơ cá nhân `PATCH /me` — UI ✅ · BE ✅ · App ✅ (tên hiển thị, BF-20261019-006; tên gọi/ảnh đại diện còn trên máy)
 - [x] Hiển thị (dark mode, cỡ chữ), ngôn ngữ đồng bộ `PATCH /me/settings` — UI ✅ · BE ✅ · App ✅ (lưu trên máy + đồng bộ server, áp khi mở app, BF-20261019-008)
 - [x] Cài đặt AI (tắt/bật, đồng ý) — UI ✅ · BE ✅ (`/me/ai-settings`, BF-20261019-006) · App ✅ (BF-20261019-006)
-- [ ] Trợ giúp, giới thiệu — UI ✅
+- [x] Trợ giúp, giới thiệu — UI ✅ · BE ✅ (`GET /support/help-center`: FAQ có version vi/en, liên hệ + đường dẫn pháp lý theo cấu hình, BF-20261021-003) · App ✅ (FAQ có câu trả lời, email/hotline/điều khoản/quyền riêng tư mở được khi server cấu hình, BF-20261021-003)
 
 ## 20. Rời gia đình, xoá tài khoản, xuất dữ liệu (§7.25)
 
@@ -239,10 +239,10 @@ Tạo 2026-10-18 (BF-20261018-001). Nguồn: [đặc tả nghiệp vụ](01_DAC_
 
 ## 21. Vận hành & Admin CMS (§7.26, §9.15)
 
-- [ ] Admin CMS web (`baby-admin/` đang trống) — ❌
-- [ ] Quản lý catalog nhiệm vụ/cột mốc/gợi ý/thông báo — ❌
-- [ ] Quản lý gói/plan version/trial policy — BE 🟡 (seed) · Admin ❌
-- [ ] Xử lý báo cáo, khoá license có audit — ❌
+- [x] Admin CMS web (`baby-admin/`) — ✅ (React + Vite + TS + Ant Design theo tài liệu kỹ thuật §24: đăng nhập email + mật khẩu + TOTP, menu theo vai trò, kiểm duyệt, khoá license, CSKH, catalog chỉ đọc; `admin-ci.yml`; đã chạy thật với backend + DB test, BF-20261021-006)
+- [ ] Quản lý catalog nhiệm vụ/cột mốc/gợi ý/thông báo — BE 🟡 (nhiệm vụ: tạo nháp → publish → ngừng dùng có lý do + audit, BF-20261021-007, Codex; cột mốc/mẫu thông báo chưa có version) · Admin 🟡 (form nhiệm vụ trong Catalog, BF-20261021-007)
+- [x] Quản lý gói/plan version/trial policy — BE ✅ (tạo phiên bản nháp → publish có ngày hiệu lực → ngừng dùng, không sửa bản đang dùng, RBAC BILLING_OPS/OPS, audit, BF-20261021-007, Codex) · Admin ✅ (form phiên bản gói, chính sách dùng thử, BF-20261021-007)
+- [x] Xử lý báo cáo, khoá license có audit — BE ✅ (`/admin/v1/moderation/*`, khoá/mở license có lý do + `AdminAuditEvent`, BF-20261021-002) · Admin ✅ (màn Kiểm duyệt: xem nội dung có lý do, đổi trạng thái, ẩn; màn Khoá license, BF-20261021-006)
 - [x] Hỗ trợ khách hàng (support ticket) — UI ✅ · BE ✅ (`/support/*`, nội dung mã hoá, không cần gói còn hạn, BF-20261019-010, Codex) · App ✅ (gửi yêu cầu theo danh mục server + danh sách đã gửi, BF-20261019-010; chưa xem/nhắn tiếp trong ticket)
 
 ## 22. Đa ngôn ngữ & accessibility (§7.27, §10.10–10.11)
@@ -259,4 +259,4 @@ Tạo 2026-10-18 (BF-20261018-001). Nguồn: [đặc tả nghiệp vụ](01_DAC_
 
 - [ ] Build ký số iOS/Android, TestFlight / Internal testing — ❌
 - [ ] Chính sách quyền riêng tư, điều khoản, age rating, privacy manifest — ❌
-- [ ] Kiểm thử bất biến bảo mật §6.4 (release blocker) đầy đủ — 🟡
+- [x] Kiểm thử bất biến bảo mật §6.4 (release blocker) đầy đủ — ✅ (phần MVP: `security-invariants.spec.ts` quét 53 route cho người ngoài/Circle/bạn đời + bảng bao phủ 1–10 ở `baby-backend/docs/security-invariants.md`; sửa lịch/nhiệm vụ trả 403 lộ sự tồn tại → 404, BF-20261021-004. Phần 1.1 (Cầu nối, PREG-07) bổ sung khi có route; chưa pentest ngoài)

@@ -3821,6 +3821,53 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get memVoiceRecording => '录音中… 点按停止';
+
+  @override
+  String get memVoiceMicDenied => '录音需要麦克风权限，请在手机设置中开启';
+
+  @override
+  String get memPeopleLabel => '在场的人';
+
+  @override
+  String get memPeopleChoose => '选择人';
+
+  @override
+  String get memPeopleAddName => '添加名字';
+
+  @override
+  String get memFeelingLabel => '当时的心情';
+
+  @override
+  String get memFeelingChoose => '选择心情';
+
+  @override
+  String get memFeelingNone => '不选';
+
+  @override
+  String memFeeling(String feeling) {
+    String _temp0 = intl.Intl.selectLogic(feeling, {
+      'love': '温馨',
+      'joy': '开心',
+      'touched': '感动',
+      'surprised': '惊喜',
+      'peaceful': '平静',
+      'proud': '自豪',
+      'other': '$feeling',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get memLocationLabel => '地点';
+
+  @override
+  String get memLocationAdd => '添加地点';
+
+  @override
+  String get memLocationHint => '例如：奶奶家、海边';
+
+  @override
   String get memKeepsakeTitleHint => '纪念品名称';
 
   @override
@@ -4688,6 +4735,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get famSettingsTimezone => '家庭时区';
 
   @override
+  String get famTimezoneSearch => '搜索城市或时区';
+
+  @override
   String get famSettingsLunar => '显示农历';
 
   @override
@@ -5299,6 +5349,24 @@ class AppLocalizationsZh extends AppLocalizations {
     });
     return '$_temp0';
   }
+
+  @override
+  String get supportThread => '对话';
+
+  @override
+  String get supportNoReply => '客服会在这里回复你。';
+
+  @override
+  String get supportTeam => '客服';
+
+  @override
+  String get supportReply => '补充说明';
+
+  @override
+  String get supportSendReply => '发送';
+
+  @override
+  String get supportClosedHint => '此请求已关闭。如需更多帮助，请提交新的请求。';
 
   @override
   String get setMyReports => '我的反馈';
@@ -6584,6 +6652,28 @@ class AppLocalizationsZh extends AppLocalizations {
   String subLimitTrimmed(int max) {
     return '视频已剪至 $max 分钟';
   }
+
+  @override
+  String subLimitQuotaTitle(String reason) {
+    String _temp0 = intl.Intl.selectLogic(reason, {
+      'QUOTA_STORAGE_EXCEEDED': '套餐存储空间已满',
+      'QUOTA_PHOTOS_PER_MEMORY': '单个回忆的照片过多',
+      'other': '已达到套餐的回忆数量上限',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String subLimitQuotaBody(String reason, String plan) {
+    String _temp0 = intl.Intl.selectLogic(reason, {
+      'QUOTA_PHOTOS_PER_MEMORY': '$plan限制每个回忆的照片数量。删掉几张再保存，或升级以添加更多。',
+      'other': '$plan已达到此上限。可将内容保存为草稿，或升级后继续保存。',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get subLimitKeepDraft => '存为草稿';
 
   @override
   String get subIssueTitle => '续订付款未成功';

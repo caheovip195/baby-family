@@ -11,12 +11,14 @@ class MemoryComposerPage extends BaseHookWidget {
     @QueryParam('kind') this.kind,
     @QueryParam('childId') this.childId,
     @QueryParam('memoryId') this.memoryId,
+    @QueryParam('draftId') this.draftId,
     super.key,
   });
 
   final String? kind;
   final String? childId;
   final String? memoryId;
+  final String? draftId;
 
   @override
   Widget buildWidget(BuildContext context, WidgetRef ref) {
@@ -24,6 +26,7 @@ class MemoryComposerPage extends BaseHookWidget {
       kind: kind,
       childId: childId,
       memoryId: memoryId,
+      draftId: draftId,
     );
   }
 }

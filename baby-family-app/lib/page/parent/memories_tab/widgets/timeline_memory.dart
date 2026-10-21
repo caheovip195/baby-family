@@ -34,9 +34,10 @@ class _TimelineMemory extends StatelessWidget {
     }
     switch (memory.kind) {
       case MemoryKind.voice:
-        return VoiceCard(
+        return PlayableVoiceCard(
           title: caption,
           duration: memoryDuration(memory.voiceDurationSec ?? 0),
+          url: memory.voiceUrl,
           onTap: open,
         );
       case MemoryKind.quote:
