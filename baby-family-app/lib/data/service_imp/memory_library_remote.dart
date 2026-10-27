@@ -10,6 +10,7 @@ import 'package:baby_family/data/model/memory/milestone_item.dart';
 import 'package:baby_family/data/model/memory/milestone_option.dart';
 import 'package:baby_family/data/model/memory/milestone_template_record.dart';
 import 'package:baby_family/data/model/memory/monthly_photo.dart';
+import 'package:baby_family/data/model/memory/monthly_photo_record.dart';
 import 'package:baby_family/data/model/memory/perspective_record.dart';
 import 'package:baby_family/data/model/memory/weekly_recap.dart';
 import 'package:baby_family/data/model/recap/weekly_recap_record.dart';
@@ -21,18 +22,24 @@ import 'package:baby_family/data/repository/memory_feed.dart';
 import 'package:baby_family/data/repository/memory_library_remote.dart';
 import 'package:baby_family/data/repository/session.dart';
 import 'package:baby_family/data/service_imp/memory_remote.dart';
+import 'package:baby_family/data/service_imp/offline_read.dart';
+import 'package:baby_family/data/service_imp/outbox_runner.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/helper/app_clock.dart';
 import 'package:baby_family/utils/helper/app_l10n.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
 import 'package:baby_family/utils/helper/server_error_message.dart';
+import 'package:dio/dio.dart';
 
 /// Thư viện ký ức qua server (BF-20261019-002): album (MEM-03), yêu thích
 /// (MEM-22), tải bản gốc (MEM-08), góc nhìn thứ hai (MEM-24), gợi ý ghi lại,
 /// cột mốc & những lần đầu (MEM-11/12), số thư niêm phong (MEM-14).
 /// Album tự động, nhóm/tên cột mốc vẫn theo catalog của app.
 class MemoryLibraryRemoteServiceImp extends MemoryRemoteServiceImp {
+  /// Bản đọc gần nhất cho màn phụ khi mất mạng (BF-20261026-007).
+  final _reads = OfflineReads();
+
   MemoryLibraryRemoteServiceImp(
     ISessionRepository sessionRepository,
     AppClock clock,
@@ -67,27 +74,44 @@ class MemoryLibraryRemoteServiceImp extends MemoryRemoteServiceImp {
     if (serverFamilyId == null) {
       return local;
     }
-    final records = await _library.albums(serverFamilyId);
+    // Mất mạng: album server đọc gần nhất.
+    final records =
+        await whenOnline(
+          () => _library.albums(serverFamilyId),
+          what: 'album',
+        ) ??
+        _albums;
+    _albums = records;
     return [
       ...local.where((album) => album.isAuto),
       for (final record in records) ?_toAlbum(record),
     ];
   }
 
+  List<AlbumRecord> _albums = const [];
+
+  /// BF-20261023-001: chỉ mở album trong gia đình hiện tại hoặc từ server.
   @override
   Future<Album?> album(String id) async {
-    final local = await super.album(id);
+    final row = _store.album(id);
+    final local = _serverFamilyId == null || row?['familyId'] == familyId
+        ? await super.album(id)
+        : null;
     final serverFamilyId = _serverFamilyId;
     if (local != null || serverFamilyId == null) {
       return local;
     }
-    final record = (await _library.albums(
-      serverFamilyId,
+    final record = (await _reads.read(
+      ['albums', serverFamilyId],
+      () => _library.albums(serverFamilyId),
     )).where((album) => album.id == id).firstOrNull;
     if (record == null) {
       return null;
     }
-    final memories = await _library.albumMemories(id);
+    final memories = await _reads.read([
+      'albumMemories',
+      id,
+    ], () => _library.albumMemories(id));
     final assets = <String, String>{};
     final items = <AlbumItem>[];
     for (final memory in memories) {
@@ -200,11 +224,14 @@ class MemoryLibraryRemoteServiceImp extends MemoryRemoteServiceImp {
   @override
   Future<List<CollectionSummary>> collections() async {
     final serverFamilyId = _serverFamilyId;
-    if (serverFamilyId != null) {
-      final favorites = {
-        for (final record in await _library.favorites(serverFamilyId))
-          ?record.id,
-      };
+    final records = serverFamilyId == null
+        ? null
+        : await whenOnline(
+            () => _library.favorites(serverFamilyId),
+            what: 'yêu thích',
+          );
+    if (records != null) {
+      final favorites = {for (final record in records) ?record.id};
       for (final row in _store.memories(familyId)) {
         final id = row['id'] as String;
         final favorite = favorites.contains(id);
@@ -228,13 +255,20 @@ class MemoryLibraryRemoteServiceImp extends MemoryRemoteServiceImp {
 
   // ------------------------------------------------------------ góc nhìn
 
+  /// BF-20261023-001: không đọc góc nhìn mẫu bằng id ngoài gia đình.
   @override
   Future<List<MemoryPerspective>> perspectives(String memoryId) async {
+    if (_serverFamilyId != null && await memory(memoryId) == null) {
+      return const [];
+    }
     if (_serverFamilyId == null || !_isServerMemory(memoryId)) {
       return super.perspectives(memoryId);
     }
     return [
-      for (final record in await _library.perspectives(memoryId))
+      for (final record in await _reads.read([
+        'perspectives',
+        memoryId,
+      ], () => _library.perspectives(memoryId)))
         ?_toPerspective(record),
     ];
   }
@@ -280,19 +314,39 @@ class MemoryLibraryRemoteServiceImp extends MemoryRemoteServiceImp {
 
   // ------------------------------------------------------------ gợi ý
 
+  /// BF-20261023-001: offline chỉ giữ gợi ý server, không lấy fixture.
   @override
   Future<MemoryPrompt?> todayPrompt({String? childId}) async {
     final serverFamilyId = _serverFamilyId;
     if (serverFamilyId == null) {
       return super.todayPrompt(childId: childId);
     }
-    final record = (await _library.prompts(
-      serverFamilyId,
-      childId: childId,
-    )).firstOrNull;
+    final MemoryPromptRecord? record;
+    try {
+      record = (await _library.prompts(
+        serverFamilyId,
+        childId: childId,
+      )).firstOrNull;
+    } on DioException catch (error) {
+      // BF-20261023-001: chỉ giữ gợi ý server, không dùng catalog mẫu.
+      if (!OutboxRunner.isTransient(error)) {
+        rethrow;
+      }
+      if (_prompt == null) {
+        return null;
+      }
+      return _promptOf(_prompt!, childId);
+    }
     _prompt = record;
-    final code = record?.code;
-    if (record == null || code == null) {
+    if (record == null) {
+      return null;
+    }
+    return _promptOf(record, childId);
+  }
+
+  MemoryPrompt? _promptOf(MemoryPromptRecord record, String? childId) {
+    final code = record.code;
+    if (code == null) {
       return null;
     }
     final language = currentAppLanguage().code;
@@ -417,11 +471,20 @@ class MemoryLibraryRemoteServiceImp extends MemoryRemoteServiceImp {
       if (row['kind'] == ChildKind.pregnancy.name) {
         continue;
       }
-      final letters = await _library.letters(row['id'] as String);
+      final letters = await whenOnline(
+        () => _library.letters(row['id'] as String),
+        what: 'thư',
+      );
+      if (letters == null) {
+        // Mất mạng: số đọc gần nhất.
+        return _sealedLetters;
+      }
       count += letters.where((letter) => letter.sealed).length;
     }
-    return count;
+    return _sealedLetters = count;
   }
+
+  int _sealedLetters = 0;
 
   // ------------------------------------------------------------ chung
 
@@ -470,7 +533,10 @@ class MemoryLibraryRemoteServiceImp extends MemoryRemoteServiceImp {
     if (serverFamilyId == null) {
       return super.pendingPosts();
     }
-    final records = await _library.pendingReview(serverFamilyId);
+    final records = await _reads.read([
+      'pendingReview',
+      serverFamilyId,
+    ], () => _library.pendingReview(serverFamilyId));
     final posts = <Memory>[];
     for (final record in records) {
       final id = record.id;
@@ -516,7 +582,10 @@ class MemoryLibraryRemoteServiceImp extends MemoryRemoteServiceImp {
     if (serverFamilyId == null) {
       return super.weeklyRecap();
     }
-    final record = await _library.latestWeeklyRecap(serverFamilyId);
+    final record = await _reads.read([
+      'latestWeeklyRecap',
+      serverFamilyId,
+    ], () => _library.latestWeeklyRecap(serverFamilyId));
     final start = DateTime.tryParse(record?.periodStart ?? '');
     final end = DateTime.tryParse(record?.periodEnd ?? '');
     if (record == null || start == null || end == null) {
@@ -566,7 +635,16 @@ class MemoryLibraryRemoteServiceImp extends MemoryRemoteServiceImp {
     if (_serverFamilyId == null || !_isServerChild(childId)) {
       return super.monthlyPhotos(childId);
     }
-    final records = await _library.monthlyPhotos(childId);
+    final List<MonthlyPhotoRecord> records;
+    try {
+      records = await _library.monthlyPhotos(childId);
+    } on DioException catch (error) {
+      // Mất mạng: ảnh tháng theo các ký ức đã lưu trên máy.
+      if (!OutboxRunner.isTransient(error)) {
+        rethrow;
+      }
+      return super.monthlyPhotos(childId);
+    }
     // Thẻ chương tháng (tính trên máy) cần biết ký ức nào là ảnh tháng nào.
     for (final record in records) {
       final memoryId = record.memoryId;

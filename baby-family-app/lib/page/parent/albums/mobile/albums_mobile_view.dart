@@ -12,6 +12,7 @@ import 'package:baby_family/utils/widget/app_chip.dart';
 import 'package:baby_family/utils/widget/app_square_icon_button.dart';
 import 'package:baby_family/utils/widget/app_text_input_sheet.dart';
 import 'package:baby_family/utils/widget/base_scaffold.dart';
+import 'package:baby_family/utils/widget/empty_state.dart';
 import 'package:baby_family/utils/widget/error_state.dart';
 import 'package:baby_family/utils/widget/loading_progress.dart';
 import 'package:flutter/material.dart';
@@ -113,23 +114,25 @@ class AlbumsMobileView extends HookConsumerWidget {
           ],
         ),
       ),
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Expanded(
-            child: Text(
-              l10n.memAlbumsAuto,
-              style: AppTypography.adapt(context, _sectionStyle),
+      // Không có album tự động (gia đình mới): ẩn cả tiêu đề (BF-20261026-003).
+      if (auto.isNotEmpty)
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(
+              child: Text(
+                l10n.memAlbumsAuto,
+                style: AppTypography.adapt(context, _sectionStyle),
+              ),
             ),
-          ),
-          Text(
-            l10n.memAlbumsAutoHint,
-            style: AppTypography.adapt(context, AppTypography.small).copyWith(
-              color: AppColors.resolve(context, kColorTextTertiary9C928A),
+            Text(
+              l10n.memAlbumsAutoHint,
+              style: AppTypography.adapt(context, AppTypography.small).copyWith(
+                color: AppColors.resolve(context, kColorTextTertiary9C928A),
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       if (auto.isNotEmpty)
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -154,6 +157,11 @@ class AlbumsMobileView extends HookConsumerWidget {
           _NewAlbumButton(onTap: () => _createAlbum(context, controller)),
         ],
       ),
+      if (family.isEmpty)
+        EmptyState(
+          title: l10n.memAlbumsEmpty,
+          description: l10n.memAlbumsEmptyDescription,
+        ),
       for (var index = 0; index < family.length; index += 2)
         IntrinsicHeight(
           child: Row(

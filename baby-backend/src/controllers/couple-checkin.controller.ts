@@ -1,3 +1,9 @@
+import { ApiHeader } from '@nestjs/swagger';
+import { Optional } from '@nestjs/common';
+import { OptionalIdempotencyKey } from '../common/http/offline-idempotency-key.decorator';
+import { offlineCommand } from '../common/http/offline-command';
+import { OFFLINE_COMMAND_SERVICE } from '../interfaces/services/offline-command-service.interface';
+import type { IOfflineCommandService } from '../interfaces/services/offline-command-service.interface';
 import {
   Body,
   Controller,
@@ -30,14 +36,34 @@ export class CoupleCheckinController {
   constructor(
     @Inject(COUPLE_CHECKIN_SERVICE)
     private readonly service: ICoupleCheckinService,
+    @Optional()
+    @Inject(OFFLINE_COMMAND_SERVICE)
+    private readonly offline?: IOfflineCommandService,
   ) {}
   @Post()
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    required: false,
+    description: 'Optional UUID; replay returns the original response.',
+  })
   create(
     @CurrentActor() actor: AuthPrincipal,
     @Param('familyId', ParseUUIDPipe) familyId: string,
     @Body() input: CreateCheckinDto,
+    @OptionalIdempotencyKey() key?: string,
   ) {
-    return this.service.create(actor, familyId, input);
+    return offlineCommand(
+      this.offline,
+      key,
+      {
+        operation: 'couple.checkin.create',
+        actor,
+        familyId,
+        body: input,
+      },
+      () => this.service.create(actor, familyId, input),
+      () => this.service.today(actor, familyId),
+    );
   }
   @Get('today')
   today(

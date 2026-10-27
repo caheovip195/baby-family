@@ -1,3 +1,9 @@
+import { ApiHeader } from '@nestjs/swagger';
+import { Optional } from '@nestjs/common';
+import { OptionalIdempotencyKey } from '../common/http/offline-idempotency-key.decorator';
+import { offlineCommand } from '../common/http/offline-command';
+import { OFFLINE_COMMAND_SERVICE } from '../interfaces/services/offline-command-service.interface';
+import type { IOfflineCommandService } from '../interfaces/services/offline-command-service.interface';
 import {
   Controller,
   Delete,
@@ -23,22 +29,47 @@ export class MemoryLibraryController {
   constructor(
     @Inject(MEMORY_LIBRARY_SERVICE)
     private readonly service: IMemoryLibraryService,
+    @Optional()
+    @Inject(OFFLINE_COMMAND_SERVICE)
+    private readonly offline?: IOfflineCommandService,
   ) {}
   @Put('memories/:id/favorite')
   @HttpCode(204)
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    required: false,
+    description: 'Optional UUID; replay returns the original response.',
+  })
   favorite(
     @CurrentActor() actor: AuthPrincipal,
     @Param('id', new ParseUUIDPipe()) id: string,
+    @OptionalIdempotencyKey() key?: string,
   ) {
-    return this.service.favorite(actor, id, true);
+    return offlineCommand(
+      this.offline,
+      key,
+      { operation: 'memory.favorite.set', actor, memoryId: id },
+      () => this.service.favorite(actor, id, true),
+    );
   }
   @Delete('memories/:id/favorite')
   @HttpCode(204)
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    required: false,
+    description: 'Optional UUID; replay returns the original response.',
+  })
   unfavorite(
     @CurrentActor() actor: AuthPrincipal,
     @Param('id', new ParseUUIDPipe()) id: string,
+    @OptionalIdempotencyKey() key?: string,
   ) {
-    return this.service.favorite(actor, id, false);
+    return offlineCommand(
+      this.offline,
+      key,
+      { operation: 'memory.favorite.clear', actor, memoryId: id },
+      () => this.service.favorite(actor, id, false),
+    );
   }
   @Get('families/:fid/favorites')
   favorites(

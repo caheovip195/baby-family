@@ -23,7 +23,7 @@ class CareStatsController extends BaseNotifier {
     ref
       ..listen(selectedSubjectProvider, (_, id) {
         subjectId = id;
-        notifyListeners();
+        load();
       })
       ..listen(mockRevisionProvider, (_, _) => load());
     load();
@@ -33,6 +33,30 @@ class CareStatsController extends BaseNotifier {
 
   late DateTime today;
   String? subjectId;
+
+  /// Thứ Hai của tuần đang xem (null = tuần này).
+  DateTime? weekStart;
+
+  DateTime get _thisMonday =>
+      DateTime(today.year, today.month, today.day - (today.weekday - 1));
+
+  /// Không đi tới tuần sau tuần này.
+  bool get canGoNext => weekStart != null && weekStart!.isBefore(_thisMonday);
+
+  void previousWeek() {
+    weekStart = (weekStart ?? _thisMonday).subtract(const Duration(days: 7));
+    load();
+  }
+
+  void nextWeek() {
+    if (!canGoNext) {
+      return;
+    }
+    final next = weekStart!.add(const Duration(days: 7));
+    weekStart = next.isBefore(_thisMonday) ? next : null;
+    load();
+  }
+
   bool loaded = false;
   bool hasError = false;
   CareStats? stats;
@@ -48,7 +72,7 @@ class CareStatsController extends BaseNotifier {
     hasError = false;
     try {
       final (value, kids) = await (
-        careService.careStats(),
+        careService.careStats(weekStart: weekStart, childId: subjectId),
         ref.read(childServiceProvider).children(),
       ).wait;
       if (isDisposed) {

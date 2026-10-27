@@ -32,7 +32,11 @@ class _DeviceRow extends StatelessWidget {
     final time = days < _recentDays
         ? l10n.commonDaysAgo(days)
         : last.toFormDate(context.localeName);
-    return l10n.setDeviceLastActive(device.location, time);
+    // Server chưa có vị trí đăng nhập: không để “ · 2 ngày trước”
+    // (BF-20261026-002).
+    return device.location.isEmpty
+        ? time
+        : l10n.setDeviceLastActive(device.location, time);
   }
 
   @override
@@ -49,8 +53,13 @@ class _DeviceRow extends StatelessWidget {
       iconColor: current ? kColorSecondary7003F7A5C : kColorTextSecondary6B625B,
       title: device.name,
       subtitle: current
-          ? l10n.setDeviceInUse(device.location)
-          : _lastActive(context),
+          ? device.location.isEmpty
+                ? l10n.setDeviceInUseNoLocation
+                : l10n.setDeviceInUse(device.location)
+          : switch (_lastActive(context)) {
+              '' => null,
+              final String text => text,
+            },
       showChevron: false,
       trailing: current
           ? AppTagPill(label: l10n.setThisDevice)

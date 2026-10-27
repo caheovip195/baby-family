@@ -23,6 +23,7 @@ export interface CreatePregnancyNameCandidateInput {
   id?: string;
   pregnancyId: string;
   nameEnc: Uint8Array;
+  nameKey?: string | null;
   meaningEnc?: Uint8Array | null;
   addedBy: string;
   chosenAt?: Date | null;
@@ -31,6 +32,7 @@ export interface CreatePregnancyNameCandidateInput {
 export interface UpdatePregnancyNameCandidateInput {
   pregnancyId?: string;
   nameEnc?: Uint8Array;
+  nameKey?: string | null;
   meaningEnc?: Uint8Array | null;
   addedBy?: string;
   chosenAt?: Date | null;

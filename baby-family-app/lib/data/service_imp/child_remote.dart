@@ -1,7 +1,10 @@
 import 'package:baby_family/data/dto/fetal_size.dart';
 import 'package:baby_family/data/model/child/child.dart';
+import 'package:baby_family/data/model/child/child_archive_info.dart';
+import 'package:baby_family/data/model/child/child_profile.dart';
 import 'package:baby_family/data/model/memory/child_memory_stats.dart';
 import 'package:baby_family/data/model/memory/week_summary.dart';
+import 'package:baby_family/data/repository/base.dart';
 import 'package:baby_family/data/repository/child.dart';
 import 'package:baby_family/data/repository/memory.dart';
 import 'package:baby_family/data/repository/pregnancy_remote.dart';
@@ -9,6 +12,7 @@ import 'package:baby_family/data/repository/session.dart';
 import 'package:baby_family/data/repository/subject.dart';
 import 'package:baby_family/data/service_imp/child.dart';
 import 'package:baby_family/data/service_imp/media_uploader.dart';
+import 'package:baby_family/data/service_imp/offline_read.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/helper/app_clock.dart';
@@ -23,6 +27,9 @@ import 'package:logger/logger.dart';
 /// ([SessionRemoteServiceImp]). Lưu trữ/xoá/sắp xếp, ảnh đại diện/ảnh bìa, số
 /// đếm hồ sơ và kích thước thai theo tuần qua server (BF-20261019-001).
 class ChildRemoteServiceImp extends ChildServiceImp {
+  /// Bản đọc gần nhất cho màn phụ khi mất mạng (BF-20261026-007).
+  final _reads = OfflineReads();
+
   ChildRemoteServiceImp(
     ISessionRepository sessionRepository,
     AppClock clock,
@@ -37,6 +44,9 @@ class ChildRemoteServiceImp extends ChildServiceImp {
   final ISubjectRepository _subjects;
   final IPregnancyRemoteRepository _pregnancies;
   final MediaUploader _uploader;
+
+  bool get _hasServerFamily =>
+      sessionRepository.session()[kValueSessionKeyServerFamilyId] != null;
 
   static final _day = DateFormat('yyyy-MM-dd');
 
@@ -56,6 +66,33 @@ class ChildRemoteServiceImp extends ChildServiceImp {
     ChildGender.girl => 'FEMALE',
     ChildGender.unknown => 'UNSPECIFIED',
   };
+
+  /// BF-20261023-001: id từ route không được mở bé mẫu thuộc gia đình khác.
+  @override
+  Future<Child?> child(String id) async {
+    final result = await super.child(id);
+    return _hasServerFamily && result?.familyId != familyId ? null : result;
+  }
+
+  /// BF-20261023-001: hồ sơ chỉ đọc cho bé thuộc gia đình đang hoạt động.
+  @override
+  Future<ChildProfile?> profile(String childId) async {
+    await ready();
+    if (_hasServerFamily && await child(childId) == null) {
+      return null;
+    }
+    return super.profile(childId);
+  }
+
+  /// BF-20261023-001: không dùng tác động lưu trữ mẫu cho id ngoài gia đình.
+  @override
+  Future<ChildArchiveInfo> archiveInfo(String childId) async {
+    await ready();
+    if (_hasServerFamily && await child(childId) == null) {
+      return ChildArchiveInfo(childId: childId);
+    }
+    return super.archiveInfo(childId);
+  }
 
   @override
   Future<Child> addChild({
@@ -186,8 +223,22 @@ class ChildRemoteServiceImp extends ChildServiceImp {
   /// và câu nói đếm trên bản phản chiếu.
   @override
   Future<ChildMemoryStats> stats(String childId) async {
+    await ready();
+    // BF-20261023-001: id ngoài gia đình không được đọc nền thống kê mẫu.
+    final subject = await child(childId);
+    if (_hasServerFamily && subject == null) {
+      return ChildMemoryStats(childId: childId);
+    }
     final local = await super.stats(childId);
-    final remote = await _subjects.childStats(childId);
+    // Thai kỳ không có `profile-stats` (chỉ cho bé): gọi sẽ 404 làm hỏng cả
+    // màn hành trình thai kỳ (BF-20261026-001).
+    if (subject?.kind == ChildKind.pregnancy) {
+      return local;
+    }
+    final remote = await whenOnline(
+      () => _subjects.childStats(childId),
+      what: 'thống kê bé',
+    );
     if (remote == null) {
       return local;
     }
@@ -201,7 +252,10 @@ class ChildRemoteServiceImp extends ChildServiceImp {
   /// thước → null).
   @override
   Future<FetalSize?> fetalSize(String pregnancyId) async {
-    final journey = await _pregnancies.journey(pregnancyId);
+    final journey = await _reads.read([
+      'journey',
+      pregnancyId,
+    ], () => _pregnancies.journey(pregnancyId));
     final size = journey?.week?.size;
     final week = journey?.week?.number ?? journey?.currentWeek;
     if (size == null || week == null) {
@@ -250,8 +304,12 @@ class ChildRemoteServiceImp extends ChildServiceImp {
     await super.reorderChildren(childIds);
   }
 
+  /// Gia đình thật không cộng số liệu/ảnh mẫu của fixture (BF-20261022-006).
+  @override
+  JsonMap? get weekBaseline => null;
+
   /// HOME-01 “Tuần này”: số khoảnh khắc và lần đầu từ server (đúng quyền
-  /// xem); câu nói và ảnh nhỏ vẫn từ ký ức đã đồng bộ. Lỗi mạng giữ số trên máy.
+  /// xem); câu nói và ảnh nhỏ từ ký ức đã đồng bộ. Lỗi mạng giữ số trên máy.
   @override
   Future<WeekSummary> weekSummary() async {
     final local = await super.weekSummary();

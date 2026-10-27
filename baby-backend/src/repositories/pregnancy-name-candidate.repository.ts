@@ -33,6 +33,7 @@ function mapPregnancyNameCandidate(
     coupleSpaceId: row.coupleSpaceId,
     pregnancyId: row.pregnancyId,
     nameEnc: new Uint8Array(row.nameEnc),
+    nameKey: row.nameKey,
     meaningEnc: row.meaningEnc === null ? null : new Uint8Array(row.meaningEnc),
     addedBy: row.addedBy,
     chosenAt: row.chosenAt,
@@ -58,6 +59,7 @@ export class PregnancyNameCandidateRepository implements IPregnancyNameCandidate
       ...(input.id === undefined ? {} : { id: input.id }),
       pregnancyId: input.pregnancyId,
       nameEnc: new Uint8Array(input.nameEnc),
+      ...(input.nameKey === undefined ? {} : { nameKey: input.nameKey }),
       ...(input.meaningEnc === undefined
         ? {}
         : {
@@ -145,6 +147,7 @@ export class PregnancyNameCandidateRepository implements IPregnancyNameCandidate
     assertDatabaseUpdate(input, [
       'pregnancyId',
       'nameEnc',
+      'nameKey',
       'meaningEnc',
       'addedBy',
       'chosenAt',
@@ -157,6 +160,7 @@ export class PregnancyNameCandidateRepository implements IPregnancyNameCandidate
       ...(input.nameEnc === undefined
         ? {}
         : { nameEnc: new Uint8Array(input.nameEnc) }),
+      ...(input.nameKey === undefined ? {} : { nameKey: input.nameKey }),
       ...(input.meaningEnc === undefined
         ? {}
         : {

@@ -6,6 +6,7 @@ import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
+import 'package:baby_family/utils/helper/relative_text.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
@@ -83,6 +84,17 @@ class RelativeInviteMobileView extends HookConsumerWidget {
         callName: name,
       );
       if (!context.mounted || invite == null) {
+        return;
+      }
+      await controller.share(
+        l10n.famInviteShareMessage(
+          name,
+          joinNames(l10n, controller.selectedChildNames),
+          invite.code,
+          invite.link ?? '',
+        ),
+      );
+      if (!context.mounted) {
         return;
       }
       showAppSnackBar(

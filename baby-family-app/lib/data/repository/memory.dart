@@ -57,9 +57,11 @@ abstract class IMemoryRepository extends IBaseRepository {
   /// Ký ức các năm trước cho MEM-16 “Ngày này năm xưa”.
   List<JsonMap> pastMemories(String familyId);
 
-  List<String> searchRecents();
+  /// [server]: lịch sử tìm của gia đình thật, tách khỏi dữ liệu mẫu
+  /// (BF-20261022-006).
+  List<String> searchRecents({bool server = false});
 
-  void saveSearchRecents(List<String> recents);
+  void saveSearchRecents(List<String> recents, {bool server = false});
 
   JsonMap weeklyRecap();
 

@@ -228,7 +228,7 @@
     "src/interfaces/services/mood-response-service.interface.ts": "9248b2665e0e699764e1f9c0c7dd4ed95a4b240ceec3289d0c6848d240f72e3a",
     "src/services/mood-response.service.ts": "07d1704e95d9dcf751a2c32402d3de0b69e3bc09c7014d8ab2b4b5f043daa269",
     "src/interfaces/services/pregnancy-name-candidate-service.interface.ts": "35a68509d0b183b6ecbec99c144508cc03712384b47099b9bd6f4000851e48d7",
-    "src/services/pregnancy-name-candidate.service.ts": "b90ac33942587b11fb68dff32ed472c060635a20315dff63860e33fc1e890d5e",
+    "src/services/pregnancy-name-candidate.service.ts": "9d0f4220227a5c2b9be1a9145d9ef62376f9bfd97828db41d371c0f5a0f34d63",
     "src/interfaces/services/pregnancy-name-vote-service.interface.ts": "4b33bcdd74f65500888f033d9df4ab80db2a060d5bca51850a2ee014822f616d",
     "src/services/pregnancy-name-vote.service.ts": "2d9207ff44eadb12869d3d21fa67028ae8f7cf2027f302030baa3aeabc3d10aa",
     "src/interfaces/services/request-child-service.interface.ts": "46a234626ad80a891c63a13c818af7ec3b746ef8bea6b9b7d6278c9b256397bd",

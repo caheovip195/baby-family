@@ -106,7 +106,6 @@ class SessionRemoteServiceImp extends BaseServiceImp
     }
     try {
       await _syncFromServer();
-      await _saveSnapshot();
     } on DioException catch (error) {
       Logger().e('Không đồng bộ được phiên: ${error.message}');
       if (error.response?.statusCode == 401) {
@@ -231,6 +230,7 @@ class SessionRemoteServiceImp extends BaseServiceImp
     await _local.cancelFamily();
   }
 
+  /// BF-20261023-001: server không cấp được mã thì không trả lời mời mẫu.
   @override
   Future<InviteInfo?> partnerInvite({bool? requireApproval}) async {
     final base = await _local.partnerInvite();
@@ -252,7 +252,7 @@ class SessionRemoteServiceImp extends BaseServiceImp
         requireFinalApproval: requireApproval ?? true,
       );
       if (issued?.code == null) {
-        return base;
+        return null;
       }
       cached = {
         'inviteId': issued!.inviteId,
@@ -331,6 +331,9 @@ class SessionRemoteServiceImp extends BaseServiceImp
     if (bootstrap?.family?.status == 'ACTIVE') {
       _pendingPartnerCallName = null;
       await _mirrorActivated(familyId, bootstrap);
+      // Gia đình vừa kích hoạt: lưu ngay để mở app lúc mất mạng không quay về
+      // màn chờ bạn đời (BF-20261022-005).
+      await _saveSnapshot();
       return PartnerJoinStatus.joined;
     }
     try {
@@ -378,6 +381,7 @@ class SessionRemoteServiceImp extends BaseServiceImp
       await _onboardingRepository.markSetupDone(familyId);
     }
     await _local.completeSetup();
+    await _saveSnapshot();
   }
 
   @override
@@ -454,7 +458,20 @@ class SessionRemoteServiceImp extends BaseServiceImp
       inviterCallName: resolved.inviterCallName,
       message: resolved.message,
       relation: FamilyRemoteServiceImp.appRelation(resolved.relation),
+      // Tên gọi Bố/Mẹ đặt cho người được mời (“Bà Nội”…), trống → nhãn quan hệ.
+      callName: switch (resolved.displayName?.trim()) {
+        final String name when name.isNotEmpty => name,
+        _ => null,
+      },
       grantedChildIds: [for (final subject in resolved.children) ?subject.id],
+      // Quyền theo từng bé của server (trước đây luôn hiện “Chỉ xem” —
+      // BF-20261026-004).
+      canComment: resolved.children.any(
+        (subject) => subject.permission != null && subject.permission != 'VIEW',
+      ),
+      canPost: resolved.children.any(
+        (subject) => subject.permission == 'CONTRIBUTE',
+      ),
       expiresAt: resolved.expiresAt,
       status: resolved.state == 'VALID' ? 'open' : 'expired',
     );
@@ -472,6 +489,16 @@ class SessionRemoteServiceImp extends BaseServiceImp
                   : ChildKind.baby,
             ),
       ],
+      childAccess: {
+        for (final subject in resolved.children)
+          if (subject.id != null)
+            subject.id!: (
+              permission: FamilyRemoteServiceImp.appPermission(
+                subject.permission,
+              ),
+              allowDownload: subject.allowDownload ?? false,
+            ),
+      },
       state: resolved.state != 'VALID'
           ? InvitePreviewState.invalid
           : awaitingPartnerApproval
@@ -530,7 +557,6 @@ class SessionRemoteServiceImp extends BaseServiceImp
     await _local.reseed(DemoSeed.fresh);
     _patch({_keyPreferredFamilyId: familyId});
     await _syncFromServer();
-    await _saveSnapshot();
     return current;
   }
 
@@ -549,6 +575,9 @@ class SessionRemoteServiceImp extends BaseServiceImp
     }
     await _syncFromServer();
   }
+
+  @override
+  Future<void> persistOffline() => _saveSnapshot();
 
   Future<void> _saveSnapshot() async {
     final snapshots = _snapshots;
@@ -580,7 +609,15 @@ class SessionRemoteServiceImp extends BaseServiceImp
   }
 
   /// Phản chiếu `GET /me` (+ bootstrap) vào phiên trên máy.
+  /// Mỗi lần phiên đổi theo server (đăng nhập, nhận lời mời, duyệt, đổi
+  /// gia đình…) lưu luôn bản chụp dùng khi mở app lúc mất mạng — trước đây
+  /// chỉ lưu lúc mở app nên mở offline có thể quay về trạng thái cũ.
   Future<void> _syncFromServer() async {
+    await _pullSession();
+    await _saveSnapshot();
+  }
+
+  Future<void> _pullSession() async {
     final me = await _authRepository.getMeProfile();
     if (me == null) {
       return;
@@ -716,12 +753,17 @@ class SessionRemoteServiceImp extends BaseServiceImp
     final data = bootstrap ?? await _onboardingRepository.bootstrap(familyId);
     _mirrorSubjects(data?.subjects ?? const []);
     final serverMe = _raw[kValueSessionKeyServerUserId] as String?;
-    _patch({
-      kValueSessionKeyServerPartnerUserId: data?.parents
-          .map((parent) => parent.userId)
-          .where((id) => id != null && id != serverMe)
-          .firstOrNull,
-    });
+    final partner = data?.parents
+        .where((parent) => parent.userId != null && parent.userId != serverMe)
+        .firstOrNull;
+    _patch({kValueSessionKeyServerPartnerUserId: partner?.userId});
+    // Tên bạn đời của server, không giữ tên mẫu của bản phản chiếu.
+    if (data != null) {
+      _local.applyServerPartner(
+        displayName: partner?.displayName ?? '',
+        callName: partner?.callName,
+      );
+    }
     final entitlement = data?.entitlement;
     switch (entitlement?.accessPhase) {
       case 'TRIAL':

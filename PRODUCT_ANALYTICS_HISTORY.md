@@ -846,6 +846,10 @@ Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hi�
 - Kết quả: 101/165 dòng checklist; mọi check app/backend/integration đạt.
 - Theo dõi: job bản tin người thân, quy trình moderation/Admin, IAP, nháp tiếp tục soạn.
 - Trạng thái: Hoàn thành (còn các phần nêu ở “Theo dõi”).
+- Ghi bù 2026-10-26T15:06+07:00 (BF-20261026-007): chạy lại đủ bộ kiểm tra **trên mã hiện tại** (đã gồm mọi thay đổi sau BF-20261019-006, nên không tái hiện riêng trạng thái lúc đó):
+  - Backend `npm run check` EXIT 0 (unit 331, e2e 35); `npx eslint --max-warnings=0 src test` EXIT 0; `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT 0 (73 suite, 609 test).
+  - App `make check` EXIT 0 (analyze sạch, 878 test).
+  - Entry này vốn đã có kết quả kiểm tra của lần làm ban đầu, nên không đổi trạng thái.
 
 ## BF-20261019-007 — Recap tuần + số liệu HOME-01, avatar hồ sơ + ảnh bé qua bootstrap (2 Codex) + app video/multipart, sửa ảnh ký ức, chi tiết từ server (Claude)
 
@@ -1058,3 +1062,334 @@ Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hi�
 - Kết quả: đã commit.
 - Theo dõi: push khi người dùng yêu cầu.
 - Trạng thái: Hoàn thành.
+
+## BF-20261022-001 — Offline-first giai đoạn 1: outbox bền vững cho tạo ký ức + đồng bộ khi có mạng (Claude app) · idempotency + changes API (Codex backend)
+
+- Ngày làm: 2026-10-22T06:41:25+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp cho tôi những phần tiếp theo đi".
+- Liên quan: `docs/04_THIET_KE_OFFLINE_FIRST.md` (BF-20261021-008), lộ trình bước 1–2.
+- Vấn đề/mục tiêu: người dùng tạo ký ức/nhật ký khi không có mạng mà không mất nội dung và không bị đăng trùng; chuẩn bị nền backend cho đồng bộ hai chiều.
+- Tác động sản phẩm/dữ liệu:
+  - Màn soạn đóng ngay cả khi mất mạng; ký ức tạm hiện "Chờ có mạng" rồi tự đăng.
+  - Nội dung chờ được lưu mã hoá trên máy và xoá khi đăng xuất. Đăng xuất khi còn mục chờ thì mất các mục đó.
+  - Server không tạo trùng khi app gửi lặp.
+- Quyết định & cơ sở:
+  - Bắt đầu từ ký ức, luồng chính của sản phẩm.
+  - Idempotency-Key suy ra từ id thao tác để còn hiệu lực sau khi tắt app.
+  - Lỗi nghiệp vụ không tự thử lại, tránh vòng lặp.
+  - Nhiệm vụ/lời nhờ giữ key bắt buộc để không cộng Hearts trùng.
+  - Changes API chỉ trả id + version cho ký ức, để app đọc lại bản đầy đủ với URL ảnh mới.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Sau khi ra mắt nên đo:
+  - Tỉ lệ ký ức tạo khi offline.
+  - Thời gian từ lúc tạo tới khi đăng xong.
+  - Tỉ lệ thử lại thất bại (4xx).
+  - Số lần replay idempotency, để xác nhận không có bản trùng.
+- Kết quả: giai đoạn 1 xong ở cả app và backend; mọi check đạt.
+- Theo dõi:
+  - App dùng changes API.
+  - Outbox cho bình luận/cảm xúc/chăm sóc.
+  - Reconciliation/retention cho ledger idempotency.
+  - Thử chế độ máy bay trên máy thật.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Theo dõi").
+
+## BF-20261022-002 — Offline-first giai đoạn 2: app dùng changes API, outbox cho bình luận, cảm xúc, chăm sóc (Claude app)
+
+- Ngày làm: 2026-10-22T07:08:35+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp giai đoạn 2 offline-first: app dùng changes API và outbox cho bình luận, cảm xúc, chăm sóc."
+- Liên quan: BF-20261022-001, `docs/04_THIET_KE_OFFLINE_FIRST.md`, `baby-backend/docs/offline-sync.md`.
+- Vấn đề/mục tiêu: người dùng bình luận, thả cảm xúc, hoàn thành nhiệm vụ khi không có mạng; thấy được thay đổi của người nhà (xoá, sửa, bình luận) mà không tải lại toàn bộ.
+- Tác động sản phẩm/dữ liệu:
+  - Thao tác hiện ngay, gửi nền, không tạo trùng.
+  - Hoàn thành nhiệm vụ khi offline chưa hiện Hearts cho tới khi server ghi nhận.
+  - Bảng nhiệm vụ mở được khi offline.
+  - Ký ức bị xoá hoặc mất quyền xem được gỡ khỏi máy ở lần đồng bộ sau.
+- Quyết định & cơ sở:
+  - Một hàng đợi chung để hành vi nhất quán giữa các tính năng.
+  - Có mạng thì vẫn chờ server cho Hearts, để giữ trải nghiệm thưởng.
+  - Cảm xúc chỉ gửi lần cuối để giảm request.
+  - Changes lần đầu chỉ lấy mốc, tránh đọc lại hàng loạt.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Sau khi ra mắt nên đo:
+  - Số thao tác xếp hàng khi offline theo loại.
+  - Thời gian tới khi đồng bộ.
+  - Tỉ lệ bị từ chối (4xx).
+  - Số ký ức được đọc lại qua changes mỗi lần đồng bộ.
+- Kết quả: giai đoạn 2 xong phía app; app check đạt (811 test).
+- Theo dõi:
+  - Local DB bền vững.
+  - Outbox cho sửa ký ức / Papa & Mama.
+  - Thử máy thật với backend thật.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Theo dõi").
+
+## BF-20261022-003 — Offline-first: local DB bền vững (Hive, mã hoá theo dòng) cho ký ức và bình luận (Claude app)
+
+- Ngày làm: 2026-10-22T07:27:08+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp offline-first: local DB bền vững thay MockStore cho ký ức và bình luận."
+- Liên quan: BF-20261022-001/002, `docs/04_THIET_KE_OFFLINE_FIRST.md` (lộ trình bước 1, 5).
+- Vấn đề/mục tiêu: mở app (kể cả khi mất mạng) là thấy ngay ký ức và bình luận đã đồng bộ; dữ liệu trên máy không làm crash app khi server thêm/đổi field hoặc app cập nhật.
+- Tác động sản phẩm/dữ liệu:
+  - Ký ức và bình luận lưu mã hoá trên máy, xoá khi đăng xuất.
+  - Màn hình có dữ liệu trước khi server trả về.
+  - Bản ghi lỗi định dạng bị bỏ qua thay vì làm hỏng cả danh sách.
+- Quyết định & cơ sở:
+  - Hive mã hoá theo dòng, giữ kiến trúc repository đồng bộ hiện có (chi phí thấp, ít rủi ro).
+  - Schema version + kiểm từng dòng: an toàn hơn migrate dữ liệu cache, vì server luôn là nguồn để tải lại.
+  - Quy tắc tương thích được ghi vào tài liệu để áp cho các bảng sau.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Sau khi ra mắt nên đo:
+  - Thời gian từ mở app tới khi thấy ký ức (mạng tốt / mất mạng).
+  - Số dòng bị bỏ do lỗi định dạng (log).
+  - Dung lượng DB trên máy.
+- Kết quả: local DB cho ký ức + bình luận và các lớp chống crash đã có; app check đạt (814 test).
+- Theo dõi:
+  - Local DB cho nhiệm vụ / Papa & Mama.
+  - Thử máy thật.
+  - Theo dõi log lỗi định dạng sau mỗi lần đổi API.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Theo dõi").
+
+## BF-20261022-004 — Offline-first: local DB cho nhiệm vụ và Papa & Mama (đọc offline + check-in/lời nhờ/cảm ơn/nhật ký qua outbox) (Claude app)
+
+- Ngày làm: 2026-10-22T07:39:09+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Chưa commit, làm tiếp local DB cho nhiệm vụ và Papa & Mama."
+- Liên quan: BF-20261022-001…003, `docs/04_THIET_KE_OFFLINE_FIRST.md`.
+- Vấn đề/mục tiêu: dùng được nhiệm vụ hằng ngày và Papa & Mama khi không có mạng: xem bảng, hoàn thành, check-in, gửi lời nhờ, cảm ơn, viết nhật ký.
+- Tác động sản phẩm/dữ liệu:
+  - Mở app offline vẫn thấy bảng nhiệm vụ (7 ngày gần nhất) và dữ liệu Papa & Mama đã đồng bộ, lưu mã hoá và xoá khi đăng xuất.
+  - Các thao tác tạo hiện ngay rồi tự gửi.
+  - Khi có mạng, lỗi server vẫn hiện như trước.
+  - Lời nhờ vẫn giữ giới hạn đang mở (BR-067) ngay trên máy.
+- Quyết định & cơ sở:
+  - Một cơ chế chung (`LocalTables` + `submit`) để mọi tính năng hành xử giống nhau và dễ mở rộng.
+  - Thao tác trên lời nhờ của bạn đời giữ online, vì cần trạng thái mới nhất của người kia.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Sau khi ra mắt nên đo:
+  - Tỉ lệ check-in / lời nhờ / cảm ơn / nhật ký tạo khi offline.
+  - Thời gian tới khi đồng bộ.
+  - Tỉ lệ bị từ chối.
+  - Số dòng bị bỏ do lỗi định dạng.
+- Kết quả: hoàn thành phía app; app check đạt (816 test).
+- Theo dõi:
+  - Thao tác lời nhờ / nhiệm vụ khi offline.
+  - Thử máy thật với backend thật.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Theo dõi").
+
+## BF-20261022-005 — Chạy app với backend thật, thử luồng offline-first (mất mạng → có mạng lại) (Claude)
+
+- Ngày làm: 2026-10-22T22:43:45+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Chạy app với backend thật và thử luồng offline-first (mất mạng rồi có mạng lại)."
+- Liên quan: BF-20261022-001…004.
+- Vấn đề/mục tiêu: xác minh offline-first trên app thật với backend thật: tạo dữ liệu khi mất mạng, mở lại app khi vẫn mất mạng, có mạng lại thì tự đồng bộ không trùng.
+- Tác động sản phẩm/dữ liệu:
+  - Phát hiện và sửa các lỗi chỉ lộ ra khi chạy thật: mở lạnh offline quay về màn onboarding cũ, nhật ký/thư/câu nói không lưu được khi mất mạng, màn chính báo lỗi khi mất mạng.
+  - Người dùng giờ dùng được các luồng chính khi offline, và Hearts được cộng khi đồng bộ.
+- Quyết định & cơ sở:
+  - Chạy Android vì môi trường iOS lỗi công cụ; dùng `adb svc` để mất mạng thật, kiểm cả cơ chế tự gửi khi có mạng lại.
+  - Mọi lệnh đọc phụ khi mất mạng phải có bản thay thế, để một nguồn lỗi không làm hỏng cả màn.
+- Cách kiểm chứng/đo lường: kịch bản và số liệu DB nêu ở SESSIONS; test hồi quy. Nên theo dõi sau khi ra mắt:
+  - Tỉ lệ mở app khi offline mà vào được màn chính.
+  - Số thao tác tự gửi khi có mạng lại.
+  - Số lần màn chính báo lỗi khi offline.
+- Kết quả: luồng offline → online chạy đúng trên Android với backend thật; 5 nhóm lỗi đã sửa; 817 test đạt.
+- Theo dõi:
+  - Thử iOS sau khi nâng Flutter.
+  - Rà offline các màn phụ.
+  - Các điểm dữ liệu mẫu còn lộ trong gia đình thật.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Theo dõi").
+
+<a id="bf-20261022-006"></a>
+## BF-20261022-006 — Không hiện dữ liệu mẫu cho gia đình thật (tên Papa, thẻ tuần)
+
+- Ngày làm: 2026-10-22T23:30:37+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: sửa các màn ở chế độ server còn hiện dữ liệu mẫu (tên Papa mẫu, thẻ "Your family this week"), rà các màn chính khác.
+- Role: MOBILE; TESTER, QUALITY (agent chính tự áp dụng).
+- Vấn đề / mục tiêu: gia đình thật (chạy với server) phải chỉ thấy dữ liệu của mình. Dữ liệu mẫu (tên người khác, ảnh stock, số liệu giả) làm mất tin cậy và có thể gây hiểu nhầm về quyền riêng tư.
+- Quan sát (BF-20261022-005, chạy thật):
+  - ONB-04 hiện "Mama QA and Papa Minh" (tên mẫu).
+  - Thẻ "Your family this week" hiện ảnh stock và "1 new quotes" cho gia đình chưa có ký ức.
+  - Rà code thấy thêm: form tạo sự kiện điền "Sinh nhật Bà nội", tìm gần đây có mục mẫu, thống kê chăm sóc / tổng kết tuần Papa & Mama / gợi ý viết lại hiện nội dung mẫu.
+- Phân tích / quyết định:
+  - Bản server không cộng hay hiển thị dữ liệu mẫu.
+  - Tên bạn đời lấy theo `bootstrap.parents`.
+  - Màn chưa có API hiện trạng thái rỗng (đúng Skill 9: không dùng giá trị giả làm fallback).
+  - Thẻ "Tuần này" ẩn khi chưa có dữ liệu theo HOME-01 ("khối không có dữ liệu thì ẩn").
+  - Bản mock (demo/design QA) giữ nguyên.
+- Tác động: đổi hành vi hiển thị ở chế độ server (ONB-04, HOME-01, CAL-02, MEM-15, CARE-09, US tổng kết tuần, Cầu nối viết lại). Không đổi API/backend, không đổi dữ liệu server.
+- Giả thuyết / đo lường: chưa có dữ liệu đo. Nếu theo dõi sau ra mắt: tỉ lệ gia đình mới tạo ký ức đầu tiên trong 24 giờ (thẻ tuần không còn "giả đầy"), phản hồi hỗ trợ về "dữ liệu lạ".
+- Kết quả / trạng thái: Hoàn thành ở mức code + test (`make check` 821 pass). Chưa xác minh lại trên app thật.
+- Theo dõi:
+  - Chạy lại ONB-04 / Home trên emulator.
+  - Cây gia đình offline chưa có bản lưu còn dùng số tuần mẫu.
+  - Khi có API thống kê chăm sóc / tổng kết tuần Papa & Mama thì nối vào.
+- Session: [BF-20261022-006](SESSIONS.md#bf-20261022-006).
+
+<a id="bf-20261023-001"></a>
+## BF-20261023-001 — Xác minh không lộ dữ liệu mẫu trên app thật; cây gia đình offline
+
+- Ngày làm: 2026-10-23T06:43:23+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: tiếp phần còn lại của BF-20261022-006.
+- Role: MOBILE (Claude + Codex CLI hỗ trợ); TESTER, QUALITY (Claude).
+- Vấn đề / mục tiêu: gia đình thật không thấy dữ liệu của gia đình mẫu ở bất kỳ màn chính nào, kể cả khi mất mạng hoặc mở liên kết cũ.
+- Quan sát:
+  - Chạy thật xác nhận hai lỗi gốc đã hết (tên Papa từ server; thẻ tuần không còn ảnh/số mẫu, ẩn với gia đình mới).
+  - Rà toàn bộ remote service tìm thêm nhiều chỗ: cài đặt (quota AI, khoá app, quyền riêng tư), bộ sưu tập, nháp, chi tiết theo id cũ, nháp nhiệm vụ, bản nháp chào đời.
+- Phân tích / quyết định:
+  - Chưa có API → trạng thái rỗng/null/0 (Skill 9).
+  - Ngoại lệ có chủ đích: giá gói vẫn lấy từ catalog giá của app. Để trống làm hỏng câu ở ONB-ACT và các màn gói. Đây là catalog chung, không phải dữ liệu riêng của gia đình mẫu.
+- Tác động:
+  - Nhiều màn ở chế độ server có thể hiện rỗng/0 thay số mẫu: Cài đặt, Bộ sưu tập, recap ngày/tháng.
+  - Không đổi API/backend. Bản mock giữ nguyên.
+- Giả thuyết / đo lường: chưa có dữ liệu đo. Gợi ý theo dõi phản hồi "dữ liệu lạ" và tỉ lệ mở màn rỗng khi có API tương ứng.
+- Kết quả / trạng thái: Hoàn thành ở mức code + test (861 pass) + chạy thật cho hai lỗi gốc. Phần Codex chưa chạy lại trên thiết bị.
+- Theo dõi:
+  - Chạy lại app thật sau thay đổi của Codex.
+  - Nối giá gói với Store/server.
+  - Nối API cho các màn đang rỗng.
+- Session: [BF-20261023-001](SESSIONS.md#bf-20261023-001).
+
+<a id="bf-20261026-001"></a>
+## BF-20261026-001 — Xác minh trên app thật các màn không còn dữ liệu mẫu (Cài đặt, Bộ sưu tập, Tạo nhiệm vụ, Chào đời)
+
+- Ngày làm: 2026-10-26T08:35:45+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: chạy lại app thật, thử các màn Codex sửa ở BF-20261023-001.
+- Role: TESTER; MOBILE; QUALITY.
+- Vấn đề / mục tiêu: xác nhận trên thiết bị rằng gia đình thật không thấy dữ liệu mẫu ở Cài đặt, Bộ sưu tập, Tạo nhiệm vụ, Chào đời.
+- Quan sát:
+  - Bộ sưu tập, Tạo nhiệm vụ, Chào đời không còn dữ liệu mẫu.
+  - Tìm ra lỗi chặn: màn hành trình thai kỳ báo lỗi với mọi thai kỳ trên server (404 `profile-stats`). Ảnh hưởng mọi gia đình đang mang thai ở chế độ server.
+  - Tìm ra 2 lỗi chữ ở Bộ sưu tập.
+  - Bố/Mẹ không có lối vào Cài đặt cá nhân. Không đăng xuất, đổi hồ sơ, xuất dữ liệu hay xoá tài khoản được từ app chính.
+- Phân tích / quyết định: sửa lỗi 404 và lỗi chữ trong phạm vi. Lối vào SET-01 là quyết định thiết kế (vị trí theo Pencil/đặc tả 8.1), nên hỏi người dùng thay vì tự thêm.
+- Tác động: thai kỳ dùng được ở bản server; nhãn bộ sưu tập đúng khi chưa có dữ liệu. Không đổi API/backend.
+- Giả thuyết / đo lường: chưa có dữ liệu đo. Lối vào Cài đặt ảnh hưởng quyền tự quản dữ liệu (xuất/xoá); nên theo dõi tỉ lệ mở SET-01 sau khi thêm.
+- Kết quả / trạng thái: Hoàn thành phần kiểm tra và sửa; chờ quyết định lối vào SET-01.
+- Theo dõi: lối vào SET-01; thử SET-02…13 trên máy.
+- Session: [BF-20261026-001](SESSIONS.md#bf-20261026-001).
+
+<a id="bf-20261026-002"></a>
+## BF-20261026-002 — Lối vào Cài đặt cá nhân cho Bố/Mẹ từ FAM-01
+
+- Ngày làm: 2026-10-26T08:58:52+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: thêm dòng "Cài đặt" cuối FAM-01 mở SET-01; thử SET-02…13 trên emulator.
+- Role: MOBILE; TESTER; QUALITY.
+- Vấn đề / mục tiêu: Bố/Mẹ không mở được Cài đặt cá nhân từ app chính, nên không tự đăng xuất, xuất dữ liệu, xoá tài khoản hay đổi quyền riêng tư được. Quyền tự quản dữ liệu là yêu cầu sản phẩm (đặc tả 8.1, "Dữ liệu của tôi").
+- Quan sát: sau khi thêm lối vào, SET-01…13 hiện dữ liệu thật. Còn 3 chỗ hiển thị sai do server thiếu dữ liệu (vị trí thiết bị, số thiết bị, quota AI).
+- Phân tích / quyết định:
+  - Người dùng chọn vị trí "dòng Cài đặt cuối FAM-01".
+  - Khi server thiếu dữ liệu: ẩn phần tử hoặc dùng nguồn thật có sẵn (Skill 9). Không hiện 0 gây hiểu nhầm hay giá trị mẫu.
+- Tác động: lối vào SET-01 cho Bố/Mẹ (cả bản mock); bản server: số thiết bị đúng, thẻ quota AI ẩn cho tới khi có API. Không đổi API/backend.
+- Giả thuyết / đo lường: chưa có dữ liệu đo. Sau ra mắt có thể theo dõi tỉ lệ mở SET-01, xuất dữ liệu, đăng xuất từ app.
+- Kết quả / trạng thái: Hoàn thành; xác minh trên emulator và `make check` 866 pass.
+- Theo dõi: API quota AI (khi có, thẻ tự hiện lại); vị trí đăng nhập nếu server bổ sung.
+- Session: [BF-20261026-002](SESSIONS.md#bf-20261026-002).
+
+<a id="bf-20261026-003"></a>
+## BF-20261026-003 — Rà dữ liệu mẫu trên app thật ở các màn chính còn lại
+
+- Ngày làm: 2026-10-26T09:11:22+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: tiếp tục rà trên emulator các màn chính chưa thử (Papa & Mama, Lịch, Thông báo, Ký ức, Chăm sóc).
+- Role: TESTER; MOBILE; QUALITY.
+- Vấn đề / mục tiêu: gia đình mới (chưa có dữ liệu) phải thấy trạng thái rỗng rõ ràng, không dữ liệu mẫu, không màn trắng hay nhãn sai.
+- Quan sát:
+  - Không còn dữ liệu mẫu ở các màn đã rà.
+  - 4 chỗ trạng thái rỗng/nhãn sai: hộp thông báo trắng, album rỗng trơ tiêu đề, lịch sử ghi việc cùng nhau "đã xong" khi chưa làm, thống kê chỉ có chữ "Thống kê".
+- Phân tích / quyết định:
+  - Thêm empty state theo Skill 8 (minh hoạ/tiêu đề/mô tả).
+  - Ghi đúng trạng thái chưa làm (trung tính, không phán xét — giọng văn mục 11).
+  - Không đổi API.
+- Tác động: trải nghiệm ngày đầu của gia đình mới rõ ràng hơn. Lịch sử nhiệm vụ không còn báo sai việc đã xong (ảnh hưởng công bằng giữa Bố–Mẹ, nguyên tắc P2).
+- Giả thuyết / đo lường: chưa có dữ liệu đo.
+- Kết quả / trạng thái: Hoàn thành; xác minh trên emulator và `make check` 869 pass.
+- Theo dõi: rà app người thân và luồng sau chào đời; câu chữ empty state mới chờ PM/design duyệt nếu cần.
+- Session: [BF-20261026-003](SESSIONS.md#bf-20261026-003).
+
+<a id="bf-20261026-004"></a>
+## BF-20261026-004 — Rà app người thân và luồng sau chào đời trên app thật
+
+- Ngày làm: 2026-10-26T09:34:43+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: rà app người thân (Circle) và luồng sau chào đời trên emulator với backend thật.
+- Role: TESTER; MOBILE; QUALITY.
+- Vấn đề / mục tiêu: luồng chào đời và mời ông bà (Circle) là hai khoảnh khắc cảm xúc quan trọng; phải ghi đúng dữ liệu và mời được người thân thật.
+- Quan sát:
+  - Ngày sinh/ngày dự sinh có thể bị lưu sai (đổi ngày–tháng, cuộn năm) khi app dùng tiếng Anh/Trung/Nhật. Rủi ro hỏng dữ liệu cốt lõi của bé.
+  - Bố/Mẹ không gửi được lời mời người thân (không có bảng chia sẻ; "gửi lại" giả).
+  - Màn mời và màn chờ của người thân hiển thị sai/thiếu chữ.
+  - Quyền hiển thị "Chỉ xem" vì API công khai không trả quyền.
+- Phân tích / quyết định:
+  - Sửa đọc ngày theo đúng định dạng đã điền và bỏ ngày không hợp lệ/tương lai.
+  - Gửi lời mời qua bảng chia sẻ hệ thống theo FAM-03 (tin nhắn soạn sẵn + link).
+  - Câu chữ không phụ thuộc trường server còn thiếu.
+  - Thiếu quyền trong `/invites/resolve` là việc của backend (app đã đọc khi có).
+- Tác động: hành vi app (PREG-06, sửa thai kỳ, FAM-03/05, INV-01, CIR-WAIT, CIR-06). Không đổi API. Dữ liệu test: nâng gói gia đình QA trực tiếp trong DB test để thử Circle (không ảnh hưởng production).
+- Giả thuyết / đo lường: chưa có dữ liệu đo. Gợi ý theo dõi tỉ lệ lời mời người thân được mở/nhận sau khi có bảng chia sẻ, và báo lỗi sai ngày sinh.
+- Kết quả / trạng thái: Hoàn thành phần app; `make check` 875 pass; xác minh trên emulator.
+- Theo dõi:
+  - Backend bổ sung `permission`/tên gọi trong `/invites/resolve`.
+  - Các mục nhỏ ghi ở SESSIONS.
+  - Có thể trả gói gia đình QA về TRIAL nếu cần.
+- Session: [BF-20261026-004](SESSIONS.md#bf-20261026-004).
+
+<a id="bf-20261026-005"></a>
+## BF-20261026-005 — Trả gói gia đình QA (DB test) về dùng thử
+
+- Ngày làm: 2026-10-26T10:01:01+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: trả dòng quyền lợi gói của gia đình QA về TRIAL như trước BF-20261026-004.
+- Role: DBA; QUALITY.
+- Tác động: chỉ dữ liệu DB test; không đổi hành vi sản phẩm. Chưa có dữ liệu đo.
+- Kết quả / trạng thái: Hoàn thành; gói về TRIAL như cũ. Người thân thử còn trong gia đình (Circle tạm dừng theo gói).
+- Session: [BF-20261026-005](SESSIONS.md#bf-20261026-005).
+
+<a id="bf-20261026-006"></a>
+## BF-20261026-006 — Xem trước lời mời người thân hiển thị đúng quyền và tên gọi đề xuất
+
+- Ngày làm: 2026-10-26T13:32+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: bổ sung quyền từng bé (`permission`, `allowDownload`) và tên gọi đề xuất (`displayName`) vào resolve lời mời CIRCLE.
+- Role: BACKEND; ARCHITECT; SECURITY_PRIVACY; TESTER; QUALITY.
+- Vấn đề / mục tiêu: người được mời vào Circle xem trước lời mời (INV-01) phải thấy đúng quyền Bố/Mẹ đã cấp (xem/bình luận/đóng góp, tải về) và tên gọi đề xuất trước khi chấp nhận.
+- Quan sát: BF-20261026-004 chạy app thật thấy lời mời quyền Bình luận vẫn hiện "Chỉ xem"; `curl` resolve xác nhận response thiếu quyền. Code: `payload.grants` có lưu quyền nhưng response không trả.
+- Phân tích / quyết định: trả quyền đề xuất của từng bé được cấp quyền và `displayName` trong response công khai; giữ nguyên lọc bé và không lộ id người dùng. Quyền thật vẫn do grant tạo lúc accept quyết định ở server.
+- Tác động: API `POST /v1/invites/resolve` CIRCLE thêm trường (tương thích ngược, chỉ bổ sung). App đã đọc `children[].permission` nên INV-01 sẽ hiện đúng quyền; `displayName` chưa dùng ở app.
+- Giả thuyết / đo lường: hiển thị đúng quyền giúp người thân hiểu rõ trước khi chấp nhận. Chưa có dữ liệu đo; không thêm tracking.
+- Kết quả / trạng thái: Hoàn thành (2026-10-26T13:34+07:00); `npm run check` và integration Circle/onboarding đạt. Chưa thử lại trên app thật.
+- Theo dõi: map `displayName` vào app (tuỳ chọn); thử lại INV-01 trên app thật với gia đình có Circle đang hoạt động (gia đình QA hiện ở TRIAL, Circle tạm dừng).
+- Session: [BF-20261026-006](SESSIONS.md#bf-20261026-006).
+
+## BF-20261026-007 — App nối `/invites/resolve` mới (tên gọi đề xuất, quyền xem/tải ảnh từng bé), chạy lại đủ bộ kiểm tra cho BF-20261019-006, làm mục checklist kế tiếp
+
+- Ngày làm: 2026-10-26T14:58:29+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: (giao từ session điều phối, theo yêu cầu "Làm phần tiếp theo di" của người dùng) (1) nối app với `POST /invites/resolve` mới của BF-20261026-006; (2) chạy lại đủ bộ kiểm tra hiện tại và ghi kết quả thật vào entry BF-20261019-006; (3) làm tiếp mục kế trong checklist.
+- Liên quan: BF-20261026-006, BF-20261019-006.
+- Vấn đề/mục tiêu: người thân xem trước lời mời thấy đúng tên gọi Bố/Mẹ đặt và quyền với từng bé; các màn phụ không báo lỗi khi mất mạng nếu đã xem trước đó.
+- Tác động sản phẩm/dữ liệu:
+  - INV-01 hiện "Bà Nội", "Xem · được tải ảnh" / "Xem, bình luận · đóng góp ảnh" theo từng bé thay vì một nhãn chung.
+  - Màn phụ (lịch sử, huy hiệu, thông báo, cài đặt…) mở được khi mất mạng sau khi đã xem trong phiên.
+  - Bản đệm tách theo gia đình / người dùng.
+- Quyết định & cơ sở:
+  - Dùng lại nhãn quyền FAM-04 cho đồng nhất.
+  - Bản đệm trong phiên cho màn phụ: đủ dùng, chi phí thấp. Màn chính đã có local DB bền vững (BF-20261022-003/004).
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Nên theo dõi tỉ lệ người thân chấp nhận lời mời sau khi xem trước, và số lỗi màn phụ khi offline.
+- Kết quả: hoàn thành phía app; mọi check app / backend đạt.
+- Theo dõi:
+  - Thử INV-01 trên emulator với backend thật.
+  - Lưu bền bản đọc màn phụ nếu cần.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Theo dõi").
+
+## BF-20261027-001 — PREG-07 Đặt tên cho con + CARE-11 Thống kê chăm con (Codex backend + Claude app)
+
+- Ngày làm: 2026-10-27T18:36:43+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: (chuyển từ session điều phối) "Tiếp tục làm các tính năng tiếp theo cho t đi" — chọn mục kế tiếp trong checklist, làm cả backend và app, chạy đủ kiểm tra, ghi nhật ký.
+- Liên quan: checklist dòng PREG-07, CARE-11 (1.1); đặc tả 7.15, 9.5 PREG-07, 9.7 CARE-11.
+- Vấn đề/mục tiêu: hai tính năng 1.1 có UI nhưng chưa có dữ liệu thật — Papa & Mama cùng chọn tên cho con (PREG-07) và xem thống kê chăm con của cả nhà theo tuần (CARE-11).
+- Tác động sản phẩm/dữ liệu:
+  - Tên dự định đồng bộ giữa hai Parent, có "Cả hai thích"; chọn tên tạo cột mốc "Chọn được tên" (song thai chọn nhiều tên). Tên lưu mã hoá; người thân không thấy.
+  - Thống kê chăm con theo category / tuần / bé ở mức gia đình, không phân chia theo người (C-15), bỏ nhiệm vụ "Hai ta"; chỉ gói có feature `care.statistics`.
+- Quyết định & cơ sở:
+  - Chọn hai mục 1.1 vì MVP còn lại phụ thuộc cấu hình bên ngoài.
+  - Quyền / feature theo catalog, không theo tên gói.
+  - Không trả id người trong thống kê để đúng nguyên tắc không so sánh.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Sau khi ra mắt nên đo:
+  - Tỉ lệ thai kỳ có danh sách tên; tỉ lệ chọn được tên trước khi chào đời.
+  - Số lần mở thống kê chăm con / tuần.
+  - Tỉ lệ gói không có feature chạm vào màn thống kê.
+- Kết quả: hai dòng checklist hoàn thành (144/166); mọi check app / backend đạt.
+- Theo dõi:
+  - Xoá tên trên app; thông điệp lỗi riêng cho `NAME_*`.
+  - Thử trên máy thật.
+  - Deploy migration và seed.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Theo dõi").

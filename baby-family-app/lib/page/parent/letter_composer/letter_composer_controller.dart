@@ -175,6 +175,8 @@ class LetterComposerController extends BaseNotifier {
         body: text,
         visibility: readers,
         sealedUntil: openDate,
+        // Offline-first: lưu trên máy ngay, tự gửi khi có mạng.
+        deferUpload: true,
       ),
     );
     if (result.isSuccess) {

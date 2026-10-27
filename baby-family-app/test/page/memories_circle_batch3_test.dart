@@ -1,11 +1,16 @@
 // MEMORIES, CIRCLE & MODERATION (batch 3): MEM-17/18/19, RPT-01/02, CHD-05,
 // CIR-02…06, SET-10 — design shots, render (360 ×1.3, dark) and main flows.
 import 'package:auto_route/auto_route.dart';
+import 'package:baby_family/data/dto/circle_view.dart';
 import 'package:baby_family/data/provider/child.dart';
+import 'package:baby_family/data/provider/circle.dart';
+import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/provider/memory.dart';
 import 'package:baby_family/data/provider/mock_store.dart';
 import 'package:baby_family/data/provider/notification.dart';
+import 'package:baby_family/data/provider/session.dart';
 import 'package:baby_family/data/provider/settings.dart';
+import 'package:baby_family/data/service_imp/circle.dart';
 import 'package:baby_family/page/parent/child_archive/child_archive_controller.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/router/app_router.dart';
@@ -434,6 +439,31 @@ void main() {
       expect(notices.map((row) => row['recipientUserId']), contains('u-lan'));
     });
 
+    // BF-20261026-004: bản server không gửi ngày sinh cho người thân → câu
+    // xem trước cỡ chữ vẫn có tên cháu.
+    testWidgets('CIR-06 text preview names a grandchild without birth dates', (
+      tester,
+    ) async {
+      await pumpRoute(
+        tester,
+        const CircleShellRoute(children: [CircleMeRoute()]),
+        seed: DemoSeed.circle,
+        overrides: [
+          circleServiceProvider.overrideWith(
+            (ref) => _NoBirthDates(
+              ref.watch(sessionRepositoryProvider),
+              ref.watch(appClockProvider),
+              ref.watch(familyRepositoryProvider),
+              ref.watch(childRepositoryProvider),
+              ref.watch(memoryRepositoryProvider),
+              ref.watch(notificationRepositoryProvider),
+            ),
+          ),
+        ],
+      );
+      expect(find.textContaining(RegExp(r'^ ')), findsNothing);
+    });
+
     testWidgets('CIR-06 → SET-10 → leave → CIR-WAIT', (tester) async {
       final router = await pumpRoute(
         tester,
@@ -474,4 +504,32 @@ void main() {
       expect(router.topRoute.name, LeaveFamilyRoute.name);
     });
   });
+}
+
+/// Như server: bé phản chiếu cho người thân không có ngày sinh.
+class _NoBirthDates extends CircleServiceImp {
+  _NoBirthDates(
+    super.sessionRepository,
+    super.clock,
+    super.familyRepository,
+    super.childRepository,
+    super.memoryRepository,
+    super.notificationRepository,
+  );
+
+  @override
+  Future<CircleView?> view({String? childId}) async {
+    final view = await super.view(childId: childId);
+    return view == null
+        ? null
+        : CircleView(
+            family: view.family,
+            viewer: view.viewer,
+            children: [
+              for (final child in view.children)
+                child.copyWith(birthDate: null),
+            ],
+            memories: view.memories,
+          );
+  }
 }

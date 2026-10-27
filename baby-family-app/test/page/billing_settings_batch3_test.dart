@@ -13,6 +13,7 @@ import 'package:lucide_flutter/lucide_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../helpers/design_qa.dart';
+import '../helpers/share_capture.dart';
 
 ProviderContainer _container(WidgetTester tester) =>
     ProviderScope.containerOf(tester.element(find.byType(Scaffold).first));
@@ -484,6 +485,9 @@ void main() {
   });
 
   group('FAM-05', () {
+    // Bảng chia sẻ hệ thống trả lời ngay trong test (BF-20261026-004).
+    setUp(captureShares);
+
     testWidgets('pending & expired invites; revoke and renew', (tester) async {
       await pumpRoute(tester, const PendingInvitesRoute());
       for (final text in [
@@ -499,8 +503,11 @@ void main() {
       ]) {
         expect(find.text(text), findsOneWidget, reason: text);
       }
+      final shared = captureShares();
       await _tap(tester, find.text('Gửi lại link'));
       expect(find.text('Đã gửi lại link cho Ông nội'), findsOneWidget);
+      // BF-20261026-004: gửi lại = mở lại bảng chia sẻ với link/mã.
+      expect(shared.single, contains('Ông nội ơi'));
       await _waitSnackBar(tester);
       await _tap(tester, find.text('Thu hồi'));
       expect(

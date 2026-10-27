@@ -16,6 +16,7 @@ import 'package:baby_family/data/service/care.dart';
 import 'package:baby_family/page/application_base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:hooks_riverpod/legacy.dart';
+import 'package:logger/logger.dart';
 
 /// CARE-01 “Chăm con hôm nay” (+ CARE-05 đổi, CARE-06 hoàn thành, STATE-03).
 /// Bảng nhiệm vụ của ngày đang chọn theo chủ thể chung (SW-01), chia 3 tab
@@ -146,7 +147,8 @@ class CareTabController extends BaseNotifier {
       openRequests = requests;
       missionDays = loadedDays;
       suggestions = loadedSuggestions;
-    } catch (_) {
+    } catch (error, stack) {
+      Logger().w('Không tải được tab Chăm sóc: $error', stackTrace: stack);
       if (isDisposed || revision != _loadRevision) {
         return;
       }

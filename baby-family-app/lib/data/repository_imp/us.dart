@@ -26,6 +26,9 @@ class UsRepositoryImp extends MockRepositoryImp implements IUsRepository {
   JsonMap addRequest(JsonMap request) => insert('requests', request);
 
   @override
+  void removeRequest(String id) => removeRow('requests', id);
+
+  @override
   void updateRequest(String id, JsonMap patch) =>
       this.patch('requests', id, patch);
 
@@ -35,6 +38,9 @@ class UsRepositoryImp extends MockRepositoryImp implements IUsRepository {
 
   @override
   JsonMap addThanks(JsonMap thanks) => insert('thanks', thanks);
+
+  @override
+  void removeThanks(String id) => removeRow('thanks', id);
 
   @override
   List<String> dailyQuestions() => [
@@ -60,6 +66,9 @@ class UsRepositoryImp extends MockRepositoryImp implements IUsRepository {
 
   @override
   JsonMap addJournal(JsonMap entry) => insert('journal', entry);
+
+  @override
+  void removeJournal(String id) => removeRow('journal', id);
 
   @override
   void updateJournal(String id, JsonMap patch) =>

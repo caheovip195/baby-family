@@ -66,6 +66,9 @@ abstract class Memory with _$Memory {
     @JsonKey(name: 'uploadDone') int? uploadDone,
     @JsonKey(name: 'uploadTotal') int? uploadTotal,
     @JsonKey(name: 'uploadFailed') @Default(false) bool uploadFailed,
+
+    /// Offline-first (BF-20261022-001): đang chờ có mạng, sẽ tự gửi lại.
+    @JsonKey(name: 'uploadWaiting') @Default(false) bool uploadWaiting,
   }) = _Memory;
 
   const Memory._();

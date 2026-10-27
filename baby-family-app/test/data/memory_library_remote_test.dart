@@ -15,6 +15,7 @@ import 'package:baby_family/data/model/memory/perspective_record.dart';
 import 'package:baby_family/data/model/memory/upload_intent.dart';
 import 'package:baby_family/data/model/recap/week_stats_record.dart';
 import 'package:baby_family/data/model/recap/weekly_recap_record.dart';
+import 'package:baby_family/data/model/sync/change_item.dart';
 import 'package:baby_family/data/provider/child.dart';
 import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/provider/memory.dart';
@@ -28,6 +29,7 @@ import 'package:baby_family/data/service/local_media.dart';
 import 'package:baby_family/data/service_imp/memory_library_remote.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -198,6 +200,36 @@ class _FakeLibrary implements IMemoryLibraryRemoteRepository {
   ];
 }
 
+/// Thư viện có công tắc mất mạng (BF-20261022-005: các lệnh đọc khi offline).
+class _SwitchableLibrary extends _FakeLibrary {
+  bool offline = false;
+
+  Never _down(String path) =>
+      throw DioException(requestOptions: RequestOptions(path: path));
+
+  @override
+  Future<List<MonthlyPhotoRecord>> monthlyPhotos(String childId) =>
+      offline ? _down('/monthly') : super.monthlyPhotos(childId);
+
+  @override
+  Future<List<AlbumRecord>> albums(String familyId) =>
+      offline ? _down('/albums') : super.albums(familyId);
+
+  @override
+  Future<List<MemoryRecord>> favorites(String familyId) =>
+      offline ? _down('/favorites') : super.favorites(familyId);
+
+  @override
+  Future<List<MemoryPromptRecord>> prompts(
+    String familyId, {
+    String? childId,
+  }) => offline ? _down('/prompts') : super.prompts(familyId, childId: childId);
+
+  @override
+  Future<List<LetterRecord>> letters(String childId) =>
+      offline ? _down('/letters') : super.letters(childId);
+}
+
 class _FakeFeed extends Fake implements IMemoryFeedRepository {
   final created = <JsonMap>[];
   List<MemoryRecord> records = const [];
@@ -223,6 +255,13 @@ class _FakeFeed extends Fake implements IMemoryFeedRepository {
   @override
   Future<MemoryRecord?> memory(String memoryId) async =>
       records.where((record) => record.id == memoryId).firstOrNull;
+
+  @override
+  Future<ChangesPage> changes(
+    String familyId, {
+    String? cursor,
+    int? limit,
+  }) async => ChangesPage(nextCursor: cursor ?? 'c0');
 }
 
 class _FakeLocalMedia implements ILocalMediaService {
@@ -298,16 +337,80 @@ void main() {
             as String;
   });
 
-  MemoryLibraryRemoteServiceImp service() => MemoryLibraryRemoteServiceImp(
-    container.read(sessionRepositoryProvider),
-    container.read(appClockProvider),
-    container.read(memoryRepositoryProvider),
-    container.read(childRepositoryProvider),
-    container.read(familyRepositoryProvider),
-    feed,
-    _FakeMedia(),
-    library,
+  MemoryLibraryRemoteServiceImp service({_FakeLibrary? remoteLibrary}) =>
+      MemoryLibraryRemoteServiceImp(
+        container.read(sessionRepositoryProvider),
+        container.read(appClockProvider),
+        container.read(memoryRepositoryProvider),
+        container.read(childRepositoryProvider),
+        container.read(familyRepositoryProvider),
+        feed,
+        _FakeMedia(),
+        remoteLibrary ?? library,
+      );
+
+  test(
+    'BF-20261023-001: first offline prompt does not use sample catalog',
+    () async {
+      final switchable = _SwitchableLibrary()..offline = true;
+      expect(
+        await service(remoteLibrary: switchable).todayPrompt(childId: childId),
+        isNull,
+      );
+    },
   );
+
+  test(
+    'BF-20261023-001: album lookup rejects another family fixture',
+    () async {
+      final store = container.read(memoryRepositoryProvider);
+      final demoFamily =
+          container.read(sessionRepositoryProvider).session()['familyId']
+              as String;
+      final fixtureId = store.albums(demoFamily).first['id'] as String;
+      container.read(sessionRepositoryProvider).patchSession({
+        'familyId': 'real-family',
+      });
+      expect(await service().album(fixtureId), isNull);
+    },
+  );
+
+  test('BF-20261023-001: perspectives reject foreign fixture memory', () async {
+    final fixture = container
+        .read(mockStoreProvider)
+        .table('perspectives')
+        .first;
+    container.read(sessionRepositoryProvider).patchSession({
+      'familyId': 'real-family',
+    });
+    expect(
+      await service().perspectives(fixture['memoryId'] as String),
+      isEmpty,
+    );
+  });
+
+  test('offline-first: library reads fall back to saved data', () async {
+    final switchable = _SwitchableLibrary();
+    final memories = MemoryLibraryRemoteServiceImp(
+      container.read(sessionRepositoryProvider),
+      container.read(appClockProvider),
+      container.read(memoryRepositoryProvider),
+      container.read(childRepositoryProvider),
+      container.read(familyRepositoryProvider),
+      feed,
+      _FakeMedia(),
+      switchable,
+    );
+    final online = await memories.albums();
+    final sealed = await memories.sealedLetters();
+    switchable.offline = true;
+    // Không màn nào hỏng vì một lệnh đọc mất mạng.
+    expect((await memories.albums()).map((a) => a.id), online.map((a) => a.id));
+    expect(await memories.sealedLetters(), sealed);
+    await memories.collections();
+    await memories.todayPrompt();
+    await memories.monthlyPhotos(childId);
+  });
 
   test('MEM-03: albums come from the server; cover by memory', () async {
     final memories = service();

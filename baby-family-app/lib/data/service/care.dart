@@ -110,5 +110,10 @@ abstract class ICareService extends IBaseService {
   // --- Batch 3 ---
 
   /// CARE-11: thống kê tuần (mức gia đình, không chia theo người).
-  Future<CareStats?> careStats();
+  /// [weekStart] = thứ Hai của tuần (mặc định tuần này); [childId] lọc bé.
+  Future<CareStats?> careStats({DateTime? weekStart, String? childId});
+
+  /// Offline-first (BF-20261022-002): gửi lại thao tác đang chờ (vừa có mạng).
+  /// Bản mock: không làm gì.
+  Future<void> syncPending();
 }

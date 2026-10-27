@@ -18,6 +18,7 @@ class UploadingMemoryCard extends StatelessWidget {
     required this.failed,
     required this.onRetry,
     required this.onCancel,
+    this.waiting = false,
     this.photo,
     super.key,
   });
@@ -27,6 +28,9 @@ class UploadingMemoryCard extends StatelessWidget {
   final int done;
   final int total;
   final bool failed;
+
+  /// Mất mạng: chờ có mạng để tự gửi (offline-first).
+  final bool waiting;
   final VoidCallback onRetry;
   final VoidCallback onCancel;
 
@@ -86,6 +90,10 @@ class UploadingMemoryCard extends StatelessWidget {
                     Text(
                       failed
                           ? l10n.memUploadFailed
+                          : waiting
+                          ? l10n.memUploadWaiting
+                          : total == 0
+                          ? l10n.memPosting
                           : l10n.memUploadProgress(done, total),
                       style: AppTypography.adapt(
                         context,

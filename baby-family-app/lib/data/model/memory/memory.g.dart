@@ -76,6 +76,7 @@ _Memory _$MemoryFromJson(Map<String, dynamic> json) => _Memory(
   uploadDone: (json['uploadDone'] as num?)?.toInt(),
   uploadTotal: (json['uploadTotal'] as num?)?.toInt(),
   uploadFailed: json['uploadFailed'] as bool? ?? false,
+  uploadWaiting: json['uploadWaiting'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$MemoryToJson(_Memory instance) => <String, dynamic>{
@@ -120,6 +121,7 @@ Map<String, dynamic> _$MemoryToJson(_Memory instance) => <String, dynamic>{
   'uploadDone': instance.uploadDone,
   'uploadTotal': instance.uploadTotal,
   'uploadFailed': instance.uploadFailed,
+  'uploadWaiting': instance.uploadWaiting,
 };
 
 const _$MemoryKindEnumMap = {

@@ -13,6 +13,7 @@ import 'package:baby_family/data/service_imp/mock_service.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
+import 'package:flutter/foundation.dart';
 
 class ChildServiceImp extends MockServiceImp implements IChildService {
   ChildServiceImp(
@@ -213,10 +214,15 @@ class ChildServiceImp extends MockServiceImp implements IChildService {
     );
   }
 
+  /// Số liệu nền “Tuần này” của dữ liệu mẫu (`children.json` → `stats.week`);
+  /// bản server không có nền này (BF-20261022-006).
+  @protected
+  JsonMap? get weekBaseline => _repository.stats()['week'] as JsonMap?;
+
   @override
   Future<WeekSummary> weekSummary() async {
     await ready();
-    final base = _repository.stats()['week'] as JsonMap?;
+    final base = weekBaseline;
     final monday = today.subtract(Duration(days: today.weekday - 1));
     final week = _memoryRepository.memories(familyId).where((row) {
       final at = DateTime.parse(row['occurredAt'] as String);
@@ -228,10 +234,28 @@ class ChildServiceImp extends MockServiceImp implements IChildService {
       quotes:
           ((base?['quotes'] as int?) ?? 0) +
           week.where((row) => row['kind'] == MemoryKind.quote.name).length,
-      thumbnails: [
-        ...((base?['thumbnails'] as List?)?.cast<String>() ?? const []),
-      ],
+      thumbnails: base == null
+          ? _weekThumbnails(week)
+          : [...((base['thumbnails'] as List?)?.cast<String>() ?? const [])],
     );
+  }
+
+  /// Ảnh của các ký ức trong tuần, mới nhất trước (bỏ thư còn niêm phong).
+  List<String> _weekThumbnails(List<JsonMap> week) {
+    final rows =
+        week.where((row) {
+          final sealed = row['sealedUntil'] as String?;
+          return row['deletedAt'] == null &&
+              (sealed == null || !DateTime.parse(sealed).isAfter(today));
+        }).toList()..sort(
+          (a, b) => DateTime.parse(
+            b['occurredAt'] as String,
+          ).compareTo(DateTime.parse(a['occurredAt'] as String)),
+        );
+    return [
+      for (final row in rows)
+        ...((row['mediaAssets'] as List?)?.whereType<String>() ?? const []),
+    ];
   }
 
   @override

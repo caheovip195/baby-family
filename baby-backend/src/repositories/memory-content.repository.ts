@@ -1098,7 +1098,7 @@ export class MemoryContentRepository implements IMemoryContentRepository {
     });
   }
 
-  private async createInTransaction(
+  protected async createInTransaction(
     tx: Transaction,
     command: CreateMemoryCommand,
   ): Promise<MemoryView> {

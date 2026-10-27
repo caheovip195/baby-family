@@ -96,6 +96,15 @@ class InvitePreviewMobileView extends HookConsumerWidget {
     final permission = invite.canComment
         ? l10n.circleViewComment
         : l10n.invViewOnly;
+    // Quyền từng bé của server (BF-20261026-006); thiếu → quyền chung.
+    String childPermission(Child child) => switch (data.childAccess[child.id]) {
+      final ChildAccess access => permissionSummary(
+        l10n,
+        access.permission,
+        allowDownload: access.allowDownload,
+      ),
+      null => permission,
+    };
     return AppStepScaffold(
       topBar: const AppTopBar(),
       gap: AppSpacing.s5,
@@ -138,19 +147,36 @@ class InvitePreviewMobileView extends HookConsumerWidget {
       children: [
         _InviteFamilyCard(
           invite: invite,
-          inviterLine: partner
-              ? l10n.invInviterParent(
-                  invite.inviterName ?? '',
-                  invite.inviterCallName ?? '',
-                )
-              : l10n.invInviterRelative(
-                  invite.inviterName ?? '',
-                  invite.inviterCallName ?? '',
-                  pronoun,
-                ),
+          // Bản server chỉ có tên gọi người mời: không để “ (Mama) mời…”
+          // (BF-20261026-004).
+          inviterLine: switch ((partner, invite.inviterName ?? '')) {
+            (true, '') => l10n.invInviterParentShort(
+              invite.inviterCallName ?? '',
+            ),
+            (true, final name) => l10n.invInviterParent(
+              name,
+              invite.inviterCallName ?? '',
+            ),
+            (false, '') => l10n.invInviterRelativeShort(
+              invite.inviterCallName ?? '',
+              pronoun,
+            ),
+            (false, final name) => l10n.invInviterRelative(
+              name,
+              invite.inviterCallName ?? '',
+              pronoun,
+            ),
+          },
           roleLine: partner
               ? l10n.invRoleParent(controller.callName)
-              : l10n.invRoleRelative(invite.callName ?? '', permission),
+              : l10n.invRoleRelative(
+                  // Tên gọi Bố/Mẹ đặt; chưa đặt → nhãn quan hệ.
+                  switch (invite.callName) {
+                    final String name when name.isNotEmpty => name,
+                    _ => relativeRelationLabel(l10n, invite.relation),
+                  },
+                  permission,
+                ),
           partner: partner,
         ),
         Column(
@@ -196,7 +222,7 @@ class InvitePreviewMobileView extends HookConsumerWidget {
                   _ChildAccessRow(
                     child: child,
                     today: controller.today,
-                    permission: permission,
+                    permission: childPermission(child),
                   ),
               ],
             ],

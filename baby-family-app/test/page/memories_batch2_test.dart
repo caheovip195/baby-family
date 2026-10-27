@@ -1,5 +1,11 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:baby_family/data/model/memory/album.dart';
 import 'package:baby_family/data/provider/child.dart';
+import 'package:baby_family/data/provider/family.dart';
+import 'package:baby_family/data/provider/memory.dart';
+import 'package:baby_family/data/provider/mock_store.dart';
+import 'package:baby_family/data/provider/session.dart';
+import 'package:baby_family/data/service_imp/memory.dart';
 import 'package:baby_family/generated/l10n/app_localizations_vi.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
@@ -144,6 +150,28 @@ void main() {
         '1 tuổi 4 tháng',
       );
       expect(childAgeShortText(l10n, birth, DateTime(2026, 6, 1)), '2 tuổi');
+    });
+
+    // BF-20261026-003: gia đình mới chưa có album → ẩn “Album tự động” rỗng,
+    // có empty state cho album của nhà mình.
+    testWidgets('MEM-03 without albums shows the empty state', (tester) async {
+      await pumpRoute(
+        tester,
+        const AlbumsRoute(),
+        overrides: [
+          memoryServiceProvider.overrideWith(
+            (ref) => _NoAlbums(
+              ref.watch(sessionRepositoryProvider),
+              ref.watch(appClockProvider),
+              ref.watch(memoryRepositoryProvider),
+              ref.watch(childRepositoryProvider),
+              ref.watch(familyRepositoryProvider),
+            ),
+          ),
+        ],
+      );
+      expect(find.text('Album tự động'), findsNothing);
+      expect(find.text('Chưa có album nào'), findsOneWidget);
     });
 
     testWidgets('MEM-03 shows auto and family albums from the frame', (
@@ -338,4 +366,18 @@ void main() {
       expect(router.topRoute.name, HomeTabRoute.name);
     });
   });
+}
+
+/// Gia đình chưa có album nào.
+class _NoAlbums extends MemoryServiceImp {
+  _NoAlbums(
+    super.sessionRepository,
+    super.clock,
+    super.repository,
+    super.childRepository,
+    super.familyRepository,
+  );
+
+  @override
+  Future<List<Album>> albums() async => const [];
 }

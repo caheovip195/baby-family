@@ -1,3 +1,8 @@
+import { Optional } from '@nestjs/common';
+import { ApiHeader } from '@nestjs/swagger';
+import { offlineCommand } from '../common/http/offline-command';
+import { OFFLINE_COMMAND_SERVICE } from '../interfaces/services/offline-command-service.interface';
+import type { IOfflineCommandService } from '../interfaces/services/offline-command-service.interface';
 import type { ArgumentsHost, ExceptionFilter } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { CoupleRequestResendBlockedError } from '../models/couple-request-resend-blocked.model';
@@ -58,15 +63,31 @@ export class CoupleRequestController {
   constructor(
     @Inject(COUPLE_REQUEST_SERVICE)
     private readonly service: ICoupleRequestService,
+    @Optional()
+    @Inject(OFFLINE_COMMAND_SERVICE)
+    private readonly offline?: IOfflineCommandService,
   ) {}
   @Post()
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    required: true,
+    description: 'UUID; replay returns the original response.',
+  })
   create(
     @CurrentActor() actor: AuthPrincipal,
     @Param('familyId', ParseUUIDPipe) familyId: string,
     @Body() input: CreateRequestDto,
     @IdempotencyKey() key: string,
   ) {
-    return this.service.create(actor, familyId, input, key);
+    // The native transactional ledger remains safe while the new provider is staged.
+    if (!this.offline) return this.service.create(actor, familyId, input, key);
+    return offlineCommand(
+      this.offline,
+      key,
+      { operation: 'couple.request.create', actor, familyId, body: input },
+      () => this.service.create(actor, familyId, input, key),
+      () => this.service.list(actor, familyId, {}),
+    );
   }
   @Get()
   list(

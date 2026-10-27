@@ -56,6 +56,7 @@ export class PregnancyNameCandidateService implements IPregnancyNameCandidateSer
     assertDatabaseUpdate(input, [
       'pregnancyId',
       'nameEnc',
+      'nameKey',
       'meaningEnc',
       'addedBy',
       'chosenAt',

@@ -1212,6 +1212,18 @@ abstract class AppLocalizations {
   /// **'Đang tải {done}/{total} ảnh…'**
   String memUploadProgress(int done, int total);
 
+  /// Offline-first: ký ức tạm chờ có mạng để tự gửi
+  ///
+  /// In vi, this message translates to:
+  /// **'Chờ có mạng · sẽ tự đăng'**
+  String get memUploadWaiting;
+
+  /// Offline-first: ký ức không có ảnh đang gửi lên server
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang đăng…'**
+  String get memPosting;
+
   /// MEM-06: tải lên lỗi
   ///
   /// In vi, this message translates to:
@@ -2448,6 +2460,18 @@ abstract class AppLocalizations {
   /// **'Khi Papa hoặc Mama gửi lời mời, bà sẽ xem được ảnh và những lần đầu của cháu.'**
   String get circleWaitingSubtitle;
 
+  /// CIR-WAIT khi người thân đã nhận lời mời, chờ Papa/Mama xác nhận lần cuối (INV-04)
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã nhận lời mời'**
+  String get circleAwaitingTitle;
+
+  /// CIR-WAIT mô tả khi chờ xác nhận lần cuối
+  ///
+  /// In vi, this message translates to:
+  /// **'Papa hoặc Mama sẽ xác nhận thêm một lần. Sau đó bà xem được ảnh và những lần đầu của cháu.'**
+  String get circleAwaitingSubtitle;
+
   /// CIR — Nhờ con mời mình
   ///
   /// In vi, this message translates to:
@@ -2603,6 +2627,18 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Đã đọc hết'**
   String get notificationsReadAll;
+
+  /// NOTI-01 — hộp thông báo rỗng
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có thông báo nào'**
+  String get notificationsEmpty;
+
+  /// NOTI-01 — mô tả khi hộp thông báo rỗng
+  ///
+  /// In vi, this message translates to:
+  /// **'Ký ức mới, lời nhờ và lời nhắc sẽ hiện ở đây.'**
+  String get notificationsEmptyDescription;
 
   /// FAM/SET/SUB/NOTI/CIR/MEM — Cháu yêu của cả nhà
   ///
@@ -3239,6 +3275,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Tuyệt vời! +{count} 💗 cho cây'**
   String careCompleteHearts(int count);
+
+  /// Offline-first: hoàn thành nhiệm vụ khi mất mạng, Hearts cộng sau
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã xong! 💗 sẽ được cộng khi có mạng'**
+  String get careCompletePendingSync;
 
   /// No description provided for @careCompleteHint.
   ///
@@ -4824,6 +4866,17 @@ abstract class AppLocalizations {
   /// **'Đã tạo lời mời cho {callName}: {link}'**
   String famInviteShared(String callName, String link);
 
+  /// FAM-03/05 tin nhắn soạn sẵn gửi kèm link mời người thân (share sheet)
+  ///
+  /// In vi, this message translates to:
+  /// **'{callName} ơi, vào Baby Family xem ảnh và ký ức của {children} cùng nhà mình nhé! Mã mời: {code} · {link}'**
+  String famInviteShareMessage(
+    String callName,
+    String children,
+    String code,
+    String link,
+  );
+
   /// SUB-01 nhãn dùng thử
   ///
   /// In vi, this message translates to:
@@ -5496,6 +5549,18 @@ abstract class AppLocalizations {
   /// **'{name} ({callName}) mời {pronoun} theo dõi cháu'**
   String invInviterRelative(String name, String callName, String pronoun);
 
+  /// INV-01 khi server không có tên người mời (chỉ tên gọi)
+  ///
+  /// In vi, this message translates to:
+  /// **'{callName} mời bạn tham gia'**
+  String invInviterParentShort(String callName);
+
+  /// INV-01 người thân, khi server không có tên người mời
+  ///
+  /// In vi, this message translates to:
+  /// **'{callName} mời {pronoun} theo dõi cháu'**
+  String invInviterRelativeShort(String callName, String pronoun);
+
   /// INV-01 — lời nhắn của người mời
   ///
   /// In vi, this message translates to:
@@ -6012,6 +6077,12 @@ abstract class AppLocalizations {
   /// **'{name} · {count}/{total} ảnh'**
   String memCollMonthly(String name, int count, int total);
 
+  /// MEM-22 — Con lớn từng tháng khi chưa có bé đã chào đời (không có tên bé)
+  ///
+  /// In vi, this message translates to:
+  /// **'{count}/{total} ảnh'**
+  String memCollMonthlyCount(int count, int total);
+
   /// MEM-22 — Những lần đầu
   ///
   /// In vi, this message translates to:
@@ -6023,6 +6094,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'{name} · {count} câu'**
   String memCollQuotes(String name, int count);
+
+  /// MEM-22 — Câu nói của con khi chưa có câu nói gắn với bé (không có tên bé)
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} câu'**
+  String memCollQuotesCount(int count);
 
   /// MEM-22 — Giọng nói
   ///
@@ -6875,6 +6952,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'{couple, select, yes{Hai ta} other{Cùng nhau}} · đã xong {time}'**
   String careHistoryTogetherDone(String couple, String time);
+
+  /// CARE-08 việc cùng nhau chưa làm (trung tính)
+  ///
+  /// In vi, this message translates to:
+  /// **'{couple, select, yes{Hai ta} other{Cùng nhau}} · Không kịp làm'**
+  String careHistoryTogetherMissed(String couple);
 
   /// CARE-08 nhiệm vụ hết hạn (trung tính)
   ///
@@ -7938,6 +8021,12 @@ abstract class AppLocalizations {
   /// **'{location} · Đang dùng'**
   String setDeviceInUse(String location);
 
+  /// SET-07 current device khi server không có vị trí
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang dùng'**
+  String get setDeviceInUseNoLocation;
+
   /// SET-07 device subtitle
   ///
   /// In vi, this message translates to:
@@ -8591,6 +8680,18 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Album của nhà mình'**
   String get memAlbumsFamily;
+
+  /// MEM-03 — chưa có album của nhà mình
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có album nào'**
+  String get memAlbumsEmpty;
+
+  /// MEM-03 — mô tả khi chưa có album
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo album để gom ký ức theo chuyến đi, ngày lễ hay bất cứ điều gì bạn thích.'**
+  String get memAlbumsEmptyDescription;
 
   /// MEM-03 button
   ///
@@ -9965,6 +10066,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Thống kê'**
   String get careStatsTitle;
+
+  /// CARE-09 thống kê — chưa có dữ liệu
+  ///
+  /// In vi, this message translates to:
+  /// **'Tuần này chưa có thống kê'**
+  String get careStatsEmpty;
 
   /// MEM-17 title
   ///

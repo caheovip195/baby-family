@@ -34,6 +34,10 @@ class CircleWaitingController extends BaseNotifier {
     notifyListeners();
   }
 
+  /// INV-04: đã nhận lời mời, chờ Papa/Mama xác nhận lần cuối
+  /// (BF-20261026-004 — trước đây vẫn hiện “cần được mời”).
+  bool get awaitingApproval => sessionService.awaitingPartnerApproval;
+
   /// Mã người thân mẫu (giả lập quét QR).
   String get sampleCode => samples.relativeInviteCode;
 

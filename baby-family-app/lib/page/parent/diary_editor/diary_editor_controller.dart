@@ -324,6 +324,8 @@ class DiaryEditorController extends BaseNotifier {
         mediaAssets: [?photo],
         visibility: visibility,
         occurredAt: occurredAt ?? today,
+        // Offline-first: lưu trên máy ngay, tự gửi khi có mạng.
+        deferUpload: true,
       ),
     );
     if (result.isSuccess) {

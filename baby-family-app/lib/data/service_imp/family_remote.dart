@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:baby_family/data/dto/account_settings_summary.dart';
 import 'package:baby_family/data/model/billing/billing_plan_record.dart';
 import 'package:baby_family/data/model/billing/family_billing_record.dart';
 import 'package:baby_family/data/model/circle/circle_invite_record.dart';
@@ -21,6 +22,7 @@ import 'package:baby_family/data/repository/session.dart';
 import 'package:baby_family/data/repository/store_purchase.dart';
 import 'package:baby_family/data/service_imp/family.dart';
 import 'package:baby_family/data/service_imp/media_uploader.dart';
+import 'package:baby_family/data/service_imp/offline_read.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/helper/app_clock.dart';
@@ -34,6 +36,9 @@ import 'package:uuid/uuid.dart';
 /// Ảnh bìa, múi giờ, ngôn ngữ nội dung vẫn ở trên máy. Family Circle
 /// (BF-20261019-004): người thân, lời mời, quyền theo từng bé qua server.
 class FamilyRemoteServiceImp extends FamilyServiceImp {
+  /// Bản đọc gần nhất cho màn phụ khi mất mạng (BF-20261026-007).
+  final _reads = OfflineReads();
+
   FamilyRemoteServiceImp(
     ISessionRepository sessionRepository,
     AppClock clock,
@@ -60,6 +65,23 @@ class FamilyRemoteServiceImp extends FamilyServiceImp {
   String? get _serverFamilyId =>
       sessionRepository.session()[kValueSessionKeyServerFamilyId] as String?;
 
+  /// BF-20261023-001: id từ liên kết cũ không đọc thành viên fixture/nhà khác.
+  @override
+  Future<Member?> member(String memberId) async {
+    final current = await super.member(memberId);
+    if (_serverFamilyId != null &&
+        _repository.member(memberId)?['familyId'] != familyId) {
+      return null;
+    }
+    return current;
+  }
+
+  /// BF-20261023-001: chưa có quota AI/khoá app thật thì không hiện meta mẫu.
+  @override
+  Future<AccountSettingsSummary> settingsSummary() => _serverFamilyId == null
+      ? super.settingsSummary()
+      : Future.value(const AccountSettingsSummary());
+
   @override
   Future<FamilySettings> familySettings() async {
     final local = await super.familySettings();
@@ -77,8 +99,10 @@ class FamilyRemoteServiceImp extends FamilyServiceImp {
       coverAsset: family?.coverUrl ?? merged.coverAsset,
       contentLanguage: family?.contentLocale ?? merged.contentLanguage,
       timezoneId: timezone ?? merged.timezoneId,
+
+      /// BF-20261023-001: không dùng nhãn múi giờ của fixture khi server thiếu.
       timezoneLabel: timezone == null
-          ? merged.timezoneLabel
+          ? ''
           : _timezoneLabels[timezone] ?? timezone,
     );
   }
@@ -91,9 +115,11 @@ class FamilyRemoteServiceImp extends FamilyServiceImp {
     if (_serverFamilyId == null) {
       return super.timezones();
     }
-    final catalog = await _remote.timezones(
-      currentL10n().localeName == 'en' ? 'en' : 'vi',
-    );
+    final language = currentL10n().localeName == 'en' ? 'en' : 'vi';
+    final catalog = await _reads.read([
+      'timezones',
+      language,
+    ], () => _remote.timezones(language));
     final items = catalog?.items ?? const <TimezoneOption>[];
     _timezoneLabels = {for (final item in items) item.id: item.label};
     return items;
@@ -113,7 +139,9 @@ class FamilyRemoteServiceImp extends FamilyServiceImp {
         ? FamilyRole.mother
         : myRole;
     return [
-      for (final record in await _remote.myFamilies())
+      for (final record in await _reads.read([
+        'myFamilies',
+      ], () => _remote.myFamilies()))
         if (record.familyId != null)
           FamilyMembership(
             familyId: record.familyId!,
@@ -597,39 +625,58 @@ class FamilyRemoteServiceImp extends FamilyServiceImp {
   @override
   Future<PlanDetails?> planDetails() async {
     await _syncBilling(force: true);
-    return super.planDetails();
+    if (_serverFamilyId == null) {
+      return super.planDetails();
+    }
+
+    /// BF-20261023-001: chỉ gói và thành viên đã đồng bộ, không lấy meta mẫu.
+    final family = await currentFamily();
+    if (family == null) {
+      return null;
+    }
+    return PlanDetails(
+      plan: family.plan,
+      relativeNames: [
+        for (final member in await members())
+          if (member.role == FamilyRole.relative &&
+              member.status == MemberStatus.active)
+            member.callName,
+      ],
+    );
   }
 
-  /// Quota/feature theo catalog server (có version); giá hiển thị vẫn lấy từ
-  /// catalog Store trên máy cho tới khi có IAP (SUB-01/02).
+  /// BF-20261023-001: quota/feature theo server; không dùng gói của fixture khi
+  /// API lỗi hoặc trả danh sách rỗng. Giá hiển thị vẫn lấy từ catalog giá của
+  /// app (chưa có giá Store/server) — để trống làm câu “House () …” hỏng.
   @override
   Future<List<PlanOffer>> planOffers() async {
-    final local = await super.planOffers();
     if (_serverFamilyId == null) {
-      return local;
+      return super.planOffers();
     }
     final List<BillingPlanRecord> plans;
     try {
       plans = await _remote.billingPlans();
     } on DioException catch (error) {
       Logger().w('Không đọc được catalog gói: ${error.message}');
-      return local;
+      return const [];
     }
     for (final plan in plans) {
       if (_planOf(plan.code) case final code?) {
         _serverPlanCodes[code] = plan.code!;
       }
     }
-    final store = {for (final offer in local) offer.code: offer};
+    final prices = {
+      for (final offer in await super.planOffers()) offer.code: offer,
+    };
     final sorted = [...plans]
       ..sort((a, b) => a.displayOrder.compareTo(b.displayOrder));
     final offers = [
       for (final plan in sorted)
         if (_planOf(plan.code) case final code?
             when code != PlanState.trial && code != PlanState.expired)
-          _offerOf(code, plan, store[code]),
+          _offerOf(code, plan, prices[code]),
     ];
-    return offers.isEmpty ? local : offers;
+    return offers;
   }
 
   /// SUB-01/02/04: server tạo lần mua (mã sản phẩm + token gắn tài khoản) →
@@ -738,7 +785,7 @@ class FamilyRemoteServiceImp extends FamilyServiceImp {
   static PlanOffer _offerOf(
     PlanState code,
     BillingPlanRecord plan,
-    PlanOffer? store,
+    PlanOffer? catalog,
   ) {
     final quotas = plan.quotas;
     int? minutes(String key) =>
@@ -747,8 +794,8 @@ class FamilyRemoteServiceImp extends FamilyServiceImp {
       code: code,
       storageGb: ((quotas[_quotaStorage] ?? 0) / (_mib * 1024)).round(),
       relativeSlots: (quotas[_quotaCircle] ?? 0).toInt(),
-      priceText: store?.priceText ?? '',
-      monthlyText: store?.monthlyText ?? '',
+      priceText: catalog?.priceText ?? '',
+      monthlyText: catalog?.monthlyText ?? '',
       photosPerMemory: quotas['photosPerMemory']?.toInt(),
       videoMinutes: minutes('videoMaxSec'),
       voiceMinutes: minutes('audioMaxSec'),

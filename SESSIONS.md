@@ -859,6 +859,10 @@ Các mục 001–005 được **ghi bù ngày 2026-10-11** từ hội thoại hi
 - Bằng chứng: app `make check` EXIT 0 (analyze sạch, 765 test; mới ở family_remote +2, settings_remote +4, subject_memory_remote +3); backend `npm run check` EXIT 0 (unit 267, e2e 35); `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT 0 (43 suite, 372 test; mới preference-settings-api 5, search-safety-api 5). Chưa chạy simulator.
 - Còn lại: job gom bản tin người thân (DIGEST) và thông báo ký ức cho Circle; moderation case/Admin xử lý báo cáo; ẩn cảm xúc người bị chặn, lưới ảnh/album chưa áp chặn; tiếp tục soạn nháp từ tài khoản; IAP/giá từ Store; `analysis_options` loại trừ thư mục test nên `flutter analyze` không bắt lỗi test (tests vẫn biên dịch khi chạy).
 - Trạng thái: Hoàn thành (còn các phần nêu ở “Còn lại”).
+- Ghi bù 2026-10-26T15:06+07:00 (BF-20261026-007): chạy lại đủ bộ kiểm tra **trên mã hiện tại** (đã gồm mọi thay đổi sau BF-20261019-006, nên không tái hiện riêng trạng thái lúc đó):
+  - Backend `npm run check` EXIT 0 (unit 331, e2e 35); `npx eslint --max-warnings=0 src test` EXIT 0; `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT 0 (73 suite, 609 test).
+  - App `make check` EXIT 0 (analyze sạch, 878 test).
+  - Entry này vốn đã có kết quả kiểm tra của lần làm ban đầu, nên không đổi trạng thái.
 
 ## BF-20261019-007 — Recap tuần + số liệu HOME-01, avatar hồ sơ + ảnh bé qua bootstrap (2 Codex) + app video/multipart, sửa ảnh ký ức, chi tiết từ server (Claude)
 
@@ -1080,3 +1084,488 @@ Các mục 001–005 được **ghi bù ngày 2026-10-11** từ hội thoại hi
 - Bằng chứng: các check ở BF-20261021-008 (app `make check` 806 pass; backend `npm run check`, eslint, generators, integration 71 suite/596 test đều EXIT 0); `git status` sau commit chỉ còn `.DS_Store`.
 - Còn lại: push khi người dùng yêu cầu.
 - Trạng thái: Hoàn thành.
+
+## BF-20261022-001 — Offline-first giai đoạn 1: outbox bền vững cho tạo ký ức + đồng bộ khi có mạng (Claude app) · idempotency + changes API (Codex backend)
+
+- Ngày làm: 2026-10-22T06:41:25+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp cho tôi những phần tiếp theo đi".
+- Liên quan: `docs/04_THIET_KE_OFFLINE_FIRST.md` (BF-20261021-008), lộ trình bước 1–2.
+- Role:
+  - ORCHESTRATOR: chọn phần tiếp theo. MVP còn lại chủ yếu cần cấu hình Store/Apple/Google/staging hoặc thiết bị thật, nên làm theo hướng người dùng đã chốt: luồng chính và offline-first.
+  - MOBILE (Claude): outbox.
+  - BACKEND (Codex): idempotency + changes API; Claude tích hợp.
+  - TESTER, QUALITY.
+- Phân tích — app:
+  - `OutboxEntry` + `IMemoryOutboxRepository`: mã hoá trong hộp đăng nhập; sao file media vào `pending_uploads/outbox`.
+  - `MemoryRemoteServiceImp` thay hàng đợi MEM-06 trong RAM bằng outbox. Mọi ký ức tạo từ màn soạn đều hiện ngay và gửi nền. Idempotency-Key là UUID v5 theo id thao tác, nên giữ nguyên qua lần tắt app.
+  - Lỗi mạng/5xx/408/429 → "Chờ có mạng" + backoff 30 giây → 15 phút; có mạng lại thì `syncPending` qua `isOfflineProvider` ở `RootApp`. 4xx → chờ người dùng Thử lại / Huỷ.
+  - Băng ngoại tuyến đếm số ký ức chờ; thêm l10n 4 ngôn ngữ.
+- Phân tích — backend (handoff `BF-20261022-001-A.md`):
+  - Idempotency-Key tuỳ chọn, có snapshot response mã hoá: bình luận, cảm xúc, góc nhìn, yêu thích, ghi chú, nhật ký riêng, check-in, cảm ơn.
+  - `GET /families/:id/changes`: log `offline_memory_changes` (migration DDL `20261022090000`), cursor ổn định, tombstone khi xoá hoặc mất quyền, cursor quá 90 ngày → 409.
+  - Claude đăng ký DI. Claude cũng khôi phục key **bắt buộc** cho nhiệm vụ và lời nhờ: Codex đã đổi sang tuỳ chọn, làm hỏng 2 test cũ và có thể khiến cộng Hearts trùng.
+- Kết quả: checklist thêm dòng "Offline-first" (BE 🟡, App 🟡) → 142/166. Cập nhật `docs/04_THIET_KE_OFFLINE_FIRST.md` (mục cập nhật giai đoạn 1), api.md, `docs/offline-sync.md`, `baby-family-app/SESSION.md`.
+- Bằng chứng — app: `make check` EXIT 0 (analyze sạch, 808 test). Test mới: tạo offline → tắt app → mở lại gửi đúng một lần với cùng key; 4xx chờ người dùng / thử lại / huỷ xoá file; MEM-06 mất mạng → chờ → gửi.
+- Bằng chứng — backend:
+  - `npm run check` EXIT 0 (unit 331, e2e 35); `npx eslint --max-warnings=0 src test` EXIT 0.
+  - `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT 0 (73 suite, 609 test) ở lần chạy cuối.
+  - Lần chạy đầu sau khi tích hợp có 3 suite lỗi: mission-board và couple-request (do key tuỳ chọn, đã sửa); transactional-mail lỗi SMTP tạm thời, chạy lại riêng đạt 8/8 và đạt trong lần chạy toàn bộ cuối.
+  - Migration chỉ áp lên `baby_family_test`.
+- Còn lại:
+  - App chưa dùng changes API.
+  - Outbox cho bình luận/cảm xúc/sửa ký ức/chăm sóc/nhiệm vụ.
+  - Local DB thay `MockStore`.
+  - Claim idempotency treo `PENDING` sau crash chưa có reconciliation.
+  - Ledger chưa có retention.
+  - Changes API cần benchmark với gia đình lớn.
+  - Test `MemoryOutboxRepositoryImp` với file thật.
+  - Thử trên máy thật (bật chế độ máy bay).
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Còn lại").
+
+## BF-20261022-002 — Offline-first giai đoạn 2: app dùng changes API, outbox cho bình luận, cảm xúc, chăm sóc (Claude app)
+
+- Ngày làm: 2026-10-22T07:08:35+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp giai đoạn 2 offline-first: app dùng changes API và outbox cho bình luận, cảm xúc, chăm sóc."
+- Liên quan: BF-20261022-001, `docs/04_THIET_KE_OFFLINE_FIRST.md`, `baby-backend/docs/offline-sync.md`.
+- Role: ORCHESTRATOR, MOBILE (Claude, chủ trì), ARCHITECT (tách hàng đợi chung), TESTER, QUALITY. Backend không đổi: dùng route của BF-20261022-001.
+- Phân tích:
+  - Tách cơ chế outbox của ký ức thành `OutboxRunner` dùng chung (lưu bền, phân loại lỗi, backoff, `syncAll`, key UUID v5), để ký ức và chăm sóc cùng một hành vi.
+  - Bình luận và cảm xúc ghi trên máy trước, gửi với Idempotency-Key. Cảm xúc chỉ gửi lần chọn cuối.
+  - Hoàn thành nhiệm vụ: có mạng chờ Hearts từ server; mất mạng xong trên máy. Bảng nhiệm vụ lưu bản đọc gần nhất để mở khi offline.
+  - Changes API chạy sau mỗi lần đồng bộ feed: gỡ ký ức đã xoá hoặc mất quyền, đọc lại ký ức đổi version / có bình luận / cảm xúc mới (tối đa 30), cập nhật bình luận đã lưu; cursor hết hạn → tải lại.
+- Kết quả: cập nhật dòng checklist Offline-first (vẫn 🟡, tổng 142/166); cập nhật `docs/04_THIET_KE_OFFLINE_FIRST.md` và `baby-family-app/SESSION.md`.
+- Bằng chứng: app `make check` EXIT 0 (analyze sạch, 811 test). Test mới:
+  - Bình luận/cảm xúc offline, gửi một lần khi có mạng.
+  - Changes: xoá, version, bình luận, cursor hết hạn.
+  - Bảng nhiệm vụ offline sau khi mở lại app; hoàn thành gửi một lần cùng key; hoàn tác khi còn chờ.
+
+  Backend không sửa nên không chạy lại; lần chạy đầy đủ gần nhất ở BF-20261022-001. Chưa thử end-to-end app ↔ backend thật hay trên máy thật.
+- Còn lại:
+  - Bộ nhớ bình luận chỉ trong RAM.
+  - Outbox cho sửa/xoá bình luận, sửa ký ức, tạo/hoàn tác/đổi nhiệm vụ, Papa & Mama.
+  - Changes API cho nhiệm vụ.
+  - Local DB thay `MockStore`.
+  - Thử chế độ máy bay trên máy thật; chạy app với backend thật.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Còn lại").
+
+## BF-20261022-003 — Offline-first: local DB bền vững (Hive, mã hoá theo dòng) cho ký ức và bình luận (Claude app)
+
+- Ngày làm: 2026-10-22T07:27:08+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp offline-first: local DB bền vững thay MockStore cho ký ức và bình luận."
+- Liên quan: BF-20261022-001/002, `docs/04_THIET_KE_OFFLINE_FIRST.md` (lộ trình bước 1, 5).
+- Câu bổ sung giữa task: "Làm chú ý phần nếu data trên server cập nhật field mới hoặc chỉnh sửa phải đảm bảo dưới local không bị crash đấy" — đã làm trong cùng task (xem phân tích) và ghi vào bộ nhớ dự án.
+- Role: ORCHESTRATOR, MOBILE (chủ trì), ARCHITECT (chọn kiểu DB), TESTER, QUALITY. Backend không đổi.
+- Phân tích:
+  - Chọn Hive box riêng, mã hoá theo dòng, làm local DB bền vững thay vì SQLite/drift. Lý do: repository của app đọc `MockStore` đồng bộ; chuyển sang SQLite bất đồng bộ phải viết lại toàn bộ tầng repository. `MockStore` giữ vai bộ nhớ làm việc; DB là nguồn bền vững, nạp lúc mở app và ghi diff có debounce.
+  - Dọn race có sẵn bị lộ ra: ký ức tạo ngay trước lần đồng bộ bị gỡ nhầm.
+  - Chống crash khi dữ liệu đổi:
+    - Field lạ bị bỏ qua; enum server ở dạng `String`.
+    - `lenientList` cho feed, changes, outbox, bình luận lưu trên máy.
+    - Kiểm từng dòng trước khi nạp; schema version để xoá DB cũ khi đổi cấu trúc.
+    - Lỗi parse trong đồng bộ chỉ ghi log; DB hỏng thì app vẫn chạy bằng dữ liệu server.
+- Kết quả: cập nhật dòng checklist Offline-first (vẫn 🟡, 142/166). `docs/04_THIET_KE_OFFLINE_FIRST.md` thêm mục BF-20261022-003 và "Quy tắc tương thích dữ liệu". Cập nhật `baby-family-app/SESSION.md`.
+- Bằng chứng: app `make check` EXIT 0 (analyze sạch, 814 test). Test mới:
+  - Ký ức/bình luận còn sau khi tắt app và mở khi offline; chỉ ghi dòng đổi; xoá dòng mất.
+  - Dòng hỏng / field lạ / schema cũ không crash.
+  - Feed/changes có phần tử đổi kiểu vẫn đọc được phần còn lại.
+
+  Không chạy backend (không sửa). Chưa test `LocalMemoryDbImp` với Hive thật, chưa thử trên máy thật.
+- Còn lại:
+  - Test Hive thật (cần khởi tạo Hive trong test).
+  - Local DB cho nhiệm vụ / Papa & Mama.
+  - Outbox cho sửa ký ức.
+  - Bỏ bảng `memories` khỏi offline snapshot sau khi thử máy thật.
+  - Thử chế độ máy bay với backend thật.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Còn lại").
+
+## BF-20261022-004 — Offline-first: local DB cho nhiệm vụ và Papa & Mama (đọc offline + check-in/lời nhờ/cảm ơn/nhật ký qua outbox) (Claude app)
+
+- Ngày làm: 2026-10-22T07:39:09+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Chưa commit, làm tiếp local DB cho nhiệm vụ và Papa & Mama."
+- Liên quan: BF-20261022-001…003, `docs/04_THIET_KE_OFFLINE_FIRST.md`.
+- Role: ORCHESTRATOR, MOBILE (chủ trì), ARCHITECT (local DB bảng chung + `submit`), TESTER, QUALITY. Backend không đổi: dùng Idempotency-Key tuỳ chọn của BF-20261022-001.
+- Phân tích:
+  - Tổng quát hoá local DB thành bảng dùng chung (`ILocalDb`, `LocalTables`), áp nguyên các quy tắc chống crash của BF-20261022-003 (schema version, kiểm từng dòng, bỏ dòng hỏng).
+  - Thêm `OutboxRunner.submit`: khi có mạng, trải nghiệm giữ như trước (bản server, lỗi server); khi mất mạng thì xếp hàng.
+  - Nhiệm vụ: chuyển cache bảng sang local DB, chi tiết offline, hoàn thành qua `submit`.
+  - Papa & Mama: lưu bền 4 bảng phản chiếu; 4 thao tác tạo qua outbox, bản tạm do bản trên máy tạo (giữ BR-067).
+  - Sửa lỗi có sẵn: đồng bộ song song bị mất mạng ném `ParallelWaitError`, không được bắt.
+- Kết quả: cập nhật dòng checklist Offline-first (vẫn 🟡, 142/166); cập nhật `docs/04_THIET_KE_OFFLINE_FIRST.md` và `baby-family-app/SESSION.md`.
+- Bằng chứng: app `make check` EXIT 0 (analyze sạch, 816 test). Test mới:
+  - Bảng nhiệm vụ và chi tiết khi offline từ local DB.
+  - Papa & Mama mở offline sau khi tắt app; dòng hỏng bị bỏ.
+  - Tạo check-in / cảm ơn / nhật ký offline rồi gửi đúng một lần với 3 key khác nhau.
+  - Check-in bị từ chối báo lỗi và không để lại bản tạm.
+  - Lời nhờ mất mạng gửi lại cùng key.
+
+  Backend không sửa nên không chạy lại. Chưa thử end-to-end với backend thật hay trên máy thật.
+- Còn lại:
+  - Thao tác lời nhờ, duyệt/thả tim cảm ơn, chia sẻ nhật ký khi offline.
+  - Tạo/đổi/hoàn tác nhiệm vụ khi offline.
+  - Sửa ký ức khi offline.
+  - Thử chế độ máy bay trên máy thật với backend thật.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Còn lại").
+
+## BF-20261022-005 — Chạy app với backend thật, thử luồng offline-first (mất mạng → có mạng lại) (Claude)
+
+- Ngày làm: 2026-10-22T22:43:45+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Chạy app với backend thật và thử luồng offline-first (mất mạng rồi có mạng lại)."
+- Liên quan: BF-20261022-001…004.
+- Role: ORCHESTRATOR, TESTER (chủ trì: chạy thật), MOBILE (sửa lỗi), QUALITY.
+- Phân tích / quá trình:
+  - Backend build từ mã nguồn ở cổng 3100, DB test (không đụng Docker stack của người dùng).
+  - iOS không build được: Flutter 3.44.5 không tương thích Xcode 27.1 ở bước `lipo -verify_arch`. Đây là lỗi môi trường, không phải lỗi app; chuyển sang emulator Android `Pixel_8`, tắt/bật mạng thật bằng `adb svc`.
+  - Đăng ký Mama bằng số thử (OTP qua Mailpit cục bộ), Papa tham gia qua API, duyệt, tạo bé.
+  - Thử: offline → hoàn thành nhiệm vụ, viết nhật ký, check-in → mở lạnh offline → bật mạng.
+- Lỗi tìm ra và đã sửa:
+  1. Snapshot offline cũ khiến mở lạnh offline quay về màn chờ Papa.
+  2. Nhật ký / Thư / Câu nói không qua outbox.
+  3. Hoàn thành offline không làm màn vẽ lại; sheet hiện "+0 💗".
+  4. Tám lệnh đọc ném lỗi khi mất mạng làm hỏng cả Home / Ký ức.
+  5. Thêm log lỗi tải.
+
+  Một lần thao tác "biến mất" là do tôi chạm nhầm nút Undo khi thử, không phải lỗi app.
+- Kết quả:
+  - Bật mạng lại → trong cùng giây gửi đủ: refresh 200, complete 201, check-in 201, memory 201, changes 200.
+  - DB test: đúng 1 nhật ký, 2 lần hoàn thành, 1 check-in, không trùng.
+  - Hearts 5 → 9.
+  - Mở lạnh offline: Home, Ký ức (nhật ký "Chờ có mạng"), Chăm sóc (2/7), Papa & Mama (check-in) đều hiển thị.
+- Bằng chứng:
+  - Ảnh chụp và log trong scratchpad của phiên; log backend `be-3100.log`.
+  - Truy vấn DB test chỉ đọc.
+  - App `make check` EXIT 0 (analyze sạch, 817 test). Test mới: snapshot sau duyệt / `completeSetup` / `persistOffline`; care `pendingSync` + cây offline; memory_library đọc offline.
+  - Không sửa backend.
+- Còn lại:
+  - Nâng Flutter để build iOS với Xcode 27.1, rồi thử iOS.
+  - Rà offline các màn còn lại (thông báo, cài đặt, chi tiết album, chi tiết ký ức…).
+  - Ghi nhận ngoài phạm vi: "Papa Minh" (tên mẫu) ở màn chọn giai đoạn; "Your family this week" hiện dữ liệu mẫu; thẻ nhật ký tạm dùng icon ảnh.
+  - Backend 3100 và emulator vẫn đang chạy nền trong phiên.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Còn lại").
+
+<a id="bf-20261022-006"></a>
+## BF-20261022-006 — App chế độ server còn lộ dữ liệu mẫu: tên "Papa Minh" ở màn chọn giai đoạn, thẻ "Your family this week" (Claude app)
+
+- Ngày làm: 2026-10-22T23:30:37+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: (giao từ phiên BF-20261022-005) Ở chế độ server, sửa hai chỗ hiện dữ liệu mẫu từ `MockStore`/fixtures thay dữ liệu server (tên Papa mẫu ở màn chọn giai đoạn; thẻ "Your family this week" có ảnh stock và "1 new quotes" cho gia đình mới), rà các màn chính khác, thêm test, `make check` đạt.
+- Liên quan: BF-20261022-005.
+- Role: Chủ trì MOBILE; review TESTER, QUALITY (agent chính tự áp dụng, không sub-agent).
+- Trạng thái: Hoàn thành (ngày giờ hoàn thành 2026-10-22T23:38:52+07:00).
+- Phân tích:
+  - Lỗi 1: khi gia đình kích hoạt, `SessionRemoteServiceImp._mirrorActivated` gọi `simulatePartnerJoined` của bản mock, tạo bạn đời với tên `defaultPartnerName` của fixture `session.json` ("Minh"); tên server trong `bootstrap.parents` không được ghi. Ảnh hưởng cả máy Papa (Mama mang tên "Minh").
+  - Lỗi 2: `ChildServiceImp.weekSummary` cộng nền mẫu `children.json → stats.week` (24/2/1 + 4 ảnh stock); bản remote chỉ thay số khoảnh khắc/lần đầu từ server nên câu nói và ảnh vẫn là mẫu.
+  - Rà các nguồn `store.meta` khác qua service remote. Lộ dữ liệu mẫu ở gia đình thật:
+    - CAL-02 tạo sự kiện (FAB) điền sẵn "Sinh nhật Bà nội".
+    - MEM-15 "tìm gần đây" có 3 mục mẫu.
+    - CARE-09 thống kê, US tổng kết tuần, gợi ý viết lại Cầu nối hiện số/nội dung mẫu.
+  - Đã đúng từ trước: US-01 câu hỏi (BF-20261021-003); `monthRecap`/`dayStory`/`chapters`/`stats(child)` lọc theo id bé (id server không khớp fixture).
+- Kết quả:
+  - `SessionServiceImp.applyServerPartner`; `_mirrorActivated` ghi `displayName`/`callName` của bạn đời từ bootstrap mỗi lần đồng bộ (sửa cả bản đã lưu tên mẫu).
+  - `ChildServiceImp.weekBaseline` (`@protected`); `ChildRemoteServiceImp` trả `null`. Không có nền: ảnh nhỏ lấy từ `mediaAssets` của ký ức trong tuần (mới nhất trước, bỏ thư còn niêm phong). `HomeTabController` ẩn thẻ "Tuần này" khi không có số liệu/ảnh (HOME-01: khối không có dữ liệu thì ẩn).
+  - `CareRemoteServiceImp.eventDraft` trả form trống (ngày hôm nay); `careStats` → `null`. `UsRemoteServiceImp.coupleWeek`/`rewriteSuggestion` → `null` (màn đã có EmptyState).
+  - `IMemoryRepository.searchRecents/saveSearchRecents({server})` (khoá meta `serverSearchRecents`); `MemoryRemoteServiceImp.searchRecents` override.
+  - Bản mock giữ nguyên hành vi.
+- Kiểm chứng:
+  - Test mới/sửa:
+    - session_remote: tên/nhãn Papa từ bootstrap.
+    - subject_memory_remote: tuần của gia đình mới không có câu nói/ảnh mẫu, ảnh từ ký ức đồng bộ; tìm gần đây rỗng.
+    - care_remote: CAL-02 trống, CARE-09 null.
+    - couple_remote: tuần/gợi ý null.
+    - home_test: thẻ tuần ẩn khi rỗng.
+  - `fvm flutter test` 6 file liên quan: 151 pass. `make check` EXIT 0 (analyze sạch, 821 test).
+  - Chưa chạy lại trên emulator với backend thật.
+- Còn lại:
+  - Kiểm tra lại trên app thật: ONB-04 hiện "QA Papa", Home gia đình mới không có thẻ tuần.
+  - `CareRemoteServiceImp.tree()` khi mất mạng mà chưa có bản lưu vẫn rơi về `super.tree()` (số tuần lấy từ `treeStats` mẫu): ca hiếm, chưa sửa.
+  - Thẻ nhật ký tạm dùng icon ảnh (ghi nhận ở BF-20261022-005) không thuộc task này.
+  - Không commit.
+- Product history: [BF-20261022-006](PRODUCT_ANALYTICS_HISTORY.md#bf-20261022-006).
+
+<a id="bf-20261023-001"></a>
+## BF-20261023-001 — Làm tiếp BF-20261022-006: xác minh trên app thật + sửa cây gia đình offline còn số liệu mẫu (Claude app)
+
+- Ngày làm: 2026-10-23T06:43:23+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp đi" — tiếp phần còn lại của BF-20261022-006.
+- Liên quan: BF-20261022-006.
+- Role: Chủ trì MOBILE (Claude); hỗ trợ Codex CLI (`codex exec`, rà và sửa `lib/data/service_imp/**` + `test/data/**` theo brief, không ghi nhật ký); TESTER chạy thật và QUALITY review diff của Codex do Claude làm.
+- Giữa chừng người dùng nhắn "Kêu codex làm thêm nữa" (cùng mã, là chỉ đạo cách làm, không phải yêu cầu mới).
+- Trạng thái: Hoàn thành (2026-10-23T06:56:15+07:00; xem "Còn lại").
+- Phân tích:
+  - Claude: `CareRemoteServiceImp.tree()` mất mạng và chưa có bản lưu vẫn lấy số tuần mẫu → sửa về 0.
+  - Codex rà mọi phương thức của các remote service so với bản mock (~250 phương thức), tìm chỗ gia đình thật có thể thấy dữ liệu mẫu (meta fixture, id fixture qua liên kết cũ, nhánh lỗi/offline `super.*`).
+  - Codex không chạy được Flutter trong sandbox (SDK cần ghi cache ngoài workspace). Claude chạy format/analyze/test và review.
+- Kết quả:
+  - Codex sửa 10 service: session, child, memory, memory_library, care, us, family, settings, circle, pregnancy. Các thay đổi chính:
+    - Ký ức/nhiệm vụ/thành viên/thai kỳ theo id ngoài gia đình hiện tại → null/rỗng.
+    - `dayStory`/`monthRecap`/`weeklyRecap` bản nền → null.
+    - Bộ sưu tập đếm theo ký ức thật; nháp chỉ giữ nháp người dùng lưu.
+    - Tìm kiếm ngắn không quét fixture; báo cáo không trả mã biên nhận giả.
+    - CARE-03 nháp trống; hoàn thành nhiệm vụ id lạ → lỗi.
+    - Cài đặt (hồ sơ, thông báo, quyền riêng tư, AI, bảo mật, xuất dữ liệu, trợ giúp, xoá tài khoản) không dùng số/nhãn mẫu.
+    - `birthDraft` bỏ số đo/ảnh mẫu.
+  - Codex thêm 39 test, trong đó có file mới `test/data/circle_remote_test.dart`.
+  - QUALITY tìm ra 1 lỗi do Codex: `planOffers` trả `priceText: ''` → ONB-ACT sẽ hiện "House () or Family ()" và mất giá ở các màn gói. Claude khôi phục giá từ catalog giá của app (quota vẫn theo server; API lỗi/rỗng → `[]`) và trả lại kỳ vọng test cũ `priceText isNotEmpty` mà Codex đã đổi.
+- Kiểm chứng:
+  - Chạy thật trên Android emulator với backend 3100 (DB test).
+    - Gia đình cũ: thẻ "Your family this week" = 1 khoảnh khắc / 0 / 0, không ảnh stock.
+    - Gia đình mới (Mama đăng ký trong app, OTP qua Mailpit; Papa "QA Papa Sao" nhận lời mời qua API; Mama duyệt):
+      - ONB-04 hiện "Mama Mama and Papa QA" (tên server, không còn "Minh"; "Mama Mama" do tên thử đặt bắt đầu bằng "Mama").
+      - Home sau tạo bé không có thẻ tuần.
+    - Lần chạy này dùng code trước khi có thay đổi của Codex.
+  - `fvm flutter analyze` sạch. `make check` EXIT 0 (861 test).
+  - Review của Claude: đọc kỹ care/memory/family/settings(security); các phần còn lại review theo bảng audit + test, chưa soi từng dòng.
+- Còn lại:
+  - Chưa chạy lại app thật sau thay đổi của Codex.
+  - Giá gói vẫn từ catalog giá của app cho tới khi có giá Store/server.
+  - Không commit.
+- Product history: [BF-20261023-001](PRODUCT_ANALYTICS_HISTORY.md#bf-20261023-001).
+
+<a id="bf-20261026-001"></a>
+## BF-20261026-001 — Chạy lại app thật, thử các màn Codex sửa ở BF-20261023-001 (Cài đặt, Bộ sưu tập, Tạo nhiệm vụ, Chào đời)
+
+- Ngày làm: 2026-10-26T08:35:45+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Chạy lại app trên emulator với backend thật và thử các màn Codex vừa sửa (Cài đặt, Bộ sưu tập, Tạo nhiệm vụ, Chào đời)." (kèm "Try again").
+- Liên quan: BF-20261023-001.
+- Role: Chủ trì TESTER (chạy thật); MOBILE (sửa lỗi tìm được); QUALITY (agent chính tự áp dụng, không sub-agent).
+- Trạng thái: Hoàn thành (2026-10-26T08:49:15+07:00); còn 1 câu hỏi cho người dùng về lối vào Cài đặt.
+- Phân tích / quá trình:
+  - Android emulator, backend 3100 (DB test), gia đình thử "The Mama family" từ BF-20261023-001. Thao tác bằng `adb` + `uiautomator`.
+  - Cài đặt:
+    - Cài đặt gia đình (FAM-07): múi giờ "Asia/Ho_Chi_Minh" từ server, không nhãn mẫu.
+    - **Cài đặt cá nhân SET-01 không mở được từ app Bố/Mẹ.** Chỉ màn chờ bạn đời có nút `SettingsRoute`; FAM-01 và Home không có. Đặc tả 8.1 đặt SET-01 dưới "Gia đình & Cài đặt" (avatar góc trái). Thiếu sót có từ commit đầu, không do BF-20261023-001.
+    - Chưa thử được SET-02…13 trên máy; các thay đổi của Codex ở đó chỉ được kiểm qua unit test.
+  - Bộ sưu tập: mọi số 0, không ảnh bìa mẫu. Lỗi hiển thị "Little words · 0 quotes": tên bé rỗng khi chưa có câu nói gắn với bé. Thêm vào đó, thẻ "Con lớn từng tháng" hiện " · 0/0 ảnh" khi chưa có bé đã sinh (thấy qua widget test).
+  - Tạo nhiệm vụ (CARE-03): form trống, không điền mẫu; lưu "QA test task" → lên bảng (Mine 0/4).
+  - Chào đời: tạo thai kỳ "Bi" (dự sinh 09/11/2026). Màn hành trình thai kỳ báo "Could not load memories": `ChildRemoteServiceImp.stats` gọi `/v1/children/{id}/profile-stats` với id thai kỳ → 404 (có từ trước, bản HEAD cũng gọi). Sau khi sửa, màn tải được. Màn chào đời (PREG-06) chỉ điền tên thật "Bi"; ngày/giờ, cân nặng, chiều dài, ảnh trống. Không bấm hoàn tất.
+  - "Synthetic swap option"/"Synthetic default item" là dữ liệu thử của server trong DB test, không phải fixture app.
+- Kết quả (sửa):
+  - `ChildRemoteServiceImp.stats`: thai kỳ không gọi `profile-stats`, trả số trên máy.
+  - `collections_view.dart`: chưa có tên bé → key mới `memCollQuotesCount` / `memCollMonthlyCount` (vi, en, zh, ja).
+- Kiểm chứng:
+  - Test mới: subject_memory_remote "pregnancy stats never call the child profile-stats"; memories_test "MEM-22 quotes card without a child has no dangling dot".
+  - `make check` EXIT 0 (analyze sạch, 863 test).
+  - Trên máy sau build lại: "Little words | 0 quotes"; hành trình thai kỳ tải được.
+- Còn lại:
+  - Quyết định lối vào SET-01 cho Bố/Mẹ (đã hỏi người dùng).
+  - Thử SET-02…13 trên máy sau khi có lối vào.
+  - Không commit.
+- Product history: [BF-20261026-001](PRODUCT_ANALYTICS_HISTORY.md#bf-20261026-001).
+
+<a id="bf-20261026-002"></a>
+## BF-20261026-002 — Thêm lối vào Cài đặt (SET-01) ở cuối FAM-01 và thử SET-02…13 trên emulator
+
+- Ngày làm: 2026-10-26T08:58:52+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Thêm một dòng "Cài đặt" ở cuối màn Gia đình (FAM-01) mở SET-01, rồi thử SET-02…13 trên emulator."
+- Liên quan: BF-20261026-001.
+- Role: Chủ trì MOBILE; TESTER (chạy thật); QUALITY (agent chính tự áp dụng, không sub-agent).
+- Trạng thái: Hoàn thành (2026-10-26T09:08:49+07:00).
+- Phân tích:
+  - Đặc tả 8.1 đặt SET-01 trong "Gia đình & Cài đặt". Dùng lại `AppGroupedList` + `AppSettingsRow` và key `settingsTitle` có sẵn; không thêm widget/chuỗi mới cho dòng này.
+  - Thử trên emulator (backend 3100, gia đình "The Mama family") lần lượt SET-01…13: Hồ sơ, Thông báo, Quyền riêng tư, AI, Hiển thị & Ngôn ngữ, Bảo mật & Thiết bị, Dữ liệu của tôi, Gói & thanh toán, Trợ giúp, Giới thiệu, Xoá tài khoản (chỉ xem bước 1, không xoá).
+    - Không còn dữ liệu mẫu: tên "Mama Sao", số ***4661, tên Papa "QA Papa Sao" ở bước xoá tài khoản, giá gói từ catalog app, FAQ từ server.
+    - Màn Hiển thị có câu xem trước "Na just reached… sitting up alone" — mẫu minh hoạ cỡ chữ với tên bé thật, giữ nguyên.
+  - Lỗi tìm ra:
+    1. SET-07 thiết bị hiện "Android |  · In use": server không có vị trí đăng nhập.
+    2. SET-04 "Signed-in devices 0" trong khi SET-07 liệt kê 1 thiết bị: BF-20261023-001 (Codex) đặt `deviceCount: 0` thay số mẫu, nhưng server có `sessions()`.
+    3. SET-05 hiện "0 / 0 uses": bản server chưa có API quota AI.
+- Kết quả:
+  - `family_mobile_view.dart`: nhóm "Cài đặt" cuối FAM-01 → `SettingsRoute`.
+  - `device_row.dart`: không có vị trí → "Đang dùng" / chỉ thời gian; key mới `setDeviceInUseNoLocation` (vi, en, zh, ja).
+  - `SettingsRemoteServiceImp.privacySettings`: `deviceCount` = số phiên từ `sessions()`.
+  - `ai_settings_mobile_view.dart`: ẩn thẻ quota khi `total == 0`.
+- Kiểm chứng:
+  - Test mới/sửa:
+    - family_settings_circle_test "“Cài đặt” at the bottom opens SET-01".
+    - family_settings_batch2_test: thiết bị không vị trí; AI ẩn thẻ quota.
+    - settings_remote_test: `deviceCount` 2 theo phiên.
+  - `make check` EXIT 0 (866 test).
+  - Trên máy sau build lại: SET-04 "1 device", SET-05 không còn "0 / 0", SET-07 "Android | In use".
+- Còn lại:
+  - Nhãn gói ở thẻ AI khi dùng thử là "Family" (ánh xạ sẵn của `planTitle`); thẻ đang ẩn ở bản server nên chưa lộ.
+  - Không commit.
+- Product history: [BF-20261026-002](PRODUCT_ANALYTICS_HISTORY.md#bf-20261026-002).
+
+<a id="bf-20261026-003"></a>
+## BF-20261026-003 — Làm tiếp: rà dữ liệu mẫu trên app thật ở các màn chính còn lại (Papa & Mama, Lịch, Thông báo, Ký ức, Chăm sóc)
+
+- Ngày làm: 2026-10-26T09:11:22+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp cho t đi" (sau BF-20261026-002). Câu này không yêu cầu commit rõ ràng, nên tiếp tục rà các màn chính còn lại và không commit.
+- Liên quan: BF-20261026-001, BF-20261026-002.
+- Role: Chủ trì TESTER (chạy thật); MOBILE (sửa lỗi); QUALITY (agent chính tự áp dụng, không sub-agent).
+- Trạng thái: Hoàn thành (2026-10-26T09:26:32+07:00).
+- Phân tích / quá trình (emulator + backend 3100, gia đình "The Mama family"):
+  - Không còn dữ liệu mẫu ở:
+    - Papa & Mama: tuần, nhật ký riêng, Cầu nối, cài đặt.
+    - Lịch: nhiệm vụ server, âm lịch; Tạo sự kiện: form trống, bé/thành viên thật; chi tiết nhiệm vụ.
+    - Ký ức: tìm kiếm không có "tìm gần đây" mẫu; Nháp, Thùng rác, Ngày này năm xưa rỗng đúng.
+    - Trang bé HOME-02: số 0; gợi ý cột mốc từ catalog.
+    - Huy hiệu: 0/8, danh mục catalog.
+  - "Synthetic …" là dữ liệu thử của server.
+  - Lỗi tìm ra (có từ trước, không phải dữ liệu mẫu, nhưng làm gia đình mới thấy màn hỏng):
+    1. NOTI-01 rỗng là trang trắng, không empty state (Skill 8).
+    2. MEM-03 Album rỗng chỉ còn hai tiêu đề trơ.
+    3. CARE-08 việc "Cùng nhau" chưa làm vẫn ghi "· đã xong" (mock chỉ có việc xong nên chưa lộ).
+    4. CARE-09 thống kê bản server chỉ hiện chữ "Thống kê" (trùng tiêu đề màn).
+- Kết quả:
+  - `notifications_mobile_view.dart`: `EmptyState` (`notificationsEmpty`, `notificationsEmptyDescription`).
+  - `albums_mobile_view.dart`: ẩn "Album tự động" khi rỗng; `EmptyState` (`memAlbumsEmpty`, `memAlbumsEmptyDescription`).
+  - `history_entry_row.dart`: chưa làm → `careHistoryTogetherMissed`.
+  - `care_stats_mobile_view.dart`: `careStatsEmpty`.
+  - Chuỗi mới đủ vi/en/zh/ja; đặc tả NOTI-01/MEM-03 không có câu rỗng nên viết theo giọng văn mục 11.
+- Kiểm chứng:
+  - Widget test mới:
+    - home_test "empty inbox shows the empty state".
+    - memories_batch2_test "MEM-03 without albums shows the empty state".
+    - care_us_child_batch2_test "CARE-08 together task not done reads as missed".
+  - `make check` EXIT 0 (869 test).
+  - Trên máy sau build lại: cả 4 màn hiển thị đúng.
+- Còn lại:
+  - Việc hôm nay chưa làm cũng ghi "Không kịp làm" ở lịch sử (ngữ nghĩa sẵn có, cả việc của tôi).
+  - Chưa rà app người thân (Circle) và luồng thai kỳ sau chào đời.
+  - Không commit.
+- Product history: [BF-20261026-003](PRODUCT_ANALYTICS_HISTORY.md#bf-20261026-003).
+
+<a id="bf-20261026-004"></a>
+## BF-20261026-004 — Rà app người thân (Circle) và luồng sau chào đời trên emulator với backend thật
+
+- Ngày làm: 2026-10-26T09:34:43+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Rà tiếp app người thân (Circle) và luồng sau chào đời trên emulator với backend thật."
+- Liên quan: BF-20261026-003.
+- Role: Chủ trì TESTER (chạy thật); MOBILE (sửa lỗi); QUALITY (agent chính tự áp dụng, không sub-agent).
+- Trạng thái: Hoàn thành (2026-10-26T09:57:25+07:00); còn mục cho backend và dữ liệu test đã đổi (xem "Còn lại").
+- Phân tích / quá trình (emulator + backend 3100, DB `baby_family_test`):
+  - Chào đời "Bi" (Mama):
+    - Gõ "10/26/2026" (tiếng Anh) thì thẻ chào mừng ghi **2/10/2028**. Ô ngày điền sẵn theo `toFormDate` (en `M/d/yyyy`) nhưng `_parseDate` luôn đọc `dd/MM`, cuộn tháng 26 sang năm khác, và nhận cả ngày tương lai.
+    - Cùng lỗi ở sheet sửa thai kỳ: chỉ mở rồi lưu (en) là ngày dự sinh 09/11 thành 11/09.
+    - Hai bản `_parseDate` trùng (Skill 11).
+    - Sau sửa: thẻ ghi "10/26/2026 · 3.2 kg", hoàn tất được, bé "0 days old", có ký ức chào đời.
+  - Gói: server chỉ cho mời người thân khi gói có `circle.enabled`. Bản dev không có lối cấp gói (IAP cần store thật, Admin chỉ khoá/mở). Đã sửa **trực tiếp 1 dòng** `billing.family_entitlements` của gia đình thử QA trong DB test: TRIAL → FAMILY v1, PAID, hạn 30 ngày. Giá trị cũ lưu ở scratchpad phiên (`entitlement_before.txt`: TRIAL, plan version TRIAL v1, hạn 2026-10-29T23:49:42Z).
+  - Lời mời người thân (FAM-03/05):
+    - Bấm "Tạo lời mời" chỉ hiện snackbar, không có bảng chia sẻ như đặc tả.
+    - "Gửi lại link" bản server chạy bản mock: báo "Đã gửi lại" mà không chia sẻ gì.
+  - INV-01 người thân:
+    - " (Mama) mời…": server chỉ trả tên gọi người mời.
+    - " · Chỉ xem": server không trả tên gọi đề xuất.
+    - Quyền luôn "Chỉ xem": app bỏ `permission`. Kiểm API: `/invites/resolve` (công khai) **không trả** `permission` cho CIRCLE, dù DB lưu COMMENT.
+  - Người thân đăng ký (OTP Mailpit, tên "Ba Noi QA") và nhận lời mời → server `AWAITING_APPROVAL`, nhưng CIR-WAIT vẫn ghi "Bà cần được con cháu mời vào gia đình". Mama duyệt qua API → CIR-01 có Na, Bi; tab Ký ức/Đăng ảnh rỗng đúng (không quyền đăng → giải thích).
+  - CIR-06 "Tôi": câu xem trước cỡ chữ thiếu tên cháu ("  có ảnh mới…"), vì bản server không gửi ngày sinh cho người thân.
+- Kết quả (sửa):
+  - `lib/utils/helper/form_date.dart` `parseFormDate(text, locale)`: ngược `toFormDate`, `parseStrict`, nhận `.`/`-`. Thay 2 bản `_parseDate` (`birth_mobile_view.dart`, `edit_pregnancy_sheet.dart`). PREG-06 bỏ ngày sau hôm nay.
+  - `external_launcher.dart` `shareText`. FAM-03 tạo lời mời → bảng chia sẻ với `famInviteShareMessage` (tên gọi, tên bé, mã, link). FAM-05 "Gửi lại link" → mở lại bảng chia sẻ khi có mã.
+  - INV-01: `invInviterParentShort` / `invInviterRelativeShort` khi không có tên; tên gọi người thân rơi về nhãn quan hệ; `SessionRemoteServiceImp._circlePreview` đọc `permission` (canComment / canPost).
+  - CIR-WAIT: `CircleWaitingController.awaitingApproval` → `circleAwaitingTitle` / `circleAwaitingSubtitle`.
+  - CIR-06: `previewChild` rơi về bé đầu tiên.
+  - Chuỗi mới đủ vi/en/zh/ja.
+- Kiểm chứng:
+  - Test mới/sửa:
+    - `test/utils/form_date_test.dart` (3).
+    - session_remote (quyền INV-01).
+    - invite_preview_accept_test +2 (INV-01 không tên, CIR-WAIT chờ duyệt).
+    - family_settings_circle_test, billing_settings_batch3_test (bắt kênh share qua helper mới `test/helpers/share_capture.dart`).
+    - memories_circle_batch3_test +1 (CIR-06).
+  - `make check` EXIT 0 (875 test).
+  - Trên máy: thẻ chào mừng đúng ngày; bảng chia sẻ hiện tin nhắn có mã; INV-01 "Mama invited Grandma…", "Paternal grandmother · View only"; CIR-06 "Na has new photos…".
+- Còn lại:
+  - **Backend:** `/invites/resolve` (CIRCLE) chưa trả `permission` từng bé và tên gọi đề xuất (`displayName` có trong payload) → INV-01 vẫn hiện "Chỉ xem" sai cho lời mời có bình luận.
+  - "Recent firsts" ở HOME-02 của bé vừa chào đời không hiện thẻ dù chương ghi "1 firsts".
+  - FAM-01 ghi "0/12" trong khi FAM-05 ghi "1/12" (lời mời chờ).
+  - CIR-WAIT "Quét QR" mở mã mẫu (rỗng ở bản server).
+  - "31 days until 1 months" (số nhiều).
+  - Lời mời tạo trước khi sửa chưa có mã trên máy nên "Gửi lại" không chia sẻ được (cần "Tạo lời mời mới").
+  - Dữ liệu test đang đổi:
+    - Gia đình QA đang ở gói FAMILY (PAID 30 ngày), có người thân "Ba Noi QA".
+    - Emulator đang đăng nhập bằng tài khoản người thân.
+  - Không commit.
+- Product history: [BF-20261026-004](PRODUCT_ANALYTICS_HISTORY.md#bf-20261026-004).
+
+<a id="bf-20261026-005"></a>
+## BF-20261026-005 — Trả gói của gia đình QA trong DB test về dùng thử như trước BF-20261026-004
+
+- Ngày làm: 2026-10-26T10:01:01+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Trả dòng billing.family_entitlements của gia đình QA về giá trị cũ (TRIAL, plan version TRIAL v1, hạn 2026-10-29T23:49:42Z)."
+- Liên quan: BF-20261026-004.
+- Role: Chủ trì DBA (dữ liệu test); QUALITY (agent chính tự áp dụng).
+- Trạng thái: Hoàn thành (2026-10-26T10:02+07:00).
+- Kết quả: `billing.family_entitlements` của gia đình QA (`01a16604-…c875`) về `TRIAL`, plan version TRIAL v1 (`01a1401a-0c09-…`), `valid_until` = `trial_ends_at` = 2026-10-29T23:49:42.129Z, `trial_started_at` giữ nguyên. `version` tăng lên 4 (bộ đếm chỉ tăng).
+- Kiểm chứng: `select` sau `update` khớp giá trị cũ đã lưu ở BF-20261026-004 (trừ `version`/`computed_at`/`updated_at`).
+- Còn lại: người thân "Ba Noi QA" vẫn là thành viên; với gói dùng thử, Circle sẽ ở trạng thái tạm dừng (CIR-05). Emulator vẫn đăng nhập bằng tài khoản người thân. Không sửa code.
+- Product history: [BF-20261026-005](PRODUCT_ANALYTICS_HISTORY.md#bf-20261026-005).
+
+<a id="bf-20261026-006"></a>
+## BF-20261026-006 — Backend: `/invites/resolve` CIRCLE trả quyền từng bé và tên gọi đề xuất
+
+- Ngày làm: 2026-10-26T13:32+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: (giao từ session BF-20261026-004) bổ sung `children[].permission`/`allowDownload` và `displayName` vào response `POST /v1/invites/resolve` loại CIRCLE; cập nhật `docs/api.md`, test; không commit.
+- Liên quan: BF-20261026-004.
+- Role: Chủ trì BACKEND; hỗ trợ ARCHITECT (contract API công khai), SECURITY_PRIVACY (không lộ id người dùng); review TESTER, QUALITY — góc nhìn do agent chính áp dụng, không có reviewer độc lập.
+- Trạng thái: Hoàn thành (2026-10-26T13:34+07:00).
+- Phân tích: `resolveCircle` chỉ trả `children:[{id,name}]` dù `payload.grants` của lời mời lưu `permission`/`allowDownload` và `payload.displayName` có tên gọi đề xuất, nên INV-01 luôn hiện "Chỉ xem". Ghép quyền theo grant của lời mời (giống cách `GET /me/circles` ghép grant của thành viên), sau khi vẫn lọc bé qua `grantedSubjects` (chỉ bé còn hiệu lực, thai kỳ riêng tư bị loại). Không thêm id người dùng; `displayName` là tên gọi Bố/Mẹ đặt cho người được mời.
+- Kết quả: `baby-backend/src/repositories/family-circle.repository.ts` (`resolveCircle` gắn `permission` mặc định VIEW và `allowDownload` cho từng bé), `src/models/family-circle-state.model.ts` (`FamilyCirclePreview.displayName`), `src/dto/invite/circle-preview.dto.ts` (response thêm `displayName`, `children[].permission/allowDownload`), `docs/api.md` (dòng `/invites/resolve` + mục Lời mời người thân), test `test/integration/family-circle-api.spec.ts` (kiểm VIEW/false cho bé, COMMENT/true cho thai kỳ, `displayName`, không chứa id Bố/Mẹ). Không sửa file sinh tự động, không sửa app.
+- Kiểm chứng: `npm run check` đạt (unit 38 suite/331 test, e2e 2 suite/35 test, lint/typecheck/build/format). `npm run test:integration -- family-circle-api.spec.ts auth-onboarding.spec.ts` với DB `baby_family_test`: 2 suite/15 test đạt. Không chạy toàn bộ integration suite; không thử lại trên app thật.
+- Còn lại: App có thể map `displayName` vào `InviteInfo.callName` (`baby-family-app/lib/data/model/session/invite_resolution.dart`) — tuỳ chọn, chưa làm. Không commit.
+- Product history: [BF-20261026-006](PRODUCT_ANALYTICS_HISTORY.md#bf-20261026-006).
+
+## BF-20261026-007 — App nối `/invites/resolve` mới (tên gọi đề xuất, quyền xem/tải ảnh từng bé), chạy lại đủ bộ kiểm tra cho BF-20261019-006, làm mục checklist kế tiếp
+
+- Ngày làm: 2026-10-26T14:58:29+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: (giao từ session điều phối, theo yêu cầu "Làm phần tiếp theo di" của người dùng) (1) nối app với `POST /invites/resolve` mới của BF-20261026-006; (2) chạy lại đủ bộ kiểm tra hiện tại và ghi kết quả thật vào entry BF-20261019-006; (3) làm tiếp mục kế trong checklist.
+- Liên quan: BF-20261026-006, BF-20261019-006.
+- Role: ORCHESTRATOR, MOBILE (chủ trì), TESTER, QUALITY. Backend không sửa.
+- Phân tích / kết quả:
+  1. **Lời mời người thân (INV-01):**
+     - `InviteResolution.displayName`. `_circlePreview` map tên gọi Bố/Mẹ đặt vào `InviteInfo.callName` (trống → nhãn quan hệ như trước).
+     - `InvitePreviewData.childAccess` (id bé → `permission` + `allowDownload`). Màn xem trước hiện nhãn quyền **theo từng bé** qua helper chung `permissionSummary` (tách từ `relativePermissionSummary`), thiếu thì dùng quyền chung.
+     - Phần `permission`/`allowDownload` trong `CircleSubjectRecord` đã có từ BF-20261026-004.
+  2. **BF-20261019-006:** không thấy chỗ nào còn "đang chờ kết quả kiểm tra đầy đủ"; cả hai entry đã "Hoàn thành" có số liệu. Vẫn chạy lại đủ bộ kiểm tra trên mã hiện tại và ghi bù vào entry đó (có đánh dấu).
+  3. **Mục kế trong checklist** ("rà offline các màn còn lại"):
+     - Quét các phương thức đọc của service remote: 23 lệnh đọc màn phụ chưa có dự phòng khi mất mạng (chăm sóc: thư viện / Hearts / huy hiệu / lịch sử / lịch / cài đặt / chuỗi; ký ức: album / góc nhìn / bài chờ duyệt / recap / ngày này năm xưa; thông báo; cài đặt: thông báo / AI / trợ giúp / thiết bị; Papa & Mama: cài đặt; thai kỳ: chuẩn bị / kích thước thai; gia đình: múi giờ / các gia đình của tôi).
+     - Thêm `OfflineReads`: mất mạng → bản đọc thành công gần nhất cùng khoá (trong phiên), chưa có → lỗi như cũ; 4xx không bị che. Khoá theo người dùng server với cài đặt / thông báo, để không lộ bản đệm khi đổi tài khoản.
+- Bằng chứng:
+  - App `make check` EXIT 0 (analyze sạch, 878 test). Test mới: session (`displayName`, quyền từng bé, tên trống), `relative_text` (`permissionSummary`), `offline_read_test` (`OfflineReads` / `whenOnline`).
+  - Backend `npm run check` EXIT 0 (unit 331, e2e 35), eslint EXIT 0, `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT 0 (73 suite / 609 test).
+  - Chưa chạy lại app trên emulator cho phần này.
+- Còn lại:
+  - Bản đọc gần nhất của màn phụ chỉ trong RAM (mất khi tắt app).
+  - Thao tác ghi ở màn phụ (đổi cài đặt, hoàn tác / đổi nhiệm vụ, thao tác lời nhờ) vẫn cần mạng.
+  - Nâng Flutter cho iOS: đã có phiên đề xuất riêng.
+  - Không commit.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Còn lại").
+
+## BF-20261027-001 — PREG-07 Đặt tên cho con + CARE-11 Thống kê chăm con (Codex backend + Claude app)
+
+- Ngày làm: 2026-10-27T18:36:43+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: (chuyển từ session điều phối) "Tiếp tục làm các tính năng tiếp theo cho t đi" — chọn mục kế tiếp trong checklist, làm cả backend và app, chạy đủ kiểm tra, ghi nhật ký.
+- Liên quan: checklist dòng PREG-07, CARE-11 (1.1); đặc tả 7.15, 9.5 PREG-07, 9.7 CARE-11.
+- Role:
+  - ORCHESTRATOR: chọn mục — MVP còn lại đều cần cấu hình Store / Apple / Google / staging hoặc thiết bị thật, nên chọn hai mục 1.1 đã có UI, đặc tả rõ.
+  - BACKEND: 2 phiên Codex song song — A: PREG-07, B: CARE-11.
+  - MOBILE (Claude), TESTER, QUALITY.
+- Phân tích:
+  - **Codex A (PREG-07):**
+    - Dùng lại hai bảng tên / lượt thích đã có; migration DDL `20261027120000_pregnancy_name_key` (khoá chuẩn hoá + unique).
+    - Tên và ý nghĩa mã hoá AES-GCM (khoá `COUPLE_CHECKIN_ENCRYPTION_KEY`); thích theo người xem; chọn tối đa `expectedCount` và cập nhật cột mốc `name_chosen` trong transaction.
+    - Chỉ người thêm được xoá; thai kỳ không ACTIVE chỉ đọc.
+  - **Codex B (CARE-11):**
+    - `GET /families/:id/care-stats` gộp theo category / tuần (múi giờ gia đình) / bé, đủ category kể cả 0, bỏ COUPLE, ngày cây nở hoa.
+    - Không trả theo người; feature `care.statistics` theo plan version của entitlement (không theo tên gói).
+  - **Claude:**
+    - Đăng ký DI cho hai controller / service / repository.
+    - App: model / client / repository / service theo hợp đồng.
+      - PREG-07: thai kỳ server qua API; bấm Chọn lần nữa = bỏ chọn.
+      - CARE-11: tham số tuần / bé, tuần trước / sau ở `AppWeekSelector`, đổi bé tải lại.
+      - Cả hai đọc qua `OfflineReads`.
+- Kết quả:
+  - Checklist tick PREG-07 và CARE-11 → 144/166 (MVP giữ 142/154).
+  - `docs/api.md` có mục BF-20261027-001; `baby-family-app/SESSION.md` đã cập nhật; handoff `BF-20261027-001-A/B.md`.
+- Bằng chứng:
+  - App `make check` EXIT 0 (analyze sạch, 879 test; mới: pregnancy_remote PREG-07, care_remote CARE-11 + bản đọc khi mất mạng).
+  - Backend `npm run check` EXIT 0 (unit 337, e2e 35, compiled); `npx eslint --max-warnings=0 src test` EXIT 0.
+  - Backend `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT 0 (75 suite, 655 test; gồm spec mới của Codex).
+  - Migration chỉ áp lên `baby_family_test`.
+  - Chưa chạy trên emulator với backend thật.
+- Còn lại:
+  - App chưa có nút xoá tên dự định (API đã có) và chưa hiện thông báo riêng cho các mã `NAME_*` (đang dùng thông điệp server).
+  - POST thêm tên chưa có Idempotency-Key.
+  - Deploy migration và seed catalog `name_chosen` ở môi trường khác.
+  - Thử trên máy thật.
+  - Không commit.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Còn lại").

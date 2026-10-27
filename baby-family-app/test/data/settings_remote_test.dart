@@ -28,6 +28,7 @@ import 'package:baby_family/data/repository/media.dart';
 import 'package:baby_family/data/service_imp/settings_remote.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -35,6 +36,9 @@ import '../helpers/design_qa.dart';
 
 /// API tài khoản giả (BF-20261018-013).
 class _FakeAccount implements IAccountRemoteRepository {
+  bool offlineSignIn = false;
+  bool offlineHelp = false;
+  bool emptyHelp = false;
   final calls = <String>[];
   final deletions = <Map<String, String>>[];
   String exportStatus = 'QUEUED';
@@ -227,21 +231,33 @@ class _FakeAccount implements IAccountRemoteRepository {
       phoneCalls.add('verify:$phone:$code');
 
   @override
-  Future<List<SignInMethodRecord>> signInMethods() async => const [
-    SignInMethodRecord(provider: 'PHONE', maskedHint: '***1234'),
-    SignInMethodRecord(provider: 'GOOGLE', maskedHint: 'a***@example.com'),
-  ];
+  Future<List<SignInMethodRecord>> signInMethods() async {
+    if (offlineSignIn) {
+      throw DioException(
+        requestOptions: RequestOptions(path: '/sign-in-methods'),
+      );
+    }
+    return const [
+      SignInMethodRecord(provider: 'PHONE', maskedHint: '***1234'),
+      SignInMethodRecord(provider: 'GOOGLE', maskedHint: 'a***@example.com'),
+    ];
+  }
 
   @override
-  Future<HelpCenterRecord?> helpCenter(String locale) async =>
-      const HelpCenterRecord(
-        version: 1,
-        faqs: [
-          HelpFaqRecord(id: 'trial', question: 'Dùng thử?', answer: 'Có.'),
-        ],
-        contact: HelpContactRecord(email: 'help@example.test'),
-        legal: HelpLegalRecord(termsUrl: 'https://example.test/terms'),
-      );
+  Future<HelpCenterRecord?> helpCenter(String locale) async {
+    if (offlineHelp) {
+      throw DioException(requestOptions: RequestOptions(path: '/help-center'));
+    }
+    if (emptyHelp) {
+      return null;
+    }
+    return const HelpCenterRecord(
+      version: 1,
+      faqs: [HelpFaqRecord(id: 'trial', question: 'Dùng thử?', answer: 'Có.')],
+      contact: HelpContactRecord(email: 'help@example.test'),
+      legal: HelpLegalRecord(termsUrl: 'https://example.test/terms'),
+    );
+  }
 
   final supportBodies = <JsonMap>[];
   final supportReplies = <String>[];
@@ -382,6 +398,102 @@ void main() {
     remote,
     container.read(sessionServiceProvider),
     media,
+  );
+
+  test(
+    'BF-20261023-001: security does not claim fixture locks are configured',
+    () async {
+      final settings = service();
+      final security = await settings.securitySettings();
+      expect(security.faceIdLock, isFalse);
+      expect(security.pinSet, isFalse);
+      await settings.saveSecuritySettings(security.copyWith(faceIdLock: true));
+      expect((await service().securitySettings()).faceIdLock, isTrue);
+    },
+  );
+
+  test(
+    'BF-20261023-001: profile offline never uses fixture identity',
+    () async {
+      remote.offlineSignIn = true;
+      container.read(sessionRepositoryProvider).patchSession({
+        'userId': 'server-user-without-profile',
+        'memberId': 'server-member-without-profile',
+      });
+      final profile = await service().profileSettings();
+      expect(profile.name, isEmpty);
+      expect(profile.callName, isEmpty);
+      expect(profile.avatarAsset, isNull);
+      expect(profile.signInMethods, isEmpty);
+      expect(profile.timezoneLabel, isEmpty);
+    },
+  );
+
+  test(
+    'BF-20261023-001: muted people count does not come from fixture',
+    () async {
+      expect((await service().notificationSettings()).mutedPeople, 0);
+    },
+  );
+
+  test(
+    'BF-20261023-001: AI quota and renewal are unknown without API data',
+    () async {
+      final ai = await service().aiSettings();
+      expect((ai.remaining, ai.total), (0, 0));
+      expect(ai.renewsAt, isNull);
+    },
+  );
+
+  test(
+    'BF-20261023-001: privacy overview excludes sample audiences and counts',
+    () async {
+      final privacy = await service().privacySettings();
+      expect(privacy.audiences, isEmpty);
+      expect(privacy.downloadAllowed, isEmpty);
+      expect(privacy.postAllowed, isEmpty);
+      expect(privacy.familyVisibleMemories, 0);
+      // BF-20261026-002: số thiết bị theo phiên đăng nhập thật (2 phiên).
+      expect(privacy.deviceCount, 2);
+      expect(privacy.aiFeatures, 0);
+      expect(privacy.blockedCount, 2);
+    },
+  );
+
+  test(
+    'BF-20261023-001: help is empty for missing or offline server content',
+    () async {
+      remote.emptyHelp = true;
+      final missing = await service().help();
+      expect(missing.faqs, isEmpty);
+      expect(missing.hotline, isEmpty);
+      expect(missing.email, isEmpty);
+      expect(missing.openReports, 0);
+      remote.offlineHelp = true;
+      expect(await service().help(), missing);
+    },
+  );
+
+  test(
+    'BF-20261023-001: export does not show fixture jobs or cache size',
+    () async {
+      final settings = service();
+      final empty = await settings.dataExport();
+      expect(empty.jobs, isEmpty);
+      expect(empty.cacheMb, 0);
+      await settings.startExport(DataExportKind.family);
+      final created = await settings.dataExport();
+      expect(created.jobs, hasLength(1));
+      expect(created.jobs.single.exportId, 'exp-FAMILY');
+      expect(created.cacheMb, 0);
+    },
+  );
+
+  test(
+    'BF-20261023-001: account deletion never shows a fixture memory count',
+    () async {
+      expect((await service().deleteAccountInfo()).postedMemories, 0);
+    },
   );
 
   test('SET-03: notification settings merge and patch the server', () async {

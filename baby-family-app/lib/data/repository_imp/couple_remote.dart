@@ -15,8 +15,16 @@ import 'package:baby_family/data/repository_imp/base.dart';
 class CoupleRemoteRepositoryImp extends BaseRepositoryImp
     implements ICoupleRemoteRepository {
   @override
-  Future<CheckinRecord?> createCheckin(String familyId, JsonMap body) async {
-    final rs = await client!.createCheckin(familyId, body);
+  Future<CheckinRecord?> createCheckin(
+    String familyId,
+    JsonMap body, {
+    String? idempotencyKey,
+  }) async {
+    final rs = await client!.createCheckin(
+      familyId,
+      body,
+      idempotencyKey: idempotencyKey,
+    );
     return rs.checkin;
   }
 
@@ -55,9 +63,14 @@ class CoupleRemoteRepositoryImp extends BaseRepositoryImp
   @override
   Future<AppreciationRecord?> createAppreciation(
     String familyId,
-    JsonMap body,
-  ) async {
-    final rs = await client!.createAppreciation(familyId, body);
+    JsonMap body, {
+    String? idempotencyKey,
+  }) async {
+    final rs = await client!.createAppreciation(
+      familyId,
+      body,
+      idempotencyKey: idempotencyKey,
+    );
     return rs.appreciation;
   }
 
@@ -102,9 +115,14 @@ class CoupleRemoteRepositoryImp extends BaseRepositoryImp
   @override
   Future<JournalEntryRecord?> createJournalEntry(
     String familyId,
-    JsonMap body,
-  ) async {
-    final rs = await client!.createJournalEntry(familyId, body);
+    JsonMap body, {
+    String? idempotencyKey,
+  }) async {
+    final rs = await client!.createJournalEntry(
+      familyId,
+      body,
+      idempotencyKey: idempotencyKey,
+    );
     return rs.entry;
   }
 

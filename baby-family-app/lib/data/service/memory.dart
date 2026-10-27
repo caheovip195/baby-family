@@ -88,6 +88,12 @@ abstract class IMemoryService extends IBaseService {
 
   Future<void> cancelUpload(String memoryId);
 
+  /// Offline-first (BF-20261022-001): số thao tác đang chờ gửi lên server và
+  /// gửi lại ngay (vừa có mạng). Bản mock: 0 / không làm gì.
+  int get pendingSyncCount;
+
+  Future<void> syncPending();
+
   Future<void> toggleFavorite(String memoryId);
 
   /// MEM-08 “Tải về”: link bản gốc ngắn hạn của ký ức (bản mock: rỗng).

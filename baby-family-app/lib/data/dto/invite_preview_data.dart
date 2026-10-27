@@ -12,6 +12,7 @@ class InvitePreviewData {
     this.state = InvitePreviewState.valid,
     this.currentFamilyName,
     this.currentCallName,
+    this.childAccess = const {},
   });
 
   /// INV-01 (valid) / INV-02 (invalid) / INV-03 (alreadyParent) / INV-04.
@@ -24,4 +25,11 @@ class InvitePreviewData {
   final InviteInfo invite;
   final List<Child> children;
   final List<Child> hiddenChildren;
+
+  /// Lời mời người thân: quyền với từng bé (id bé → quyền + được tải ảnh);
+  /// bé không có trong map dùng quyền chung của lời mời.
+  final Map<String, ChildAccess> childAccess;
 }
+
+/// Quyền người thân với một bé khi xem trước lời mời (INV-01).
+typedef ChildAccess = ({RelativePermission permission, bool allowDownload});

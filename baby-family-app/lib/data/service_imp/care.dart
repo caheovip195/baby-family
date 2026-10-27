@@ -95,6 +95,9 @@ class CareServiceImp extends MockServiceImp implements ICareService {
       .clamp(0, kValueMissionSwapLimit);
 
   @override
+  Future<void> syncPending() async {}
+
+  @override
   Future<CareBoard> board({DateTime? date, String? childId}) async {
     await ready();
     final day = date ?? today;
@@ -581,7 +584,7 @@ class CareServiceImp extends MockServiceImp implements ICareService {
   // ------------------------------------------------------------ batch 3
 
   @override
-  Future<CareStats?> careStats() async {
+  Future<CareStats?> careStats({DateTime? weekStart, String? childId}) async {
     await ready();
     final row = _repository.careStats();
     return row.isEmpty ? null : CareStats.fromJson(row);

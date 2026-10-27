@@ -4,6 +4,8 @@ import 'package:baby_family/data/model/care/calendar_event.dart';
 import 'package:baby_family/data/model/care/calendar_event_record.dart';
 import 'package:baby_family/data/model/care/calendar_record.dart';
 import 'package:baby_family/data/model/care/calendar_special_day_record.dart';
+import 'package:baby_family/data/model/care/care_stats.dart';
+import 'package:baby_family/data/model/care/category_count.dart';
 import 'package:baby_family/data/model/care/event_participant_record.dart';
 import 'package:baby_family/data/model/care/event_reminder_rule_record.dart';
 import 'package:baby_family/data/model/care/family_tree_record.dart';
@@ -42,6 +44,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../helpers/design_qa.dart';
+import '../helpers/fake_local_db.dart';
+import '../helpers/fake_outbox.dart';
 
 /// API nhiệm vụ giả (BF-20261018-007).
 class _FakeCare implements ICareRemoteRepository {
@@ -161,6 +165,33 @@ class _FakeCare implements ICareRemoteRepository {
     canSwap: true,
   );
 
+  /// Mất mạng (không có response) cho bảng và hoàn thành.
+  bool offline = false;
+
+  final statsCalls = <String>[];
+
+  @override
+  Future<CareStats?> careStats(
+    String familyId, {
+    String? weekStart,
+    String? childId,
+  }) async {
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/stats'));
+    }
+    statsCalls.add('$familyId:$weekStart:$childId');
+    return CareStats(
+      weekStart: DateTime(2026, 10, 19),
+      weekEnd: DateTime(2026, 10, 25),
+      total: 4,
+      categories: const [
+        CategoryCount(code: 'CARE', count: 3),
+        CategoryCount(code: 'BONDING', count: 1),
+      ],
+      bloomDays: 2,
+    );
+  }
+
   @override
   Future<MissionBoardRecord?> board(
     String familyId, {
@@ -168,6 +199,9 @@ class _FakeCare implements ICareRemoteRepository {
     String? date,
     String? childId,
   }) async {
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/board'));
+    }
     tabs.add('$tab@$date');
     return switch (tab) {
       'MINE' => MissionBoardRecord(
@@ -197,7 +231,12 @@ class _FakeCare implements ICareRemoteRepository {
   ];
 
   @override
-  Future<MissionRecord?> mission(String missionId) async => record(missionId);
+  Future<MissionRecord?> mission(String missionId) async {
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/mission'));
+    }
+    return record(missionId);
+  }
 
   @override
   Future<MissionResultRecord?> createMission(
@@ -215,6 +254,9 @@ class _FakeCare implements ICareRemoteRepository {
     JsonMap body = const {},
   ]) async {
     keys.add(idempotencyKey);
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/complete'));
+    }
     if (failComplete) {
       failComplete = false;
       throw DioException(requestOptions: RequestOptions(path: '/complete'));
@@ -258,14 +300,18 @@ class _FakeCare implements ICareRemoteRepository {
       );
 
   @override
-  Future<FamilyTreeRecord?> familyTree(String familyId) async =>
-      const FamilyTreeRecord(
-        level: 3,
-        levelName: 'Cây non',
-        progressPercent: 42,
-        bloomedDaysThisWeek: 2,
-        today: FamilyTreeTodayRecord(leaves: 4, total: 6),
-      );
+  Future<FamilyTreeRecord?> familyTree(String familyId) async {
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/tree'));
+    }
+    return const FamilyTreeRecord(
+      level: 3,
+      levelName: 'Cây non',
+      progressPercent: 42,
+      bloomedDaysThisWeek: 2,
+      today: FamilyTreeTodayRecord(leaves: 4, total: 6),
+    );
+  }
 
   @override
   Future<List<BadgeRecord>> badges(String familyId) async => [
@@ -340,8 +386,9 @@ class _FakeThanks implements ICoupleRemoteRepository {
   @override
   Future<AppreciationRecord?> createAppreciation(
     String familyId,
-    JsonMap body,
-  ) async {
+    JsonMap body, {
+    String? idempotencyKey,
+  }) async {
     bodies.add(body);
     return const AppreciationRecord(id: 'srv-thanks');
   }
@@ -383,6 +430,92 @@ void main() {
     l10n: () => lookupAppLocalizations(const Locale('vi')),
   );
 
+  // BF-20261023-001: form thêm mới không dùng bản nháp/template fixture.
+  test('CARE-03 draft is blank or uses a server library template', () async {
+    final care = service();
+    final draft = await care.missionDraft();
+    expect(draft.title, isEmpty);
+    expect(draft.childIds, isEmpty);
+    expect(draft.icon, isNull);
+    expect(draft.dueTime, isNull);
+    expect(draft.repeat, MissionRepeat.none);
+    final template = (await care.templates()).single;
+    final selected = await care.missionDraft(
+      childId: 'real-child',
+      templateId: template.id,
+    );
+    expect(selected.title, template.title);
+    expect(selected.templateId, template.id);
+    expect(selected.childIds, ['real-child']);
+    final stale = await care.missionDraft(templateId: 't-read-picture-book');
+    expect(stale.title, isEmpty);
+    expect(stale.templateId, isNull);
+    container.read(sessionRepositoryProvider).patchSession({
+      kValueSessionKeyServerFamilyId: null,
+    });
+    expect((await care.missionDraft()).title, isNotEmpty);
+  });
+
+  test(
+    'CARE-06 stale fixture mission id has no detail in server mode',
+    () async {
+      final store = container.read(careRepositoryProvider);
+      final id = store.missions('f-lan').first['id'] as String;
+      final care = service();
+      expect(await care.mission(id), isNull);
+      container.read(sessionRepositoryProvider).patchSession({
+        kValueSessionKeyServerFamilyId: null,
+      });
+      expect(await care.mission(id), isNotNull);
+    },
+  );
+
+  test('CARE-05 stale fixture mission id has no sample swap options', () async {
+    final store = container.read(careRepositoryProvider);
+    final id = store.missions('f-lan').first['id'] as String;
+    final options = await service().swapOptions(id);
+    expect(options.options, isEmpty);
+    expect(options.swapsLeft, 0);
+  });
+
+  test('CARE-06 cannot complete a fixture mission in server mode', () async {
+    final store = container.read(careRepositoryProvider);
+    final row = store.missions('f-lan').first;
+    final before = Map<String, dynamic>.from(row);
+    await expectLater(
+      service().completeMission(row['id'] as String),
+      throwsStateError,
+    );
+    expect(store.mission(row['id'] as String), before);
+  });
+
+  // BF-20261022-006: gia đình thật không thấy sự kiện / thống kê mẫu.
+  test('CAL-02 starts blank; CARE-11 stats come from the server', () async {
+    final care = service();
+    final draft = await care.eventDraft();
+    expect(draft.title, isEmpty);
+    expect(draft.note, isNull);
+    expect(draft.childIds, isEmpty);
+    expect(draft.participantUserIds, isEmpty);
+    expect(draft.date, container.read(appClockProvider).today);
+
+    // CARE-11 (BF-20261027-001): số liệu server, không phải số liệu mẫu.
+    final stats = await care.careStats(
+      weekStart: DateTime(2026, 10, 19),
+      childId: 'srv-kid',
+    );
+    expect(remote.statsCalls.single, 'srv-family:2026-10-19:srv-kid');
+    expect(stats?.total, 4);
+    expect(stats?.categories.map((c) => c.code), ['CARE', 'BONDING']);
+    // Mất mạng: bản đọc gần nhất cùng tuần / bé.
+    remote.offline = true;
+    final cached = await care.careStats(
+      weekStart: DateTime(2026, 10, 19),
+      childId: 'srv-kid',
+    );
+    expect(cached?.total, 4);
+  });
+
   test(
     'CARE-01: the board comes from the server, partner without Hearts',
     () async {
@@ -413,10 +546,10 @@ void main() {
       await care.board(date: DateTime(2026, 10, 10));
       final revision = container.read(mockStoreProvider).revision;
       remote.failComplete = true;
-      await expectLater(
-        care.completeMission('m-mine'),
-        throwsA(isA<DioException>()),
-      );
+      // Mất mạng: xong ngay trên máy, chờ gửi (offline-first).
+      final offline = await care.completeMission('m-mine');
+      expect(offline.mission.isDone, isTrue);
+      expect(offline.heartsEarned, 0);
       final done = await care.completeMission('m-mine');
       expect(remote.keys, hasLength(2));
       expect(remote.keys.first, remote.keys.last);
@@ -437,6 +570,68 @@ void main() {
       ]);
     },
   );
+
+  // BF-20261023-001: mất mạng khi chưa từng đọc cây → không số tuần mẫu.
+  test(
+    'CARE-09 offline without a saved tree has no sample week stats',
+    () async {
+      remote.offline = true;
+      final tree = await (service()..localDb = FakeLocalDb()).tree();
+      expect(tree.weekCareMoments, 0);
+      expect(tree.weekTogether, 0);
+      expect(tree.weekBloomDays, 0);
+    },
+  );
+
+  test('offline-first: the board opens offline and a completion is sent once '
+      'after a restart', () async {
+    final outbox = FakeOutbox();
+    final db = FakeLocalDb();
+    final day = DateTime(2026, 10, 10);
+    final first = service()
+      ..outbox = outbox
+      ..localDb = db;
+    await first.board(date: day);
+    await first.tree();
+    expect(db.table('srv-family', 'careBoards'), hasLength(1));
+
+    // Mở lại app khi mất mạng: bảng đã lưu, vẫn hoàn thành được.
+    remote.offline = true;
+    final offlineCare = service()
+      ..outbox = outbox
+      ..localDb = db;
+    final board = await offlineCare.board(date: day);
+    expect(board.mine.single.id, 'm-mine');
+    expect(board.heartsToday, 7);
+    final done = await offlineCare.completeMission('m-mine');
+    expect(done.mission.isDone, isTrue);
+    // Hearts do server cộng sau: màn báo “sẽ cộng khi có mạng”.
+    expect(done.pendingSync, isTrue);
+    // Cây gia đình khi mất mạng: bản đã lưu ở lần đọc trước khi tắt app.
+    expect((await offlineCare.tree()).level, 3);
+    expect((await offlineCare.board(date: day)).mine.single.isDone, isTrue);
+    // Chi tiết nhiệm vụ khi mất mạng: bản trên bảng, đã xong.
+    expect((await offlineCare.mission('m-mine'))?.isDone, isTrue);
+    expect(outbox.entries.single.kind, 'mission.complete');
+    final key = remote.keys.single;
+
+    // Mở lại app khi có mạng: gửi đúng một lần, cùng Idempotency-Key.
+    remote.offline = false;
+    final online = service()
+      ..outbox = outbox
+      ..localDb = db;
+    await online.syncPending();
+    await online.board(date: day);
+    expect(outbox.entries, isEmpty);
+    expect(remote.keys, [key, key]);
+
+    // Hoàn tác khi còn chờ gửi: chỉ bỏ khỏi hàng đợi, không gọi server.
+    remote.offline = true;
+    await online.completeMission('m-mine');
+    await online.undoCompletion('m-mine');
+    expect(outbox.entries, isEmpty);
+    expect(remote.actions, isEmpty);
+  });
 
   test(
     'CARE-03: only ME or TOGETHER missions are created on the server',

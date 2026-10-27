@@ -1,3 +1,4 @@
+import 'package:baby_family/data/model/sync/change_item.dart';
 import 'package:baby_family/data/remote/request_options.dart';
 import 'package:baby_family/utils/constants/server.dart';
 import 'package:dio/dio.dart';
@@ -231,6 +232,61 @@ sealed class AppClient {
     @Query('limit') int? limit,
   });
 
+  /// Offline-first: ký ức / bình luận / cảm xúc đổi sau [cursor] (không bọc
+  /// `{data}`).
+  @GET(Api.familyChanges)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<ChangesPage> getChanges(
+    @Path('familyId') String familyId, {
+    @Query('cursor') String? cursor,
+    @Query('limit') int? limit,
+  });
+
+  /// PREG-07: tên dự định của thai kỳ (chỉ Papa & Mama).
+  @GET(Api.pregnancyNames)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<PregnancyNamesRespond> getPregnancyNames(
+    @Path('pregnancyId') String pregnancyId,
+  );
+
+  @POST(Api.pregnancyNames)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<PregnancyNameRespond> addPregnancyName(
+    @Path('pregnancyId') String pregnancyId,
+    @Body() Map<String, dynamic> body,
+  );
+
+  @PUT(Api.pregnancyNameLike)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<PregnancyNameRespond> likePregnancyName(@Path('nameId') String nameId);
+
+  @DELETE(Api.pregnancyNameLike)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<PregnancyNameRespond> unlikePregnancyName(
+    @Path('nameId') String nameId,
+  );
+
+  @POST(Api.pregnancyNameChoose)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<PregnancyNameRespond> choosePregnancyName(
+    @Path('nameId') String nameId,
+  );
+
+  @DELETE(Api.pregnancyNameChoose)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<PregnancyNameRespond> unchoosePregnancyName(
+    @Path('nameId') String nameId,
+  );
+
+  /// CARE-11: `weekStart` = thứ Hai (YYYY-MM-DD); `childId` lọc theo bé.
+  @GET(Api.familyCareStats)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<CareStatsRespond> getCareStats(
+    @Path('familyId') String familyId, {
+    @Query('weekStart') String? weekStart,
+    @Query('childId') String? childId,
+  });
+
   /// MEM-09: sửa ký ức, `If-Match` = `version` hiện tại (412 khi đã cũ).
   @PATCH(Api.memory)
   @Extra({RequestOptionsExtra.requiresAuth: true})
@@ -271,8 +327,9 @@ sealed class AppClient {
   @Extra({RequestOptionsExtra.requiresAuth: true})
   Future<CommentRecordRespond> addComment(
     @Path('memoryId') String memoryId,
-    @Body() Map<String, dynamic> body,
-  );
+    @Body() Map<String, dynamic> body, {
+    @Header('Idempotency-Key') String? idempotencyKey,
+  });
 
   /// Sửa bình luận của mình trong 15 phút.
   @PATCH(Api.comment)
@@ -291,12 +348,16 @@ sealed class AppClient {
   @Extra({RequestOptionsExtra.requiresAuth: true})
   Future<ReactionStateRespond> setReaction(
     @Path('memoryId') String memoryId,
-    @Body() Map<String, dynamic> body,
-  );
+    @Body() Map<String, dynamic> body, {
+    @Header('Idempotency-Key') String? idempotencyKey,
+  });
 
   @DELETE(Api.memoryReaction)
   @Extra({RequestOptionsExtra.requiresAuth: true})
-  Future<ReactionStateRespond> clearReaction(@Path('memoryId') String memoryId);
+  Future<ReactionStateRespond> clearReaction(
+    @Path('memoryId') String memoryId, {
+    @Header('Idempotency-Key') String? idempotencyKey,
+  });
 
   /// NOTI-01: hộp thông báo của chính tôi (`tab` = FAMILY|US), mới nhất trước.
   @GET(Api.notifications)
@@ -408,8 +469,9 @@ sealed class AppClient {
   @Extra({RequestOptionsExtra.requiresAuth: true})
   Future<CheckinRecordRespond> createCheckin(
     @Path('familyId') String familyId,
-    @Body() Map<String, dynamic> body,
-  );
+    @Body() Map<String, dynamic> body, {
+    @Header('Idempotency-Key') String? idempotencyKey,
+  });
 
   /// US-01: check-in còn hiệu lực của tôi và của bạn đời (đã lọc phần chia sẻ).
   @GET(Api.coupleCheckinsToday)
@@ -423,8 +485,9 @@ sealed class AppClient {
   @Extra({RequestOptionsExtra.requiresAuth: true})
   Future<AppreciationRecordRespond> createAppreciation(
     @Path('familyId') String familyId,
-    @Body() Map<String, dynamic> body,
-  );
+    @Body() Map<String, dynamic> body, {
+    @Header('Idempotency-Key') String? idempotencyKey,
+  });
 
   /// US-06: bức tường cảm ơn hai chiều, mới nhất trước.
   @GET(Api.coupleAppreciations)
@@ -457,8 +520,9 @@ sealed class AppClient {
   @Extra({RequestOptionsExtra.requiresAuth: true})
   Future<JournalEntryRespond> createJournalEntry(
     @Path('familyId') String familyId,
-    @Body() Map<String, dynamic> body,
-  );
+    @Body() Map<String, dynamic> body, {
+    @Header('Idempotency-Key') String? idempotencyKey,
+  });
 
   /// “Chia sẻ đoạn này với bạn đời” — `excerpt` nằm nguyên văn trong bài.
   @POST(Api.coupleJournalShare)

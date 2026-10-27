@@ -12,8 +12,8 @@ Tạo 2026-10-18 (BF-20261018-001). Nguồn: [đặc tả nghiệp vụ](01_DAC_
 
 ## Tiến độ
 
-- Tổng: 142 / 165 dòng đã xong (riêng MVP: 142 / 153).
-- Đang làm: —. Xong gần nhất: BF-20261021-008 — media do client nén/tạo biến thể, server chỉ cấp phiên presigned + HEAD kiểm khi complete; app hiển thị ảnh/video còn trong thư viện máy trước. Thiết kế offline-first: `docs/04_THIET_KE_OFFLINE_FIRST.md` (chưa triển khai)
+- Tổng: 144 / 166 dòng đã xong (riêng MVP: 142 / 154).
+- Đang làm: —. Xong gần nhất: BF-20261027-001 — PREG-07 Đặt tên cho con, CARE-11 Thống kê chăm con (backend + app). Tiếp theo (1.1 còn lại): US-14 Tuần của hai ta, Câu hỏi kết nối, REC-03 Tháng tuổi, Bàn giao ca; MVP còn lại cần cấu hình Store / Apple / Google / staging
 - Thứ tự đề xuất tiếp theo (MVP, theo vòng lặp Ký ức → Gia đình → Nhiệm vụ):
   1. Upload video, ghi âm, multipart trên app (MEM-04/06).
   2. Timeline + lưới ảnh + lọc theo bé (MEM-01/02).
@@ -34,6 +34,7 @@ Tạo 2026-10-18 (BF-20261018-001). Nguồn: [đặc tả nghiệp vụ](01_DAC_
 - [x] App Flutter: kiến trúc Page → Controller → Service → Repository, l10n vi/en, Design System (2026-10-07)
 - [x] Outbox relay → consumer (thông báo, feed, Hearts) — BE ✅ (rà toàn bộ event: route chính/bổ sung + danh sách “không cần consumer” có lý do, Hearts ký ức/góc nhìn qua `care.award-badges`, email giao dịch; feed đọc trực tiếp PostgreSQL nên không cần consumer, `docs/outbox.md`, BF-20261021-002)
 - [ ] CI build/test tự động — 🟡 (`backend-ci.yml` + `app-ci.yml` (Flutter: format, codegen, analyze, test), BF-20261021-001, Codex; chưa chạy trên GitHub Actions)
+- [ ] Offline-first: ghi trên máy trước, đồng bộ khi có mạng (`docs/04_THIET_KE_OFFLINE_FIRST.md`) — BE 🟡 (Idempotency-Key cho các lệnh xếp hàng được, `GET /families/:id/changes` cho ký ức/bình luận/cảm xúc, BF-20261022-001, Codex) · App 🟡 (outbox bền vững cho tạo ký ức: hiện ngay khi mất mạng, tự gửi khi có mạng, không trùng sau khi tắt app, BF-20261022-001; `OutboxRunner` chung cho bình luận, cảm xúc, hoàn thành nhiệm vụ + bảng nhiệm vụ mở được khi offline; kéo changes API: gỡ ký ức đã xoá, đọc lại ký ức đổi, cập nhật bình luận, BF-20261022-002; local DB bền vững (Hive mã hoá theo dòng) cho ký ức + bình luận, mở app offline có dữ liệu, chịu được server đổi/thêm field, BF-20261022-003; local DB bảng chung cho bảng nhiệm vụ và Papa & Mama (check-in, lời nhờ, cảm ơn, nhật ký riêng: đọc offline + tạo qua outbox), BF-20261022-004; thử thật Android + backend thật: tạo offline → mở lạnh offline → có mạng tự gửi đúng một lần, sửa 5 lỗi, BF-20261022-005; màn phụ (lịch sử, huy hiệu, thông báo, cài đặt, album…) dùng bản đọc gần nhất khi mất mạng, BF-20261026-007; chưa có: sửa ký ức, thao tác lời nhờ, tạo/đổi nhiệm vụ khi offline; chưa thử iOS (Flutter 3.44.5 không build được với Xcode 27.1))
 - [ ] Môi trường staging + deploy — ❌
 - [ ] Logging/monitoring production, cảnh báo sự cố — BE 🟡 (log JSON có cấu trúc, `/metrics` Prometheus có token, hook báo lỗi, `docs/observability.md`, BF-20261021-001, Codex; chưa nối Sentry/cảnh báo thật, worker chưa áp)
 
@@ -76,7 +77,7 @@ Tạo 2026-10-18 (BF-20261018-001). Nguồn: [đặc tả nghiệp vụ](01_DAC_
 - [x] PREG-04 Chuẩn bị đón bé (danh sách chuẩn bị) — UI ✅ · BE ✅ (`/prep-items`, mặc định từ catalog, BF-20261019-001) · App ✅ (người phụ trách/“Đã nhờ” còn trên máy, BF-20261019-001)
 - [x] PREG-05 Bé đã chào đời (birth conversion, sinh đôi) — UI ✅ · BE ✅ (`/birth` idempotent, sinh đôi, BF-20261019-001) · App ✅ (form một bé, BF-20261019-001)
 - [x] PREG-06 Lưu trữ thai kỳ (nhạy cảm) — UI ✅ · BE ✅ (`ENDED_PRIVATE` ẩn khỏi Circle, BF-20261019-001) · App ✅ (BF-20261019-001)
-- [ ] PREG-07 Đặt tên cho con — **1.1** — UI ✅ · BE ❌ · App ❌
+- [x] PREG-07 Đặt tên cho con — **1.1** — UI ✅ · BE ✅ (tên dự định mã hoá, thích theo người, chọn tối đa theo số bé dự kiến + cột mốc `name_chosen`, chỉ Papa & Mama, BF-20261027-001, Codex) · App ✅ (danh sách / thêm / thích / chọn – bỏ chọn qua API, BF-20261027-001)
 
 ## 5. Hồ sơ bé & nhiều bé (§7.7, §9.6)
 
@@ -151,7 +152,7 @@ Tạo 2026-10-18 (BF-20261018-001). Nguồn: [đặc tả nghiệp vụ](01_DAC_
 - [x] Hearts riêng tư (ledger, giới hạn/ngày) — UI ✅ · BE ✅ (`/hearts/me`, BF-20261018-009) · App ✅ (BF-20261018-012)
 - [x] CARE-09 Cây gia đình (cấp + %) — UI ✅ · BE ✅ (BF-20261018-009) · App ✅ (BF-20261018-012; số liệu tuần chưa có API → 0)
 - [x] CARE-10 Huy hiệu — UI ✅ · BE ✅ (tính khi đọc BF-20261018-009; worker trao huy hiệu + thông báo BF-20261018-014, Codex) · App ✅ (BF-20261018-012/014)
-- [ ] CARE-11 Thống kê chăm con — **1.1** — UI ✅ · BE ❌ · App ❌
+- [x] CARE-11 Thống kê chăm con — **1.1** — UI ✅ · BE ✅ (`GET /families/:id/care-stats`: theo category / tuần / bé, ngày cây nở hoa, không chia theo người, bỏ COUPLE, feature `care.statistics`, BF-20261027-001, Codex) · App ✅ (đổi tuần, đổi bé, bản đọc gần nhất khi mất mạng, BF-20261027-001)
 
 ## 11. Papa & Mama Space (§7.16, §9.8)
 

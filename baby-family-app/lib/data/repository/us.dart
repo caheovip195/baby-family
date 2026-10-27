@@ -14,11 +14,16 @@ abstract class IUsRepository extends IBaseRepository {
 
   JsonMap addRequest(JsonMap request);
 
+  /// Bỏ bản tạm (offline-first) khi server đã nhận / từ chối.
+  void removeRequest(String id);
+
   void updateRequest(String id, JsonMap patch);
 
   List<JsonMap> thanks(String familyId);
 
   JsonMap addThanks(JsonMap thanks);
+
+  void removeThanks(String id);
 
   /// Câu hỏi kết nối (đã dịch) — `index` theo ngày.
   List<String> dailyQuestions();
@@ -33,6 +38,8 @@ abstract class IUsRepository extends IBaseRepository {
   List<JsonMap> journal(String userId);
 
   JsonMap addJournal(JsonMap entry);
+
+  void removeJournal(String id);
 
   void updateJournal(String id, JsonMap patch);
 

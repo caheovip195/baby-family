@@ -922,6 +922,242 @@ class _AppClient implements AppClient {
   }
 
   @override
+  Future<ChangesPage> getChanges(
+    String familyId, {
+    String? cursor,
+    int? limit,
+  }) async {
+    final _extra = <String, dynamic>{'requires_auth': true};
+    final queryParameters = <String, dynamic>{
+      r'cursor': cursor,
+      r'limit': limit,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<ChangesPage>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/v1/families/${familyId}/changes',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late ChangesPage _value;
+    try {
+      _value = ChangesPage.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<PregnancyNamesRespond> getPregnancyNames(String pregnancyId) async {
+    final _extra = <String, dynamic>{'requires_auth': true};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<PregnancyNamesRespond>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/v1/pregnancies/${pregnancyId}/names',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late PregnancyNamesRespond _value;
+    try {
+      _value = PregnancyNamesRespond.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<PregnancyNameRespond> addPregnancyName(
+    String pregnancyId,
+    Map<String, dynamic> body,
+  ) async {
+    final _extra = <String, dynamic>{'requires_auth': true};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(body);
+    final _options = _setStreamType<PregnancyNameRespond>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/v1/pregnancies/${pregnancyId}/names',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late PregnancyNameRespond _value;
+    try {
+      _value = PregnancyNameRespond.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<PregnancyNameRespond> likePregnancyName(String nameId) async {
+    final _extra = <String, dynamic>{'requires_auth': true};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<PregnancyNameRespond>(
+      Options(method: 'PUT', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/v1/pregnancy-names/${nameId}/like',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late PregnancyNameRespond _value;
+    try {
+      _value = PregnancyNameRespond.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<PregnancyNameRespond> unlikePregnancyName(String nameId) async {
+    final _extra = <String, dynamic>{'requires_auth': true};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<PregnancyNameRespond>(
+      Options(method: 'DELETE', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/v1/pregnancy-names/${nameId}/like',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late PregnancyNameRespond _value;
+    try {
+      _value = PregnancyNameRespond.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<PregnancyNameRespond> choosePregnancyName(String nameId) async {
+    final _extra = <String, dynamic>{'requires_auth': true};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<PregnancyNameRespond>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/v1/pregnancy-names/${nameId}/choose',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late PregnancyNameRespond _value;
+    try {
+      _value = PregnancyNameRespond.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<PregnancyNameRespond> unchoosePregnancyName(String nameId) async {
+    final _extra = <String, dynamic>{'requires_auth': true};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<PregnancyNameRespond>(
+      Options(method: 'DELETE', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/v1/pregnancy-names/${nameId}/choose',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late PregnancyNameRespond _value;
+    try {
+      _value = PregnancyNameRespond.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<CareStatsRespond> getCareStats(
+    String familyId, {
+    String? weekStart,
+    String? childId,
+  }) async {
+    final _extra = <String, dynamic>{'requires_auth': true};
+    final queryParameters = <String, dynamic>{
+      r'weekStart': weekStart,
+      r'childId': childId,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<CareStatsRespond>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/v1/families/${familyId}/care-stats',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late CareStatsRespond _value;
+    try {
+      _value = CareStatsRespond.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<MemoryRecordRespond> updateMemory(
     String memoryId,
     String version,
@@ -1064,11 +1300,14 @@ class _AppClient implements AppClient {
   @override
   Future<CommentRecordRespond> addComment(
     String memoryId,
-    Map<String, dynamic> body,
-  ) async {
+    Map<String, dynamic> body, {
+    String? idempotencyKey,
+  }) async {
     final _extra = <String, dynamic>{'requires_auth': true};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{r'Idempotency-Key': idempotencyKey};
+    _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     _data.addAll(body);
     final _options = _setStreamType<CommentRecordRespond>(
@@ -1145,11 +1384,14 @@ class _AppClient implements AppClient {
   @override
   Future<ReactionStateRespond> setReaction(
     String memoryId,
-    Map<String, dynamic> body,
-  ) async {
+    Map<String, dynamic> body, {
+    String? idempotencyKey,
+  }) async {
     final _extra = <String, dynamic>{'requires_auth': true};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{r'Idempotency-Key': idempotencyKey};
+    _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     _data.addAll(body);
     final _options = _setStreamType<ReactionStateRespond>(
@@ -1174,10 +1416,15 @@ class _AppClient implements AppClient {
   }
 
   @override
-  Future<ReactionStateRespond> clearReaction(String memoryId) async {
+  Future<ReactionStateRespond> clearReaction(
+    String memoryId, {
+    String? idempotencyKey,
+  }) async {
     final _extra = <String, dynamic>{'requires_auth': true};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{r'Idempotency-Key': idempotencyKey};
+    _headers.removeWhere((k, v) => v == null);
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<ReactionStateRespond>(
       Options(method: 'DELETE', headers: _headers, extra: _extra)
@@ -1634,11 +1881,14 @@ class _AppClient implements AppClient {
   @override
   Future<CheckinRecordRespond> createCheckin(
     String familyId,
-    Map<String, dynamic> body,
-  ) async {
+    Map<String, dynamic> body, {
+    String? idempotencyKey,
+  }) async {
     final _extra = <String, dynamic>{'requires_auth': true};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{r'Idempotency-Key': idempotencyKey};
+    _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     _data.addAll(body);
     final _options = _setStreamType<CheckinRecordRespond>(
@@ -1692,11 +1942,14 @@ class _AppClient implements AppClient {
   @override
   Future<AppreciationRecordRespond> createAppreciation(
     String familyId,
-    Map<String, dynamic> body,
-  ) async {
+    Map<String, dynamic> body, {
+    String? idempotencyKey,
+  }) async {
     final _extra = <String, dynamic>{'requires_auth': true};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{r'Idempotency-Key': idempotencyKey};
+    _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     _data.addAll(body);
     final _options = _setStreamType<AppreciationRecordRespond>(
@@ -1827,11 +2080,14 @@ class _AppClient implements AppClient {
   @override
   Future<JournalEntryRespond> createJournalEntry(
     String familyId,
-    Map<String, dynamic> body,
-  ) async {
+    Map<String, dynamic> body, {
+    String? idempotencyKey,
+  }) async {
     final _extra = <String, dynamic>{'requires_auth': true};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{r'Idempotency-Key': idempotencyKey};
+    _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     _data.addAll(body);
     final _options = _setStreamType<JournalEntryRespond>(

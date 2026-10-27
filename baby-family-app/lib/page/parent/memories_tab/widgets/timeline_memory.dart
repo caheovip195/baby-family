@@ -28,6 +28,7 @@ class _TimelineMemory extends StatelessWidget {
         done: memory.uploadDone ?? 0,
         total: total,
         failed: memory.uploadFailed,
+        waiting: memory.uploadWaiting,
         onRetry: () => controller.retryUpload(memory.id),
         onCancel: () => controller.cancelUpload(memory.id),
       );

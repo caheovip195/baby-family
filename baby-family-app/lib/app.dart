@@ -2,7 +2,12 @@ import 'dart:async';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/data/provider/app_setting.dart';
+import 'package:baby_family/data/provider/care.dart';
+import 'package:baby_family/data/provider/connectivity.dart';
+import 'package:baby_family/data/provider/memory.dart';
 import 'package:baby_family/data/provider/push.dart';
+import 'package:baby_family/data/provider/session.dart';
+import 'package:baby_family/data/provider/us.dart';
 import 'package:baby_family/generated/l10n/app_localizations.dart';
 import 'package:baby_family/page/application_base.dart';
 import 'package:baby_family/utils/helper/broadcast_manager.dart';
@@ -31,6 +36,24 @@ class RootApp extends BaseHookWidget {
         BroadcastManager().close();
       };
     }, []);
+
+    // App vào nền: lưu bản chụp phiên / gia đình / bé để mở app lúc mất mạng
+    // đúng trạng thái mới nhất (BF-20261022-005).
+    useOnAppLifecycleStateChange((previous, state) {
+      if (state == AppLifecycleState.paused ||
+          state == AppLifecycleState.hidden) {
+        unawaited(ref.read(sessionServiceProvider).persistOffline());
+      }
+    });
+
+    // Offline-first (BF-20261022-001): có mạng lại → gửi các ký ức đang chờ.
+    ref.listen(isOfflineProvider, (previous, next) {
+      if (previous?.value == true && next.value == false) {
+        unawaited(ref.read(memoryServiceProvider).syncPending());
+        unawaited(ref.read(careServiceProvider).syncPending());
+        unawaited(ref.read(usServiceProvider).syncPending());
+      }
+    });
 
     final language = ref.watch(appLanguageProvider);
     final appearance = ref.watch(appAppearanceProvider);

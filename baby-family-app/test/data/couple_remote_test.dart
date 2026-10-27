@@ -8,6 +8,7 @@ import 'package:baby_family/data/model/us/appreciation_record.dart';
 import 'package:baby_family/data/model/us/appreciation_wall.dart';
 import 'package:baby_family/data/model/us/checkin_record.dart';
 import 'package:baby_family/data/model/us/checkin_today.dart';
+import 'package:baby_family/data/model/us/couple_request.dart';
 import 'package:baby_family/data/model/us/journal_entry_record.dart';
 import 'package:baby_family/data/model/us/journal_list.dart';
 import 'package:baby_family/data/model/us/request_created.dart';
@@ -31,6 +32,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../helpers/design_qa.dart';
+import '../helpers/fake_local_db.dart';
+import '../helpers/fake_outbox.dart';
 
 /// Kho media giả: ghi lại mục đích của ảnh tải lên.
 class _FakeMedia extends Fake implements IMediaRepository {
@@ -93,11 +96,33 @@ class _FakeCouple implements ICoupleRemoteRepository {
   final keys = <String>[];
   final actions = <String>[];
   CheckinToday today = const CheckinToday();
+
+  /// Mất mạng (không có response) cho mọi lệnh tạo và lần đọc.
+  bool offline = false;
+  int? rejectWith;
+  final createKeys = <String?>[];
   List<RequestRecord> page = const [];
   bool failNext = false;
 
   @override
-  Future<CheckinRecord?> createCheckin(String familyId, JsonMap body) async {
+  Future<CheckinRecord?> createCheckin(
+    String familyId,
+    JsonMap body, {
+    String? idempotencyKey,
+  }) async {
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/checkins'));
+    }
+    final status = rejectWith;
+    if (status != null) {
+      rejectWith = null;
+      final options = RequestOptions(path: '/checkins');
+      throw DioException(
+        requestOptions: options,
+        response: Response(requestOptions: options, statusCode: status),
+      );
+    }
+    createKeys.add(idempotencyKey);
     checkins.add(body);
     return CheckinRecord(
       id: 'srv-checkin-${checkins.length}',
@@ -111,7 +136,12 @@ class _FakeCouple implements ICoupleRemoteRepository {
   }
 
   @override
-  Future<CheckinToday?> checkinsToday(String familyId) async => today;
+  Future<CheckinToday?> checkinsToday(String familyId) async {
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/today'));
+    }
+    return today;
+  }
 
   @override
   Future<RequestCreated?> createRequest(
@@ -147,7 +177,12 @@ class _FakeCouple implements ICoupleRemoteRepository {
     String? box,
     String? cursor,
     int? limit,
-  }) async => RequestList(items: page);
+  }) async {
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/requests'));
+    }
+    return RequestList(items: page);
+  }
 
   final appreciationBodies = <JsonMap>[];
   final reactions = <String>[];
@@ -159,8 +194,13 @@ class _FakeCouple implements ICoupleRemoteRepository {
   @override
   Future<AppreciationRecord?> createAppreciation(
     String familyId,
-    JsonMap body,
-  ) async {
+    JsonMap body, {
+    String? idempotencyKey,
+  }) async {
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/thanks'));
+    }
+    createKeys.add(idempotencyKey);
     appreciationBodies.add(body);
     return AppreciationRecord(
       id: 'srv-thanks-${appreciationBodies.length}',
@@ -181,7 +221,12 @@ class _FakeCouple implements ICoupleRemoteRepository {
     String? cursor,
     int? limit,
     String? month,
-  }) async => AppreciationWall(items: wall);
+  }) async {
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/wall'));
+    }
+    return AppreciationWall(items: wall);
+  }
 
   @override
   Future<AppreciationRecord?> reactAppreciation(
@@ -200,7 +245,12 @@ class _FakeCouple implements ICoupleRemoteRepository {
     String familyId, {
     String? cursor,
     int? limit,
-  }) async => JournalList(items: entries);
+  }) async {
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/journal'));
+    }
+    return JournalList(items: entries);
+  }
 
   final shareRequests = <String>[];
   final usPatches = <JsonMap>[];
@@ -238,8 +288,13 @@ class _FakeCouple implements ICoupleRemoteRepository {
   @override
   Future<JournalEntryRecord?> createJournalEntry(
     String familyId,
-    JsonMap body,
-  ) async {
+    JsonMap body, {
+    String? idempotencyKey,
+  }) async {
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/journal'));
+    }
+    createKeys.add(idempotencyKey);
     journalBodies.add(body);
     return JournalEntryRecord(
       id: 'srv-journal-${journalBodies.length}',
@@ -312,6 +367,153 @@ void main() {
     uploader: MediaUploader(media),
   );
 
+  // BF-20261023-001: liên kết theo id không đọc fixture của gia đình khác.
+  test(
+    'US-04 stale request id does not resolve a sample family request',
+    () async {
+      final session = container.read(sessionRepositoryProvider);
+      session.patchSession({'familyId': 'real-family'});
+      final us = service();
+      expect(await us.request('rq-1'), isNull);
+      final store = container.read(usRepositoryProvider);
+      final own = store.addRequest({
+        ...store.request('rq-1')!,
+        'id': 'real-request',
+        'familyId': 'real-family',
+        'title': 'Real request',
+      });
+      expect((await us.request(own['id'] as String))?.title, 'Real request');
+      session.patchSession({kValueSessionKeyServerFamilyId: null});
+      expect(await us.request('rq-1'), isNotNull);
+    },
+  );
+
+  test('US bridge detail ignores a sample session from a stale link', () async {
+    final session = container.read(sessionRepositoryProvider);
+    session.patchSession({'familyId': 'real-family'});
+    final us = service();
+    expect(await us.bridgeSession('br-1'), isNull);
+    final store = container.read(usRepositoryProvider);
+    store.addBridgeSession({
+      ...store.bridgeSession('br-1')!,
+      'id': 'real-bridge',
+      'familyId': 'real-family',
+    });
+    expect((await us.bridgeSession('real-bridge'))?.id, 'real-bridge');
+    session.patchSession({kValueSessionKeyServerFamilyId: null});
+    expect(await us.bridgeSession('br-1'), isNotNull);
+  });
+
+  // BF-20261022-006: chưa có API → trạng thái rỗng, không nội dung mẫu.
+  test('US week recap and bridge rewrite have no sample content', () async {
+    final us = service();
+    expect(await us.coupleWeek(), isNull);
+    expect(await us.rewriteSuggestion(), isNull);
+  });
+
+  test(
+    'offline-first: Papa & Mama opens offline after a restart and items made '
+    'offline are sent once when back online',
+    () async {
+      final outbox = FakeOutbox();
+      final db = FakeLocalDb();
+      final store = container.read(usRepositoryProvider);
+      remote.wall = [
+        AppreciationRecord(
+          id: 'srv-t1',
+          fromUserId: 'srv-partner',
+          toUserId: 'srv-me',
+          body: 'Cảm ơn em',
+          createdAt: DateTime.utc(2026, 10, 9),
+        ),
+      ];
+      remote.entries = [
+        JournalEntryRecord(
+          id: 'srv-j1',
+          title: 'Mệt',
+          body: 'Hôm nay mệt',
+          mood: 'TIRED',
+          createdAt: DateTime.utc(2026, 10, 9),
+        ),
+      ];
+      final first = service()
+        ..outbox = outbox
+        ..localDb = db;
+      await first.thanks();
+      await first.journal();
+      await first.flushLocalDb();
+      expect(db.table('srv-family', 'thanks').keys, ['srv-t1']);
+      expect(db.table('srv-family', 'journal').keys, ['srv-j1']);
+      // Dòng lưu từ bản app khác không đọc được: bỏ, không crash.
+      db.table('srv-family', 'thanks')['bad'] = {'id': 'bad', 'body': 42};
+
+      // Tắt app (kho trong RAM mất), mở lại khi mất mạng.
+      store
+        ..removeThanks('srv-t1')
+        ..removeJournal('srv-j1');
+      remote.offline = true;
+      final second = service()
+        ..outbox = outbox
+        ..localDb = db;
+      final wall = await second.thanks();
+      expect(wall.map((t) => t.id), contains('srv-t1'));
+      expect(wall.map((t) => t.id), isNot(contains('bad')));
+      expect(db.table('srv-family', 'thanks').containsKey('bad'), isFalse);
+      expect((await second.journal()).map((j) => j.id), contains('srv-j1'));
+
+      final checkin = await second.checkIn(mood: MoodCode.tired);
+      final thanks = await second.sendThanks(body: 'Cảm ơn anh');
+      final entry = await second.addJournalEntry(
+        mood: JournalMood.calm,
+        title: 'Hôm nay',
+      );
+      expect(outbox.entries.map((e) => e.kind), [
+        'us.checkin',
+        'us.thanks',
+        'us.journal',
+      ]);
+      expect((await second.thanks()).map((t) => t.id), contains(thanks.id));
+
+      // Mở lại app khi có mạng: bản tạm hiện lại rồi được gửi đúng một lần.
+      store
+        ..removeCheckin(checkin.id)
+        ..removeThanks(thanks.id)
+        ..removeJournal(entry.id);
+      remote.offline = false;
+      final third = service()
+        ..outbox = outbox
+        ..localDb = db;
+      await third.thanks();
+      await third.outboxSettled;
+      expect(outbox.entries, isEmpty);
+      expect(remote.checkins, hasLength(1));
+      expect(remote.appreciationBodies.single['body'], 'Cảm ơn anh');
+      expect(remote.journalBodies.single['title'], 'Hôm nay');
+      expect(remote.createKeys, hasLength(3));
+      expect(remote.createKeys.toSet(), hasLength(3));
+      final journal = await third.journal();
+      expect(journal.map((j) => j.id), isNot(contains(entry.id)));
+    },
+  );
+
+  test('offline-first: a refused check-in shows the server error', () async {
+    final outbox = FakeOutbox();
+    final us = service()..outbox = outbox;
+    final store = container.read(usRepositoryProvider);
+    final familyId =
+        container.read(sessionRepositoryProvider).session()['familyId']
+            as String;
+    final before = store.checkins(familyId).length;
+    remote.rejectWith = 422;
+    await expectLater(
+      us.checkIn(mood: MoodCode.tired),
+      throwsA(isA<DioException>()),
+    );
+    // Bản tạm bị bỏ, không còn trong hàng đợi.
+    expect(outbox.entries, isEmpty);
+    expect(store.checkins(familyId), hasLength(before));
+  });
+
   test(
     'US-02: a check-in is sent with server codes, note never shared by default',
     () async {
@@ -373,7 +575,7 @@ void main() {
       final us = service();
       final clock = container.read(appClockProvider);
       final at = clock.now().add(const Duration(hours: 1));
-      Future<void> send() => us.sendRequest(
+      Future<CoupleRequest> send() => us.sendRequest(
         title: 'Tắm cho bé',
         message: 'Tối nay nhé',
         dueLabel: 'at',
@@ -382,8 +584,12 @@ void main() {
         urgency: RequestUrgency.soon,
       );
       remote.failNext = true;
-      await expectLater(send(), throwsA(isA<DioException>()));
-      await send();
+      // Mất mạng: lời nhờ hiện ngay trên máy, tự gửi lại (cùng key).
+      final pending = await send();
+      expect(pending.status, RequestStatus.sent);
+      await us.syncPending();
+      await us.outboxSettled;
+      expect(container.read(usRepositoryProvider).request(pending.id), isNull);
       expect(remote.keys, hasLength(2));
       expect(remote.keys.first, remote.keys.last);
       final body = remote.requestBodies.single;

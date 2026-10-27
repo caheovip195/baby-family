@@ -70,6 +70,9 @@ class UsServiceImp extends MockServiceImp implements IUsService {
   }
 
   @override
+  Future<void> syncPending() async {}
+
+  @override
   Future<CoupleToday> coupleToday() async {
     await ready();
     final thanks = await this.thanks();

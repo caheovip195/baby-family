@@ -1,3 +1,9 @@
+import { ApiHeader } from '@nestjs/swagger';
+import { Optional } from '@nestjs/common';
+import { OptionalIdempotencyKey } from '../common/http/offline-idempotency-key.decorator';
+import { offlineCommand } from '../common/http/offline-command';
+import { OFFLINE_COMMAND_SERVICE } from '../interfaces/services/offline-command-service.interface';
+import type { IOfflineCommandService } from '../interfaces/services/offline-command-service.interface';
 import {
   Body,
   Controller,
@@ -25,6 +31,9 @@ export class MemoryPerspectiveContentController {
   constructor(
     @Inject(MEMORY_PERSPECTIVE_CONTENT_SERVICE)
     private readonly service: IMemoryPerspectiveContentService,
+    @Optional()
+    @Inject(OFFLINE_COMMAND_SERVICE)
+    private readonly offline?: IOfflineCommandService,
   ) {}
   @Get('perspectives')
   list(
@@ -34,12 +43,30 @@ export class MemoryPerspectiveContentController {
     return this.service.list(actor, memoryId);
   }
   @Put('perspective')
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    required: false,
+    description: 'Optional UUID; replay returns the original response.',
+  })
   put(
     @CurrentActor() actor: AuthPrincipal,
     @Param('memoryId', new ParseUUIDPipe()) memoryId: string,
     @Body() input: PutPerspectiveContentDto,
+    @OptionalIdempotencyKey() key?: string,
   ) {
-    return this.service.put(actor, memoryId, input);
+    return offlineCommand(
+      this.offline,
+      key,
+      {
+        operation: 'memory.perspective.put',
+        parentOnly: true,
+        actor,
+        memoryId,
+        body: input,
+      },
+      () => this.service.put(actor, memoryId, input),
+      () => this.service.list(actor, memoryId),
+    );
   }
   @Delete('perspective')
   @HttpCode(204)

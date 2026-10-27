@@ -614,6 +614,12 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get memUploadWaiting => '接続を待っています · 自動で投稿します';
+
+  @override
+  String get memPosting => '投稿中…';
+
+  @override
   String get memUploadFailed => 'アップロードが完了していません';
 
   @override
@@ -1281,6 +1287,13 @@ class AppLocalizationsJa extends AppLocalizations {
       'Papa または Mama に招待されると、孫の写真や初めての瞬間を見られます。';
 
   @override
+  String get circleAwaitingTitle => '招待を受け取りました';
+
+  @override
+  String get circleAwaitingSubtitle =>
+      'Papa または Mama がもう一度確認します。確認されると、孫の写真や初めての瞬間を見られます。';
+
+  @override
   String get circleAskInvite => '家族に招待をお願い';
 
   @override
@@ -1357,6 +1370,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get notificationsReadAll => 'すべて既読にする';
+
+  @override
+  String get notificationsEmpty => 'まだお知らせはありません';
+
+  @override
+  String get notificationsEmptyDescription => '新しい思い出、お願い、リマインダーがここに表示されます。';
 
   @override
   String get circleGreeting => '家族の大切な子どもたち';
@@ -1710,6 +1729,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String careCompleteHearts(int count) {
     return 'すばらしい！木に +$count 💗';
   }
+
+  @override
+  String get careCompletePendingSync => '完了！オンラインに戻ると 💗 が加算されます';
 
   @override
   String careCompleteHint(String title) {
@@ -2788,6 +2810,16 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String famInviteShareMessage(
+    String callName,
+    String children,
+    String code,
+    String link,
+  ) {
+    return '$callName、Baby Family で$childrenの写真や思い出を一緒に見ませんか？招待コード：$code · $link';
+  }
+
+  @override
   String subTrialLeft(int days) {
     return 'お試し残り$days日';
   }
@@ -3273,6 +3305,16 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String invInviterParentShort(String callName) {
+    return '$callNameがあなたを招待しました';
+  }
+
+  @override
+  String invInviterRelativeShort(String callName, String pronoun) {
+    return '$callNameが$pronounを孫の見守りに招待しました';
+  }
+
+  @override
   String invQuotedMessage(String message) {
     return '「$message」';
   }
@@ -3746,6 +3788,11 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String memCollMonthlyCount(int count, int total) {
+    return '$count/$total枚';
+  }
+
+  @override
   String memCollFirsts(int count) {
     return 'マイルストーン $count';
   }
@@ -3753,6 +3800,11 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String memCollQuotes(String name, int count) {
     return '$name · $count件';
+  }
+
+  @override
+  String memCollQuotesCount(int count) {
+    return '$count件';
   }
 
   @override
@@ -4370,6 +4422,15 @@ class AppLocalizationsJa extends AppLocalizations {
       'other': 'いっしょに',
     });
     return '$_temp0 · $time 完了';
+  }
+
+  @override
+  String careHistoryTogetherMissed(String couple) {
+    String _temp0 = intl.Intl.selectLogic(couple, {
+      'yes': 'ふたり',
+      'other': 'いっしょに',
+    });
+    return '$_temp0 · できなかった';
   }
 
   @override
@@ -5035,6 +5096,9 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get setDeviceInUseNoLocation => '使用中';
+
+  @override
   String setDeviceLastActive(String location, String time) {
     return '$location · $time';
   }
@@ -5438,6 +5502,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get memAlbumsFamily => 'わが家のアルバム';
+
+  @override
+  String get memAlbumsEmpty => 'まだアルバムはありません';
+
+  @override
+  String get memAlbumsEmptyDescription => '旅行や行事など、好きなテーマで思い出をまとめるアルバムを作りましょう。';
 
   @override
   String get memAlbumNew => '新しいアルバム';
@@ -6341,6 +6411,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get careStatsTitle => '統計';
+
+  @override
+  String get careStatsEmpty => '今週の統計はまだありません';
 
   @override
   String get memTrashTitle => 'ゴミ箱';

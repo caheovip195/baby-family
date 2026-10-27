@@ -1,6 +1,7 @@
 import 'package:baby_family/data/model/care/badge_record.dart';
 import 'package:baby_family/data/model/care/calendar_event_record.dart';
 import 'package:baby_family/data/model/care/calendar_record.dart';
+import 'package:baby_family/data/model/care/care_stats.dart';
 import 'package:baby_family/data/model/care/family_tree_record.dart';
 import 'package:baby_family/data/model/care/hearts_me_record.dart';
 import 'package:baby_family/data/model/care/mission_board_record.dart';
@@ -55,6 +56,13 @@ abstract class ICareRemoteRepository extends IBaseRepository {
   Future<HeartsMeRecord?> myHearts(String familyId, {int? limit});
 
   Future<FamilyTreeRecord?> familyTree(String familyId);
+
+  /// CARE-11: `GET /v1/families/{fid}/care-stats`.
+  Future<CareStats?> careStats(
+    String familyId, {
+    String? weekStart,
+    String? childId,
+  });
 
   Future<List<BadgeRecord>> badges(String familyId);
 

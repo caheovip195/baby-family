@@ -89,6 +89,8 @@ class MemoryQuoteController extends BaseNotifier {
             : quoteContext.text.trim(),
         visibility: visibility,
         voiceDurationSec: voiceAttached ? 8 : null,
+        // Offline-first: lưu trên máy ngay, tự gửi khi có mạng.
+        deferUpload: true,
       ),
     );
     if (isDisposed || result.isFailure) {

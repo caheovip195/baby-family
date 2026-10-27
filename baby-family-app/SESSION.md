@@ -678,3 +678,180 @@ do agent tự đặt tên (06/10, 09/10, 11/10).
   Không so theo tên file. Quyền thư viện được xin khi chọn ảnh trong màn soạn. Android cần `READ_MEDIA_IMAGES`/`VIDEO`.
 - Test: `local_media_test` (6), memory_library_remote (+1 local), subject_memory_remote (MEM-04/08 client nén), settings_remote (avatar có biến thể). `make check` 806 pass.
 - Thiết kế offline-first (chưa làm): `docs/04_THIET_KE_OFFLINE_FIRST.md`.
+
+## 2026-10-22 — BF-20261022-001: offline-first giai đoạn 1 (outbox tạo ký ức)
+
+- `OutboxEntry` (`lib/data/model/sync`) và `IMemoryOutboxRepository`:
+  - `MemoryOutboxRepositoryImp` lưu qua `LocalStore.saveMemoryOutbox` (mã hoá, hộp đăng nhập).
+  - File media được sao vào `ApplicationDirectory.applicationUploadFolder/outbox/<id>`; dọn bản sao của thao tác đã xong khi mở app.
+- `MemoryRemoteServiceImp`:
+  - `create(deferUpload: true)` luôn đi qua outbox (kể cả không có ảnh).
+  - `_loadOutbox` hiện lại ký ức tạm và xếp hàng gửi. `_keyFor` dùng UUID v5 theo id thao tác.
+  - Lỗi mạng/5xx → `uploadWaiting` + backoff; 4xx → `uploadFailed`.
+  - Thêm `syncPending()`, `pendingSyncCount`. Đổi gia đình/đăng xuất → `_resetOutbox`.
+- `RootApp` lắng nghe `isOfflineProvider`: có mạng lại → `syncPending()`. Băng ngoại tuyến hiện số ký ức đang chờ. `UploadingMemoryCard.waiting` hiện "Chờ có mạng · sẽ tự đăng"; ký ức không có ảnh hiện "Đang đăng…". Thêm l10n `memUploadWaiting`, `memPosting` (4 ngôn ngữ).
+- Test: subject_memory_remote gồm MEM-06 (mất mạng → chờ → `syncPending`), tạo offline → tắt app → mở lại gửi đúng một lần cùng key, và 4xx chờ người dùng → thử lại / huỷ xoá file. `make check` 808 pass.
+- Chưa làm: outbox cho bình luận/cảm xúc/sửa ký ức/chăm sóc; dùng `GET /families/:id/changes`; local DB thay `MockStore`; test `MemoryOutboxRepositoryImp` với file thật (cần path_provider).
+
+## 2026-10-22 — BF-20261022-002: offline-first giai đoạn 2
+
+- `OutboxRunner` (`lib/data/service_imp/outbox_runner.dart`) dùng chung:
+  - `send`/`onState`/`onRestore`; trạng thái `sending|waiting|failed|done`.
+  - `keyOf(entryId, part)` = UUID v5.
+  - `isTransient`: không có response, 5xx, 408, 429, `IDEMPOTENCY_COMMAND_PENDING`.
+  - `backoff`: 30 giây × 2ⁿ, tối đa 15 phút.
+- `IOutboxRepository` (đổi tên từ `IMemoryOutboxRepository`): `OutboxRepositoryImp(name)`, thêm `cursor`/`saveCursor` (changes API) và `readCache`/`writeCache`. `LocalStore.saveOutbox/getOutbox(key)`.
+- Ký ức:
+  - `addComment` hiện ngay rồi gửi qua outbox với `idempotencyKey`. `comments()` khi mất mạng trả bản đã lưu + bình luận tạm. `deleteComment` với bình luận chưa gửi chỉ bỏ khỏi hàng đợi.
+  - `react` đổi số đếm tạm ngay, gửi lần chọn cuối.
+  - `_pullChanges` chạy sau `_pull`: cursor theo gia đình server; lần đầu chỉ lấy mốc; xử lý delete / version / comment / reaction; `SYNC_CURSOR_EXPIRED` → bỏ cursor.
+  - Thêm hằng `kValueRemoteChanges*`.
+  - Client `getChanges` (`Api.familyChanges`, không bọc `{data}`); thêm header `Idempotency-Key` cho `addComment`/`setReaction`/`clearReaction`. Model `ChangeItem`/`ChangesPage`.
+- Chăm sóc (`CareRemoteServiceImp`):
+  - `outbox` (`OutboxRepositoryImp('care')`). `completeMission` qua outbox: có mạng chờ kết quả, mất mạng xong trên máy, bấm lại dùng lại thao tác cũ. `undoCompletion` khi còn chờ chỉ bỏ hàng đợi.
+  - `board` lưu và đọc cache khi mất mạng.
+  - `ICareService.syncPending`. `RootApp` gọi cả memory và care khi có mạng lại.
+- Test:
+  - Helper `test/helpers/fake_outbox.dart`.
+  - subject_memory_remote: bình luận/cảm xúc offline; changes (xoá, version, bình luận, cursor hết hạn).
+  - care_remote: bảng offline + hoàn thành gửi một lần sau khi mở lại app, hoàn tác khi còn chờ; CARE-06 mất mạng → xong trên máy.
+  - `make check` 811 pass.
+
+## 2026-10-22 — BF-20261022-003: local DB ký ức + bình luận, chịu lỗi dữ liệu
+
+- `ILocalMemoryDb` / `LocalMemoryDbImp` (Hive box `LocalStoreKey.localDbBoxName`, khoá `fid|m|id`, `fid|c|memoryId`, giá trị `encryptData`; `ensureSchema`). `LocalStore.localRows/putLocalRows/deleteLocalRows/clearLocalDb`; `clearAll` xoá cả box này.
+- `MemoryRemoteServiceImp.localDb`:
+  - `_hydrate` (trong `memories()`, trước `_sync`): kiểm từng dòng bằng `Memory.fromJson`, bỏ và xoá dòng hỏng; bình luận đọc qua `lenientList`.
+  - `_schedulePersist` (`kValueLocalDbWriteDelay` 300 ms) → `_persist` ghi diff / xoá dòng mất. `flushLocalDb()` cho test.
+  - `_createdDuringSync` giữ ký ức vừa tạo tới khi feed thấy.
+- Chịu lỗi: `lenientList` (`lib/utils/helper/lenient_json.dart`) cho `MemoryFeedRespond.memories`, `ChangesPage.items`, outbox; `_pull` bắt lỗi parse; cache bảng nhiệm vụ hỏng thì coi như chưa có. `kValueLocalDbSchemaVersion = 1`.
+- Test: helper `fake_local_memory_db.dart`; còn sau khi tắt app và mở offline, chỉ ghi dòng đổi; dòng hỏng / field lạ / schema cũ; feed và changes có phần tử đổi kiểu. `make check` 814 pass.
+- Chưa: test `LocalMemoryDbImp` với Hive thật; local DB cho nhiệm vụ / Papa & Mama; bỏ bảng `memories` khỏi offline snapshot.
+
+## 2026-10-22 — BF-20261022-004: local DB + outbox cho nhiệm vụ và Papa & Mama
+
+- `ILocalDb` / `LocalDbImp` (bảng dùng chung, khoá `fid|t:table|id`, cùng `ensureSchema`). `LocalTables` + `LocalTable{rows, restore, validate}` (`lib/data/service_imp/local_tables.dart`): `hydrate`, `schedule`, `flush`, `scope` callback.
+- `OutboxRunner.submit(entry)`: true = server nhận, false = đang chờ; 4xx → bỏ và ném lỗi.
+- Care:
+  - `localDb` (`LocalDbImp`): bảng `careBoards` (`kValueLocalBoardDays` = 7).
+  - Bỏ `readCache/writeCache` khỏi `IOutboxRepository`.
+  - `mission()` khi mất mạng trả bản đã biết; `completeMission` dùng `submit`.
+- Us (`UsRemoteServiceImp`):
+  - `outbox` (`OutboxRepositoryImp('us')`) và `localDb`; bảng `checkins`/`requests`/`thanks`/`journal` (chỉ dòng `remote: true`).
+  - `_hydrateLocal()` ở `coupleToday`/`requests`/`thanks`/`thanksWall`/`journal`.
+  - `checkIn`/`sendRequest`/`sendThanks`/`addJournalEntry`: bản tạm qua `super.*` → `_submit` (kind `us.*`).
+  - Client/repo thêm `idempotencyKey` cho `createCheckin`/`createAppreciation`/`createJournalEntry`; `IUsRepository.removeRequest/removeThanks/removeJournal`.
+  - `_pull`/`_syncThanks`/`journal` bắt cả lỗi không phải Dio (`ParallelWaitError`, parse). `IUsService.syncPending`; `RootApp` gọi khi có mạng lại.
+- Test:
+  - Helper `fake_local_db.dart`.
+  - care: `careBoards` + chi tiết offline.
+  - couple: mở offline sau khi tắt app (cảm ơn, nhật ký), dòng hỏng bị bỏ, tạo check-in/cảm ơn/nhật ký offline → mở lại gửi đúng một lần; check-in bị từ chối báo lỗi; US-03 lời nhờ mất mạng → gửi lại cùng key.
+  - `make check` 816 pass.
+
+## 2026-10-22 — BF-20261022-005: thử offline-first trên Android với backend thật
+
+- Chạy: backend `node dist/main.js` (PORT=3100, DB test); `fvm flutter run -d emulator-5554 --flavor staging -t lib/main_dev.dart --dart-define=BABY_FAMILY_API_URL=http://10.0.2.2:3100/api`. Mất mạng: `adb shell svc wifi disable && adb shell svc data disable`. iOS: Flutter 3.44.5 + Xcode 27.1 lỗi `debug_unpack_ios` (`lipo -verify_arch` "requires exactly one input file") → cần nâng Flutter.
+- Sửa:
+  - `SessionRemoteServiceImp`: `_syncFromServer` = `_pullSession` + `_saveSnapshot`; lưu sau khi kích hoạt gia đình (`checkPartnerStatus`) và sau `completeSetup`. `ISessionService.persistOffline()`; `RootApp` gọi khi `paused`/`hidden`.
+  - Diary / letter / quote composer: `deferUpload: true`.
+  - `CareRemoteServiceImp.completeMission` offline: `_store.touch()`, `MissionCompletion.pendingSync`. Sheet dùng `careCompletePendingSync` (4 ngôn ngữ) và ẩn phần lưu khoảnh khắc.
+  - `whenOnline()` (`lib/data/service_imp/offline_read.dart`): `collections`, `sealedLetters`, `albums`, child `stats`. Fallback riêng: `todayPrompt`, `tree` (+ bảng `careTree`), `unreadCount`, `monthlyPhotos`.
+  - Log lỗi tải ở Home / Care controller.
+- Test: session (snapshot sau duyệt / `completeSetup` / `persistOffline`), care (`pendingSync`, cây offline), memory_library (đọc offline). `make check` 817 pass.
+- Ghi nhận chưa sửa (không thuộc offline): màn chọn giai đoạn hiện "Papa Minh" (tên dữ liệu mẫu) thay tên server; "Your family this week" hiện ảnh/số liệu mẫu; thẻ nhật ký tạm dùng icon ảnh.
+
+## 2026-10-22 — BF-20261022-006: bản server không lộ dữ liệu mẫu
+
+- ONB-04 "Papa Minh":
+  - `SessionServiceImp.applyServerPartner({displayName, callName})`.
+  - `SessionRemoteServiceImp._mirrorActivated` ghi tên bạn đời từ `bootstrap.parents`, thay tên mẫu `defaultPartnerName` của `simulatePartnerJoined`.
+- HOME-01 "Tuần này":
+  - `ChildServiceImp.weekBaseline` (`@protected`, fixture `stats.week`); `ChildRemoteServiceImp` → `null`.
+  - Không có nền: ảnh nhỏ lấy từ `mediaAssets` ký ức trong tuần.
+  - `HomeTabController` đặt `week = null` khi rỗng → thẻ ẩn.
+- Rà thêm:
+  - `CareRemoteServiceImp.eventDraft` trống (hôm nay); `careStats` → `null`.
+  - `UsRemoteServiceImp.coupleWeek`/`rewriteSuggestion` → `null`.
+  - `searchRecents({server})` (meta `serverSearchRecents`) + override ở `MemoryRemoteServiceImp`.
+- Test: session_remote, subject_memory_remote, care_remote, couple_remote, home_test. `make check` 821 pass.
+- Chưa: chạy lại trên app thật; `CareRemoteServiceImp.tree()` offline chưa có bản lưu vẫn dùng `treeStats` mẫu.
+
+## 2026-10-23 — BF-20261023-001: không lộ dữ liệu mẫu (tiếp) + chạy thật
+
+- Claude: `CareRemoteServiceImp.tree()` offline chưa có bản lưu → số tuần 0.
+- Codex (`codex exec`) rà và sửa 10 remote service (session, child, memory, memory_library, care, us, family, settings, circle, pregnancy) + 39 test (file mới `test/data/circle_remote_test.dart`). Nội dung:
+  - Id ngoài gia đình → null/rỗng.
+  - Recap ngày/tháng/tuần bản nền → null.
+  - Bộ sưu tập đếm theo ký ức thật; nháp chỉ của người dùng.
+  - Cài đặt không dùng meta mẫu; `birthDraft` không số đo mẫu.
+- Review: `planOffers` của Codex xoá giá (`priceText: ''`) → sửa lại lấy giá từ catalog giá của app; khôi phục test `priceText isNotEmpty`.
+- Chạy thật (Android, backend 3100): ONB-04 "Mama … and Papa QA" (tên server); Home gia đình mới không có thẻ tuần; gia đình cũ thẻ tuần 1/0/0 không ảnh stock.
+- `make check` 861 pass. Chưa chạy lại app sau thay đổi của Codex.
+
+## 2026-10-26 — BF-20261026-001: chạy thật các màn Codex sửa
+
+- Android + backend 3100. Kết quả:
+  - Bộ sưu tập: số 0, không bìa mẫu.
+  - CARE-03: form trống, lưu được.
+  - PREG-06: chỉ tên thật.
+  - FAM-07: múi giờ từ server.
+- Sửa:
+  - `ChildRemoteServiceImp.stats`: thai kỳ không gọi `profile-stats` (trước 404 → hành trình thai kỳ báo lỗi).
+  - `collections_view.dart`: thiếu tên bé → `memCollQuotesCount` / `memCollMonthlyCount` (4 ARB).
+- Test: subject_memory_remote +1, memories_test +1. `make check` 863 pass.
+- Chưa: SET-01 không có lối vào từ app Bố/Mẹ (chỉ màn chờ bạn đời) → chờ quyết định; chưa thử SET-02…13 trên máy.
+
+## 2026-10-26 — BF-20261026-002: lối vào SET-01 ở FAM-01 + chạy thật SET-02…13
+
+- FAM-01: nhóm cuối `AppGroupedList` > `AppSettingsRow` (`settingsTitle`) → `SettingsRoute`.
+- Chạy thật SET-01…13 (Android, backend 3100): không còn dữ liệu mẫu.
+- Sửa 3 chỗ:
+  - SET-07 `device_row.dart`: không vị trí → `setDeviceInUseNoLocation` / chỉ thời gian.
+  - SET-04 `SettingsRemoteServiceImp.privacySettings`: `deviceCount` từ `sessions()`.
+  - SET-05: ẩn `_AiQuotaCard` khi `total == 0`.
+- Test: family_settings_circle +1, family_settings_batch2 +2, settings_remote (sửa kỳ vọng `deviceCount`). `make check` 866 pass.
+
+## 2026-10-26 — BF-20261026-003: rà tiếp các màn chính trên app thật
+
+- Không còn dữ liệu mẫu: Papa & Mama, Lịch / Tạo sự kiện, Tìm kiếm / Nháp / Thùng rác / Ngày này năm xưa, HOME-02, Huy hiệu.
+- Sửa:
+  - NOTI-01: `EmptyState` khi rỗng.
+  - MEM-03: ẩn "Album tự động" rỗng + `EmptyState`.
+  - CARE-08: việc cùng nhau chưa làm → `careHistoryTogetherMissed` (trước ghi "đã xong").
+  - CARE-09: `careStatsEmpty`.
+  - Chuỗi mới đủ 4 ARB.
+- Test: home_test +1, memories_batch2 +1, care_us_child_batch2 +1. `make check` 869 pass.
+- Chưa: app người thân (Circle), luồng sau chào đời.
+
+## 2026-10-26 — BF-20261026-004: chạy thật luồng chào đời + app người thân
+
+- Sửa:
+  - `parseFormDate` (`lib/utils/helper/form_date.dart`) thay 2 bản `_parseDate`: ô ngày đọc đúng định dạng `toFormDate` theo ngôn ngữ, ngày sai → null. PREG-06 bỏ ngày tương lai.
+  - `shareText` (`external_launcher.dart`): FAM-03 tạo lời mời và FAM-05 gửi lại → bảng chia sẻ `famInviteShareMessage`.
+  - INV-01: `invInviterParentShort` / `invInviterRelativeShort`, tên gọi theo quan hệ, quyền từ `permission`.
+  - CIR-WAIT chờ duyệt: `circleAwaitingTitle` / `circleAwaitingSubtitle`.
+  - CIR-06: `previewChild` không ngày sinh.
+- Test: `form_date_test.dart` (mới), helper `test/helpers/share_capture.dart`, session_remote, invite_preview_accept +2, family_settings_circle, billing_settings_batch3, memories_circle_batch3 +1. `make check` 875 pass.
+- Chưa:
+  - Backend `/invites/resolve` thiếu `permission`.
+  - HOME-02 "Recent firsts" trống sau chào đời.
+  - FAM-01 0/12 vs FAM-05 1/12.
+  - CIR-WAIT "Quét QR" dùng mã mẫu.
+
+## 2026-10-26 — BF-20261026-007: INV-01 theo quyền từng bé; màn phụ khi mất mạng
+
+- `InviteResolution.displayName` → `InviteInfo.callName` (trống → nhãn quan hệ). `InvitePreviewData.childAccess` (`ChildAccess` = `(permission, allowDownload)`). Màn INV-01: `_ChildAccessRow` nhận nhãn từng bé qua `permissionSummary(l10n, permission, allowDownload:)` (`relative_text.dart`; `relativePermissionSummary` dùng lại).
+- `OfflineReads` (`lib/data/service_imp/offline_read.dart`): `read(key, call)`. Đã bọc các lệnh đọc màn phụ ở care / memory_library / memory / notification / settings / us / pregnancy / child / family remote. Khoá có id gia đình hoặc id người dùng server.
+- Test: session_remote (INV-01), relative_text, offline_read_test. `make check` 878 pass.
+
+## 2026-10-27 — BF-20261027-001: PREG-07 Đặt tên cho con, CARE-11 Thống kê chăm con
+
+- **PREG-07:**
+  - Model `PregnancyNameRecord` / `PregnancyNameList` (đọc danh sách chịu lỗi).
+  - Client `get/addPregnancyName`, `like/unlike`, `choose/unchoose`; `IPregnancyRemoteRepository.names/addName/likeName/chooseName`.
+  - `PregnancyRemoteServiceImp`: thai kỳ server (`kValueChildKeyServerSubject`) → API, đọc qua `OfflineReads`. Bấm Chọn lần nữa = bỏ chọn (song thai được chọn nhiều tên, server giới hạn). Người thêm hiển thị theo tên gọi của tôi / bạn đời.
+  - Constructor đổi tham số `familyRepository` thành field `_family`.
+- **CARE-11:**
+  - `ICareService.careStats({weekStart, childId})`; `CareRemoteServiceImp` gọi `GET /families/{fid}/care-stats` qua `OfflineReads`.
+  - `CareStatsController`: tuần trước / tuần sau (không quá tuần này), đổi bé thì tải lại; `AppWeekSelector` có `onPrevious` / `onNext`.
+- Test: pregnancy_remote (PREG-07 qua API), care_remote (CARE-11 + bản đọc khi mất mạng). `make check` 879 pass.

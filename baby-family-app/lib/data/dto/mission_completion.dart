@@ -6,9 +6,14 @@ class MissionCompletion {
     required this.mission,
     required this.heartsEarned,
     required this.undoUntil,
+    this.pendingSync = false,
   });
 
   final Mission mission;
   final int heartsEarned;
   final DateTime undoUntil;
+
+  /// Xong trên máy khi mất mạng (offline-first): Hearts do server cộng khi
+  /// thao tác được gửi.
+  final bool pendingSync;
 }

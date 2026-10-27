@@ -1,4 +1,13 @@
+import 'package:baby_family/data/model/memory/week_summary.dart';
+import 'package:baby_family/data/model/notification/app_notification.dart';
 import 'package:baby_family/data/provider/child.dart';
+import 'package:baby_family/data/provider/memory.dart';
+import 'package:baby_family/data/provider/mock_store.dart';
+import 'package:baby_family/data/provider/notification.dart';
+import 'package:baby_family/data/provider/session.dart';
+import 'package:baby_family/data/service_imp/child.dart';
+import 'package:baby_family/data/service_imp/notification.dart';
+import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_tab_bar.dart';
 import 'package:baby_family/utils/widget/child_switcher.dart';
@@ -166,6 +175,28 @@ void main() {
         });
       }
     }
+
+    // BF-20261022-006: gia đình mới chưa có ký ức → khối “Tuần này” ẩn
+    // (HOME-01: khối không có dữ liệu thì ẩn), không hiện số/ảnh mẫu.
+    testWidgets('empty week hides “Tuần này của nhà mình”', (tester) async {
+      await pumpRoute(
+        tester,
+        _home,
+        size: const Size(390, 2290),
+        overrides: [
+          childServiceProvider.overrideWith(
+            (ref) => _EmptyWeekChildService(
+              ref.watch(sessionRepositoryProvider),
+              ref.watch(appClockProvider),
+              ref.watch(childRepositoryProvider),
+              ref.watch(memoryRepositoryProvider),
+            ),
+          ),
+        ],
+      );
+      expect(find.text('Hôm nay của các con'), findsOneWidget);
+      expect(find.text('Tuần này của nhà mình'), findsNothing);
+    });
 
     testWidgets('bell opens NOTI-01', (tester) async {
       final router = await pumpRoute(tester, _home);
@@ -374,6 +405,24 @@ void main() {
   });
 
   group('NOTI-01', () {
+    // BF-20261026-003: hộp thông báo rỗng có empty state, không trang trắng.
+    testWidgets('empty inbox shows the empty state', (tester) async {
+      await pumpRoute(
+        tester,
+        const NotificationsRoute(),
+        overrides: [
+          notificationServiceProvider.overrideWith(
+            (ref) => _EmptyNotifications(
+              ref.watch(sessionRepositoryProvider),
+              ref.watch(appClockProvider),
+              ref.watch(notificationRepositoryProvider),
+            ),
+          ),
+        ],
+      );
+      expect(find.text('Chưa có thông báo nào'), findsOneWidget);
+    });
+
     testWidgets('lists notifications by day and filters', (tester) async {
       await pumpRoute(tester, const NotificationsRoute());
       for (final text in [
@@ -426,4 +475,27 @@ class _Subject extends SelectedSubjectNotifier {
 
   @override
   String? build() => id;
+}
+
+/// Bé như bản mock nhưng tuần này chưa có ký ức nào.
+class _EmptyWeekChildService extends ChildServiceImp {
+  _EmptyWeekChildService(
+    super.sessionRepository,
+    super.clock,
+    super.repository,
+    super.memoryRepository,
+  );
+
+  @override
+  Future<WeekSummary> weekSummary() async => const WeekSummary();
+}
+
+/// Hộp thông báo chưa có gì (gia đình mới).
+class _EmptyNotifications extends NotificationServiceImp {
+  _EmptyNotifications(super.sessionRepository, super.clock, super.repository);
+
+  @override
+  Future<List<AppNotification>> notifications({
+    NotificationGroup group = NotificationGroup.all,
+  }) async => const [];
 }

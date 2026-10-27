@@ -41,7 +41,9 @@ class CircleMeController extends BaseNotifier {
       for (final child in view?.children ?? const <Child>[])
         if (child.birthDate != null) child,
     ]..sort((a, b) => b.birthDate!.compareTo(a.birthDate!));
-    return babies.firstOrNull;
+    // Bản server không gửi ngày sinh cho người thân: lấy bé đầu tiên, không
+    // để câu xem trước thiếu tên (BF-20261026-004).
+    return babies.firstOrNull ?? view?.children.firstOrNull;
   }
 
   Future<void> load() async {

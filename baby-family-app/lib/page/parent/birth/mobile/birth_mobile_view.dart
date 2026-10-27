@@ -8,6 +8,7 @@ import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/extension/date_time.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/form_date.dart';
 import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
@@ -87,6 +88,7 @@ class BirthMobileView extends HookConsumerWidget {
       2 => _BirthInfoStep(
         key: ValueKey(controller.babyIndex),
         controller: controller,
+        today: ref.watch(todayProvider),
       ),
       _ => _BirthWelcomeStep(
         controller: controller,
@@ -112,21 +114,6 @@ class BirthMobileView extends HookConsumerWidget {
     ]);
     messenger.showSnackBar(SnackBar(content: Text(message)));
   }
-}
-
-/// `dd/MM/yyyy` → ngày; sai định dạng → null.
-DateTime? _parseDate(String text) {
-  final parts = text.trim().split(RegExp(r'[/.\-]'));
-  if (parts.length != 3) {
-    return null;
-  }
-  final day = int.tryParse(parts[0]);
-  final month = int.tryParse(parts[1]);
-  final year = int.tryParse(parts[2]);
-  if (day == null || month == null || year == null) {
-    return null;
-  }
-  return DateTime(year, month, day);
 }
 
 /// “3,2 kg” → 3.2; không có số → null.

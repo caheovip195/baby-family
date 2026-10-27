@@ -8,6 +8,7 @@ import 'package:baby_family/data/model/billing/family_billing_record.dart';
 import 'package:baby_family/data/model/care/badge_list.dart';
 import 'package:baby_family/data/model/care/calendar_event_record.dart';
 import 'package:baby_family/data/model/care/calendar_record.dart';
+import 'package:baby_family/data/model/care/care_stats.dart';
 import 'package:baby_family/data/model/care/family_tree_record.dart';
 import 'package:baby_family/data/model/care/hearts_me_record.dart';
 import 'package:baby_family/data/model/care/mission_board_record.dart';
@@ -52,6 +53,7 @@ import 'package:baby_family/data/model/notification/notification_count.dart';
 import 'package:baby_family/data/model/notification/notification_page.dart';
 import 'package:baby_family/data/model/pregnancy/birth_result_record.dart';
 import 'package:baby_family/data/model/pregnancy/journey_record.dart';
+import 'package:baby_family/data/model/pregnancy/pregnancy_name_record.dart';
 import 'package:baby_family/data/model/pregnancy/pregnancy_record.dart';
 import 'package:baby_family/data/model/pregnancy/prep_group_record.dart';
 import 'package:baby_family/data/model/pregnancy/prep_item_record.dart';
@@ -88,6 +90,7 @@ import 'package:baby_family/data/model/us/request_list.dart';
 import 'package:baby_family/data/model/us/request_record.dart';
 import 'package:baby_family/data/model/us/us_settings_record.dart';
 import 'package:baby_family/data/model/user.dart';
+import 'package:baby_family/utils/helper/lenient_json.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'base_response.freezed.dart';
@@ -205,9 +208,23 @@ sealed class BaseRespond with _$BaseRespond {
     @JsonKey(name: 'data') ReactionState? reaction,
   }) = ReactionStateRespond;
 
+  /// PREG-07 (BF-20261027-001).
+  factory BaseRespond.pregnancyNamesRespond({
+    @JsonKey(name: 'data') PregnancyNameList? list,
+  }) = PregnancyNamesRespond;
+
+  factory BaseRespond.pregnancyNameRespond({
+    @JsonKey(name: 'data') PregnancyNameRecord? name,
+  }) = PregnancyNameRespond;
+
+  /// CARE-11 (BF-20261027-001).
+  factory BaseRespond.careStatsRespond({
+    @JsonKey(name: 'data') CareStats? stats,
+  }) = CareStatsRespond;
+
   /// Danh sách cursor: `{ data: [...], nextCursor }` (mục 11.1).
   factory BaseRespond.memoryFeedRespond({
-    @JsonKey(name: 'data')
+    @JsonKey(name: 'data', fromJson: _memoryRecords)
     @Default(<MemoryRecord>[])
     List<MemoryRecord> memories,
     @JsonKey(name: 'nextCursor') String? nextCursor,
@@ -526,3 +543,7 @@ sealed class BaseRespond with _$BaseRespond {
   factory BaseRespond.fromJson(Map<String, dynamic> json) =>
       _$BaseRespondFromJson(json);
 }
+
+/// Feed: một ký ức server đổi kiểu field không làm hỏng cả trang.
+List<MemoryRecord> _memoryRecords(Object? json) =>
+    lenientList(json, MemoryRecord.fromJson, label: 'ký ức');

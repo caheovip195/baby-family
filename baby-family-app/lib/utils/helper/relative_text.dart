@@ -54,18 +54,28 @@ RelativePermission? relativeTopPermission(Member member) {
 
 /// Tóm tắt quyền (FAM-01): “Xem, bình luận · được tải ảnh” /
 /// “Xem, bình luận · đóng góp ảnh” / “Xem”.
-String relativePermissionSummary(AppLocalizations l10n, Member member) {
-  final top = relativeTopPermission(member);
-  final parts = [
-    if (top == null || top == RelativePermission.view)
-      l10n.famPermSummaryView
-    else
-      l10n.famPermSummaryComment,
-    if (top == RelativePermission.contribute) l10n.famPermSummaryContribute,
-    if (member.allowDownload) l10n.famPermSummaryDownload,
-  ];
-  return parts.join(' · ');
-}
+String relativePermissionSummary(AppLocalizations l10n, Member member) =>
+    permissionSummary(
+      l10n,
+      relativeTopPermission(member),
+      allowDownload: member.allowDownload,
+    );
+
+/// Nhãn một mức quyền (+ tải ảnh) — dùng cho cả tóm tắt người thân và từng
+/// bé ở màn xem trước lời mời (INV-01).
+String permissionSummary(
+  AppLocalizations l10n,
+  RelativePermission? permission, {
+  bool allowDownload = false,
+}) => [
+  if (permission == null || permission == RelativePermission.view)
+    l10n.famPermSummaryView
+  else
+    l10n.famPermSummaryComment,
+  if (permission == RelativePermission.contribute)
+    l10n.famPermSummaryContribute,
+  if (allowDownload) l10n.famPermSummaryDownload,
+].join(' · ');
 
 /// Mã đại từ cho câu ICU `select` (“bà”/“ông”/“người thân”).
 String relativePronounCode(RelativeRelation? relation) => switch (relation) {

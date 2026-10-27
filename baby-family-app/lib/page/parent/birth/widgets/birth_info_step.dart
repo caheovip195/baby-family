@@ -5,9 +5,16 @@ part of '../mobile/birth_mobile_view.dart';
 /// nặng + chiều dài; nút “Xem thẻ chào mừng”. Điền sẵn từ tên đã chọn và bản
 /// nháp; không chặn khi thiếu dữ liệu.
 class _BirthInfoStep extends HookWidget {
-  const _BirthInfoStep({required this.controller, super.key});
+  const _BirthInfoStep({
+    required this.controller,
+    required this.today,
+    super.key,
+  });
 
   final BirthController controller;
+
+  /// Ngày sinh không được sau hôm nay.
+  final DateTime today;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +48,12 @@ class _BirthInfoStep extends HookWidget {
         baby.copyWith(
           name: (match?.group(1) ?? name.text).trim(),
           nickname: match?.group(2)?.trim(),
-          birthDate: _parseDate(date.text),
+          // Đọc theo đúng định dạng đã điền sẵn (en `M/d/yyyy`); ngày không
+          // hợp lệ hoặc sau hôm nay → bỏ (BF-20261026-004).
+          birthDate: switch (parseFormDate(date.text, locale)) {
+            final DateTime day when !day.isAfter(today) => day,
+            _ => null,
+          },
           birthTime: time.text.trim().isEmpty ? null : time.text.trim(),
           weightKg: _parseMeasure(weight.text),
           heightCm: _parseMeasure(height.text),

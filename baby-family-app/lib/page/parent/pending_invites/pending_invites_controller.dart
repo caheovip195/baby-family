@@ -8,6 +8,7 @@ import 'package:baby_family/data/provider/mock_store.dart';
 import 'package:baby_family/data/service/family.dart';
 import 'package:baby_family/page/application_base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
+import 'package:baby_family/utils/helper/external_launcher.dart';
 import 'package:hooks_riverpod/legacy.dart';
 
 /// FAM-05 — Lời mời người thân đang chờ / đã hết hạn: gửi lại link, thu hồi,
@@ -85,8 +86,14 @@ class PendingInvitesController extends BaseNotifier {
     notifyListeners();
   }
 
-  Future<void> resend(InviteInfo invite) =>
-      familyService.resendInvite(invite.id);
+  /// FAM-05 “Gửi lại link”: mở lại bảng chia sẻ với [message] (server không
+  /// tự gửi cho người thân — BF-20261026-004), rồi ghi lần gửi.
+  Future<void> resend(InviteInfo invite, String message) async {
+    if (invite.code.isNotEmpty) {
+      await shareText(message);
+    }
+    await familyService.resendInvite(invite.id);
+  }
 
   Future<void> revoke(InviteInfo invite) async {
     await familyService.revokeInvite(invite.id);

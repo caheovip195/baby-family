@@ -67,6 +67,18 @@ void main() {
     );
   });
 
+  test('INV-01: per-child permission label of an invite', () {
+    expect(permissionSummary(vi, RelativePermission.view), 'Xem');
+    expect(
+      permissionSummary(vi, RelativePermission.view, allowDownload: true),
+      'Xem · ${vi.famPermSummaryDownload}',
+    );
+    expect(
+      permissionSummary(vi, RelativePermission.contribute),
+      '${vi.famPermSummaryComment} · ${vi.famPermSummaryContribute}',
+    );
+  });
+
   test('initials, pronouns and name lists', () {
     expect(nameInitials('Bà nội'), 'BN');
     expect(nameInitials('Ông ngoại'), 'ÔN');

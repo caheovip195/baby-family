@@ -6,6 +6,7 @@ import 'package:baby_family/data/model/memory/reaction_state.dart';
 import 'package:baby_family/data/model/memory/timeline_item_record.dart';
 import 'package:baby_family/data/model/memory/today_story_record.dart';
 import 'package:baby_family/data/model/safety/report_record.dart';
+import 'package:baby_family/data/model/sync/change_item.dart';
 import 'package:baby_family/data/repository/base.dart';
 
 /// Ký ức trên server (tài liệu kỹ thuật 11.3, 11.5).
@@ -39,6 +40,9 @@ abstract class IMemoryFeedRepository extends IBaseRepository {
     int? limit,
   });
 
+  /// `GET /v1/families/{fid}/changes` (offline-first; null cursor = bắt đầu).
+  Future<ChangesPage> changes(String familyId, {String? cursor, int? limit});
+
   /// `GET /v1/memories/{id}`.
   Future<MemoryRecord?> memory(String memoryId);
 
@@ -57,6 +61,7 @@ abstract class IMemoryFeedRepository extends IBaseRepository {
     String memoryId,
     String body, {
     String? parentCommentId,
+    String? idempotencyKey,
   });
 
   /// `PATCH /v1/comments/{id}`.
@@ -66,10 +71,17 @@ abstract class IMemoryFeedRepository extends IBaseRepository {
   Future<void> deleteComment(String commentId);
 
   /// `PUT /v1/memories/{id}/reaction` với loại server ([type]).
-  Future<ReactionState?> setReaction(String memoryId, String type);
+  Future<ReactionState?> setReaction(
+    String memoryId,
+    String type, {
+    String? idempotencyKey,
+  });
 
   /// `DELETE /v1/memories/{id}/reaction`.
-  Future<ReactionState?> clearReaction(String memoryId);
+  Future<ReactionState?> clearReaction(
+    String memoryId, {
+    String? idempotencyKey,
+  });
 
   /// `DELETE /v1/memories/{id}` — vào thùng rác 30 ngày.
   Future<void> trashMemory(String memoryId);

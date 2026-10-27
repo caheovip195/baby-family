@@ -54,16 +54,27 @@ class _CollectionsView extends StatelessWidget {
         ? controller.subject
         : monthly;
     final subtitle = switch (item.code) {
-      'monthly' => l10n.memCollMonthly(
-        monthly?.name ?? '',
-        controller.monthlyCount,
-        controller.monthlyTotal,
-      ),
+      'monthly' => switch (monthly?.name) {
+        final String name when name.isNotEmpty => l10n.memCollMonthly(
+          name,
+          controller.monthlyCount,
+          controller.monthlyTotal,
+        ),
+        // Chưa có bé đã chào đời: không để “ · 0/0 ảnh” (BF-20261026-001).
+        _ => l10n.memCollMonthlyCount(
+          controller.monthlyCount,
+          controller.monthlyTotal,
+        ),
+      },
       'firsts' => l10n.memCollFirsts(item.count),
-      'quotes' => l10n.memCollQuotes(
-        controller.quoteChild?.name ?? '',
-        item.count,
-      ),
+      'quotes' => switch (controller.quoteChild?.name) {
+        final String name when name.isNotEmpty => l10n.memCollQuotes(
+          name,
+          item.count,
+        ),
+        // Chưa có câu nói gắn với bé: không để “ · 0 câu” (BF-20261026-001).
+        _ => l10n.memCollQuotesCount(item.count),
+      },
       'voices' => l10n.memCollVoices(item.count),
       'letters' => l10n.memCollLetters(item.count, controller.sealedLetters),
       'best' => l10n.memCollBest(item.count),

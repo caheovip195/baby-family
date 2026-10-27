@@ -15,8 +15,10 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$InviteResolution {
 
-@JsonKey(name: 'inviteId') String? get inviteId;@JsonKey(name: 'type') String? get type;@JsonKey(name: 'state') String? get state;@JsonKey(name: 'familyName') String? get familyName;@JsonKey(name: 'inviterCallName') String? get inviterCallName;@JsonKey(name: 'inviterKind') String? get inviterKind;@JsonKey(name: 'proposedKind') String? get proposedKind;@JsonKey(name: 'message') String? get message;@JsonKey(name: 'expiresAt') DateTime? get expiresAt;/// Lời mời CIRCLE: quan hệ + chỉ bé/thai kỳ được cấp quyền.
-@JsonKey(name: 'relation') String? get relation;@JsonKey(name: 'children') List<CircleSubjectRecord> get children;
+@JsonKey(name: 'inviteId') String? get inviteId;@JsonKey(name: 'type') String? get type;@JsonKey(name: 'state') String? get state;@JsonKey(name: 'familyName') String? get familyName;@JsonKey(name: 'inviterCallName') String? get inviterCallName;@JsonKey(name: 'inviterKind') String? get inviterKind;@JsonKey(name: 'proposedKind') String? get proposedKind;@JsonKey(name: 'message') String? get message;@JsonKey(name: 'expiresAt') DateTime? get expiresAt;/// Lời mời CIRCLE: quan hệ + chỉ bé/thai kỳ được cấp quyền (kèm quyền
+/// xem/tải ảnh từng bé) + tên gọi Bố/Mẹ đặt cho người được mời
+/// (BF-20261026-006).
+@JsonKey(name: 'relation') String? get relation;@JsonKey(name: 'displayName') String? get displayName;@JsonKey(name: 'children') List<CircleSubjectRecord> get children;
 /// Create a copy of InviteResolution
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +31,16 @@ $InviteResolutionCopyWith<InviteResolution> get copyWith => _$InviteResolutionCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is InviteResolution&&(identical(other.inviteId, inviteId) || other.inviteId == inviteId)&&(identical(other.type, type) || other.type == type)&&(identical(other.state, state) || other.state == state)&&(identical(other.familyName, familyName) || other.familyName == familyName)&&(identical(other.inviterCallName, inviterCallName) || other.inviterCallName == inviterCallName)&&(identical(other.inviterKind, inviterKind) || other.inviterKind == inviterKind)&&(identical(other.proposedKind, proposedKind) || other.proposedKind == proposedKind)&&(identical(other.message, message) || other.message == message)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.relation, relation) || other.relation == relation)&&const DeepCollectionEquality().equals(other.children, children));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is InviteResolution&&(identical(other.inviteId, inviteId) || other.inviteId == inviteId)&&(identical(other.type, type) || other.type == type)&&(identical(other.state, state) || other.state == state)&&(identical(other.familyName, familyName) || other.familyName == familyName)&&(identical(other.inviterCallName, inviterCallName) || other.inviterCallName == inviterCallName)&&(identical(other.inviterKind, inviterKind) || other.inviterKind == inviterKind)&&(identical(other.proposedKind, proposedKind) || other.proposedKind == proposedKind)&&(identical(other.message, message) || other.message == message)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.relation, relation) || other.relation == relation)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&const DeepCollectionEquality().equals(other.children, children));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,inviteId,type,state,familyName,inviterCallName,inviterKind,proposedKind,message,expiresAt,relation,const DeepCollectionEquality().hash(children));
+int get hashCode => Object.hash(runtimeType,inviteId,type,state,familyName,inviterCallName,inviterKind,proposedKind,message,expiresAt,relation,displayName,const DeepCollectionEquality().hash(children));
 
 @override
 String toString() {
-  return 'InviteResolution(inviteId: $inviteId, type: $type, state: $state, familyName: $familyName, inviterCallName: $inviterCallName, inviterKind: $inviterKind, proposedKind: $proposedKind, message: $message, expiresAt: $expiresAt, relation: $relation, children: $children)';
+  return 'InviteResolution(inviteId: $inviteId, type: $type, state: $state, familyName: $familyName, inviterCallName: $inviterCallName, inviterKind: $inviterKind, proposedKind: $proposedKind, message: $message, expiresAt: $expiresAt, relation: $relation, displayName: $displayName, children: $children)';
 }
 
 
@@ -49,7 +51,7 @@ abstract mixin class $InviteResolutionCopyWith<$Res>  {
   factory $InviteResolutionCopyWith(InviteResolution value, $Res Function(InviteResolution) _then) = _$InviteResolutionCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'inviteId') String? inviteId,@JsonKey(name: 'type') String? type,@JsonKey(name: 'state') String? state,@JsonKey(name: 'familyName') String? familyName,@JsonKey(name: 'inviterCallName') String? inviterCallName,@JsonKey(name: 'inviterKind') String? inviterKind,@JsonKey(name: 'proposedKind') String? proposedKind,@JsonKey(name: 'message') String? message,@JsonKey(name: 'expiresAt') DateTime? expiresAt,@JsonKey(name: 'relation') String? relation,@JsonKey(name: 'children') List<CircleSubjectRecord> children
+@JsonKey(name: 'inviteId') String? inviteId,@JsonKey(name: 'type') String? type,@JsonKey(name: 'state') String? state,@JsonKey(name: 'familyName') String? familyName,@JsonKey(name: 'inviterCallName') String? inviterCallName,@JsonKey(name: 'inviterKind') String? inviterKind,@JsonKey(name: 'proposedKind') String? proposedKind,@JsonKey(name: 'message') String? message,@JsonKey(name: 'expiresAt') DateTime? expiresAt,@JsonKey(name: 'relation') String? relation,@JsonKey(name: 'displayName') String? displayName,@JsonKey(name: 'children') List<CircleSubjectRecord> children
 });
 
 
@@ -66,7 +68,7 @@ class _$InviteResolutionCopyWithImpl<$Res>
 
 /// Create a copy of InviteResolution
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? inviteId = freezed,Object? type = freezed,Object? state = freezed,Object? familyName = freezed,Object? inviterCallName = freezed,Object? inviterKind = freezed,Object? proposedKind = freezed,Object? message = freezed,Object? expiresAt = freezed,Object? relation = freezed,Object? children = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? inviteId = freezed,Object? type = freezed,Object? state = freezed,Object? familyName = freezed,Object? inviterCallName = freezed,Object? inviterKind = freezed,Object? proposedKind = freezed,Object? message = freezed,Object? expiresAt = freezed,Object? relation = freezed,Object? displayName = freezed,Object? children = null,}) {
   return _then(_self.copyWith(
 inviteId: freezed == inviteId ? _self.inviteId : inviteId // ignore: cast_nullable_to_non_nullable
 as String?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
@@ -78,6 +80,7 @@ as String?,proposedKind: freezed == proposedKind ? _self.proposedKind : proposed
 as String?,message: freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
 as String?,expiresAt: freezed == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,relation: freezed == relation ? _self.relation : relation // ignore: cast_nullable_to_non_nullable
+as String?,displayName: freezed == displayName ? _self.displayName : displayName // ignore: cast_nullable_to_non_nullable
 as String?,children: null == children ? _self.children : children // ignore: cast_nullable_to_non_nullable
 as List<CircleSubjectRecord>,
   ));
@@ -159,7 +162,7 @@ return $default(_that);case _:
 
 @JsonSerializable(explicitToJson: true)
 class _InviteResolution implements InviteResolution {
-  const _InviteResolution({@JsonKey(name: 'inviteId') this.inviteId, @JsonKey(name: 'type') this.type, @JsonKey(name: 'state') this.state, @JsonKey(name: 'familyName') this.familyName, @JsonKey(name: 'inviterCallName') this.inviterCallName, @JsonKey(name: 'inviterKind') this.inviterKind, @JsonKey(name: 'proposedKind') this.proposedKind, @JsonKey(name: 'message') this.message, @JsonKey(name: 'expiresAt') this.expiresAt, @JsonKey(name: 'relation') this.relation, @JsonKey(name: 'children') final  List<CircleSubjectRecord> children = const <CircleSubjectRecord>[]}): _children = children;
+  const _InviteResolution({@JsonKey(name: 'inviteId') this.inviteId, @JsonKey(name: 'type') this.type, @JsonKey(name: 'state') this.state, @JsonKey(name: 'familyName') this.familyName, @JsonKey(name: 'inviterCallName') this.inviterCallName, @JsonKey(name: 'inviterKind') this.inviterKind, @JsonKey(name: 'proposedKind') this.proposedKind, @JsonKey(name: 'message') this.message, @JsonKey(name: 'expiresAt') this.expiresAt, @JsonKey(name: 'relation') this.relation, @JsonKey(name: 'displayName') this.displayName, @JsonKey(name: 'children') final  List<CircleSubjectRecord> children = const <CircleSubjectRecord>[]}): _children = children;
   factory _InviteResolution.fromJson(Map<String, dynamic> json) => _$InviteResolutionFromJson(json);
 
 @override@JsonKey(name: 'inviteId') final  String? inviteId;
@@ -171,8 +174,11 @@ class _InviteResolution implements InviteResolution {
 @override@JsonKey(name: 'proposedKind') final  String? proposedKind;
 @override@JsonKey(name: 'message') final  String? message;
 @override@JsonKey(name: 'expiresAt') final  DateTime? expiresAt;
-/// Lời mời CIRCLE: quan hệ + chỉ bé/thai kỳ được cấp quyền.
+/// Lời mời CIRCLE: quan hệ + chỉ bé/thai kỳ được cấp quyền (kèm quyền
+/// xem/tải ảnh từng bé) + tên gọi Bố/Mẹ đặt cho người được mời
+/// (BF-20261026-006).
 @override@JsonKey(name: 'relation') final  String? relation;
+@override@JsonKey(name: 'displayName') final  String? displayName;
  final  List<CircleSubjectRecord> _children;
 @override@JsonKey(name: 'children') List<CircleSubjectRecord> get children {
   if (_children is EqualUnmodifiableListView) return _children;
@@ -194,16 +200,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _InviteResolution&&(identical(other.inviteId, inviteId) || other.inviteId == inviteId)&&(identical(other.type, type) || other.type == type)&&(identical(other.state, state) || other.state == state)&&(identical(other.familyName, familyName) || other.familyName == familyName)&&(identical(other.inviterCallName, inviterCallName) || other.inviterCallName == inviterCallName)&&(identical(other.inviterKind, inviterKind) || other.inviterKind == inviterKind)&&(identical(other.proposedKind, proposedKind) || other.proposedKind == proposedKind)&&(identical(other.message, message) || other.message == message)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.relation, relation) || other.relation == relation)&&const DeepCollectionEquality().equals(other._children, _children));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _InviteResolution&&(identical(other.inviteId, inviteId) || other.inviteId == inviteId)&&(identical(other.type, type) || other.type == type)&&(identical(other.state, state) || other.state == state)&&(identical(other.familyName, familyName) || other.familyName == familyName)&&(identical(other.inviterCallName, inviterCallName) || other.inviterCallName == inviterCallName)&&(identical(other.inviterKind, inviterKind) || other.inviterKind == inviterKind)&&(identical(other.proposedKind, proposedKind) || other.proposedKind == proposedKind)&&(identical(other.message, message) || other.message == message)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.relation, relation) || other.relation == relation)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&const DeepCollectionEquality().equals(other._children, _children));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,inviteId,type,state,familyName,inviterCallName,inviterKind,proposedKind,message,expiresAt,relation,const DeepCollectionEquality().hash(_children));
+int get hashCode => Object.hash(runtimeType,inviteId,type,state,familyName,inviterCallName,inviterKind,proposedKind,message,expiresAt,relation,displayName,const DeepCollectionEquality().hash(_children));
 
 @override
 String toString() {
-  return 'InviteResolution(inviteId: $inviteId, type: $type, state: $state, familyName: $familyName, inviterCallName: $inviterCallName, inviterKind: $inviterKind, proposedKind: $proposedKind, message: $message, expiresAt: $expiresAt, relation: $relation, children: $children)';
+  return 'InviteResolution(inviteId: $inviteId, type: $type, state: $state, familyName: $familyName, inviterCallName: $inviterCallName, inviterKind: $inviterKind, proposedKind: $proposedKind, message: $message, expiresAt: $expiresAt, relation: $relation, displayName: $displayName, children: $children)';
 }
 
 
@@ -214,7 +220,7 @@ abstract mixin class _$InviteResolutionCopyWith<$Res> implements $InviteResoluti
   factory _$InviteResolutionCopyWith(_InviteResolution value, $Res Function(_InviteResolution) _then) = __$InviteResolutionCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'inviteId') String? inviteId,@JsonKey(name: 'type') String? type,@JsonKey(name: 'state') String? state,@JsonKey(name: 'familyName') String? familyName,@JsonKey(name: 'inviterCallName') String? inviterCallName,@JsonKey(name: 'inviterKind') String? inviterKind,@JsonKey(name: 'proposedKind') String? proposedKind,@JsonKey(name: 'message') String? message,@JsonKey(name: 'expiresAt') DateTime? expiresAt,@JsonKey(name: 'relation') String? relation,@JsonKey(name: 'children') List<CircleSubjectRecord> children
+@JsonKey(name: 'inviteId') String? inviteId,@JsonKey(name: 'type') String? type,@JsonKey(name: 'state') String? state,@JsonKey(name: 'familyName') String? familyName,@JsonKey(name: 'inviterCallName') String? inviterCallName,@JsonKey(name: 'inviterKind') String? inviterKind,@JsonKey(name: 'proposedKind') String? proposedKind,@JsonKey(name: 'message') String? message,@JsonKey(name: 'expiresAt') DateTime? expiresAt,@JsonKey(name: 'relation') String? relation,@JsonKey(name: 'displayName') String? displayName,@JsonKey(name: 'children') List<CircleSubjectRecord> children
 });
 
 
@@ -231,7 +237,7 @@ class __$InviteResolutionCopyWithImpl<$Res>
 
 /// Create a copy of InviteResolution
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? inviteId = freezed,Object? type = freezed,Object? state = freezed,Object? familyName = freezed,Object? inviterCallName = freezed,Object? inviterKind = freezed,Object? proposedKind = freezed,Object? message = freezed,Object? expiresAt = freezed,Object? relation = freezed,Object? children = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? inviteId = freezed,Object? type = freezed,Object? state = freezed,Object? familyName = freezed,Object? inviterCallName = freezed,Object? inviterKind = freezed,Object? proposedKind = freezed,Object? message = freezed,Object? expiresAt = freezed,Object? relation = freezed,Object? displayName = freezed,Object? children = null,}) {
   return _then(_InviteResolution(
 inviteId: freezed == inviteId ? _self.inviteId : inviteId // ignore: cast_nullable_to_non_nullable
 as String?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
@@ -243,6 +249,7 @@ as String?,proposedKind: freezed == proposedKind ? _self.proposedKind : proposed
 as String?,message: freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
 as String?,expiresAt: freezed == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,relation: freezed == relation ? _self.relation : relation // ignore: cast_nullable_to_non_nullable
+as String?,displayName: freezed == displayName ? _self.displayName : displayName // ignore: cast_nullable_to_non_nullable
 as String?,children: null == children ? _self._children : children // ignore: cast_nullable_to_non_nullable
 as List<CircleSubjectRecord>,
   ));

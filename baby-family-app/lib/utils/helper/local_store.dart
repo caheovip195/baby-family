@@ -206,6 +206,27 @@ class LocalStore {
     );
   }
 
+  /// Outbox + cursor đồng bộ offline-first (BF-20261022-001/002): mã hoá,
+  /// xoá cùng hộp đăng nhập.
+  /// [key] theo từng service (`memory_outbox`, `care_outbox`…).
+  Future saveOutbox(String key, Object? value) async {
+    final box = await _getBox(boxName: LocalStoreKey.authBoxName);
+    await box.put(key, encryptData(jsonEncode(value)));
+  }
+
+  Future<Object?> getOutbox(String key) async {
+    try {
+      final box = await _getBox(boxName: LocalStoreKey.authBoxName);
+      final raw = box.get(key);
+      if (raw is! String || raw.isEmpty) {
+        return null;
+      }
+      return jsonDecode(decryptData(raw));
+    } catch (e) {
+      return null;
+    }
+  }
+
   Future<Map<String, dynamic>> getLocalMediaIndex() async {
     try {
       final box = await _getBox(boxName: LocalStoreKey.authBoxName);
@@ -220,7 +241,50 @@ class LocalStore {
   }
 
   /// Đăng xuất / xoá tài khoản: xoá toàn bộ dữ liệu người dùng trên máy.
+  /// Local DB (BF-20261022-003): các dòng có khoá bắt đầu bằng [prefix].
+  Future<Map<String, Object?>> localRows(String prefix) async {
+    final box = await _getBox(boxName: LocalStoreKey.localDbBoxName);
+    final rows = <String, Object?>{};
+    for (final key in box.keys.whereType<String>()) {
+      if (!key.startsWith(prefix)) {
+        continue;
+      }
+      try {
+        rows[key] = jsonDecode(decryptData(box.get(key) as String));
+      } catch (e) {
+        // Dòng hỏng (đổi khoá mã hoá…): bỏ qua, lần đồng bộ sau ghi lại.
+      }
+    }
+    return rows;
+  }
+
+  Future<void> putLocalRows(Map<String, Object?> rows) async {
+    if (rows.isEmpty) {
+      return;
+    }
+    final box = await _getBox(boxName: LocalStoreKey.localDbBoxName);
+    await box.putAll({
+      for (final MapEntry(:key, :value) in rows.entries)
+        key: encryptData(jsonEncode(value)),
+    });
+  }
+
+  Future<void> clearLocalDb() async {
+    final box = await _getBox(boxName: LocalStoreKey.localDbBoxName);
+    await box.clear();
+  }
+
+  Future<void> deleteLocalRows(Iterable<String> keys) async {
+    if (keys.isEmpty) {
+      return;
+    }
+    final box = await _getBox(boxName: LocalStoreKey.localDbBoxName);
+    await box.deleteAll(keys);
+  }
+
   Future clearAll() async {
+    final localDb = await _getBox(boxName: LocalStoreKey.localDbBoxName);
+    await localDb.clear();
     final authBox = await _getBox(boxName: LocalStoreKey.authBoxName);
     final settingBox = await _getBox(boxName: LocalStoreKey.settingBoxName);
     await authBox.clear();

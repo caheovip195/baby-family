@@ -5,17 +5,23 @@ import 'package:baby_family/data/repository/notification.dart';
 import 'package:baby_family/data/repository/notification_remote.dart';
 import 'package:baby_family/data/repository/session.dart';
 import 'package:baby_family/data/service_imp/notification.dart';
+import 'package:baby_family/data/service_imp/offline_read.dart';
+import 'package:baby_family/data/service_imp/outbox_runner.dart';
 import 'package:baby_family/generated/l10n/app_localizations.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/helper/app_clock.dart';
 import 'package:baby_family/utils/helper/app_l10n.dart';
+import 'package:dio/dio.dart';
 
 /// NOTI-01 qua server thật (BF-20261018-011): hộp thông báo của chính tôi, số
 /// chưa đọc, đánh dấu đã đọc. Server trả `templateCode` + `params` an toàn; app
 /// dựng câu bằng l10n (Skill 10) và đổi `deepLink`/id thành route của app.
 /// Thông báo nhạy cảm (Papa & Mama) không có nội dung, chỉ nêu tên người gửi.
 class NotificationRemoteServiceImp extends NotificationServiceImp {
+  /// Bản đọc gần nhất cho màn phụ khi mất mạng (BF-20261026-007).
+  final _reads = OfflineReads();
+
   NotificationRemoteServiceImp(
     ISessionRepository sessionRepository,
     AppClock clock,
@@ -48,9 +54,17 @@ class NotificationRemoteServiceImp extends NotificationServiceImp {
     final items = <AppNotification>[];
     String? cursor;
     for (var page = 0; page < _maxPages; page++) {
-      final result = await _remote.notifications(
-        cursor: cursor,
-        limit: kValueRemoteFeedPageSize,
+      final result = await _reads.read(
+        [
+          'notifications',
+          sessionRepository.session()[kValueSessionKeyServerUserId],
+          cursor,
+          kValueRemoteFeedPageSize,
+        ],
+        () => _remote.notifications(
+          cursor: cursor,
+          limit: kValueRemoteFeedPageSize,
+        ),
       );
       for (final record in result?.items ?? const <NotificationRecord>[]) {
         final item = _toNotification(record);
@@ -73,8 +87,18 @@ class NotificationRemoteServiceImp extends NotificationServiceImp {
     if (_serverFamilyId == null) {
       return super.unreadCount();
     }
-    return _remote.unreadCount();
+    try {
+      return _lastUnread = await _remote.unreadCount();
+    } on DioException catch (error) {
+      // Mất mạng (offline-first): số đọc gần nhất, không làm hỏng màn hình.
+      if (!OutboxRunner.isTransient(error)) {
+        rethrow;
+      }
+      return _lastUnread;
+    }
   }
+
+  int _lastUnread = 0;
 
   @override
   Future<void> markRead(String id) async {

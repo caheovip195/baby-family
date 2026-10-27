@@ -1,6 +1,7 @@
 import 'package:baby_family/data/model/child/child_record.dart';
 import 'package:baby_family/data/model/pregnancy/birth_result_record.dart';
 import 'package:baby_family/data/model/pregnancy/journey_record.dart';
+import 'package:baby_family/data/model/pregnancy/pregnancy_name_record.dart';
 import 'package:baby_family/data/model/pregnancy/prep_group_record.dart';
 import 'package:baby_family/data/model/pregnancy/prep_item_record.dart';
 import 'package:baby_family/data/provider/child.dart';
@@ -92,6 +93,55 @@ class _FakePregnancy implements IPregnancyRemoteRepository {
   @override
   Future<void> archive(String pregnancyId, String reason) async =>
       archived.add('$pregnancyId:$reason');
+
+  // PREG-07 (BF-20261027-001): server giữ danh sách tên + giới hạn chọn.
+  final nameRows = <PregnancyNameRecord>[];
+  final nameCalls = <String>[];
+  int chosenLimit = 2;
+
+  @override
+  Future<PregnancyNameList?> names(String pregnancyId) async =>
+      PregnancyNameList(items: nameRows, chosenLimit: chosenLimit);
+
+  @override
+  Future<PregnancyNameRecord?> addName(String pregnancyId, JsonMap body) async {
+    nameCalls.add('add:${body['name']}:${body['meaning'] ?? '-'}');
+    final record = PregnancyNameRecord(
+      id: 'n-${nameRows.length + 1}',
+      name: body['name'] as String,
+      meaning: body['meaning'] as String?,
+      addedByUserId: 'srv-me',
+      likedByMe: true,
+    );
+    nameRows.add(record);
+    return record;
+  }
+
+  PregnancyNameRecord _update(
+    String nameId,
+    PregnancyNameRecord Function(PregnancyNameRecord) change,
+  ) {
+    final index = nameRows.indexWhere((n) => n.id == nameId);
+    return nameRows[index] = change(nameRows[index]);
+  }
+
+  @override
+  Future<PregnancyNameRecord?> likeName(
+    String nameId, {
+    required bool like,
+  }) async {
+    nameCalls.add('${like ? 'like' : 'unlike'}:$nameId');
+    return _update(nameId, (n) => n.copyWith(likedByMe: like));
+  }
+
+  @override
+  Future<PregnancyNameRecord?> chooseName(
+    String nameId, {
+    required bool choose,
+  }) async {
+    nameCalls.add('${choose ? 'choose' : 'unchoose'}:$nameId');
+    return _update(nameId, (n) => n.copyWith(chosen: choose));
+  }
 }
 
 void main() {
@@ -126,6 +176,75 @@ void main() {
     container.read(memoryRepositoryProvider),
     container.read(usRepositoryProvider),
     remote,
+  );
+
+  test('PREG-07: names of a server pregnancy go through the API', () async {
+    container.read(childRepositoryProvider).updateChild('srv-preg', {
+      kValueChildKeyServerSubject: true,
+    });
+    remote.nameRows.add(
+      const PregnancyNameRecord(
+        id: 'n-0',
+        name: 'An',
+        addedByUserId: 'srv-partner',
+        likedByPartner: true,
+      ),
+    );
+    final pregnancy = service();
+    var names = await pregnancy.names('srv-preg');
+    expect(names.single.name, 'An');
+    expect(names.single.likedByPartner, isTrue);
+    expect(names.single.bothLike, isFalse);
+
+    await pregnancy.addName('srv-preg', name: ' Bơ ', meaning: ' Ngọt ');
+    await pregnancy.toggleNameLike('n-0');
+    names = await pregnancy.names('srv-preg');
+    expect(names.map((n) => n.name), ['An', 'Bơ']);
+    expect(names.first.bothLike, isTrue);
+
+    // Chọn rồi bấm lại = bỏ chọn (song thai: server giới hạn số tên).
+    await pregnancy.chooseName('n-0');
+    await pregnancy.chooseName('n-0');
+    await pregnancy.toggleNameLike('n-0');
+    expect(remote.nameCalls, [
+      'add:Bơ:Ngọt',
+      'like:n-0',
+      'choose:n-0',
+      'unchoose:n-0',
+      'unlike:n-0',
+    ]);
+  });
+
+  test(
+    'BF-20261023-001: stale pregnancy id cannot reveal fixture names',
+    () async {
+      final session = container.read(sessionRepositoryProvider);
+      session.patchSession({'familyId': 'server-family-mirror'});
+      final pregnancy = service();
+      expect(await pregnancy.names('bo'), isEmpty);
+      final children = container.read(childRepositoryProvider);
+      children.addChild({
+        'id': 'own-pregnancy',
+        'familyId': 'server-family-mirror',
+        'name': 'Our baby',
+        'kind': ChildKind.pregnancy.name,
+      });
+      await pregnancy.addName('own-pregnancy', name: 'An');
+      expect((await pregnancy.names('own-pregnancy')).single.name, 'An');
+    },
+  );
+
+  test(
+    'BF-20261023-001: birth draft excludes sample date, measurements and photo',
+    () async {
+      final draft = await service().birthDraft('bo');
+      expect(draft.birthDate, isNull);
+      expect(draft.birthTime, isNull);
+      expect(draft.gender, ChildGender.unknown);
+      expect(draft.weightKg, isNull);
+      expect(draft.heightCm, isNull);
+      expect(draft.samplePhotoAsset, isNull);
+    },
   );
 
   test(

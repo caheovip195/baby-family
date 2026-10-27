@@ -29,7 +29,7 @@ class _EditPregnancySheet extends HookWidget {
             final navigator = Navigator.of(context);
             await controller.saveEdit(
               name: name.text,
-              dueDate: _parseDate(due.text),
+              dueDate: parseFormDate(due.text, context.localeName),
             );
             navigator.pop();
           },
@@ -37,19 +37,4 @@ class _EditPregnancySheet extends HookWidget {
       ],
     );
   }
-}
-
-/// `dd/MM/yyyy` → ngày; sai định dạng → null (giữ giá trị cũ).
-DateTime? _parseDate(String text) {
-  final parts = text.trim().split(RegExp(r'[/.\-]'));
-  if (parts.length != 3) {
-    return null;
-  }
-  final day = int.tryParse(parts[0]);
-  final month = int.tryParse(parts[1]);
-  final year = int.tryParse(parts[2]);
-  if (day == null || month == null || year == null) {
-    return null;
-  }
-  return DateTime(year, month, day);
 }

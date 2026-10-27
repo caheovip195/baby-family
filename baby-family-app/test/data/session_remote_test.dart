@@ -54,6 +54,7 @@ class _FakeServer {
   String? familyStatus;
   String inviteStatus = 'PENDING';
   int invitesIssued = 0;
+  bool issueInvite = true;
   final consents = <JsonMap>[];
   final cache = <String, JsonMap>{};
   final setupDone = <String>{};
@@ -184,8 +185,18 @@ class _FakeOnboardingRepository implements IOnboardingRepository {
     entitlement: BootstrapEntitlement(accessPhase: server.accessPhase),
     subjects: server.subjects,
     parents: const [
-      BootstrapParent(userId: 'srv-user', slot: 'PARENT_1'),
-      BootstrapParent(userId: 'srv-partner', slot: 'PARENT_2'),
+      BootstrapParent(
+        userId: 'srv-user',
+        slot: 'PARENT_1',
+        callName: 'Mama',
+        displayName: 'Baby Family',
+      ),
+      BootstrapParent(
+        userId: 'srv-partner',
+        slot: 'PARENT_2',
+        callName: 'Bố',
+        displayName: 'QA Papa',
+      ),
     ],
   );
 
@@ -227,6 +238,9 @@ class _FakeOnboardingRepository implements IOnboardingRepository {
     String? message,
   }) async {
     server.invitesIssued++;
+    if (!server.issueInvite) {
+      return null;
+    }
     return PartnerInviteIssued(
       inviteId: 'inv-${server.invitesIssued}',
       code: 'K7Q29MX${server.invitesIssued}',
@@ -486,6 +500,23 @@ void main() {
     expect(auth.saved, isNull);
   });
 
+  test(
+    'BF-20261023-001: missing server invite never returns a mock code',
+    () async {
+      final session = build();
+      await session.restore();
+      await session.requestOtp('+84912345678');
+      await session.verifyOtp('123456');
+      await session.saveProfile(name: 'Lan');
+      await session.chooseRole(FamilyRole.mother);
+      await session.createFamily(name: 'Nhà thử');
+      server.issueInvite = false;
+
+      expect(await session.partnerInvite(), isNull);
+      expect(server.invitesIssued, 1);
+    },
+  );
+
   test('Parent A: OTP → profile → role → family → approval → trial', () async {
     final session = build();
     expect(session.usesServer, isTrue);
@@ -528,11 +559,26 @@ void main() {
     );
     expect(session.pendingPartnerCallName, 'Bố');
 
+    snapshots.saved = null;
     expect(
       await session.decidePartner(approve: true),
       PartnerJoinStatus.joined,
     );
     expect(session.current.state, SessionState.activatedSetup);
+    // BF-20261022-005: bản chụp offline cập nhật ngay sau khi duyệt (trước
+    // đây chỉ lưu lúc mở app → mở offline quay về “chờ bạn đời”).
+    expect(snapshots.saved, isNotNull);
+    snapshots.saved = null;
+    await session.completeSetup();
+    expect(snapshots.saved, isNotNull);
+    snapshots.saved = null;
+    await session.persistOffline();
+    expect(snapshots.saved, isNotNull);
+    // BF-20261022-006: ONB-04 “Mama … và Papa …” dùng tên server của bạn
+    // đời, không phải tên mẫu `defaultPartnerName` của fixture.
+    final partner = await container.read(familyServiceProvider).partner();
+    expect(partner?.displayName, 'QA Papa');
+    expect(partner?.callName, 'Bố');
     // The partner's server id is kept for calendar invites/reminders.
     expect(
       container
@@ -881,13 +927,43 @@ void main() {
         familyName: 'Nhà Lan',
         inviterCallName: 'Mama',
         relation: 'GRANDMOTHER_PATERNAL',
-        children: [kid],
+        displayName: 'Bà Nội',
+        children: [
+          kid,
+          CircleSubjectRecord(
+            id: 'srv-preg',
+            name: 'Bơ',
+            kind: 'PREGNANCY',
+            permission: 'VIEW',
+            allowDownload: true,
+          ),
+        ],
       );
       final preview = await session.previewInvite('CIRC1234');
+      // BF-20261026-006: tên gọi Bố/Mẹ đặt và quyền xem/tải ảnh từng bé.
+      expect(preview.invite.callName, 'Bà Nội');
+      expect(preview.childAccess['srv-kid'], (
+        permission: RelativePermission.contribute,
+        allowDownload: false,
+      ));
+      expect(preview.childAccess['srv-preg'], (
+        permission: RelativePermission.view,
+        allowDownload: true,
+      ));
+      // Chưa đặt tên gọi → để màn dùng nhãn quan hệ.
+      server.circleInvite = server.circleInvite!.copyWith(
+        displayName: '  ',
+        children: const [kid],
+      );
+      expect((await session.previewInvite('CIRC1234')).invite.callName, null);
       expect(preview.invite.kind, InviteKind.relative);
       expect(preview.invite.relation, RelativeRelation.grandmaPaternal);
-      expect(preview.children.map((child) => child.name), ['Hana']);
+      expect(preview.children.map((child) => child.name), ['Hana', 'Bơ']);
       expect(preview.state, InvitePreviewState.valid);
+      // BF-20261026-004: quyền theo từng bé của server (không mặc định
+      // “Chỉ xem”).
+      expect(preview.invite.canComment, isTrue);
+      expect(preview.invite.canPost, isTrue);
 
       // Bố/Mẹ chưa xác nhận lần cuối → vẫn CIR-WAIT.
       server.circles = const [

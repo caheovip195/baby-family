@@ -1,11 +1,16 @@
+import 'dart:async';
+
 import 'package:baby_family/data/dto/care_board.dart';
 import 'package:baby_family/data/dto/mission_completion.dart';
+import 'package:baby_family/data/dto/mission_draft.dart';
 import 'package:baby_family/data/dto/mission_series_info.dart';
 import 'package:baby_family/data/model/care/calendar_event.dart';
 import 'package:baby_family/data/model/care/calendar_event_record.dart';
 import 'package:baby_family/data/model/care/calendar_special_day_record.dart';
+import 'package:baby_family/data/model/care/care_stats.dart';
 import 'package:baby_family/data/model/care/family_badge.dart';
 import 'package:baby_family/data/model/care/family_tree.dart';
+import 'package:baby_family/data/model/care/family_tree_record.dart';
 import 'package:baby_family/data/model/care/heart_history_record.dart';
 import 'package:baby_family/data/model/care/hearts_entry.dart';
 import 'package:baby_family/data/model/care/hearts_summary.dart';
@@ -13,26 +18,35 @@ import 'package:baby_family/data/model/care/mission.dart';
 import 'package:baby_family/data/model/care/mission_history_day.dart';
 import 'package:baby_family/data/model/care/mission_history_entry.dart';
 import 'package:baby_family/data/model/care/mission_record.dart';
+import 'package:baby_family/data/model/care/mission_result_record.dart';
 import 'package:baby_family/data/model/care/mission_settings.dart';
 import 'package:baby_family/data/model/care/mission_template.dart';
 import 'package:baby_family/data/model/care/mission_template_record.dart';
 import 'package:baby_family/data/model/care/swap_option.dart';
+import 'package:baby_family/data/model/sync/outbox_entry.dart';
+import 'package:baby_family/data/repository/base.dart';
 import 'package:baby_family/data/repository/care.dart';
 import 'package:baby_family/data/repository/care_remote.dart';
 import 'package:baby_family/data/repository/child.dart';
 import 'package:baby_family/data/repository/couple_remote.dart';
 import 'package:baby_family/data/repository/family.dart';
+import 'package:baby_family/data/repository/local_db.dart';
 import 'package:baby_family/data/repository/memory.dart';
+import 'package:baby_family/data/repository/outbox.dart';
 import 'package:baby_family/data/repository/session.dart';
 import 'package:baby_family/data/repository/us.dart';
 import 'package:baby_family/data/service_imp/care.dart';
 import 'package:baby_family/data/service_imp/media_uploader.dart';
+import 'package:baby_family/data/service_imp/offline_read.dart';
+import 'package:baby_family/data/service_imp/outbox_runner.dart';
 import 'package:baby_family/generated/l10n/app_localizations.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/helper/app_clock.dart';
 import 'package:baby_family/utils/helper/app_l10n.dart';
+import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
 
 /// Nhiệm vụ hằng ngày qua server thật (CARE-01…06 — BF-20261018-007): bảng ngày
@@ -41,6 +55,9 @@ import 'package:uuid/uuid.dart';
 /// đời không có Hearts (BR-018). Lịch, lịch sử, huy hiệu, cây gia đình, thống kê
 /// và “lưu khoảnh khắc” vẫn dùng dữ liệu trên máy cho tới khi có API.
 class CareRemoteServiceImp extends CareServiceImp {
+  /// Bản đọc gần nhất cho màn phụ khi mất mạng (BF-20261026-007).
+  final _reads = OfflineReads();
+
   CareRemoteServiceImp(
     ISessionRepository sessionRepository,
     AppClock clock,
@@ -108,6 +125,153 @@ class CareRemoteServiceImp extends CareServiceImp {
   bool _isServer(String missionId) =>
       _serverFamilyId != null && _missions.containsKey(missionId);
 
+  // ------------------------------------------------ offline-first (CARE-06)
+
+  /// Hàng đợi hoàn thành nhiệm vụ khi mất mạng (BF-20261022-002); provider gán
+  /// bản lưu trên máy, null (test) = chỉ giữ trong RAM.
+  IOutboxRepository? get outbox => _outbox.store;
+  set outbox(IOutboxRepository? store) => _outbox.store = store;
+
+  late final OutboxRunner _outbox = OutboxRunner(
+    send: _sendCompletion,
+    onState: (entry, state) {
+      if (state == OutboxState.failed) {
+        // Server từ chối (đã hết hạn, đã bị đổi…): bỏ, bảng đọc lại từ server.
+        unawaited(_outbox.remove(entry.id));
+      }
+      if (state == OutboxState.done || state == OutboxState.failed) {
+        _store.touch();
+      }
+    },
+  );
+
+  static const _completeKind = 'mission.complete';
+
+  /// Kết quả lần gửi hoàn thành theo id thao tác.
+  final _completed = <String, MissionResultRecord?>{};
+
+  Future<void> _sendCompletion(OutboxEntry entry) async {
+    _completed[entry.id] = await _remote.complete(
+      entry.args['missionId'] as String,
+      OutboxRunner.keyOf(entry.id),
+    );
+  }
+
+  /// Local DB (BF-20261022-004): bảng nhiệm vụ đọc gần nhất theo ngày, dùng
+  /// khi mất mạng (kể cả sau khi mở lại app). null (test) = chỉ trong RAM.
+  ILocalDb? localDb;
+
+  static const _boardsTable = 'careBoards';
+  static const _treeTable = 'careTree';
+
+  FamilyTree? _lastTree;
+
+  Future<FamilyTree?> _savedTree(String scope) async {
+    try {
+      final row = (await localDb?.rows(scope, _treeTable))?.firstOrNull;
+      return row == null ? null : FamilyTree.fromJson(row);
+    } on Object catch (error) {
+      Logger().w('Bỏ cây gia đình lưu trên máy: $error');
+      return null;
+    }
+  }
+
+  /// Giữ bảng của [kValueLocalBoardDays] ngày gần nhất.
+  Future<void> _saveBoard(String scope, String key, CareBoard board) async {
+    final db = localDb;
+    if (db == null) {
+      return;
+    }
+    try {
+      await db.ensureSchema(kValueLocalDbSchemaVersion);
+      await db.putRows(scope, _boardsTable, [
+        {'id': key, ..._boardJson(board)},
+      ]);
+      final oldest = today.subtract(const Duration(days: kValueLocalBoardDays));
+      await db.deleteRows(scope, _boardsTable, [
+        for (final row in await db.rows(scope, _boardsTable))
+          if (DateTime.tryParse('${row['date']}')?.isBefore(oldest) ?? true)
+            row['id'] as String,
+      ]);
+    } on Object catch (error) {
+      Logger().w('Không lưu được bảng nhiệm vụ: $error');
+    }
+  }
+
+  Future<CareBoard?> _savedBoard(String scope, String key) async {
+    final db = localDb;
+    if (db == null) {
+      return null;
+    }
+    try {
+      await db.ensureSchema(kValueLocalDbSchemaVersion);
+      final row = (await db.rows(
+        scope,
+        _boardsTable,
+      )).where((row) => row['id'] == key).firstOrNull;
+      return row == null ? null : _boardOf(row);
+    } on Object catch (error) {
+      // Bản lưu từ phiên bản app cũ không đọc được: như chưa có.
+      Logger().w('Bỏ bảng nhiệm vụ lưu trên máy: $error');
+      return null;
+    }
+  }
+
+  /// Nhiệm vụ đã hoàn thành trên máy, đang chờ gửi.
+  Set<String> get _pendingDone => {
+    for (final entry in _outbox.entries)
+      if (entry.kind == _completeKind) entry.args['missionId'] as String,
+  };
+
+  @override
+  Future<void> syncPending() => _outbox.syncAll();
+
+  Mission _withPending(Mission mission) =>
+      _pendingDone.contains(mission.id) && !mission.isDone
+      ? mission.copyWith(status: MissionStatus.done, completedAt: now)
+      : mission;
+
+  CareBoard _applyPending(CareBoard board) => CareBoard(
+    date: board.date,
+    mine: board.mine.map(_withPending).toList(),
+    partner: board.partner,
+    together: board.together.map(_withPending).toList(),
+    heartsToday: board.heartsToday,
+    swapsLeft: board.swapsLeft,
+  );
+
+  static String _boardKey(DateTime day, String? childId) =>
+      'board:${_day.format(day)}:${childId ?? '-'}';
+
+  static JsonMap _boardJson(CareBoard board) => {
+    'date': board.date.toIso8601String(),
+    'mine': [for (final m in board.mine) m.toJson()],
+    'partner': [for (final m in board.partner) m.toJson()],
+    'together': [for (final m in board.together) m.toJson()],
+    'heartsToday': board.heartsToday,
+    'swapsLeft': board.swapsLeft,
+  };
+
+  /// Bảng đã lưu → nhớ lại nhiệm vụ server để thao tác sau vẫn đi server.
+  CareBoard _boardOf(JsonMap json) {
+    List<Mission> list(String key) => [
+      for (final row in (json[key] as List? ?? const []))
+        Mission.fromJson(Map<String, dynamic>.from(row as Map)),
+    ];
+    final board = CareBoard(
+      date: DateTime.parse(json['date'] as String),
+      mine: list('mine'),
+      partner: list('partner'),
+      together: list('together'),
+      heartsToday: json['heartsToday'] as int? ?? 0,
+      swapsLeft: json['swapsLeft'] as int? ?? 0,
+    );
+    for (final mission in board.all) {
+      _missions[mission.id] = mission;
+    }
+    return board;
+  }
+
   @override
   Future<CareBoard> board({DateTime? date, String? childId}) async {
     final serverFamilyId = _serverFamilyId;
@@ -115,7 +279,34 @@ class CareRemoteServiceImp extends CareServiceImp {
       return super.board(date: date, childId: childId);
     }
     await ready();
+    await _outbox.load();
     final day = date ?? today;
+    final key = _boardKey(day, childId);
+    try {
+      final board = await _serverBoard(serverFamilyId, day, childId);
+      _boardCache[key] = board;
+      await _saveBoard(serverFamilyId, key, board);
+      return _applyPending(board);
+    } on DioException catch (error) {
+      // Mất mạng: bảng đọc lần trước (cả sau khi mở lại app).
+      if (!OutboxRunner.isTransient(error)) {
+        rethrow;
+      }
+      final cached = _boardCache[key] ?? await _savedBoard(serverFamilyId, key);
+      if (cached == null) {
+        rethrow;
+      }
+      return _applyPending(cached);
+    }
+  }
+
+  final _boardCache = <String, CareBoard>{};
+
+  Future<CareBoard> _serverBoard(
+    String serverFamilyId,
+    DateTime day,
+    String? childId,
+  ) async {
     Future<List<Mission>> tab(String name, MissionOwnerKind owner) async {
       final record = await _remote.board(
         serverFamilyId,
@@ -152,13 +343,23 @@ class CareRemoteServiceImp extends CareServiceImp {
     );
   }
 
+  /// BF-20261023-001: liên kết cũ không được đọc nhiệm vụ fixture theo id.
   @override
   Future<Mission?> mission(String id) async {
     if (!_isServer(id)) {
-      return super.mission(id);
+      return _serverFamilyId == null ? super.mission(id) : null;
     }
     final known = _missions[id]!;
-    final record = await _remote.mission(id);
+    final MissionRecord? record;
+    try {
+      record = await _remote.mission(id);
+    } on DioException catch (error) {
+      // Mất mạng: bản đã đọc trên bảng (offline-first).
+      if (OutboxRunner.isTransient(error)) {
+        return _withPending(known);
+      }
+      rethrow;
+    }
     return record == null
         ? known
         : _toMission(record, known.ownerKind, known.date) ?? known;
@@ -171,12 +372,36 @@ class CareRemoteServiceImp extends CareServiceImp {
       return super.templates(childId: childId);
     }
     return [
-      for (final record in await _remote.templates(
+      for (final record in await _reads.read([
+        'templates',
         serverFamilyId,
-        childId: childId,
-      ))
+        childId,
+      ], () => _remote.templates(serverFamilyId, childId: childId)))
         ?_toTemplate(record),
     ];
+  }
+
+  /// BF-20261023-001: CARE-03 chỉ điền mẫu từ server, không lấy createDraft
+  /// hoặc template của gia đình demo trong MockStore.
+  @override
+  Future<MissionDraft> missionDraft({
+    String? childId,
+    String? templateId,
+  }) async {
+    if (_serverFamilyId == null) {
+      return super.missionDraft(childId: childId, templateId: templateId);
+    }
+    final template = templateId == null
+        ? null
+        : (await templates(
+            childId: childId,
+          )).where((item) => item.id == templateId).firstOrNull;
+    return MissionDraft(
+      title: template?.title ?? '',
+      templateId: template?.id,
+      icon: template?.icon,
+      childIds: [?childId],
+    );
   }
 
   @override
@@ -253,19 +478,46 @@ class CareRemoteServiceImp extends CareServiceImp {
     return mission;
   }
 
+  /// BF-20261023-001: hoàn thành chỉ dùng nhiệm vụ đã đọc từ bảng server,
+  /// không trả kết quả/Hearts của nhiệm vụ demo theo id cũ.
   @override
   Future<MissionCompletion> completeMission(String id) async {
     if (!_isServer(id)) {
+      if (_serverFamilyId != null) {
+        throw StateError('Mission $id not found');
+      }
       return super.completeMission(id);
     }
     await ready();
-    final fingerprint = 'complete:$id';
-    final result = await _remote.complete(
-      id,
-      _pendingKeys[fingerprint] ??= _uuid.v4(),
-    );
-    _pendingKeys.remove(fingerprint);
+    // Offline-first: gửi qua outbox (key theo thao tác). Có mạng → chờ kết quả
+    // server (Hearts); mất mạng → xong trên máy, tự gửi khi có mạng.
+    await _outbox.load();
+    final waiting = _outbox.entries
+        .where((e) => e.kind == _completeKind && e.args['missionId'] == id)
+        .firstOrNull;
+    final entry =
+        waiting ??
+        OutboxEntry(
+          id: _uuid.v4(),
+          kind: _completeKind,
+          args: {'missionId': id},
+          createdAt: now,
+        );
+    // Bấm lại khi lần trước còn chờ: gửi lại đúng thao tác đó (cùng key).
+    // Bị từ chối → lỗi server như khi gọi thẳng.
+    await _outbox.submit(entry);
     final known = _missions[id]!;
+    if (!_completed.containsKey(entry.id)) {
+      // Mất mạng: xong trên máy → các màn đọc lại bảng (đã áp bản chờ gửi).
+      _store.touch();
+      return MissionCompletion(
+        mission: known.copyWith(status: MissionStatus.done, completedAt: now),
+        heartsEarned: 0,
+        undoUntil: now.add(kValueMissionUndoWindow),
+        pendingSync: true,
+      );
+    }
+    final result = _completed.remove(entry.id);
     final record = result?.mission;
     final mission = record == null
         ? known.copyWith(status: MissionStatus.done, completedAt: now)
@@ -279,8 +531,19 @@ class CareRemoteServiceImp extends CareServiceImp {
   }
 
   @override
-  Future<void> undoCompletion(String id) =>
-      _act(id, 'undo', () => super.undoCompletion(id));
+  Future<void> undoCompletion(String id) async {
+    // Hoàn thành còn chờ gửi: chỉ bỏ khỏi hàng đợi.
+    for (final entry in [..._outbox.entries]) {
+      if (entry.kind == _completeKind &&
+          entry.args['missionId'] == id &&
+          entry.id != _outbox.active) {
+        await _outbox.remove(entry.id);
+        _store.touch();
+        return;
+      }
+    }
+    return _act(id, 'undo', () => super.undoCompletion(id));
+  }
 
   @override
   Future<void> removeFromToday(String missionId) =>
@@ -307,10 +570,13 @@ class CareRemoteServiceImp extends CareServiceImp {
     _store.touch();
   }
 
+  /// BF-20261023-001: id chưa có trên bảng server không dùng lựa chọn mẫu.
   @override
   Future<SwapOption> swapOptions(String missionId) async {
     if (!_isServer(missionId)) {
-      return super.swapOptions(missionId);
+      return _serverFamilyId == null
+          ? super.swapOptions(missionId)
+          : SwapOption(missionId: missionId);
     }
     final record = await _remote.swapOptions(missionId);
     final token = record?.optionsToken;
@@ -347,7 +613,11 @@ class CareRemoteServiceImp extends CareServiceImp {
     if (serverFamilyId == null) {
       return super.myHearts();
     }
-    final record = await _remote.myHearts(serverFamilyId, limit: 20);
+    final record = await _reads.read([
+      'myHearts',
+      serverFamilyId,
+      20,
+    ], () => _remote.myHearts(serverFamilyId, limit: 20));
     final l10n = _l10n();
     final history = record?.history ?? const <HeartHistoryRecord>[];
     return HeartsSummary(
@@ -381,8 +651,25 @@ class CareRemoteServiceImp extends CareServiceImp {
     if (serverFamilyId == null) {
       return super.tree();
     }
-    final record = await _remote.familyTree(serverFamilyId);
-    return FamilyTree(
+    final FamilyTreeRecord? record;
+    try {
+      record = await _remote.familyTree(serverFamilyId);
+    } on DioException catch (error) {
+      // Mất mạng: cây đọc gần nhất (cả sau khi mở lại app).
+      if (!OutboxRunner.isTransient(error)) {
+        rethrow;
+      }
+      return _lastTree ??
+          await _savedTree(serverFamilyId) ??
+          // Chưa từng đọc cây: tính trên máy nhưng không lấy số tuần mẫu
+          // (BF-20261023-001).
+          (await super.tree()).copyWith(
+            weekCareMoments: 0,
+            weekTogether: 0,
+            weekBloomDays: 0,
+          );
+    }
+    final tree = FamilyTree(
       level: record?.level ?? 1,
       name: record?.levelName ?? '',
       progressPercent: record?.progressPercent ?? 0,
@@ -391,6 +678,15 @@ class CareRemoteServiceImp extends CareServiceImp {
       bloomed: record?.today?.bloomed ?? false,
       weekBloomDays: record?.bloomedDaysThisWeek ?? 0,
     );
+    _lastTree = tree;
+    try {
+      await localDb?.putRows(serverFamilyId, _treeTable, [
+        {'id': 'tree', ...tree.toJson()},
+      ]);
+    } on Object catch (error) {
+      Logger().w('Không lưu được cây gia đình: $error');
+    }
+    return tree;
   }
 
   /// CARE-10: đã đạt trước, sắp mở sau (thứ tự server); tên theo ngôn ngữ app.
@@ -402,7 +698,10 @@ class CareRemoteServiceImp extends CareServiceImp {
     }
     final locale = _l10n().localeName;
     return [
-      for (final badge in await _remote.badges(serverFamilyId))
+      for (final badge in await _reads.read([
+        'badges',
+        serverFamilyId,
+      ], () => _remote.badges(serverFamilyId)))
         if (badge.code != null)
           FamilyBadge(
             code: badge.code!,
@@ -434,12 +733,22 @@ class CareRemoteServiceImp extends CareServiceImp {
       final rows = <(MissionRecord, MissionOwnerKind)>[];
       String? cursor;
       for (var page = 0; page < kValueRemoteFeedMaxPages; page++) {
-        final result = await _remote.missionHistory(
-          serverFamilyId,
-          from: _day.format(from),
-          to: _day.format(to),
-          owner: name,
-          cursor: cursor,
+        final result = await _reads.read(
+          [
+            'missionHistory',
+            serverFamilyId,
+            _day.format(from),
+            _day.format(to),
+            name,
+            cursor,
+          ],
+          () => _remote.missionHistory(
+            serverFamilyId,
+            from: _day.format(from),
+            to: _day.format(to),
+            owner: name,
+            cursor: cursor,
+          ),
         );
         rows.addAll([
           for (final item in result?.items ?? const []) (item, kind),
@@ -502,10 +811,13 @@ class CareRemoteServiceImp extends CareServiceImp {
       return super.calendarEvents(from, to);
     }
     await ready();
-    final calendar = await _remote.calendar(
-      serverFamilyId,
-      from: _day.format(from),
-      to: _day.format(to),
+    final calendar = await _reads.read(
+      ['calendar', serverFamilyId, _day.format(from), _day.format(to)],
+      () => _remote.calendar(
+        serverFamilyId,
+        from: _day.format(from),
+        to: _day.format(to),
+      ),
     );
     final l10n = _l10n();
     final items = <CalendarEvent>[
@@ -530,6 +842,33 @@ class CareRemoteServiceImp extends CareServiceImp {
       final day = a.date.compareTo(b.date);
       return day != 0 ? day : minutes(a).compareTo(minutes(b));
     });
+  }
+
+  /// CAL-02 gia đình thật: form trống (ngày hôm nay), không điền sự kiện mẫu
+  /// của fixture (BF-20261022-006).
+  @override
+  Future<CalendarEvent> eventDraft() async {
+    final draft = await super.eventDraft();
+    if (_serverFamilyId == null) {
+      return draft;
+    }
+    return CalendarEvent(id: draft.id, title: '', date: today);
+  }
+
+  /// CARE-11 qua server (BF-20261027-001): số nhiệm vụ cả nhà theo category,
+  /// ngày cây nở hoa; mất mạng → bản đọc gần nhất cùng tuần/bé.
+  @override
+  Future<CareStats?> careStats({DateTime? weekStart, String? childId}) async {
+    final serverFamilyId = _serverFamilyId;
+    if (serverFamilyId == null) {
+      return super.careStats(weekStart: weekStart, childId: childId);
+    }
+    final week = weekStart == null ? null : _day.format(weekStart);
+    return _reads.read(
+      ['careStats', serverFamilyId, week, childId],
+      () =>
+          _remote.careStats(serverFamilyId, weekStart: week, childId: childId),
+    );
   }
 
   /// CAL-02 qua server: nhắc gửi cho chính người tạo; “Mời cả nhà” chỉ cho
@@ -836,7 +1175,10 @@ class CareRemoteServiceImp extends CareServiceImp {
     if (serverFamilyId == null) {
       return local;
     }
-    final record = await _remote.missionSettings(serverFamilyId);
+    final record = await _reads.read([
+      'missionSettings',
+      serverFamilyId,
+    ], () => _remote.missionSettings(serverFamilyId));
     if (record == null) {
       return local;
     }
@@ -1054,7 +1396,10 @@ class CareRemoteServiceImp extends CareServiceImp {
     if (serverFamilyId == null) {
       return super.missionSeries();
     }
-    final records = await _remote.missionSeries(serverFamilyId);
+    final records = await _reads.read([
+      'missionSeries',
+      serverFamilyId,
+    ], () => _remote.missionSeries(serverFamilyId));
     final todayKey = _day.format(today);
     return [
       for (final record in records)

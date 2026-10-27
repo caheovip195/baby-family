@@ -43,10 +43,13 @@ class _HistoryEntryRow extends StatelessWidget {
     if (partner) {
       meta = l10n.careHistoryPartnerDone(controller.partnerCallName);
     } else if (together) {
-      meta = l10n.careHistoryTogetherDone(
-        entry.couple ? 'yes' : 'no',
-        entry.completedTime ?? '',
-      );
+      // Việc cùng nhau chưa làm không ghi “đã xong” (BF-20261026-003).
+      meta = missed
+          ? l10n.careHistoryTogetherMissed(entry.couple ? 'yes' : 'no')
+          : l10n.careHistoryTogetherDone(
+              entry.couple ? 'yes' : 'no',
+              entry.completedTime ?? '',
+            );
     } else {
       final head = missed
           ? l10n.careHistoryMissed

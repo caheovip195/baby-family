@@ -60,6 +60,18 @@ mixin Api {
   static const memories = '/v1/memories';
   static const memory = '/v1/memories/{memoryId}';
   static const familyFeed = '/v1/families/{familyId}/feed';
+
+  /// PREG-07 đặt tên cho con (chỉ Papa & Mama).
+  static const pregnancyNames = '/v1/pregnancies/{pregnancyId}/names';
+  static const pregnancyName = '/v1/pregnancy-names/{nameId}';
+  static const pregnancyNameLike = '/v1/pregnancy-names/{nameId}/like';
+  static const pregnancyNameChoose = '/v1/pregnancy-names/{nameId}/choose';
+
+  /// CARE-11 thống kê chăm con (mức gia đình).
+  static const familyCareStats = '/v1/families/{familyId}/care-stats';
+
+  /// Offline-first: thay đổi theo cursor (BF-20261022-002).
+  static const familyChanges = '/v1/families/{familyId}/changes';
   static const familyTimeline = '/v1/families/{familyId}/timeline';
   static const familyMediaGrid = '/v1/families/{familyId}/media-grid';
 

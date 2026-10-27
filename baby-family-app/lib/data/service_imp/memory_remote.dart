@@ -1,35 +1,45 @@
 import 'dart:async';
-
 import 'dart:convert';
 
 import 'package:baby_family/data/dto/memory_grid_photo.dart';
 import 'package:baby_family/data/dto/memory_search_result.dart';
+import 'package:baby_family/data/model/memory/collection_summary.dart';
 import 'package:baby_family/data/model/memory/comment_record.dart';
+import 'package:baby_family/data/model/memory/day_story.dart';
 import 'package:baby_family/data/model/memory/media_asset_record.dart';
 import 'package:baby_family/data/model/memory/memory.dart';
 import 'package:baby_family/data/model/memory/memory_comment.dart';
 import 'package:baby_family/data/model/memory/memory_draft_item.dart';
 import 'package:baby_family/data/model/memory/memory_record.dart';
+import 'package:baby_family/data/model/memory/month_recap.dart';
 import 'package:baby_family/data/model/memory/on_this_day_group.dart';
 import 'package:baby_family/data/model/memory/on_this_day_record.dart';
 import 'package:baby_family/data/model/memory/report_receipt.dart';
 import 'package:baby_family/data/model/memory/story_item.dart';
 import 'package:baby_family/data/model/memory/today_story_record.dart';
+import 'package:baby_family/data/model/memory/weekly_recap.dart';
+import 'package:baby_family/data/model/sync/change_item.dart';
+import 'package:baby_family/data/model/sync/outbox_entry.dart';
 import 'package:baby_family/data/repository/base.dart';
 import 'package:baby_family/data/repository/child.dart';
 import 'package:baby_family/data/repository/family.dart';
+import 'package:baby_family/data/repository/local_memory_db.dart';
 import 'package:baby_family/data/repository/media.dart';
 import 'package:baby_family/data/repository/memory.dart';
 import 'package:baby_family/data/repository/memory_feed.dart';
+import 'package:baby_family/data/repository/outbox.dart';
 import 'package:baby_family/data/repository/session.dart';
 import 'package:baby_family/data/service/local_media.dart';
 import 'package:baby_family/data/service_imp/child.dart';
 import 'package:baby_family/data/service_imp/media_uploader.dart';
 import 'package:baby_family/data/service_imp/memory.dart';
+import 'package:baby_family/data/service_imp/offline_read.dart';
+import 'package:baby_family/data/service_imp/outbox_runner.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/helper/app_clock.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
+import 'package:baby_family/utils/helper/lenient_json.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -45,6 +55,9 @@ import 'package:uuid/uuid.dart';
 /// Các loại chưa có API phía server (ghi âm, thư, cột mốc, ảnh tháng…) vẫn chỉ
 /// lưu trên máy (BF-20261016-002).
 class MemoryRemoteServiceImp extends MemoryServiceImp {
+  /// Bản đọc gần nhất cho màn phụ khi mất mạng (BF-20261026-007).
+  final _reads = OfflineReads();
+
   MemoryRemoteServiceImp(
     ISessionRepository sessionRepository,
     AppClock clock,
@@ -106,8 +119,9 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
   DateTime? _fullSyncedAt;
   Future<void>? _syncing;
 
-  /// Ký ức tạo trên máy trong lúc đang đồng bộ: có thể chưa nằm trong ảnh chụp
-  /// feed vừa tải nên không bị coi là đã xoá phía server.
+  /// Ký ức vừa tạo trên máy: có thể chưa nằm trong ảnh chụp feed đang/vừa tải
+  /// nên không bị coi là đã xoá phía server — giữ tới khi feed thấy nó (ký ức
+  /// bị xoá thật sau đó được gỡ qua changes API).
   final _createdDuringSync = <String>{};
 
   /// Lúc đầu tiên thấy ký ức ở trạng thái PROCESSING (giới hạn thời gian hỏi lại).
@@ -117,14 +131,26 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
   /// (server có thể đã ghi nhưng mất response) dùng lại key → không tạo trùng.
   final _pendingKeys = <String, String>{};
 
-  String _keyFor(String fingerprint) =>
-      _pendingKeys[fingerprint] ??= _uuid.v4();
+  String _keyFor(String fingerprint) {
+    final op = _outbox.active;
+    if (op != null) {
+      // Outbox: cùng thao tác → cùng key kể cả sau khi tắt/mở lại app.
+      return OutboxRunner.keyOf(op, fingerprint);
+    }
+    return _pendingKeys[fingerprint] ??= _uuid.v4();
+  }
 
   String? get _serverFamilyId {
     final id =
         sessionRepository.session()[kValueSessionKeyServerFamilyId] as String?;
     if (id != _cachedFamilyId) {
       // FAM-08: đổi gia đình → bỏ mốc đồng bộ/bộ nhớ đệm của nhà cũ.
+      if (_cachedFamilyId != null) {
+        _outbox.reset();
+        _commentCache.clear();
+        _resetLocalDb();
+        _createdDuringSync.clear();
+      }
       _cachedFamilyId = id;
       _timelineSyncedAt.clear();
       _photoCache.clear();
@@ -137,11 +163,67 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
 
   String? _cachedFamilyId;
 
+  /// BF-20261023-001: không mở ký ức mẫu từ recap hoặc id của nhà khác.
+  @override
+  Future<Memory?> memory(String id) async {
+    await ready();
+    if (_serverFamilyId != null &&
+        _memories.memory(id)?['familyId'] != familyId) {
+      return null;
+    }
+    return super.memory(id);
+  }
+
+  /// BF-20261023-001: catalog chỉ cung cấp nhãn; số và bìa lấy từ ký ức thật.
+  @override
+  Future<List<CollectionSummary>> collections() async {
+    if (_serverFamilyId == null) {
+      return super.collections();
+    }
+    await ready();
+    final result = <CollectionSummary>[];
+    for (final row in _memories.collections()) {
+      final items = await collectionMemories(row['code'] as String);
+      result.add(
+        CollectionSummary.fromJson({
+          ...row,
+          'count': items.length,
+          'coverAsset': items
+              .where(
+                (memory) =>
+                    memory.sealedUntil == null ||
+                    !memory.sealedUntil!.isAfter(now),
+              )
+              .expand((memory) => memory.mediaAssets)
+              .firstOrNull,
+        }),
+      );
+    }
+    return result;
+  }
+
+  /// BF-20261023-001: chưa có nguồn câu chuyện ngày của gia đình trên server.
+  @override
+  Future<DayStory?> dayStory({String? childId}) async =>
+      _serverFamilyId == null ? super.dayStory(childId: childId) : null;
+
+  /// BF-20261023-001: không dùng tổng kết tháng mẫu khi chưa có API tương ứng.
+  @override
+  Future<MonthRecap?> monthRecap({String? childId}) async =>
+      _serverFamilyId == null ? super.monthRecap(childId: childId) : null;
+
+  /// BF-20261023-001: bản thư viện đọc API recap; bản nền không dùng fixture.
+  @override
+  Future<WeeklyRecap?> weeklyRecap() async =>
+      _serverFamilyId == null ? super.weeklyRecap() : null;
+
   @override
   Future<List<Memory>> memories({
     String? childId,
     Set<MemoryKind>? kinds,
   }) async {
+    await _loadOutbox();
+    await _hydrate();
     _markStaleUploads();
     await _sync();
     if (childId != null) {
@@ -382,29 +464,30 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
       );
     }
     await ready();
-    if (deferUpload && mediaAssets.isNotEmpty) {
-      // MEM-06: ký ức tạm hiện ngay với tiến độ; tải + tạo ký ức chạy nền.
+    if (deferUpload) {
+      // MEM-06 + offline-first: ký ức tạm hiện ngay (cả khi mất mạng); tải +
+      // tạo ký ức chạy nền qua outbox, tự gửi lại khi có mạng.
       return _enqueue(
-        () => create(
-          kind: kind,
-          childIds: childIds,
-          title: title,
-          body: body,
-          quoteContext: quoteContext,
-          mediaAssets: mediaAssets,
-          visibility: visibility,
-          occurredAt: occurredAt,
-          feeling: feeling,
-          people: people,
-          locationLabel: locationLabel,
-          milestoneCode: milestoneCode,
-          milestoneTitle: milestoneTitle,
-          monthIndex: monthIndex,
-          pregnancyWeek: pregnancyWeek,
-          voiceDurationSec: voiceDurationSec,
-          sealedUntil: sealedUntil,
-          missionId: missionId,
-        ),
+        {
+          'kind': kind.name,
+          'childIds': childIds,
+          'title': ?title,
+          'body': ?body,
+          'quoteContext': ?quoteContext,
+          'mediaAssets': mediaAssets,
+          'visibility': visibility.name,
+          'occurredAt': (occurredAt ?? now).toIso8601String(),
+          'feeling': ?feeling,
+          'people': people,
+          'locationLabel': ?locationLabel,
+          'milestoneCode': ?milestoneCode,
+          'milestoneTitle': ?milestoneTitle,
+          'monthIndex': ?monthIndex,
+          'pregnancyWeek': ?pregnancyWeek,
+          'voiceDurationSec': ?voiceDurationSec,
+          'sealedUntil': ?sealedUntil?.toIso8601String(),
+          'missionId': ?missionId,
+        },
         {
           'familyId': familyId,
           'kind': kind.name,
@@ -478,9 +561,7 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
     _pendingKeys.remove(fingerprint);
     final createdId = record?.id;
     if (createdId != null) {
-      if (_syncing != null) {
-        _createdDuringSync.add(createdId);
-      }
+      _createdDuringSync.add(createdId);
       _trackProcessing(createdId, record?.status);
     }
     final row = _memories.addMemory({
@@ -509,80 +590,190 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
     return Memory.fromJson(row);
   }
 
-  // ------------------------------------------------------------ MEM-06
+  // ------------------------------------------------- MEM-06 / offline-first
 
-  /// Việc tải nền theo id ký ức tạm; chạy lần lượt (một tải lên một lúc).
-  final _uploadJobs = <String, Future<Memory> Function()>{};
+  /// Hàng đợi ghi bền vững (BF-20261022-001/002): tạo ký ức, bình luận, cảm
+  /// xúc tạo lúc mất mạng còn sau khi tắt app và tự gửi khi có mạng. Provider
+  /// gán bản lưu trên máy; null (mock, test) = chỉ giữ trong RAM.
+  IOutboxRepository? get outbox => _outbox.store;
+  set outbox(IOutboxRepository? store) => _outbox.store = store;
+
+  late final OutboxRunner _outbox = OutboxRunner(
+    send: _sendEntry,
+    onState: _onEntryState,
+    onRestore: _restoreEntry,
+  );
+
+  static const _createKind = 'memory.create';
+  static const _commentKind = 'memory.comment';
+  static const _reactionKind = 'memory.reaction';
+
   String? _activeUpload;
-  Future<void> _uploadQueue = Future.value();
 
   /// Chờ hàng đợi tải nền xong (test, đăng xuất).
   @visibleForTesting
-  Future<void> get uploadsSettled => _uploadQueue;
+  Future<void> get uploadsSettled => _outbox.settled;
 
-  Memory _enqueue(Future<Memory> Function() run, JsonMap placeholder) {
+  /// Ký ức tạo trên máy đang chờ đăng (băng ngoại tuyến).
+  @override
+  int get pendingSyncCount =>
+      _outbox.entries.where((entry) => entry.kind == _createKind).length;
+
+  Future<void> _sendEntry(OutboxEntry entry) => switch (entry.kind) {
+    _commentKind => _sendComment(entry),
+    _reactionKind => _sendReaction(entry),
+    _ => _replay(entry),
+  };
+
+  void _onEntryState(OutboxEntry entry, OutboxState state) {
+    switch (entry.kind) {
+      case _createKind:
+        _onCreateState(entry, state);
+      case _commentKind:
+        if (state == OutboxState.failed) {
+          // Server không nhận (vd ký ức đã tắt bình luận): bỏ bản tạm.
+          unawaited(_outbox.remove(entry.id));
+          _bumpComments(entry.args['memoryId'] as String, -1);
+        }
+      case _reactionKind:
+        if (state == OutboxState.failed) {
+          unawaited(_outbox.remove(entry.id));
+        }
+    }
+  }
+
+  void _onCreateState(OutboxEntry entry, OutboxState state) {
+    final id = entry.id;
+    if (state == OutboxState.sending) {
+      _activeUpload = id;
+    } else if (_activeUpload == id) {
+      _activeUpload = null;
+    }
+    if (_memories.memory(id) == null) {
+      return;
+    }
+    switch (state) {
+      case OutboxState.sending:
+        _memories.updateMemory(id, {
+          'uploadFailed': false,
+          'uploadWaiting': false,
+          'uploadDone': 0,
+        });
+      case OutboxState.waiting:
+        _memories.updateMemory(id, {
+          'uploadFailed': false,
+          'uploadWaiting': true,
+        });
+      case OutboxState.failed:
+        _memories.updateMemory(id, {
+          'uploadFailed': true,
+          'uploadWaiting': false,
+        });
+      case OutboxState.done:
+        _memories.removeMemory(id);
+    }
+  }
+
+  /// Mở app: hiện lại ký ức tạm còn chờ.
+  void _restoreEntry(OutboxEntry entry) {
+    if (entry.kind != _createKind || _memories.memory(entry.id) != null) {
+      return;
+    }
+    _memories.addMemory({
+      ...entry.placeholder,
+      'uploadDone': 0,
+      'uploadFailed': entry.failed,
+      'uploadWaiting': false,
+    });
+  }
+
+  Future<void> _loadOutbox() => _outbox.load();
+
+  Future<Memory> _enqueue(JsonMap args, JsonMap placeholder) async {
+    await _loadOutbox();
+    final id = _uuid.v4();
+    final media = [
+      ...(args['mediaAssets'] as List? ?? const []).cast<String>(),
+    ];
+    final kept = await outbox?.keepFiles(id, media) ?? media;
     final row = _memories.addMemory({
       ...placeholder,
+      'id': id,
+      'mediaAssets': kept,
       'uploadDone': 0,
       'uploadFailed': false,
       ChildServiceImp.localKey: true,
     });
-    final id = row['id'] as String;
-    _uploadJobs[id] = run;
-    _scheduleUpload(id);
+    await _outbox.add(
+      OutboxEntry(
+        id: id,
+        kind: _createKind,
+        args: {...args, 'mediaAssets': kept},
+        placeholder: row,
+        createdAt: now,
+      ),
+    );
     return Memory.fromJson(row);
   }
 
-  /// Ký ức tạm không còn việc tải (app vừa mở lại) → hiện “chưa xong”.
+  /// Ký ức tạm không còn việc tải (bản cũ trước outbox) → hiện “chưa xong”.
   void _markStaleUploads() {
     for (final row in _memories.memories(familyId)) {
       final id = row['id'] as String;
       if (row['uploadTotal'] != null &&
           row['uploadFailed'] != true &&
-          !_uploadJobs.containsKey(id)) {
+          !_outbox.contains(id)) {
         _memories.updateMemory(id, {'uploadFailed': true});
       }
     }
   }
 
-  void _scheduleUpload(String id) {
-    _uploadQueue = _uploadQueue.then((_) => _runUpload(id));
+  /// Gửi lại mọi thao tác đang chờ (vừa có mạng lại).
+  @override
+  Future<void> syncPending() => _outbox.syncAll();
+
+  Future<void> _replay(OutboxEntry entry) async {
+    final args = entry.args;
+    DateTime? date(String key) => DateTime.tryParse('${args[key] ?? ''}');
+    List<String> list(String key) => [
+      ...(args[key] as List? ?? const []).cast<String>(),
+    ];
+    await create(
+      kind: MemoryKind.values.byName(args['kind'] as String),
+      childIds: list('childIds'),
+      title: args['title'] as String?,
+      body: args['body'] as String?,
+      quoteContext: args['quoteContext'] as String?,
+      mediaAssets: list('mediaAssets'),
+      visibility: MemoryVisibility.values.byName(args['visibility'] as String),
+      occurredAt: date('occurredAt'),
+      feeling: args['feeling'] as String?,
+      people: list('people'),
+      locationLabel: args['locationLabel'] as String?,
+      milestoneCode: args['milestoneCode'] as String?,
+      milestoneTitle: args['milestoneTitle'] as String?,
+      monthIndex: args['monthIndex'] as int?,
+      pregnancyWeek: args['pregnancyWeek'] as int?,
+      voiceDurationSec: args['voiceDurationSec'] as int?,
+      sealedUntil: date('sealedUntil'),
+      missionId: args['missionId'] as String?,
+    );
   }
 
-  Future<void> _runUpload(String id) async {
-    final run = _uploadJobs[id];
-    if (run == null || _memories.memory(id) == null) {
-      return;
-    }
-    _activeUpload = id;
-    _memories.updateMemory(id, {'uploadFailed': false, 'uploadDone': 0});
-    try {
-      await run();
-      _uploadJobs.remove(id);
-      _memories.removeMemory(id);
-    } on Object catch (error) {
-      Logger().w('Tải lên chưa xong: $error');
-      if (_memories.memory(id) != null) {
-        _memories.updateMemory(id, {'uploadFailed': true});
-      }
-    } finally {
-      _activeUpload = null;
-    }
-  }
-
-  /// Key idempotency theo nội dung được giữ, nên thử lại không tạo trùng.
+  /// Key idempotency theo nội dung được giữ (và suy ra từ id thao tác khi gửi
+  /// từ outbox), nên thử lại không tạo trùng.
   @override
   Future<void> retryUpload(String memoryId) async {
-    if (!_uploadJobs.containsKey(memoryId)) {
+    if (!await _outbox.retry(memoryId)) {
       return _keepAsDraft(memoryId);
     }
-    _scheduleUpload(memoryId);
-    await _uploadQueue;
   }
 
   @override
   Future<void> cancelUpload(String memoryId) async {
-    _uploadJobs.remove(memoryId);
+    if (await _outbox.remove(memoryId)) {
+      await outbox?.discardFiles(memoryId);
+    }
     _memories.removeMemory(memoryId);
   }
 
@@ -601,6 +792,62 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
       mediaAssets: memory.mediaAssets,
     );
     _memories.removeMemory(memoryId);
+  }
+
+  // --------------------------------- bình luận / cảm xúc qua outbox (MEM-07)
+
+  /// Bình luận đã đọc từ server theo ký ức — dùng khi mất mạng; changes API
+  /// cập nhật thêm/sửa/xoá (BF-20261022-002).
+  final _commentCache = <String, Map<String, MemoryComment>>{};
+
+  Future<void> _sendComment(OutboxEntry entry) async {
+    final memoryId = entry.args['memoryId'] as String;
+    final record = await _feed.addComment(
+      memoryId,
+      entry.args['body'] as String,
+      parentCommentId: entry.args['parentId'] as String?,
+      idempotencyKey: OutboxRunner.keyOf(entry.id),
+    );
+    if (record?.id != null) {
+      final comment = _commentOf(record!, memoryId);
+      (_commentCache[memoryId] ??= {})[comment.id] = comment;
+      _schedulePersist();
+    }
+  }
+
+  /// Gửi cảm xúc cuối cùng người dùng chọn (đổi liên tiếp chỉ gửi lần cuối).
+  Future<void> _sendReaction(OutboxEntry entry) async {
+    final memoryId = entry.args['memoryId'] as String;
+    final type = entry.args['type'] as String?;
+    final key = OutboxRunner.keyOf(entry.id);
+    final state = type == null
+        ? await _feed.clearReaction(memoryId, idempotencyKey: key)
+        : await _feed.setReaction(memoryId, type, idempotencyKey: key);
+    if (state != null && _memories.memory(memoryId) != null) {
+      _memories.updateMemory(memoryId, {
+        'reactions': _emojiReactions(state.reactions),
+        'myReaction': _emojiOf(state.myReaction),
+      });
+    }
+  }
+
+  /// Bình luận tạm (chờ gửi) của một ký ức, theo thứ tự tạo.
+  List<MemoryComment> _pendingComments(String memoryId) => [
+    for (final entry in _outbox.entries)
+      if (entry.kind == _commentKind && entry.args['memoryId'] == memoryId)
+        MemoryComment.fromJson(entry.placeholder),
+  ];
+
+  void _bumpComments(String memoryId, int delta) {
+    final row = _memories.memory(memoryId);
+    if (row == null) {
+      return;
+    }
+    final count = row['commentCount'] as int? ?? 0;
+    _memories.updateMemory(memoryId, {
+      'commentCount': (count + delta).clamp(0, 1 << 30),
+    });
+    _schedulePersist();
   }
 
   /// Tải một ảnh/video lên (lớp con dùng cho ảnh tháng); trả asset id.
@@ -787,30 +1034,73 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
       return;
     }
     await ready();
-    final previous = _memories.memory(memoryId)?['myReaction'];
-    final state = previous == emoji
-        ? await _feed.clearReaction(memoryId)
-        : await _feed.setReaction(memoryId, type);
-    if (state == null) {
-      return;
+    await _loadOutbox();
+    // Offline-first: đổi ngay trên máy (số đếm tạm), gửi nền qua outbox; đổi
+    // liên tiếp thì chỉ lần chọn cuối được gửi.
+    final row = _memories.memory(memoryId)!;
+    final previous = row['myReaction'] as String?;
+    final next = previous == emoji ? null : emoji;
+    final counts = Map<String, dynamic>.from(
+      (row['reactions'] as Map?) ?? const {},
+    );
+    void bump(String? key, int delta) {
+      if (key == null) {
+        return;
+      }
+      final value = ((counts[key] as int?) ?? 0) + delta;
+      if (value <= 0) {
+        counts.remove(key);
+      } else {
+        counts[key] = value;
+      }
     }
-    _memories.updateMemory(memoryId, {
-      'reactions': _emojiReactions(state.reactions),
-      'myReaction': _emojiOf(state.myReaction),
-    });
+
+    bump(previous, -1);
+    bump(next, 1);
+    _memories.updateMemory(memoryId, {'reactions': counts, 'myReaction': next});
+    for (final entry in [..._outbox.entries]) {
+      // Kể cả lần đang gửi: lỗi thì không quay lại hàng đợi, xong thì lần chọn
+      // mới vẫn được gửi sau và ghi đè.
+      if (entry.kind == _reactionKind && entry.args['memoryId'] == memoryId) {
+        await _outbox.remove(entry.id);
+      }
+    }
+    await _outbox.add(
+      OutboxEntry(
+        id: _uuid.v4(),
+        kind: _reactionKind,
+        args: {'memoryId': memoryId, 'type': next == null ? null : type},
+        createdAt: now,
+      ),
+    );
   }
 
+  /// BF-20261023-001: không đọc bình luận mẫu qua id ký ức ngoài gia đình.
   @override
   Future<List<MemoryComment>> comments(String memoryId) async {
+    if (_serverFamilyId != null && await memory(memoryId) == null) {
+      return const [];
+    }
     if (!_isServerMemory(memoryId)) {
       return super.comments(memoryId);
     }
     await ready();
-    final records = await _feed.comments(memoryId);
-    return [
-      for (final record in records)
-        if (record.id != null) _commentOf(record, memoryId),
-    ];
+    await _loadOutbox();
+    try {
+      final records = await _feed.comments(memoryId);
+      _commentCache[memoryId] = {
+        for (final record in records)
+          if (record.id != null) record.id!: _commentOf(record, memoryId),
+      };
+      _schedulePersist();
+    } on DioException catch (error) {
+      // Mất mạng: bình luận đã đọc lần trước (offline-first).
+      if (!OutboxRunner.isTransient(error) ||
+          !_commentCache.containsKey(memoryId)) {
+        rethrow;
+      }
+    }
+    return [...?_commentCache[memoryId]?.values, ..._pendingComments(memoryId)];
   }
 
   @override
@@ -823,18 +1113,43 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
       return super.addComment(memoryId, body, parentId: parentId);
     }
     await ready();
-    final record = await _feed.addComment(
-      memoryId,
-      body.trim(),
-      parentCommentId: parentId,
+    // Offline-first: bình luận hiện ngay, gửi nền qua outbox (key theo thao
+    // tác nên gửi lại không tạo trùng).
+    final id = _uuid.v4();
+    final comment = MemoryComment(
+      id: id,
+      memoryId: memoryId,
+      authorId: myUserId,
+      authorName: _myCallName,
+      body: body.trim(),
+      createdAt: now,
+      parentId: parentId,
     );
-    if (record?.id == null) {
-      throw StateError('Comment was not created');
-    }
-    final count = _memories.memory(memoryId)?['commentCount'] as int? ?? 0;
-    _memories.updateMemory(memoryId, {'commentCount': count + 1});
-    return _commentOf(record!, memoryId);
+    await _outbox.add(
+      OutboxEntry(
+        id: id,
+        kind: _commentKind,
+        args: {
+          'memoryId': memoryId,
+          'body': body.trim(),
+          'parentId': ?parentId,
+        },
+        placeholder: comment.toJson(),
+        createdAt: now,
+      ),
+    );
+    _bumpComments(memoryId, 1);
+    return comment;
   }
+
+  /// Tên gọi của tôi trong gia đình (bình luận tạm).
+  String get _myCallName =>
+      _family
+              .members(familyId)
+              .where((row) => row['userId'] == myUserId)
+              .firstOrNull?['displayName']
+          as String? ??
+      '';
 
   @override
   Future<void> editComment(String commentId, String body) async {
@@ -847,6 +1162,13 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
 
   @override
   Future<void> deleteComment(String commentId) async {
+    final pending = _outbox[commentId];
+    if (pending != null && commentId != _outbox.active) {
+      // Bình luận chưa gửi: chỉ bỏ khỏi hàng đợi.
+      await _outbox.remove(commentId);
+      _bumpComments(pending.args['memoryId'] as String, -1);
+      return;
+    }
     final memoryId = _serverComments[commentId];
     if (memoryId == null) {
       return super.deleteComment(commentId);
@@ -854,6 +1176,8 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
     await ready();
     await _feed.deleteComment(commentId);
     _serverComments.remove(commentId);
+    _commentCache[memoryId]?.remove(commentId);
+    _schedulePersist();
   }
 
   /// Bình luận server → dạng của app (tác giả đổi về id/tên trên máy).
@@ -888,6 +1212,7 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
     await _feed.trashMemory(memoryId);
     _processingSince.remove(memoryId);
     _memories.removeMemory(memoryId);
+    _schedulePersist();
   }
 
   /// MEM-17: thùng rác của server (mọi trang) + ký ức chỉ có trên máy đã xoá.
@@ -1021,19 +1346,36 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
 
   // ------------------------------------------------ MEM-15/16, RPT-01
 
+  /// MEM-15: tìm gần đây của gia đình thật (không có các mục mẫu).
+  @override
+  Future<List<String>> searchRecents() async {
+    if (_serverFamilyId == null) {
+      return super.searchRecents();
+    }
+    await ready();
+    return _memories.searchRecents(server: true);
+  }
+
   /// MEM-15: server tìm (bỏ dấu, theo tiền tố từ, đúng quyền xem); kết quả
   /// ghi vào kho trên máy rồi chia nhóm Ảnh & video / Nhật ký như bản mock.
   @override
   Future<MemorySearchResult> search(String query, {String? childId}) async {
     final serverFamilyId = _serverFamilyId;
     final text = query.trim();
-    if (serverFamilyId == null || text.length < kValueSearchMinLength) {
+    if (serverFamilyId == null) {
       return super.search(query, childId: childId);
     }
+    // BF-20261023-001: truy vấn ngắn không tìm trong bảng fixture của mock.
+    if (text.length < kValueSearchMinLength) {
+      return MemorySearchResult(query: query);
+    }
     await ready();
-    final recents = _memories.searchRecents();
+    final recents = _memories.searchRecents(server: true);
     if (!recents.contains(text)) {
-      _memories.saveSearchRecents([text, ...recents].take(5).toList());
+      _memories.saveSearchRecents(
+        [text, ...recents].take(5).toList(),
+        server: true,
+      );
     }
     final pregnancy =
         childId != null &&
@@ -1065,9 +1407,12 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
       return super.onThisDay(date: date);
     }
     await ready();
-    final record = await _feed.onThisDay(
-      serverFamilyId,
-      date: date == null ? null : _day.format(date),
+    final record = await _reads.read(
+      ['onThisDay', serverFamilyId, date?.toIso8601String()],
+      () => _feed.onThisDay(
+        serverFamilyId,
+        date: date == null ? null : _day.format(date),
+      ),
     );
     return [
       for (final group in record?.groups ?? const <OnThisDayGroupRecord>[])
@@ -1084,6 +1429,7 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
 
   /// RPT-01: ký ức/bình luận/người của server báo cáo lên server (ẩn với tôi
   /// do server lưu); nội dung chỉ có trên máy giữ cách cũ.
+  /// BF-20261023-001: không tạo mã biên nhận giả cho nội dung chưa lên server.
   @override
   Future<ReportReceipt> submitReport({
     required String targetId,
@@ -1100,7 +1446,7 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
       ReportTarget.member => _family.member(targetId)?['userId'] as String?,
       _ => null,
     };
-    if (serverFamilyId == null || serverTarget == null) {
+    if (serverFamilyId == null) {
       return super.submitReport(
         targetId: targetId,
         target: target,
@@ -1109,6 +1455,9 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
         hideForMe: hideForMe,
         removeFromFamily: removeFromFamily,
       );
+    }
+    if (serverTarget == null) {
+      throw StateError('Report target is not available on the server');
     }
     final record = await _feed.report({
       'familyId': serverFamilyId,
@@ -1249,13 +1598,20 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
 
   /// Nháp trên máy trước, nháp đã lưu trên tài khoản (`GET /me/drafts`) sau;
   /// lỗi mạng chỉ hiện nháp trên máy.
+  /// BF-20261023-001: lọc bỏ nháp mẫu, giữ nháp do người dùng lưu.
   @override
   Future<List<MemoryDraftItem>> drafts() async {
-    final local = await super.drafts();
+    var local = await super.drafts();
     final serverFamilyId = _serverFamilyId;
     if (serverFamilyId == null) {
       return local;
     }
+    // Chỉ nháp do người dùng lưu, kể cả lúc server lỗi.
+    final deviceIds = {
+      for (final row in _memories.drafts(myUserId))
+        if (row['resumable'] == true) row['id'],
+    };
+    local = local.where((draft) => deviceIds.contains(draft.id)).toList();
     final List<MemoryRecord> records;
     try {
       records = await _feed.drafts(serverFamilyId);
@@ -1351,7 +1707,6 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
   }
 
   Future<void> _pull({required bool full}) async {
-    _createdDuringSync.clear();
     final serverFamilyId = _serverFamilyId;
     if (serverFamilyId == null) {
       return;
@@ -1387,6 +1742,295 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
       }
     } on DioException catch (error) {
       Logger().w('Không đồng bộ được ký ức: ${error.message}');
+      return;
+    } on Object catch (error) {
+      // Server đổi định dạng bất ngờ: giữ dữ liệu trên máy, không làm hỏng app.
+      Logger().w('Không đọc được dữ liệu ký ức từ server: $error');
+      return;
+    }
+    await _pullChanges(serverFamilyId);
+    _schedulePersist();
+  }
+
+  // ------------------------------------------- local DB (BF-20261022-003)
+
+  /// Local DB bền vững của ký ức + bình luận đã đồng bộ; provider gán bản lưu
+  /// trên máy, null (mock, test) = chỉ trong RAM. Kho trong RAM vẫn là nơi
+  /// giao diện đọc; DB nạp lên lúc mở app (dùng được ngay, kể cả mất mạng) và
+  /// được ghi lại phần thay đổi sau mỗi lần đồng bộ / thao tác.
+  ILocalMemoryDb? localDb;
+
+  String? _hydratedScope;
+  Future<void>? _hydrating;
+
+  /// Bản đã ghi xuống DB (id → JSON) để chỉ ghi dòng đổi.
+  final _savedRows = <String, String>{};
+  final _savedComments = <String, String>{};
+  Timer? _persistTimer;
+
+  void _resetLocalDb() {
+    _persistTimer?.cancel();
+    _persistTimer = null;
+    _hydratedScope = null;
+    _hydrating = null;
+    _savedRows.clear();
+    _savedComments.clear();
+  }
+
+  /// Mở app: dựng lại ký ức và bình luận đã lưu của gia đình hiện tại.
+  Future<void> _hydrate() {
+    final db = localDb;
+    final scope = _serverFamilyId;
+    if (db == null || scope == null || _hydratedScope == scope) {
+      return Future.value();
+    }
+    return _hydrating ??= () async {
+      try {
+        await db.ensureSchema(kValueLocalDbSchemaVersion);
+        final rows = await db.memories(scope);
+        final comments = await db.comments(scope);
+        if (_serverFamilyId != scope) {
+          return;
+        }
+        final broken = <String>[];
+        for (final row in rows) {
+          final id = row['id'];
+          if (id is! String) {
+            continue;
+          }
+          // Chỉ nạp dòng app hiện tại đọc được; dòng hỏng bỏ qua, server ghi
+          // lại ở lần đồng bộ sau.
+          try {
+            Memory.fromJson({...row, 'familyId': familyId});
+          } on Object catch (error) {
+            Logger().w('Bỏ ký ức lưu trên máy không đọc được: $error');
+            broken.add(id);
+            continue;
+          }
+          _savedRows[id] = jsonEncode(row);
+          if (_memories.memory(id) == null) {
+            // Id gia đình trên máy có thể đổi giữa các lần mở app.
+            _memories.addMemory({...row, 'familyId': familyId});
+          }
+        }
+        await db.deleteMemories(scope, broken);
+        for (final MapEntry(key: memoryId, value: list) in comments.entries) {
+          final cache = _commentCache[memoryId] ??= {};
+          for (final comment in lenientList(
+            list,
+            MemoryComment.fromJson,
+            label: 'bình luận lưu trên máy',
+          )) {
+            cache.putIfAbsent(comment.id, () => comment);
+            _serverComments[comment.id] = memoryId;
+          }
+        }
+      } on Object catch (error) {
+        // DB trên máy hỏng không chặn app: dùng dữ liệu server như trước.
+        Logger().w('Không đọc được dữ liệu trên máy: $error');
+      }
+      _hydratedScope = scope;
+    }().whenComplete(() => _hydrating = null);
+  }
+
+  /// Ghi gộp (300 ms) để nhiều thay đổi liên tiếp chỉ ghi một lần.
+  void _schedulePersist() {
+    if (localDb == null) {
+      return;
+    }
+    _persistTimer?.cancel();
+    _persistTimer = Timer(kValueLocalDbWriteDelay, () {
+      _persistTimer = null;
+      unawaited(_persist());
+    });
+  }
+
+  /// Ghi ngay phần còn chờ (test, trước khi đăng xuất).
+  @visibleForTesting
+  Future<void> flushLocalDb() {
+    _persistTimer?.cancel();
+    _persistTimer = null;
+    return _persist();
+  }
+
+  Future<void> _persist() async {
+    final db = localDb;
+    final scope = _serverFamilyId;
+    if (db == null || scope == null || _hydratedScope != scope) {
+      return;
+    }
+    try {
+      final rows = {
+        for (final row in _mirroredRows()) row['id'] as String: row,
+      };
+      final changed = [
+        for (final MapEntry(key: id, value: row) in rows.entries)
+          if (_savedRows[id] != jsonEncode(row)) row,
+      ];
+      final gone = _savedRows.keys
+          .where((id) => !rows.containsKey(id))
+          .toList();
+      await db.putMemories(scope, changed);
+      await db.deleteMemories(scope, gone);
+      for (final row in changed) {
+        _savedRows[row['id'] as String] = jsonEncode(row);
+      }
+      gone.forEach(_savedRows.remove);
+
+      final comments = {
+        for (final MapEntry(key: memoryId, value: cache)
+            in _commentCache.entries)
+          if (rows.containsKey(memoryId))
+            memoryId: [for (final c in cache.values) c.toJson()],
+      };
+      final changedComments = {
+        for (final MapEntry(key: memoryId, value: list) in comments.entries)
+          if (_savedComments[memoryId] != jsonEncode(list)) memoryId: list,
+      };
+      final goneComments = _savedComments.keys
+          .where((id) => !comments.containsKey(id))
+          .toList();
+      await db.putComments(scope, changedComments);
+      await db.deleteComments(scope, goneComments);
+      for (final MapEntry(:key, :value) in changedComments.entries) {
+        _savedComments[key] = jsonEncode(value);
+      }
+      goneComments.forEach(_savedComments.remove);
+    } on Object catch (error) {
+      Logger().w('Không ghi được dữ liệu trên máy: $error');
+    }
+  }
+
+  // ------------------------------------------- changes API (BF-20261022-002)
+
+  /// Cursor khi không có bản lưu trên máy (mock, test không gán [outbox]).
+  final _cursors = <String, String>{};
+
+  /// Kéo thay đổi sau cursor đã lưu: ký ức bị xoá/mất quyền xem gỡ khỏi máy,
+  /// ký ức đổi version / có bình luận, cảm xúc mới được đọc lại; bình luận đã
+  /// lưu được cập nhật. Lần đầu (chưa cursor) chỉ lấy mốc — feed vừa tải đủ.
+  Future<void> _pullChanges(String serverFamilyId) async {
+    final store = outbox;
+    var cursor = store == null
+        ? _cursors[serverFamilyId]
+        : await store.cursor(serverFamilyId);
+    final bootstrap = cursor == null;
+    final refresh = <String>{};
+    try {
+      for (var page = 0; page < kValueRemoteChangesMaxPages; page++) {
+        final result = await _feed.changes(
+          serverFamilyId,
+          cursor: cursor,
+          limit: kValueRemoteChangesPageSize,
+        );
+        if (_serverFamilyId != serverFamilyId) {
+          return;
+        }
+        if (!bootstrap) {
+          for (final item in result.items) {
+            _applyChange(item, refresh);
+          }
+        }
+        cursor = result.nextCursor ?? cursor;
+        if (!result.hasMore) {
+          break;
+        }
+      }
+    } on DioException catch (error) {
+      if (_errorCode(error) == 'SYNC_CURSOR_EXPIRED') {
+        // Quá 90 ngày: bắt đầu lại, lần sau tải đủ feed.
+        cursor = null;
+        _fullSyncedAt = null;
+      } else {
+        Logger().w('Không đọc được thay đổi: ${error.message}');
+        return;
+      }
+    } on Object catch (error) {
+      // Lỗi đọc thay đổi không làm hỏng lần đồng bộ feed.
+      Logger().w('Không áp được thay đổi: $error');
+      return;
+    }
+    if (store == null) {
+      if (cursor == null) {
+        _cursors.remove(serverFamilyId);
+      } else {
+        _cursors[serverFamilyId] = cursor;
+      }
+    } else {
+      await store.saveCursor(serverFamilyId, cursor);
+    }
+    // Cảm xúc tôi đang chờ gửi: không ghi đè số đếm tạm bằng bản server.
+    final pendingReaction = {
+      for (final entry in _outbox.entries)
+        if (entry.kind == _reactionKind) entry.args['memoryId'] as String,
+    };
+    for (final id
+        in refresh
+            .where((id) => !pendingReaction.contains(id))
+            .take(kValueRemoteChangesRefreshLimit)) {
+      try {
+        final record = await _feed.memory(id);
+        if (record != null && _serverFamilyId == serverFamilyId) {
+          _mirror(record);
+        }
+      } on DioException catch (error) {
+        Logger().w('Không đọc lại được ký ức: ${error.message}');
+      }
+    }
+  }
+
+  static String? _errorCode(DioException error) {
+    final body = error.response?.data;
+    return body is Map && body['error'] is Map
+        ? (body['error'] as Map)['code'] as String?
+        : null;
+  }
+
+  void _applyChange(ChangeItem item, Set<String> refresh) {
+    final memoryId = item.entity == 'memory' ? item.id : item.memoryId;
+    if (memoryId == null) {
+      return;
+    }
+    final row = _memories.memory(memoryId);
+    final mirrored = row?['remoteStatus'] != null;
+    switch (item.entity) {
+      case 'memory' when item.isDelete:
+        refresh.remove(memoryId);
+        _commentCache.remove(memoryId);
+        if (mirrored) {
+          _memories.removeMemory(memoryId);
+          _processingSince.remove(memoryId);
+        }
+      case 'memory':
+        if (row == null || row['remoteVersion'] != item.version) {
+          refresh.add(memoryId);
+        }
+      case 'memoryComment':
+        final cache = _commentCache[memoryId];
+        if (item.isDelete) {
+          cache?.remove(item.id);
+          _serverComments.remove(item.id);
+        } else if (cache != null && item.data != null) {
+          final record = CommentRecord.fromJson({
+            ...item.data!,
+            'createdAt': ?cache[item.id]?.createdAt.toUtc().toIso8601String(),
+          });
+          final comment = _commentOf(
+            record.createdAt == null
+                ? record.copyWith(createdAt: item.updatedAt)
+                : record,
+            memoryId,
+          );
+          cache[item.id] = comment;
+        }
+        // Số bình luận trên thẻ: đọc lại ký ức.
+        if (row != null) {
+          refresh.add(memoryId);
+        }
+      case 'memoryReaction':
+        if (row != null) {
+          refresh.add(memoryId);
+        }
     }
   }
 
@@ -1404,6 +2048,7 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
       _memories.removeMemory(id);
       _processingSince.remove(id);
     }
+    _createdDuringSync.removeWhere(serverIds.contains);
   }
 
   /// Ghi một ký ức của server vào kho trên máy; chỉ ghi khi có thay đổi (mỗi
@@ -1490,6 +2135,7 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
       'mediaAssets': _urlsOf(record),
       'mediaVideos': _videoUrlsOf(record),
     });
+    _schedulePersist();
   }
 
   void _mirror(MemoryRecord record) {
@@ -1497,6 +2143,7 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
     if (id == null) {
       return;
     }
+    _schedulePersist();
     _queueLocal(record);
     _trackProcessing(id, record.status);
     final urls = _urlsOf(record);

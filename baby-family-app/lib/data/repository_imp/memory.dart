@@ -109,12 +109,15 @@ class MemoryRepositoryImp extends MockRepositoryImp
       rows('pastMemories', (row) => row['familyId'] == familyId);
 
   @override
-  List<String> searchRecents() =>
-      ((store.meta['searchRecents'] as List?) ?? const []).cast<String>();
+  List<String> searchRecents({bool server = false}) =>
+      ((store.meta[_recentsKey(server)] as List?) ?? const []).cast<String>();
 
   @override
-  void saveSearchRecents(List<String> recents) =>
-      saveMeta('searchRecents', recents);
+  void saveSearchRecents(List<String> recents, {bool server = false}) =>
+      saveMeta(_recentsKey(server), recents);
+
+  static String _recentsKey(bool server) =>
+      server ? 'serverSearchRecents' : 'searchRecents';
 
   @override
   JsonMap weeklyRecap() => metaSection('weeklyRecap');

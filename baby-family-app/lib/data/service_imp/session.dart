@@ -362,6 +362,25 @@ class SessionServiceImp extends MockServiceImp implements ISessionService {
     }
   }
 
+  /// Bản server (BF-20261022-006): tên bạn đời theo `bootstrap.parents` thay
+  /// cho tên mẫu `defaultPartnerName` mà [simulatePartnerJoined] gán khi phản
+  /// chiếu gia đình vừa kích hoạt. [callName] rỗng/null giữ nhãn đang có.
+  void applyServerPartner({required String displayName, String? callName}) {
+    for (final member in _familyRepository.members(familyId)) {
+      if (member['id'] == myMemberId ||
+          member['role'] == FamilyRole.relative.name) {
+        continue;
+      }
+      final fields = <String, dynamic>{
+        'displayName': displayName,
+        if (callName != null && callName.isNotEmpty) 'callName': callName,
+      };
+      if (fields.entries.any((entry) => member[entry.key] != entry.value)) {
+        _familyRepository.updateMember(member['id'] as String, fields);
+      }
+    }
+  }
+
   /// Bản server (BF-20261019-005): phản chiếu tư cách người thân từ
   /// `GET /v1/me/circles`. [familyName] null → chưa vào gia đình nào hoặc
   /// đang chờ Bố/Mẹ duyệt (CIR-WAIT); [paused] → CIR-05. Trả id gia đình trên
@@ -707,6 +726,9 @@ class SessionServiceImp extends MockServiceImp implements ISessionService {
 
   @override
   Future<void> signOut() => reseed(DemoSeed.fresh);
+
+  @override
+  Future<void> persistOffline() async {}
 
   @override
   Future<AppSession> changeFamily(String familyId) async => current;

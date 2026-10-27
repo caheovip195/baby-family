@@ -19,7 +19,11 @@ class _HomeShell extends StatelessWidget {
       child: Column(
         children: [
           _HomeAppBar(controller: controller),
-          if (offline) OfflineBanner(onRetry: controller.load),
+          if (offline)
+            OfflineBanner(
+              pendingUploads: controller.pendingSync,
+              onRetry: controller.load,
+            ),
           Expanded(child: child),
         ],
       ),

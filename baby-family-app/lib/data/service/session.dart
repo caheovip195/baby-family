@@ -100,6 +100,10 @@ abstract class ISessionService extends IBaseService {
   /// Đăng xuất: dữ liệu mẫu trở về seed `fresh`.
   Future<void> signOut();
 
+  /// Lưu bản chụp dữ liệu dùng khi mở app lúc mất mạng (app vào nền,
+  /// BF-20261022-005). Bản mock: không làm gì.
+  Future<void> persistOffline();
+
   /// FAM-08: mở gia đình [familyId] (id server) — bản phản chiếu trên máy làm
   /// lại theo gia đình mới. Bản mẫu chỉ có một gia đình nên không đổi gì.
   Future<AppSession> changeFamily(String familyId);

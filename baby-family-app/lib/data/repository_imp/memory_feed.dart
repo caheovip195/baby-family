@@ -6,6 +6,7 @@ import 'package:baby_family/data/model/memory/reaction_state.dart';
 import 'package:baby_family/data/model/memory/timeline_item_record.dart';
 import 'package:baby_family/data/model/memory/today_story_record.dart';
 import 'package:baby_family/data/model/safety/report_record.dart';
+import 'package:baby_family/data/model/sync/change_item.dart';
 import 'package:baby_family/data/repository/base.dart';
 import 'package:baby_family/data/repository/memory_feed.dart';
 import 'package:baby_family/data/repository_imp/base.dart';
@@ -39,6 +40,10 @@ class MemoryFeedRepositoryImp extends BaseRepositoryImp
     );
     return (memories: rs.memories, nextCursor: rs.nextCursor);
   }
+
+  @override
+  Future<ChangesPage> changes(String familyId, {String? cursor, int? limit}) =>
+      client!.getChanges(familyId, cursor: cursor, limit: limit);
 
   @override
   Future<({List<TimelineItemRecord> items, String? nextCursor})> timeline(
@@ -101,11 +106,12 @@ class MemoryFeedRepositoryImp extends BaseRepositoryImp
     String memoryId,
     String body, {
     String? parentCommentId,
+    String? idempotencyKey,
   }) async {
     final rs = await client!.addComment(memoryId, {
       'body': body,
       'parentCommentId': ?parentCommentId,
-    });
+    }, idempotencyKey: idempotencyKey);
     return rs.comment;
   }
 
@@ -120,14 +126,26 @@ class MemoryFeedRepositoryImp extends BaseRepositoryImp
       client!.deleteComment(commentId);
 
   @override
-  Future<ReactionState?> setReaction(String memoryId, String type) async {
-    final rs = await client!.setReaction(memoryId, {'type': type});
+  Future<ReactionState?> setReaction(
+    String memoryId,
+    String type, {
+    String? idempotencyKey,
+  }) async {
+    final rs = await client!.setReaction(memoryId, {
+      'type': type,
+    }, idempotencyKey: idempotencyKey);
     return rs.reaction;
   }
 
   @override
-  Future<ReactionState?> clearReaction(String memoryId) async {
-    final rs = await client!.clearReaction(memoryId);
+  Future<ReactionState?> clearReaction(
+    String memoryId, {
+    String? idempotencyKey,
+  }) async {
+    final rs = await client!.clearReaction(
+      memoryId,
+      idempotencyKey: idempotencyKey,
+    );
     return rs.reaction;
   }
 

@@ -6,6 +6,7 @@ export interface PregnancyNameCandidateAttributes {
   coupleSpaceId: string;
   pregnancyId: string;
   nameEnc: Uint8Array;
+  nameKey: string | null;
   meaningEnc: Uint8Array | null;
   addedBy: string;
   chosenAt: Date | null;
@@ -20,6 +21,7 @@ export class PregnancyNameCandidate implements PregnancyNameCandidateAttributes 
   readonly coupleSpaceId: string;
   readonly pregnancyId: string;
   readonly nameEnc: Uint8Array;
+  readonly nameKey: string | null;
   readonly meaningEnc: Uint8Array | null;
   readonly addedBy: string;
   readonly chosenAt: Date | null;
@@ -33,6 +35,7 @@ export class PregnancyNameCandidate implements PregnancyNameCandidateAttributes 
     this.coupleSpaceId = attributes.coupleSpaceId;
     this.pregnancyId = attributes.pregnancyId;
     this.nameEnc = attributes.nameEnc;
+    this.nameKey = attributes.nameKey;
     this.meaningEnc = attributes.meaningEnc;
     this.addedBy = attributes.addedBy;
     this.chosenAt = attributes.chosenAt;

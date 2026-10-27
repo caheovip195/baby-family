@@ -1,29 +1,38 @@
 import 'dart:convert';
 
 import 'package:baby_family/data/dto/couple_today.dart';
+import 'package:baby_family/data/model/sync/outbox_entry.dart';
 import 'package:baby_family/data/model/us/appreciation_record.dart';
+import 'package:baby_family/data/model/us/bridge_session.dart';
 import 'package:baby_family/data/model/us/checkin_record.dart';
 import 'package:baby_family/data/model/us/couple_request.dart';
 import 'package:baby_family/data/model/us/couple_settings.dart';
+import 'package:baby_family/data/model/us/couple_week.dart';
 import 'package:baby_family/data/model/us/journal_entry.dart';
 import 'package:baby_family/data/model/us/journal_entry_record.dart';
 import 'package:baby_family/data/model/us/mood_checkin.dart';
 import 'package:baby_family/data/model/us/request_record.dart';
+import 'package:baby_family/data/model/us/rewrite_suggestion.dart';
 import 'package:baby_family/data/model/us/thanks.dart';
 import 'package:baby_family/data/repository/base.dart';
 import 'package:baby_family/data/repository/care.dart';
 import 'package:baby_family/data/repository/couple_remote.dart';
 import 'package:baby_family/data/repository/family.dart';
+import 'package:baby_family/data/repository/local_db.dart';
+import 'package:baby_family/data/repository/outbox.dart';
 import 'package:baby_family/data/repository/session.dart';
 import 'package:baby_family/data/repository/us.dart';
+import 'package:baby_family/data/service_imp/local_tables.dart';
 import 'package:baby_family/data/service_imp/media_uploader.dart';
+import 'package:baby_family/data/service_imp/offline_read.dart';
+import 'package:baby_family/data/service_imp/outbox_runner.dart';
 import 'package:baby_family/data/service_imp/us.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/helper/app_clock.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
-import 'package:uuid/uuid.dart';
 
 /// Papa & Mama qua server thật (US-01 hôm nay, US-02 check-in, US-03/04 lời
 /// nhờ — BF-20261018-005). Kết quả server được phản chiếu vào kho trên máy
@@ -31,6 +40,9 @@ import 'package:uuid/uuid.dart';
 /// đã chia sẻ. Cảm ơn, câu hỏi, nhật ký riêng, Cầu nối… chưa có API nên vẫn
 /// chỉ lưu trên máy.
 class UsRemoteServiceImp extends UsServiceImp {
+  /// Bản đọc gần nhất cho màn phụ khi mất mạng (BF-20261026-007).
+  final _reads = OfflineReads();
+
   UsRemoteServiceImp(
     ISessionRepository sessionRepository,
     AppClock clock,
@@ -47,8 +59,6 @@ class UsRemoteServiceImp extends UsServiceImp {
 
   /// Tải ảnh nhật ký riêng (US-07, mục đích JOURNAL — chỉ người viết xem).
   final MediaUploader? uploader;
-
-  static const _uuid = Uuid();
 
   /// Mood của app ↔ mã server (catalog `couple-policy.ts`).
   static const _moods = {
@@ -93,9 +103,6 @@ class UsRemoteServiceImp extends UsServiceImp {
   DateTime? _journalSyncedAt;
   Future<void>? _syncing;
 
-  /// Idempotency-Key theo nội dung lời nhờ đang gửi dở (giữ khi bấm gửi lại).
-  final _pendingKeys = <String, String>{};
-
   String? get _serverFamilyId =>
       sessionRepository.session()[kValueSessionKeyServerFamilyId] as String?;
 
@@ -118,8 +125,224 @@ class UsRemoteServiceImp extends UsServiceImp {
       ? myUserId
       : _partnerLocalId ?? serverUserId ?? '';
 
+  // ----------------------------------- offline-first (BF-20261022-004)
+
+  /// Hàng đợi check-in / lời nhờ / cảm ơn / nhật ký tạo lúc mất mạng; provider
+  /// gán bản lưu trên máy, null (test) = chỉ trong RAM.
+  IOutboxRepository? get outbox => _outbox.store;
+  set outbox(IOutboxRepository? store) => _outbox.store = store;
+
+  /// Local DB của các bản phản chiếu server (mở app khi mất mạng vẫn có).
+  ILocalDb? get localDb => _local.db;
+  set localDb(ILocalDb? db) => _local.db = db;
+
+  static const _checkinKind = 'us.checkin';
+  static const _requestKind = 'us.request';
+  static const _thanksKind = 'us.thanks';
+  static const _journalKind = 'us.journal';
+
+  late final OutboxRunner _outbox = OutboxRunner(
+    send: _sendEntry,
+    onState: (entry, state) {
+      if (state == OutboxState.done || state == OutboxState.failed) {
+        _removePlaceholder(entry);
+      }
+    },
+    onRestore: _restorePlaceholder,
+  );
+
+  late final LocalTables _local = LocalTables({
+    'checkins': LocalTable(
+      rows: () => _remoteRows(_store.checkins(familyId)),
+      restore: (row) {
+        if (!_store.checkins(familyId).any((r) => r['id'] == row['id'])) {
+          _store.addCheckin({...row, 'familyId': familyId});
+        }
+      },
+      validate: (row) => MoodCheckin.fromJson({...row, 'familyId': familyId}),
+    ),
+    'requests': LocalTable(
+      rows: () => _remoteRows(_store.requests(familyId)),
+      restore: (row) {
+        if (_store.request(row['id'] as String) == null) {
+          _store.addRequest({...row, 'familyId': familyId});
+        }
+      },
+      validate: (row) => CoupleRequest.fromJson({...row, 'familyId': familyId}),
+    ),
+    'thanks': LocalTable(
+      rows: () => _remoteRows(_store.thanks(familyId)),
+      restore: (row) {
+        if (!_store.thanks(familyId).any((r) => r['id'] == row['id'])) {
+          _store.addThanks({...row, 'familyId': familyId});
+        }
+      },
+      validate: (row) => Thanks.fromJson({...row, 'familyId': familyId}),
+    ),
+    // Nhật ký riêng: chỉ của tôi, mã hoá trên máy như mọi dòng.
+    'journal': LocalTable(
+      rows: () => _remoteRows(_store.journal(myUserId)),
+      restore: (row) {
+        if (!_store.journal(myUserId).any((r) => r['id'] == row['id'])) {
+          _store.addJournal({...row, 'familyId': familyId, 'userId': myUserId});
+        }
+      },
+      validate: (row) => JournalEntry.fromJson({
+        ...row,
+        'familyId': familyId,
+        'userId': myUserId,
+      }),
+    ),
+  }, scope: () => _serverFamilyId);
+
+  /// Kết quả server của thao tác vừa gửi (dòng đã phản chiếu) theo id.
+  final _sent = <String, JsonMap>{};
+
+  static List<JsonMap> _remoteRows(List<JsonMap> rows) => [
+    for (final row in rows)
+      if (row['remote'] == true) row,
+  ];
+
+  /// Mở app: dựng lại dữ liệu đã lưu + thao tác chờ gửi, trước khi đồng bộ.
+  Future<void> _hydrateLocal() async {
+    if (_serverFamilyId == null) {
+      return;
+    }
+    await ready();
+    await _outbox.load();
+    await _local.hydrate();
+  }
+
+  @override
+  Future<void> syncPending() => _outbox.syncAll();
+
+  /// Chờ các thao tác đã xếp hàng gửi xong (test).
+  @visibleForTesting
+  Future<void> get outboxSettled => _outbox.settled;
+
+  /// Ghi gộp phần thay đổi xuống local DB (test gọi trực tiếp).
+  @visibleForTesting
+  Future<void> flushLocalDb() => _local.flush();
+
+  Future<void> _sendEntry(OutboxEntry entry) async {
+    final serverFamilyId = _serverFamilyId;
+    if (serverFamilyId == null) {
+      throw StateError('Signed out');
+    }
+    final key = OutboxRunner.keyOf(entry.id);
+    final body = Map<String, dynamic>.from(entry.args['body'] as Map);
+    switch (entry.kind) {
+      case _checkinKind:
+        final record = await _remote.createCheckin(
+          serverFamilyId,
+          body,
+          idempotencyKey: key,
+        );
+        if (record?.id == null) {
+          throw StateError('Check-in was not created');
+        }
+        _sent[entry.id] =
+            _mirrorCheckin(record!, myUserId) ?? entry.placeholder;
+      case _requestKind:
+        final record = (await _remote.createRequest(
+          serverFamilyId,
+          key,
+          body,
+        ))?.request;
+        if (record?.id == null) {
+          throw StateError('Request was not created');
+        }
+        _sent[entry.id] = _mirrorRequest(record!);
+      case _thanksKind:
+        final record = await _remote.createAppreciation(
+          serverFamilyId,
+          body,
+          idempotencyKey: key,
+        );
+        if (record?.id == null) {
+          throw StateError('Thanks was not sent');
+        }
+        if (entry.args['share'] == true) {
+          await _remote.requestAppreciationShare(serverFamilyId, record!.id!);
+        }
+        _sent[entry.id] = _mirrorThanks(record!);
+      case _journalKind:
+        final photo = entry.args['photo'] as String?;
+        final uploader = this.uploader;
+        final assetIds = [
+          if (photo != null && uploader != null)
+            await uploader.upload(
+              serverFamilyId,
+              photo,
+              purpose: 'JOURNAL',
+              idempotencyKey: OutboxRunner.keyOf(entry.id, 'photo'),
+            ),
+        ];
+        final record = await _remote.createJournalEntry(serverFamilyId, {
+          ...body,
+          if (assetIds.isNotEmpty) 'assetIds': assetIds,
+        }, idempotencyKey: key);
+        if (record?.id == null) {
+          throw StateError('Journal entry was not saved');
+        }
+        _sent[entry.id] = _mirrorJournal(record!, photoAsset: photo);
+    }
+    _local.schedule();
+  }
+
+  void _removePlaceholder(OutboxEntry entry) {
+    switch (entry.kind) {
+      case _checkinKind:
+        _store.removeCheckin(entry.id);
+      case _requestKind:
+        _store.removeRequest(entry.id);
+      case _thanksKind:
+        _store.removeThanks(entry.id);
+      case _journalKind:
+        _store.removeJournal(entry.id);
+    }
+  }
+
+  void _restorePlaceholder(OutboxEntry entry) {
+    final row = {...entry.placeholder, 'familyId': familyId};
+    switch (entry.kind) {
+      case _checkinKind
+          when !_store.checkins(familyId).any((r) => r['id'] == entry.id):
+        _store.addCheckin(row);
+      case _requestKind when _store.request(entry.id) == null:
+        _store.addRequest(row);
+      case _thanksKind
+          when !_store.thanks(familyId).any((r) => r['id'] == entry.id):
+        _store.addThanks(row);
+      case _journalKind
+          when !_store.journal(myUserId).any((r) => r['id'] == entry.id):
+        _store.addJournal({...row, 'userId': myUserId});
+    }
+  }
+
+  /// Bản tạm đã hiện → gửi ngay; có mạng thì trả bản của server, mất mạng thì
+  /// giữ bản tạm (tự gửi sau); server từ chối thì ném lỗi như gọi thẳng.
+  Future<JsonMap> _submit(
+    String kind,
+    JsonMap placeholder,
+    JsonMap args,
+  ) async {
+    final id = placeholder['id'] as String;
+    final sent = await _outbox.submit(
+      OutboxEntry(
+        id: id,
+        kind: kind,
+        args: args,
+        placeholder: placeholder,
+        createdAt: now,
+      ),
+    );
+    return sent ? _sent.remove(id) ?? placeholder : placeholder;
+  }
+
   @override
   Future<CoupleToday> coupleToday() async {
+    await _hydrateLocal();
     await _sync();
     final today = await super.coupleToday();
     // Câu hỏi kết nối hằng ngày là bản 1.1 (chưa có API): bản server không
@@ -137,8 +360,37 @@ class UsRemoteServiceImp extends UsServiceImp {
 
   @override
   Future<List<CoupleRequest>> requests({bool openOnly = false}) async {
+    await _hydrateLocal();
     await _sync();
     return super.requests(openOnly: openOnly);
+  }
+
+  /// BF-20261023-001: US-04 không đọc lời nhờ demo từ liên kết cũ theo id.
+  @override
+  Future<CoupleRequest?> request(String id) async {
+    if (_serverFamilyId == null) {
+      return super.request(id);
+    }
+    await _hydrateLocal();
+    final row = _store.request(id);
+    return row == null || row['familyId'] != familyId
+        ? null
+        : CoupleRequest.fromJson(row);
+  }
+
+  /// BF-20261023-001: Cầu nối chưa có API; chỉ mở phiên do gia đình này lưu,
+  /// không giải quyết id của phiên mẫu trong MockStore.
+  @override
+  Future<BridgeSession?> bridgeSession(String id) async {
+    if (_serverFamilyId == null) {
+      return super.bridgeSession(id);
+    }
+    await ready();
+    final row = _store
+        .bridgeSessions(familyId)
+        .where((item) => item['id'] == id)
+        .firstOrNull;
+    return row == null ? null : BridgeSession.fromJson(row);
   }
 
   @override
@@ -159,8 +411,8 @@ class UsRemoteServiceImp extends UsServiceImp {
         shared: shared,
       );
     }
-    await ready();
-    final record = await _remote.createCheckin(serverFamilyId, {
+    await _hydrateLocal();
+    final body = {
       'mood': _moods[mood],
       'energy': energy,
       'needs': [for (final need in needs) ?_needs[need]],
@@ -169,11 +421,21 @@ class UsRemoteServiceImp extends UsServiceImp {
         'enabled': shared,
         'fields': shared ? _sharedFields : const <String>[],
       },
-    });
-    if (record?.id == null) {
-      throw StateError('Check-in was not created');
-    }
-    return MoodCheckin.fromJson(_mirrorCheckin(record!, myUserId)!);
+    };
+    // Offline-first: bản trên máy hiện ngay, gửi qua outbox.
+    final local = await super.checkIn(
+      mood: mood,
+      energy: energy,
+      needs: needs,
+      note: note,
+      shared: shared,
+    );
+    final placeholder = _store
+        .checkins(familyId)
+        .firstWhere((row) => row['id'] == local.id);
+    return MoodCheckin.fromJson(
+      await _submit(_checkinKind, placeholder, {'body': body}),
+    );
   }
 
   @override
@@ -218,18 +480,23 @@ class UsRemoteServiceImp extends UsServiceImp {
       'urgency': urgency == RequestUrgency.soon ? 'SOON' : 'NORMAL',
       'message': ?message,
     };
-    final fingerprint = jsonEncode(body);
-    final created = await _remote.createRequest(
-      serverFamilyId,
-      _pendingKeys[fingerprint] ??= _uuid.v4(),
-      body,
+    await _hydrateLocal();
+    // Bản trên máy (kiểm luôn giới hạn lời nhờ đang mở BR-067) → outbox.
+    final local = await super.sendRequest(
+      kind: kind,
+      templateCode: templateCode,
+      needCode: needCode,
+      title: title,
+      message: message,
+      childIds: childIds,
+      dueLabel: dueLabel,
+      dueAt: dueAt,
+      durationMin: durationMin,
+      urgency: urgency,
     );
-    _pendingKeys.remove(fingerprint);
-    final record = created?.request;
-    if (record?.id == null) {
-      throw StateError('Request was not created');
-    }
-    return CoupleRequest.fromJson(_mirrorRequest(record!));
+    return CoupleRequest.fromJson(
+      await _submit(_requestKind, _store.request(local.id)!, {'body': body}),
+    );
   }
 
   /// Hạn của app (`now` | `tonight` | `at` + giờ chọn) → `dueKind` server.
@@ -308,6 +575,7 @@ class UsRemoteServiceImp extends UsServiceImp {
     );
     if (record != null) {
       _mirrorRequest(record);
+      _local.schedule();
     }
   }
 
@@ -331,8 +599,8 @@ class UsRemoteServiceImp extends UsServiceImp {
         proposeFamilyMoment: proposeFamilyMoment,
       );
     }
-    await ready();
-    final record = await _remote.createAppreciation(serverFamilyId, {
+    await _hydrateLocal();
+    final payload = {
       'body': body.trim(),
       'sticker': ?sticker,
       if (missionId != null) ...{
@@ -343,24 +611,35 @@ class UsRemoteServiceImp extends UsServiceImp {
         'linkedType': 'MEMORY',
         'linkedId': memoryId,
       },
-    });
-    if (record?.id == null) {
-      throw StateError('Thanks was not sent');
-    }
-    if (proposeFamilyMoment) {
-      await _remote.requestAppreciationShare(serverFamilyId, record!.id!);
-    }
-    return Thanks.fromJson(_mirrorThanks(record!));
+    };
+    final local = await super.sendThanks(
+      body: body,
+      sticker: sticker,
+      missionId: missionId,
+      memoryId: memoryId,
+      proposeFamilyMoment: proposeFamilyMoment,
+    );
+    final placeholder = _store
+        .thanks(familyId)
+        .firstWhere((row) => row['id'] == local.id);
+    return Thanks.fromJson(
+      await _submit(_thanksKind, placeholder, {
+        'body': payload,
+        'share': proposeFamilyMoment,
+      }),
+    );
   }
 
   @override
   Future<List<Thanks>> thanks() async {
+    await _hydrateLocal();
     await _syncThanks();
     return super.thanks();
   }
 
   @override
   Future<List<Thanks>> thanksWall({DateTime? month}) async {
+    await _hydrateLocal();
     await _syncThanks();
     return super.thanksWall(month: month);
   }
@@ -442,8 +721,11 @@ class UsRemoteServiceImp extends UsServiceImp {
         cursor = next;
       }
       _thanksSyncedAt = now;
+      _local.schedule();
     } on DioException catch (error) {
       Logger().w('Không đồng bộ được lời cảm ơn: ${error.message}');
+    } on Object catch (error) {
+      Logger().w('Không đọc được lời cảm ơn từ server: $error');
     }
   }
 
@@ -484,6 +766,7 @@ class UsRemoteServiceImp extends UsServiceImp {
 
   @override
   Future<List<JournalEntry>> journal() async {
+    await _hydrateLocal();
     final serverFamilyId = _serverFamilyId;
     final synced = _journalSyncedAt;
     if (serverFamilyId != null &&
@@ -506,8 +789,11 @@ class UsRemoteServiceImp extends UsServiceImp {
           cursor = next;
         }
         _journalSyncedAt = now;
+        _local.schedule();
       } on DioException catch (error) {
         Logger().w('Không đồng bộ được nhật ký riêng: ${error.message}');
+      } on Object catch (error) {
+        Logger().w('Không đọc được nhật ký riêng từ server: $error');
       }
     }
     return super.journal();
@@ -531,30 +817,31 @@ class UsRemoteServiceImp extends UsServiceImp {
         photoAsset: photoAsset,
       );
     }
-    await ready();
+    await _hydrateLocal();
     final text = body.trim().isEmpty ? title.trim() : body.trim();
-    final uploader = this.uploader;
-    final assetIds = [
-      if (photoAsset != null &&
-          !photoAsset.startsWith('assets/') &&
-          uploader != null)
-        await uploader.uploadImage(
-          serverFamilyId,
-          photoAsset,
-          purpose: 'JOURNAL',
-        ),
-    ];
-    final record = await _remote.createJournalEntry(serverFamilyId, {
-      if (title.trim().isNotEmpty) 'title': title.trim(),
-      'body': text,
-      'mood': _journalMoods[mood],
-      if (assetIds.isNotEmpty) 'assetIds': assetIds,
-    });
-    if (record?.id == null) {
-      throw StateError('Journal entry was not saved');
-    }
+    final local = await super.addJournalEntry(
+      mood: mood,
+      title: title,
+      body: body,
+      photoAsset: photoAsset,
+    );
+    // Ảnh được sao vào thư mục của app để còn khi gửi lại sau.
+    final upload = photoAsset != null && !photoAsset.startsWith('assets/')
+        ? (await outbox?.keepFiles(local.id, [photoAsset]))?.single ??
+              photoAsset
+        : null;
+    final placeholder = _store
+        .journal(myUserId)
+        .firstWhere((row) => row['id'] == local.id);
     return JournalEntry.fromJson(
-      _mirrorJournal(record!, photoAsset: photoAsset),
+      await _submit(_journalKind, placeholder, {
+        'body': {
+          if (title.trim().isNotEmpty) 'title': title.trim(),
+          'body': text,
+          'mood': _journalMoods[mood],
+        },
+        'photo': ?upload,
+      }),
     );
   }
 
@@ -663,8 +950,13 @@ class UsRemoteServiceImp extends UsServiceImp {
         _mirrorCheckin(shared, partner);
       }
       page?.items.forEach(_mirrorRequest);
+      _local.schedule();
     } on DioException catch (error) {
       Logger().w('Không đồng bộ được Papa & Mama: ${error.message}');
+    } on Object catch (error) {
+      // Mất mạng khi gọi song song (ParallelWaitError) hoặc server đổi định
+      // dạng: giữ dữ liệu trên máy.
+      Logger().w('Không đồng bộ được Papa & Mama: $error');
     }
   }
 
@@ -763,6 +1055,16 @@ class UsRemoteServiceImp extends UsServiceImp {
     return {...existing, ...row};
   }
 
+  /// Chưa có API tổng kết tuần / gợi ý viết lại: gia đình thật hiện trạng
+  /// thái rỗng thay cho nội dung mẫu (BF-20261022-006).
+  @override
+  Future<CoupleWeek?> coupleWeek() async =>
+      _serverFamilyId == null ? super.coupleWeek() : null;
+
+  @override
+  Future<RewriteSuggestion?> rewriteSuggestion() async =>
+      _serverFamilyId == null ? super.rewriteSuggestion() : null;
+
   // ------------------------------------------------------------ US-15
 
   /// US-15 qua server: chia sẻ cảm xúc mặc định, ẩn nội dung trên màn khoá,
@@ -774,7 +1076,10 @@ class UsRemoteServiceImp extends UsServiceImp {
     if (_serverFamilyId == null) {
       return local;
     }
-    final record = await _remote.usSettings();
+    final record = await _reads.read([
+      'usSettings',
+      sessionRepository.session()[kValueSessionKeyServerUserId],
+    ], () => _remote.usSettings());
     if (record == null) {
       return local;
     }

@@ -218,6 +218,19 @@ void main() {
       expect(router.topRoute.name, CollectionDetailRoute.name);
     });
 
+    // BF-20261026-001: chưa có bé đã sinh / câu nói gắn với bé → không hiện
+    // “ · 0/0 ảnh”, “ · 34 câu” thiếu tên bé.
+    testWidgets('MEM-22 quotes card without a child has no dangling dot', (
+      tester,
+    ) async {
+      await pumpRoute(tester, _memoriesTab, seed: DemoSeed.pregnant);
+      await tester.tap(find.text('Bộ sưu tập'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining(RegExp(r'^ · ')), findsNothing);
+      expect(find.text('0/0 ảnh'), findsOneWidget);
+      expect(find.textContaining(RegExp(r'^\d+ câu$')), findsOneWidget);
+    });
+
     testWidgets('MEM-05 save returns to the previous screen', (tester) async {
       final router = await _pump(tester, 'mem_01');
       router.push(MemoryComposerRoute(kind: MemoryKind.photo.name));

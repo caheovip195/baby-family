@@ -1,3 +1,9 @@
+import { ApiHeader } from '@nestjs/swagger';
+import { Optional } from '@nestjs/common';
+import { OptionalIdempotencyKey } from '../common/http/offline-idempotency-key.decorator';
+import { offlineCommand } from '../common/http/offline-command';
+import { OFFLINE_COMMAND_SERVICE } from '../interfaces/services/offline-command-service.interface';
+import type { IOfflineCommandService } from '../interfaces/services/offline-command-service.interface';
 import {
   Body,
   Controller,
@@ -43,6 +49,9 @@ export class MemoryInteractionController {
   constructor(
     @Inject(MEMORY_INTERACTION_SERVICE)
     private readonly service: IMemoryInteractionService,
+    @Optional()
+    @Inject(OFFLINE_COMMAND_SERVICE)
+    private readonly offline?: IOfflineCommandService,
   ) {}
 
   @Get('memories/:id/comments')
@@ -56,12 +65,28 @@ export class MemoryInteractionController {
 
   @Post('memories/:id/comments')
   @ApiCreatedResponse({ type: CommentResponseDto })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    required: false,
+    description: 'Optional UUID; replay returns the original response.',
+  })
   addComment(
     @CurrentActor() actor: AuthPrincipal,
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() input: CreateCommentDto,
+    @OptionalIdempotencyKey() key?: string,
   ) {
-    return this.service.addComment(actor, id, input);
+    return offlineCommand(
+      this.offline,
+      key,
+      {
+        operation: 'memory.comment.create',
+        actor,
+        memoryId: id,
+        body: input,
+      },
+      () => this.service.addComment(actor, id, input),
+    );
   }
 
   @Patch('comments/:id')
@@ -86,20 +111,47 @@ export class MemoryInteractionController {
 
   @Put('memories/:id/reaction')
   @ApiOkResponse({ type: ReactionResponseDto })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    required: false,
+    description: 'Optional UUID; replay returns the original response.',
+  })
   setReaction(
     @CurrentActor() actor: AuthPrincipal,
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() input: SetReactionDto,
+    @OptionalIdempotencyKey() key?: string,
   ) {
-    return this.service.setReaction(actor, id, input);
+    return offlineCommand(
+      this.offline,
+      key,
+      {
+        operation: 'memory.reaction.set',
+        actor,
+        memoryId: id,
+        body: input,
+      },
+      () => this.service.setReaction(actor, id, input),
+    );
   }
 
   @Delete('memories/:id/reaction')
   @ApiOkResponse({ type: ReactionResponseDto })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    required: false,
+    description: 'Optional UUID; replay returns the original response.',
+  })
   clearReaction(
     @CurrentActor() actor: AuthPrincipal,
     @Param('id', new ParseUUIDPipe()) id: string,
+    @OptionalIdempotencyKey() key?: string,
   ) {
-    return this.service.clearReaction(actor, id);
+    return offlineCommand(
+      this.offline,
+      key,
+      { operation: 'memory.reaction.clear', actor, memoryId: id },
+      () => this.service.clearReaction(actor, id),
+    );
   }
 }

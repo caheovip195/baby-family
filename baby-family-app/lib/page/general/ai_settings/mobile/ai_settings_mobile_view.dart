@@ -118,13 +118,17 @@ class AiSettingsMobileView extends HookConsumerWidget {
           ),
         ),
         gap,
-        _AiQuotaCard(
-          remaining: settings.remaining,
-          total: settings.total,
-          renews: settings.renewsAt?.toFormDate(context.localeName),
-          planLabel: plan == null ? null : planTitle(l10n, plan),
-        ),
-        gap,
+        // Chưa biết quota (bản server chưa có API lượt dùng): ẩn thẻ thay vì
+        // “0 / 0 lượt” (BF-20261026-002).
+        if (settings.total > 0) ...[
+          _AiQuotaCard(
+            remaining: settings.remaining,
+            total: settings.total,
+            renews: settings.renewsAt?.toFormDate(context.localeName),
+            planLabel: plan == null ? null : planTitle(l10n, plan),
+          ),
+          gap,
+        ],
         AppCapsLabel(l10n.setAiFeatures),
         gap,
         Opacity(

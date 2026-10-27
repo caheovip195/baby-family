@@ -76,7 +76,15 @@ class PendingInvitesMobileView extends HookConsumerWidget {
         description: description(invite),
         dates: _dates(context, controller, invite, isExpired: isExpired),
         onResend: () async {
-          await controller.resend(invite);
+          await controller.resend(
+            invite,
+            l10n.famInviteShareMessage(
+              name,
+              joinNames(l10n, controller.childNames(invite)),
+              invite.code,
+              invite.link ?? '',
+            ),
+          );
           if (context.mounted) {
             showAppSnackBar(context, l10n.famInviteResent(name));
           }

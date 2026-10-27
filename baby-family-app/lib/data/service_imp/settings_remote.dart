@@ -27,6 +27,7 @@ import 'package:baby_family/data/repository/session.dart';
 import 'package:baby_family/data/repository/settings.dart';
 import 'package:baby_family/data/service/session.dart';
 import 'package:baby_family/data/service_imp/media_uploader.dart';
+import 'package:baby_family/data/service_imp/offline_read.dart';
 import 'package:baby_family/data/service_imp/settings.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
@@ -42,6 +43,9 @@ import 'package:uuid/uuid.dart';
 ///   lại trong bộ nhớ (≤ 5 phút), gửi yêu cầu xoá có 30 ngày chờ rồi đăng xuất.
 /// Các mục cài đặt khác vẫn dùng bản trên máy.
 class SettingsRemoteServiceImp extends SettingsServiceImp {
+  /// Bản đọc gần nhất cho màn phụ khi mất mạng (BF-20261026-007).
+  final _reads = OfflineReads();
+
   SettingsRemoteServiceImp(
     ISessionRepository sessionRepository,
     AppClock clock,
@@ -77,7 +81,19 @@ class SettingsRemoteServiceImp extends SettingsServiceImp {
   /// bản trên máy.
   @override
   Future<ProfileSettings> profileSettings() async {
-    final local = await super.profileSettings();
+    var local = await super.profileSettings();
+    if (_remoteOn) {
+      /// BF-20261023-001: thiếu hồ sơ/phương thức đăng nhập không dùng Lan/OTP mẫu.
+      final me = _family.member(myMemberId);
+      final user = sessionRepository.user(myUserId);
+      local = local.copyWith(
+        name: user?['displayName'] as String? ?? '',
+        callName: me?['callName'] as String? ?? '',
+        avatarAsset: me?['avatarAsset'] as String?,
+        signInMethods: const [],
+        timezoneLabel: '',
+      );
+    }
     if (!_remoteOn) {
       return local;
     }
@@ -148,11 +164,17 @@ class SettingsRemoteServiceImp extends SettingsServiceImp {
 
   @override
   Future<NotificationSettings> notificationSettings() async {
-    final local = await super.notificationSettings();
+    final saved = await super.notificationSettings();
+
+    /// BF-20261023-001: số người tắt thông báo trong fixture không thuộc phiên thật.
+    final local = _remoteOn ? saved.copyWith(mutedPeople: 0) : saved;
     if (!_remoteOn) {
       return local;
     }
-    final record = await _remote.notificationSettings();
+    final record = await _reads.read([
+      'notificationSettings',
+      sessionRepository.session()[kValueSessionKeyServerUserId],
+    ], () => _remote.notificationSettings());
     return record == null ? local : _mergeNotifications(local, record);
   }
 
@@ -233,11 +255,19 @@ class SettingsRemoteServiceImp extends SettingsServiceImp {
 
   @override
   Future<AiSettings> aiSettings() async {
-    final local = await super.aiSettings();
+    final saved = await super.aiSettings();
+
+    /// BF-20261023-001: API AI chưa có quota/lịch gia hạn, không hiện số mẫu.
+    final local = _remoteOn
+        ? saved.copyWith(remaining: 0, total: 0, renewsAt: null)
+        : saved;
     if (!_remoteOn) {
       return local;
     }
-    final record = await _remote.aiSettings();
+    final record = await _reads.read([
+      'aiSettings',
+      sessionRepository.session()[kValueSessionKeyServerUserId],
+    ], () => _remote.aiSettings());
     if (record == null) {
       return local;
     }
@@ -287,20 +317,39 @@ class SettingsRemoteServiceImp extends SettingsServiceImp {
   /// màn tự tính từ danh sách người thân (đã đồng bộ `/circle`).
   @override
   Future<PrivacySettings> privacySettings() async {
-    final local = await super.privacySettings();
+    final saved = await super.privacySettings();
+
+    /// BF-20261023-001: audience, quyền và số đếm fixture không thuộc gia đình thật.
+    final local = _remoteOn
+        ? saved.copyWith(
+            audiences: const [],
+            downloadAllowed: const [],
+            postAllowed: const [],
+            familyVisibleMemories: 0,
+            deviceCount: 0,
+            aiFeatures: 0,
+            blockedCount: 0,
+          )
+        : saved;
     final serverFamilyId = _serverFamilyId;
     if (serverFamilyId == null) {
       return local;
     }
-    final overview = await _remote.privacyOverview(serverFamilyId);
+    // BF-20261026-002: số thiết bị theo phiên đăng nhập thật (SET-07 cùng
+    // nguồn), không để 0 khi máy này đang đăng nhập.
+    final (overview, sessions) = await (
+      _remote.privacyOverview(serverFamilyId),
+      _remote.sessions(),
+    ).wait;
+    final withDevices = local.copyWith(deviceCount: sessions.length);
     if (overview == null) {
-      return local;
+      return withDevices;
     }
     final visibility = _visibilityCodes.entries
         .where((entry) => entry.value == overview.defaults?.defaultVisibility)
         .firstOrNull
         ?.key;
-    return local.copyWith(
+    return withDevices.copyWith(
       blockedCount: overview.blockedCount,
       defaultVisibility: visibility ?? local.defaultVisibility,
     );
@@ -352,14 +401,17 @@ class SettingsRemoteServiceImp extends SettingsServiceImp {
     }
     final HelpCenterRecord? record;
     try {
-      record = await _remote.helpCenter(
-        currentL10n().localeName == 'en' ? 'en' : 'vi',
-      );
+      final language = currentL10n().localeName == 'en' ? 'en' : 'vi';
+      record = await _reads.read([
+        'helpCenter',
+        language,
+      ], () => _remote.helpCenter(language));
     } on DioException {
-      return super.help();
+      /// BF-20261023-001: lỗi API không hiển thị hotline/FAQ/số báo cáo mẫu.
+      return const HelpInfo();
     }
     if (record == null) {
-      return super.help();
+      return const HelpInfo();
     }
     return HelpInfo(
       faqs: [for (final faq in record.faqs) faq.question],
@@ -553,11 +605,20 @@ class SettingsRemoteServiceImp extends SettingsServiceImp {
   /// cài đặt trên máy.
   @override
   Future<SecuritySettings> securitySettings() async {
-    final local = await super.securitySettings();
+    final saved = await super.securitySettings();
     if (!_remoteOn) {
-      return local;
+      return saved;
     }
-    final sessions = await _remote.sessions();
+
+    /// BF-20261023-001: khoá Face ID/PIN mẫu không phải thiết lập trên máy thật.
+    final local =
+        _store.section('security')['_serverFamilyId'] == _serverFamilyId
+        ? saved
+        : const SecuritySettings(faceIdLock: false, pinSet: false);
+    final sessions = await _reads.read([
+      'sessions',
+      sessionRepository.session()[kValueSessionKeyServerUserId],
+    ], () => _remote.sessions());
     return local.copyWith(
       devices: [
         for (final session in sessions)
@@ -570,6 +631,18 @@ class SettingsRemoteServiceImp extends SettingsServiceImp {
             ),
       ],
     );
+  }
+
+  /// BF-20261023-001: đánh dấu tuỳ chọn bảo mật thực sự được người dùng lưu.
+  @override
+  Future<void> saveSecuritySettings(SecuritySettings settings) async {
+    await super.saveSecuritySettings(settings);
+    if (_remoteOn) {
+      _store.saveSection('security', {
+        ...settings.toJson(),
+        '_serverFamilyId': _serverFamilyId,
+      });
+    }
   }
 
   @override
@@ -598,9 +671,20 @@ class SettingsRemoteServiceImp extends SettingsServiceImp {
 
   // ------------------------------------------------------------ xuất dữ liệu
 
+  /// BF-20261023-001: chỉ job có id server; chưa đo cache thì không hiện 486 MB.
+  Future<DataExportInfo> _exportInfo() async {
+    final local = await super.dataExport();
+    return !_remoteOn
+        ? local
+        : local.copyWith(
+            cacheMb: 0,
+            jobs: local.jobs.where((job) => job.exportId != null).toList(),
+          );
+  }
+
   @override
   Future<DataExportInfo> dataExport() async {
-    final info = await super.dataExport();
+    final info = await _exportInfo();
     if (!_remoteOn) {
       return info;
     }
@@ -636,7 +720,7 @@ class SettingsRemoteServiceImp extends SettingsServiceImp {
       kind == DataExportKind.family ? 'FAMILY' : 'PERSONAL',
       familyId: kind == DataExportKind.family ? _serverFamilyId : null,
     );
-    final info = await super.dataExport();
+    final info = await _exportInfo();
     final job =
         (record == null ? null : _toJob(kind, record)) ??
         DataExportJob(kind: kind, status: DataExportStatus.preparing);
@@ -655,7 +739,7 @@ class SettingsRemoteServiceImp extends SettingsServiceImp {
     if (!_remoteOn) {
       return super.exportDownloadUrl(kind);
     }
-    final info = await super.dataExport();
+    final info = await _exportInfo();
     final id = info.jobs.where((job) => job.kind == kind).firstOrNull?.exportId;
     if (id == null) {
       return null;
@@ -694,7 +778,10 @@ class SettingsRemoteServiceImp extends SettingsServiceImp {
     }
     final preview = await _remote.deletionPreview();
     final phone = sessionRepository.session()['phone'] as String?;
+
+    /// BF-20261023-001: API preview chưa có số ký ức đã đăng.
     return info.copyWith(
+      postedMemories: 0,
       onlyParent:
           preview?.familyChoices.contains('DELETE_FAMILY') ?? info.onlyParent,
       purgeDate: today.add(Duration(days: preview?.graceDays ?? 30)),

@@ -21,6 +21,7 @@ import 'package:baby_family/data/service_imp/family_remote.dart';
 import 'package:baby_family/data/service_imp/media_uploader.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -141,30 +142,42 @@ class _FakeFamily implements IFamilyRemoteRepository {
 
   FamilyBillingRecord billing = const FamilyBillingRecord(accessPhase: 'TRIAL');
   int billingReads = 0;
+  bool offlinePlans = false;
+  bool emptyPlans = false;
 
   @override
-  Future<List<BillingPlanRecord>> billingPlans() async => const [
-    BillingPlanRecord(code: 'TRIAL', quotas: {'storageBytes': 10737418240}),
-    BillingPlanRecord(
-      code: 'FAMILY',
-      displayOrder: 200,
-      quotas: {
-        'storageBytes': 214748364800,
-        'circleMax': 12,
-        'photosPerMemory': 50,
-        'videoMaxSec': 600,
-        'audioMaxSec': 600,
-        'aiPerMonth': 300,
-      },
-      features: {'circle.enabled': true, 'media.keepOriginal': true},
-    ),
-    BillingPlanRecord(
-      code: 'HOUSE',
-      displayOrder: 100,
-      quotas: {'storageBytes': 53687091200, 'circleMax': 0},
-      features: {'circle.enabled': false},
-    ),
-  ];
+  Future<List<BillingPlanRecord>> billingPlans() async {
+    if (offlinePlans) {
+      throw DioException(
+        requestOptions: RequestOptions(path: '/billing/plans'),
+      );
+    }
+    if (emptyPlans) {
+      return const [];
+    }
+    return const [
+      BillingPlanRecord(code: 'TRIAL', quotas: {'storageBytes': 10737418240}),
+      BillingPlanRecord(
+        code: 'FAMILY',
+        displayOrder: 200,
+        quotas: {
+          'storageBytes': 214748364800,
+          'circleMax': 12,
+          'photosPerMemory': 50,
+          'videoMaxSec': 600,
+          'audioMaxSec': 600,
+          'aiPerMonth': 300,
+        },
+        features: {'circle.enabled': true, 'media.keepOriginal': true},
+      ),
+      BillingPlanRecord(
+        code: 'HOUSE',
+        displayOrder: 100,
+        quotas: {'storageBytes': 53687091200, 'circleMax': 0},
+        features: {'circle.enabled': false},
+      ),
+    ];
+  }
 
   @override
   Future<FamilyBillingRecord?> familyBilling(String familyId) async {
@@ -275,6 +288,65 @@ void main() {
   );
 
   test(
+    'BF-20261023-001: stale member id cannot resolve another family fixture',
+    () async {
+      final session = container.read(sessionRepositoryProvider);
+      final fixtureId = session.session()['memberId'] as String;
+      expect(
+        container.read(familyRepositoryProvider).member(fixtureId),
+        isNotNull,
+      );
+      session.patchSession({'familyId': 'server-family-mirror'});
+      expect(await service().member(fixtureId), isNull);
+    },
+  );
+
+  test(
+    'BF-20261023-001: billing catalog never falls back to fixture offers',
+    () async {
+      final family = service();
+      final offers = await family.planOffers();
+      // Giá hiển thị theo catalog giá của app (ONB-ACT “House (…)”).
+      expect(offers.every((offer) => offer.priceText.isNotEmpty), isTrue);
+      remote.emptyPlans = true;
+      expect(await family.planOffers(), isEmpty);
+      remote.offlinePlans = true;
+      expect(await family.planOffers(), isEmpty);
+    },
+  );
+
+  test(
+    'BF-20261023-001: settings summary hides unknown quota and app lock',
+    () async {
+      final summary = await service().settingsSummary();
+      expect(summary.aiRemaining, isNull);
+      expect(summary.aiTotal, isNull);
+      expect(summary.appLockName, isNull);
+    },
+  );
+
+  test(
+    'BF-20261023-001: plan details exclude fixture payer and usage',
+    () async {
+      final details = await service().planDetails();
+      expect(details, isNotNull);
+      expect(details!.payerUserId, isNull);
+      expect(details.channel, isEmpty);
+      expect(details.storage, isEmpty);
+      expect((details.aiRemaining, details.aiTotal), (0, 0));
+      expect(details.aiRenewsAt, isNull);
+      expect((details.videoMaxMinutes, details.photosPerMemory), (0, 0));
+    },
+  );
+
+  test(
+    'BF-20261023-001: absent family timezone has no fixture label',
+    () async {
+      expect((await service().familySettings()).timezoneLabel, isEmpty);
+    },
+  );
+
+  test(
     'FAM-08: my families come from the server; switching saves it',
     () async {
       final family = service();
@@ -364,7 +436,7 @@ void main() {
     expect(family.aiPerMonth, 300);
     expect(family.originalQuality, isTrue);
     expect(family.digestAndReview, isTrue);
-    // Giá Store vẫn từ catalog trên máy (chưa có IAP).
+    // Giá hiển thị lấy từ catalog giá của app.
     expect(family.priceText, isNotEmpty);
   });
 

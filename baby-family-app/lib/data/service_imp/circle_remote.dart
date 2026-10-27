@@ -1,5 +1,6 @@
 import 'package:baby_family/data/dto/circle_view.dart';
 import 'package:baby_family/data/model/circle/circle_post_draft.dart';
+import 'package:baby_family/data/model/memory/memory.dart';
 import 'package:baby_family/data/model/memory/memory_comment.dart';
 import 'package:baby_family/data/repository/child.dart';
 import 'package:baby_family/data/repository/family.dart';
@@ -89,6 +90,12 @@ class CircleRemoteServiceImp extends CircleServiceImp {
       ],
     );
   }
+
+  /// BF-20261023-001: chi tiết người thân lấy từ service server, không lookup fixture.
+  @override
+  Future<Memory?> memory(String memoryId) => _serverFamilyId == null
+      ? super.memory(memoryId)
+      : _memories.refreshMemory(memoryId);
 
   @override
   Future<MemoryComment?> sendWish(String memoryId, String body) async {

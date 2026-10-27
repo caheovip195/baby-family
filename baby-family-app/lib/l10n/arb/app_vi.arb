@@ -813,6 +813,14 @@
       }
     }
   },
+  "memUploadWaiting": "Chờ có mạng · sẽ tự đăng",
+  "@memUploadWaiting": {
+    "description": "Offline-first: ký ức tạm chờ có mạng để tự gửi"
+  },
+  "memPosting": "Đang đăng…",
+  "@memPosting": {
+    "description": "Offline-first: ký ức không có ảnh đang gửi lên server"
+  },
   "memUploadFailed": "Tải lên chưa xong",
   "@memUploadFailed": {
     "description": "MEM-06: tải lên lỗi"
@@ -1708,6 +1716,14 @@
   "@circleWaitingSubtitle": {
     "description": "CIR — Khi Papa hoặc Mama gửi lời mời, bạn sẽ xem được ảnh và những lần đầu của cháu."
   },
+  "circleAwaitingTitle": "Đã nhận lời mời",
+  "@circleAwaitingTitle": {
+    "description": "CIR-WAIT khi người thân đã nhận lời mời, chờ Papa/Mama xác nhận lần cuối (INV-04)"
+  },
+  "circleAwaitingSubtitle": "Papa hoặc Mama sẽ xác nhận thêm một lần. Sau đó bà xem được ảnh và những lần đầu của cháu.",
+  "@circleAwaitingSubtitle": {
+    "description": "CIR-WAIT mô tả khi chờ xác nhận lần cuối"
+  },
   "circleAskInvite": "Nhờ con mời mình",
   "@circleAskInvite": {
     "description": "CIR — Nhờ con mời mình"
@@ -1811,6 +1827,14 @@
   "notificationsReadAll": "Đã đọc hết",
   "@notificationsReadAll": {
     "description": "FAM/SET/SUB/NOTI/CIR/MEM — Đã đọc hết"
+  },
+  "notificationsEmpty": "Chưa có thông báo nào",
+  "@notificationsEmpty": {
+    "description": "NOTI-01 — hộp thông báo rỗng"
+  },
+  "notificationsEmptyDescription": "Ký ức mới, lời nhờ và lời nhắc sẽ hiện ở đây.",
+  "@notificationsEmptyDescription": {
+    "description": "NOTI-01 — mô tả khi hộp thông báo rỗng"
   },
   "circleGreeting": "Cháu yêu của cả nhà",
   "@circleGreeting": {
@@ -2271,6 +2295,10 @@
         "type": "int"
       }
     }
+  },
+  "careCompletePendingSync": "Đã xong! 💗 sẽ được cộng khi có mạng",
+  "@careCompletePendingSync": {
+    "description": "Offline-first: hoàn thành nhiệm vụ khi mất mạng, Hearts cộng sau"
   },
   "careCompleteHint": "{title} — cây thêm một chiếc lá. (+2 💗 nếu lưu ảnh)",
   "@careCompleteHint": {
@@ -3891,6 +3919,24 @@
       }
     }
   },
+  "famInviteShareMessage": "{callName} ơi, vào Baby Family xem ảnh và ký ức của {children} cùng nhà mình nhé! Mã mời: {code} · {link}",
+  "@famInviteShareMessage": {
+    "description": "FAM-03/05 tin nhắn soạn sẵn gửi kèm link mời người thân (share sheet)",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      },
+      "children": {
+        "type": "String"
+      },
+      "code": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
   "subTrialLeft": "Dùng thử còn {days} ngày",
   "@subTrialLeft": {
     "description": "SUB-01 nhãn dùng thử",
@@ -4753,6 +4799,27 @@
       }
     }
   },
+  "invInviterParentShort": "{callName} mời bạn tham gia",
+  "@invInviterParentShort": {
+    "description": "INV-01 khi server không có tên người mời (chỉ tên gọi)",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "invInviterRelativeShort": "{callName} mời {pronoun} theo dõi cháu",
+  "@invInviterRelativeShort": {
+    "description": "INV-01 người thân, khi server không có tên người mời",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      },
+      "pronoun": {
+        "type": "String"
+      }
+    }
+  },
   "invQuotedMessage": "“{message}”",
   "@invQuotedMessage": {
     "description": "INV-01 — lời nhắn của người mời",
@@ -5599,6 +5666,18 @@
       }
     }
   },
+  "memCollMonthlyCount": "{count}/{total} ảnh",
+  "@memCollMonthlyCount": {
+    "description": "MEM-22 — Con lớn từng tháng khi chưa có bé đã chào đời (không có tên bé)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "memCollFirsts": "{count} cột mốc",
   "@memCollFirsts": {
     "description": "MEM-22 — Những lần đầu",
@@ -5615,6 +5694,15 @@
       "name": {
         "type": "String"
       },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "memCollQuotesCount": "{count} câu",
+  "@memCollQuotesCount": {
+    "description": "MEM-22 — Câu nói của con khi chưa có câu nói gắn với bé (không có tên bé)",
+    "placeholders": {
       "count": {
         "type": "int"
       }
@@ -6462,6 +6550,15 @@
         "type": "String"
       },
       "time": {
+        "type": "String"
+      }
+    }
+  },
+  "careHistoryTogetherMissed": "{couple, select, yes{Hai ta} other{Cùng nhau}} · Không kịp làm",
+  "@careHistoryTogetherMissed": {
+    "description": "CARE-08 việc cùng nhau chưa làm (trung tính)",
+    "placeholders": {
+      "couple": {
         "type": "String"
       }
     }
@@ -7398,6 +7495,10 @@
       }
     }
   },
+  "setDeviceInUseNoLocation": "Đang dùng",
+  "@setDeviceInUseNoLocation": {
+    "description": "SET-07 current device khi server không có vị trí"
+  },
   "setDeviceLastActive": "{location} · {time}",
   "@setDeviceLastActive": {
     "description": "SET-07 device subtitle",
@@ -7993,6 +8094,14 @@
   "memAlbumsFamily": "Album của nhà mình",
   "@memAlbumsFamily": {
     "description": "MEM-03 section"
+  },
+  "memAlbumsEmpty": "Chưa có album nào",
+  "@memAlbumsEmpty": {
+    "description": "MEM-03 — chưa có album của nhà mình"
+  },
+  "memAlbumsEmptyDescription": "Tạo album để gom ký ức theo chuyến đi, ngày lễ hay bất cứ điều gì bạn thích.",
+  "@memAlbumsEmptyDescription": {
+    "description": "MEM-03 — mô tả khi chưa có album"
   },
   "memAlbumNew": "Album mới",
   "@memAlbumNew": {
@@ -9404,6 +9513,10 @@
   "careStatsTitle": "Thống kê",
   "@careStatsTitle": {
     "description": "CARE-11 title"
+  },
+  "careStatsEmpty": "Tuần này chưa có thống kê",
+  "@careStatsEmpty": {
+    "description": "CARE-09 thống kê — chưa có dữ liệu"
   },
   "memTrashTitle": "Thùng rác",
   "@memTrashTitle": {

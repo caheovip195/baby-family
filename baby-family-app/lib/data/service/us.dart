@@ -159,4 +159,8 @@ abstract class IUsService extends IBaseService {
 
   /// US-14: tuần của hai ta.
   Future<CoupleWeek?> coupleWeek();
+
+  /// Offline-first (BF-20261022-004): gửi lại thao tác đang chờ (vừa có mạng).
+  /// Bản mock: không làm gì.
+  Future<void> syncPending();
 }

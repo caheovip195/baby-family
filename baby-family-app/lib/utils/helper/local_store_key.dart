@@ -9,6 +9,10 @@ mixin LocalStoreKey {
   static const String authBoxName = 'vn.babyfamily.app.authbox';
   static const String settingBoxName = 'vn.babyfamily.app.settingbox';
 
+  /// Local DB offline-first (BF-20261022-003): mỗi dòng một khoá, giá trị mã
+  /// hoá; xoá khi đăng xuất.
+  static const String localDbBoxName = 'vn.babyfamily.app.localdb';
+
   /// keys
   static const String authCertificateKey = 'auth_certificate';
 

@@ -610,6 +610,12 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get memUploadWaiting => '等待网络 · 将自动发布';
+
+  @override
+  String get memPosting => '正在发布…';
+
+  @override
   String get memUploadFailed => '上传未完成';
 
   @override
@@ -1271,6 +1277,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get circleWaitingSubtitle => 'Papa 或 Mama 邀请你后，就能查看孙辈的照片和第一次。';
 
   @override
+  String get circleAwaitingTitle => '已接受邀请';
+
+  @override
+  String get circleAwaitingSubtitle => 'Papa 或 Mama 还会再确认一次。确认后，就能查看孙辈的照片和第一次。';
+
+  @override
   String get circleAskInvite => '请孩子邀请我';
 
   @override
@@ -1347,6 +1359,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get notificationsReadAll => '全部标为已读';
+
+  @override
+  String get notificationsEmpty => '还没有通知';
+
+  @override
+  String get notificationsEmptyDescription => '新的回忆、请求和提醒会显示在这里。';
 
   @override
   String get circleGreeting => '家里的小宝贝';
@@ -1699,6 +1717,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String careCompleteHearts(int count) {
     return '太棒了！为树增加 $count 💗';
   }
+
+  @override
+  String get careCompletePendingSync => '完成！联网后将累计 💗';
 
   @override
   String careCompleteHint(String title) {
@@ -2777,6 +2798,16 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String famInviteShareMessage(
+    String callName,
+    String children,
+    String code,
+    String link,
+  ) {
+    return '$callName，来 Baby Family 和我们一起看$children的照片和回忆吧！邀请码：$code · $link';
+  }
+
+  @override
   String subTrialLeft(int days) {
     return '试用还剩 $days 天';
   }
@@ -3262,6 +3293,16 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String invInviterParentShort(String callName) {
+    return '$callName邀请你加入';
+  }
+
+  @override
+  String invInviterRelativeShort(String callName, String pronoun) {
+    return '$callName邀请$pronoun关注孙辈';
+  }
+
+  @override
   String invQuotedMessage(String message) {
     return '“$message”';
   }
@@ -3735,6 +3776,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String memCollMonthlyCount(int count, int total) {
+    return '$count/$total 张';
+  }
+
+  @override
   String memCollFirsts(int count) {
     return '$count 个里程碑';
   }
@@ -3742,6 +3788,11 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String memCollQuotes(String name, int count) {
     return '$name · $count 句';
+  }
+
+  @override
+  String memCollQuotesCount(int count) {
+    return '$count 句';
   }
 
   @override
@@ -4358,6 +4409,15 @@ class AppLocalizationsZh extends AppLocalizations {
       'other': '一起',
     });
     return '$_temp0 · $time 完成';
+  }
+
+  @override
+  String careHistoryTogetherMissed(String couple) {
+    String _temp0 = intl.Intl.selectLogic(couple, {
+      'yes': '我们俩',
+      'other': '一起',
+    });
+    return '$_temp0 · 没来得及做';
   }
 
   @override
@@ -5020,6 +5080,9 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get setDeviceInUseNoLocation => '正在使用';
+
+  @override
   String setDeviceLastActive(String location, String time) {
     return '$location · $time';
   }
@@ -5420,6 +5483,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get memAlbumsFamily => '我们家的相册';
+
+  @override
+  String get memAlbumsEmpty => '还没有相册';
+
+  @override
+  String get memAlbumsEmptyDescription => '建一个相册，按旅行、节日或任何主题收集回忆。';
 
   @override
   String get memAlbumNew => '新相册';
@@ -6321,6 +6390,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get careStatsTitle => '统计';
+
+  @override
+  String get careStatsEmpty => '本周还没有统计';
 
   @override
   String get memTrashTitle => '回收站';

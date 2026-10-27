@@ -6,6 +6,7 @@ import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/service/family.dart';
 import 'package:baby_family/page/application_base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
+import 'package:baby_family/utils/helper/external_launcher.dart';
 import 'package:hooks_riverpod/legacy.dart';
 
 /// FAM-03 — Mời người thân: quan hệ, tên gọi, bé được theo dõi, quyền.
@@ -86,4 +87,14 @@ class RelativeInviteController extends BaseNotifier {
     });
     return invite;
   }
+
+  /// Tên các bé được chọn (ghép vào tin nhắn mời).
+  List<String> get selectedChildNames => [
+    for (final child in children)
+      if (selectedChildIds.contains(child.id)) child.name,
+  ];
+
+  /// FAM-03 “Gửi”: bảng chia sẻ hệ thống với tin nhắn soạn sẵn + link
+  /// (BF-20261026-004 — trước đây chỉ hiện snackbar, không gửi được).
+  Future<void> share(String message) => shareText(message);
 }

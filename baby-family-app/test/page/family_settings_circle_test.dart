@@ -13,6 +13,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../helpers/design_qa.dart';
+import '../helpers/share_capture.dart';
 
 class _FakeAppSettingService implements IAppSettingService {
   @override
@@ -199,7 +200,11 @@ void main() {
       // Let the purchase snack bar leave so it does not cover the button.
       await tester.pump(const Duration(seconds: 5));
       await tester.pumpAndSettle();
+      final shared = captureShares();
       await _tap(tester, find.text('Tạo lời mời'));
+      // BF-20261026-004: “Gửi” mở bảng chia sẻ với tin nhắn soạn sẵn + mã.
+      expect(shared.single, startsWith('Ông nội ơi'));
+      expect(shared.single, contains('Mã mời:'));
       // FAM-05: the new invite shows in “Lời mời đang chờ”.
       expect(router.topRoute.name, PendingInvitesRoute.name);
       expect(find.textContaining('Đã tạo lời mời cho Ông nội'), findsOneWidget);
@@ -209,6 +214,19 @@ void main() {
       final router = await pumpRoute(tester, const FamilyRoute());
       await _tap(tester, find.byTooltip('Cài đặt gia đình'));
       expect(router.topRoute.name, FamilySettingsRoute.name);
+    });
+
+    // BF-20261026-002: Bố/Mẹ mở Cài đặt cá nhân từ cuối FAM-01.
+    testWidgets('“Cài đặt” at the bottom opens SET-01', (tester) async {
+      final router = await pumpRoute(tester, const FamilyRoute());
+      final row = find.text('Cài đặt');
+      await tester.scrollUntilVisible(
+        row,
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await _tap(tester, row);
+      expect(router.topRoute.name, SettingsRoute.name);
     });
   });
 

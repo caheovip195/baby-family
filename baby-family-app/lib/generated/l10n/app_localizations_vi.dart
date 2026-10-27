@@ -628,6 +628,12 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get memUploadWaiting => 'Chờ có mạng · sẽ tự đăng';
+
+  @override
+  String get memPosting => 'Đang đăng…';
+
+  @override
   String get memUploadFailed => 'Tải lên chưa xong';
 
   @override
@@ -1321,6 +1327,13 @@ class AppLocalizationsVi extends AppLocalizations {
       'Khi Papa hoặc Mama gửi lời mời, bà sẽ xem được ảnh và những lần đầu của cháu.';
 
   @override
+  String get circleAwaitingTitle => 'Đã nhận lời mời';
+
+  @override
+  String get circleAwaitingSubtitle =>
+      'Papa hoặc Mama sẽ xác nhận thêm một lần. Sau đó bà xem được ảnh và những lần đầu của cháu.';
+
+  @override
   String get circleAskInvite => 'Nhờ con mời mình';
 
   @override
@@ -1405,6 +1418,13 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get notificationsReadAll => 'Đã đọc hết';
+
+  @override
+  String get notificationsEmpty => 'Chưa có thông báo nào';
+
+  @override
+  String get notificationsEmptyDescription =>
+      'Ký ức mới, lời nhờ và lời nhắc sẽ hiện ở đây.';
 
   @override
   String get circleGreeting => 'Cháu yêu của cả nhà';
@@ -1765,6 +1785,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String careCompleteHearts(int count) {
     return 'Tuyệt vời! +$count 💗 cho cây';
   }
+
+  @override
+  String get careCompletePendingSync => 'Đã xong! 💗 sẽ được cộng khi có mạng';
 
   @override
   String careCompleteHint(String title) {
@@ -2847,6 +2870,16 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String famInviteShareMessage(
+    String callName,
+    String children,
+    String code,
+    String link,
+  ) {
+    return '$callName ơi, vào Baby Family xem ảnh và ký ức của $children cùng nhà mình nhé! Mã mời: $code · $link';
+  }
+
+  @override
   String subTrialLeft(int days) {
     return 'Dùng thử còn $days ngày';
   }
@@ -3337,6 +3370,16 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String invInviterParentShort(String callName) {
+    return '$callName mời bạn tham gia';
+  }
+
+  @override
+  String invInviterRelativeShort(String callName, String pronoun) {
+    return '$callName mời $pronoun theo dõi cháu';
+  }
+
+  @override
   String invQuotedMessage(String message) {
     return '“$message”';
   }
@@ -3810,6 +3853,11 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String memCollMonthlyCount(int count, int total) {
+    return '$count/$total ảnh';
+  }
+
+  @override
   String memCollFirsts(int count) {
     return '$count cột mốc';
   }
@@ -3817,6 +3865,11 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String memCollQuotes(String name, int count) {
     return '$name · $count câu';
+  }
+
+  @override
+  String memCollQuotesCount(int count) {
+    return '$count câu';
   }
 
   @override
@@ -4438,6 +4491,15 @@ class AppLocalizationsVi extends AppLocalizations {
       'other': 'Cùng nhau',
     });
     return '$_temp0 · đã xong $time';
+  }
+
+  @override
+  String careHistoryTogetherMissed(String couple) {
+    String _temp0 = intl.Intl.selectLogic(couple, {
+      'yes': 'Hai ta',
+      'other': 'Cùng nhau',
+    });
+    return '$_temp0 · Không kịp làm';
   }
 
   @override
@@ -5120,6 +5182,9 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get setDeviceInUseNoLocation => 'Đang dùng';
+
+  @override
   String setDeviceLastActive(String location, String time) {
     return '$location · $time';
   }
@@ -5533,6 +5598,13 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get memAlbumsFamily => 'Album của nhà mình';
+
+  @override
+  String get memAlbumsEmpty => 'Chưa có album nào';
+
+  @override
+  String get memAlbumsEmptyDescription =>
+      'Tạo album để gom ký ức theo chuyến đi, ngày lễ hay bất cứ điều gì bạn thích.';
 
   @override
   String get memAlbumNew => 'Album mới';
@@ -6446,6 +6518,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get careStatsTitle => 'Thống kê';
+
+  @override
+  String get careStatsEmpty => 'Tuần này chưa có thống kê';
 
   @override
   String get memTrashTitle => 'Thùng rác';

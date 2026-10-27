@@ -2,7 +2,10 @@
 // 09/09b/09c/11/12 and the story-v2 updates of FAM-01, FAM-03, SET-01 —
 // render (390/360, light/dark, text 1.3) + main flows.
 import 'package:auto_route/auto_route.dart';
+import 'package:baby_family/data/model/settings/ai_settings.dart';
 import 'package:baby_family/data/model/settings/delete_account_info.dart';
+import 'package:baby_family/data/model/settings/login_device.dart';
+import 'package:baby_family/data/model/settings/security_settings.dart';
 import 'package:baby_family/data/provider/child.dart';
 import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/provider/mock_store.dart';
@@ -31,6 +34,45 @@ class _OnlyParentSettingsService extends SettingsServiceImp {
   Future<DeleteAccountInfo> deleteAccountInfo() async =>
       (await super.deleteAccountInfo()).copyWith(onlyParent: true);
 }
+
+/// Bản server chưa có vị trí đăng nhập, quota AI (BF-20261026-002).
+class _ServerLikeSettingsService extends SettingsServiceImp {
+  _ServerLikeSettingsService(
+    super.sessionRepository,
+    super.clock,
+    super.repository,
+    super.familyRepository,
+    super.childRepository,
+  );
+
+  @override
+  Future<SecuritySettings> securitySettings() async =>
+      (await super.securitySettings()).copyWith(
+        devices: [
+          const LoginDevice(id: 's-1', name: 'Android', current: true),
+          const LoginDevice(id: 's-2', name: 'iPhone'),
+        ],
+      );
+
+  @override
+  Future<AiSettings> aiSettings() async => (await super.aiSettings()).copyWith(
+    remaining: 0,
+    total: 0,
+    renewsAt: null,
+  );
+}
+
+final _serverLikeOverrides = [
+  settingsServiceProvider.overrideWith(
+    (ref) => _ServerLikeSettingsService(
+      ref.watch(sessionRepositoryProvider),
+      ref.watch(appClockProvider),
+      ref.watch(settingsRepositoryProvider),
+      ref.watch(familyRepositoryProvider),
+      ref.watch(childRepositoryProvider),
+    ),
+  ),
+];
 
 final _onlyParentOverrides = [
   settingsServiceProvider.overrideWith(
@@ -347,6 +389,32 @@ void main() {
         200,
         scrollable: find.byType(Scrollable).first,
       );
+    });
+  });
+
+  group('BF-20261026-002 server data gaps', () {
+    testWidgets('SET-07 device without a location has no dangling dot', (
+      tester,
+    ) async {
+      await pumpRoute(
+        tester,
+        const SecuritySettingsRoute(),
+        overrides: _serverLikeOverrides,
+      );
+      expect(find.text('Đang dùng'), findsOneWidget);
+      expect(find.textContaining(RegExp(r'^ · ')), findsNothing);
+    });
+
+    testWidgets('SET-05 hides the quota card when the quota is unknown', (
+      tester,
+    ) async {
+      await pumpRoute(
+        tester,
+        const AiSettingsRoute(),
+        overrides: _serverLikeOverrides,
+      );
+      expect(find.text('Lượt AI còn lại tháng này'), findsNothing);
+      expect(find.text('/ 0 lượt'), findsNothing);
     });
   });
 

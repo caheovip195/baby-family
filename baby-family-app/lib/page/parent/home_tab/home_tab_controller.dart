@@ -34,6 +34,7 @@ import 'package:baby_family/page/application_base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
 import 'package:hooks_riverpod/legacy.dart';
+import 'package:logger/logger.dart';
 
 /// HOME-01 (Cả nhà, Pencil ClpJ6/uEPMP), HOME-02 (bé đã sinh, gfj2H),
 /// HOME-03 (thai kỳ, l2ePul). Chủ thể theo `selectedSubjectProvider` (SW-01).
@@ -160,6 +161,9 @@ class HomeTabController extends BaseNotifier {
     return ref.read(sessionServiceProvider).changeFamily(familyId);
   }
 
+  /// Ký ức đang chờ gửi lên server (băng ngoại tuyến).
+  int get pendingSync => ref.read(memoryServiceProvider).pendingSyncCount;
+
   Future<void> load({bool silent = false}) async {
     final revision = ++_revision;
     hasError = false;
@@ -200,7 +204,8 @@ class HomeTabController extends BaseNotifier {
         return;
       }
       loaded = true;
-    } on Object {
+    } on Object catch (error, stack) {
+      Logger().w('Không tải được Home: $error', stackTrace: stack);
       if (isDisposed || revision != _revision) {
         return;
       }
@@ -233,7 +238,13 @@ class HomeTabController extends BaseNotifier {
     couple = results[2]! as CoupleToday;
     prompt = results[3] as MemoryPrompt?;
     memories = results[4]! as List<Memory>;
-    week = results[5]! as WeekSummary;
+    final summary = results[5]! as WeekSummary;
+    // HOME-01: khối không có dữ liệu thì ẩn (gia đình mới chưa có ký ức).
+    week =
+        summary.moments + summary.firsts + summary.quotes == 0 &&
+            summary.thumbnails.isEmpty
+        ? null
+        : summary;
     tree = results[6]! as FamilyTree;
     specialMonthly = special == null
         ? const []

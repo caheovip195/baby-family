@@ -12,7 +12,12 @@ import 'package:baby_family/data/repository/base.dart';
 
 /// Papa & Mama trên server (US-01…04, tài liệu kỹ thuật 15.8).
 abstract class ICoupleRemoteRepository extends IBaseRepository {
-  Future<CheckinRecord?> createCheckin(String familyId, JsonMap body);
+  /// [idempotencyKey]: gửi lại từ outbox không tạo trùng (offline-first).
+  Future<CheckinRecord?> createCheckin(
+    String familyId,
+    JsonMap body, {
+    String? idempotencyKey,
+  });
 
   Future<CheckinToday?> checkinsToday(String familyId);
 
@@ -29,7 +34,11 @@ abstract class ICoupleRemoteRepository extends IBaseRepository {
     int? limit,
   });
 
-  Future<AppreciationRecord?> createAppreciation(String familyId, JsonMap body);
+  Future<AppreciationRecord?> createAppreciation(
+    String familyId,
+    JsonMap body, {
+    String? idempotencyKey,
+  });
 
   /// US-05: đề nghị đăng lời cảm ơn thành khoảnh khắc gia đình.
   Future<void> requestAppreciationShare(String familyId, String appreciationId);
@@ -57,7 +66,11 @@ abstract class ICoupleRemoteRepository extends IBaseRepository {
 
   Future<JournalList?> journal(String familyId, {String? cursor, int? limit});
 
-  Future<JournalEntryRecord?> createJournalEntry(String familyId, JsonMap body);
+  Future<JournalEntryRecord?> createJournalEntry(
+    String familyId,
+    JsonMap body, {
+    String? idempotencyKey,
+  });
 
   Future<void> shareJournalExcerpt(
     String familyId,

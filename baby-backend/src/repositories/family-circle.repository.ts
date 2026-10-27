@@ -444,9 +444,22 @@ export class FamilyCircleRepository implements IFamilyCircleRepository {
       row.family.name,
       inviter?.callName ?? null,
       payload.relation,
-      await this.grantedSubjects(this.prisma, row.familyId, payload.grants),
+      (
+        await this.grantedSubjects(this.prisma, row.familyId, payload.grants)
+      ).map((subject) => {
+        // INV-01 shows the proposed per-subject rights before accepting.
+        const grant = payload.grants.find(
+          (g) => (g.childId ?? g.pregnancyId) === subject.id,
+        );
+        return {
+          ...subject,
+          permission: grant?.permission ?? 'VIEW',
+          allowDownload: grant?.allowDownload ?? false,
+        };
+      }),
       row.expiresAt,
       payload.message,
+      payload.displayName,
     );
   }
   async acceptCircle(input: AcceptInviteInput): Promise<InviteDecisionResult> {

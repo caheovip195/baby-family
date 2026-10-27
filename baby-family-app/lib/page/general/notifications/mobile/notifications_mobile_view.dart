@@ -9,6 +9,7 @@ import 'package:baby_family/utils/helper/relative_time.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/widget/app_chip.dart';
 import 'package:baby_family/utils/widget/base_scaffold.dart';
+import 'package:baby_family/utils/widget/empty_state.dart';
 import 'package:baby_family/utils/widget/error_state.dart';
 import 'package:baby_family/utils/widget/skeleton_block.dart';
 import 'package:flutter/material.dart';
@@ -115,6 +116,16 @@ class NotificationsMobileView extends HookConsumerWidget {
       else if (!controller.loaded)
         for (var index = 0; index < 3; index++)
           const SkeletonBlock(height: 72, radius: AppRadius.lg)
+      else if (controller.days.isEmpty)
+        // Danh sách rỗng có empty state (Skill 8) — trước đây trang trắng
+        // (BF-20261026-003).
+        Padding(
+          padding: const EdgeInsets.only(top: AppSpacing.s8),
+          child: EmptyState(
+            title: l10n.notificationsEmpty,
+            description: l10n.notificationsEmptyDescription,
+          ),
+        )
       else
         for (final (day, items) in controller.days) ...[
           Text(

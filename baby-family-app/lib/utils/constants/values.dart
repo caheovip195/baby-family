@@ -63,6 +63,22 @@ const kValueRemoteFeedPageSize = 50;
 const kValueRemoteFeedFullSyncInterval = Duration(minutes: 2);
 const kValueRemoteFeedMaxPages = 200;
 
+/// Local DB (BF-20261022-003): gộp các lần ghi xuống máy trong khoảng này.
+const kValueLocalDbWriteDelay = Duration(milliseconds: 300);
+
+/// Tăng khi đổi cấu trúc dòng ký ức/bình luận lưu trên máy: bản cũ bị xoá và
+/// tải lại từ server thay vì đọc sai.
+const kValueLocalDbSchemaVersion = 1;
+
+/// Số ngày bảng nhiệm vụ đã đọc được giữ trên máy (offline).
+const kValueLocalBoardDays = 7;
+
+/// Offline-first changes API (BF-20261022-002): cỡ trang, số trang tối đa mỗi
+/// lần đồng bộ, số ký ức đọc lại tối đa (phần còn lại đến ở lần sau / feed).
+const kValueRemoteChangesPageSize = 200;
+const kValueRemoteChangesMaxPages = 10;
+const kValueRemoteChangesRefreshLimit = 30;
+
 /// Ký ức đang xử lý ảnh được hỏi lại (mỗi [kValueRemoteFeedRefreshInterval])
 /// khi màn còn mở, tối đa 10 phút kể từ lúc thấy trạng thái PROCESSING.
 const kValueRemoteProcessingPollWindow = Duration(minutes: 10);

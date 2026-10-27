@@ -646,6 +646,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get memUploadWaiting =>
+      'Waiting for a connection · will post automatically';
+
+  @override
+  String get memPosting => 'Posting…';
+
+  @override
   String get memUploadFailed => 'Upload didn\'t finish';
 
   @override
@@ -1369,6 +1376,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Once Papa or Mama invites you, you can see your grandchild’s photos and firsts.';
 
   @override
+  String get circleAwaitingTitle => 'Invitation accepted';
+
+  @override
+  String get circleAwaitingSubtitle =>
+      'Papa or Mama will confirm once more. When they do, you can see your grandchild’s photos and firsts.';
+
+  @override
   String get circleAskInvite => 'Ask family to invite you';
 
   @override
@@ -1453,6 +1467,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationsReadAll => 'Mark all read';
+
+  @override
+  String get notificationsEmpty => 'No notifications yet';
+
+  @override
+  String get notificationsEmptyDescription =>
+      'New memories, requests and reminders will show up here.';
 
   @override
   String get circleGreeting => 'Our little ones';
@@ -1813,6 +1834,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String careCompleteHearts(int count) {
     return 'Wonderful! +$count 💗 for the tree';
   }
+
+  @override
+  String get careCompletePendingSync =>
+      'Done! 💗 will be added when you\'re back online';
 
   @override
   String careCompleteHint(String title) {
@@ -2994,6 +3019,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String famInviteShareMessage(
+    String callName,
+    String children,
+    String code,
+    String link,
+  ) {
+    return '$callName, join our family on Baby Family to see $children\'s photos and memories! Invite code: $code · $link';
+  }
+
+  @override
   String subTrialLeft(int days) {
     return '$days trial days left';
   }
@@ -3503,6 +3538,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String invInviterParentShort(String callName) {
+    return '$callName invited you to join';
+  }
+
+  @override
+  String invInviterRelativeShort(String callName, String pronoun) {
+    return '$callName invited $pronoun to follow the grandchildren';
+  }
+
+  @override
   String invQuotedMessage(String message) {
     return '“$message”';
   }
@@ -3991,6 +4036,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String memCollMonthlyCount(int count, int total) {
+    return '$count/$total photos';
+  }
+
+  @override
   String memCollFirsts(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -4010,6 +4060,17 @@ class AppLocalizationsEn extends AppLocalizations {
       one: '1 quote',
     );
     return '$name · $_temp0';
+  }
+
+  @override
+  String memCollQuotesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count quotes',
+      one: '1 quote',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -4687,6 +4748,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'other': 'Together',
     });
     return '$_temp0 · done $time';
+  }
+
+  @override
+  String careHistoryTogetherMissed(String couple) {
+    String _temp0 = intl.Intl.selectLogic(couple, {
+      'yes': 'Us two',
+      'other': 'Together',
+    });
+    return '$_temp0 · didn\'t get to it';
   }
 
   @override
@@ -5384,6 +5454,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get setDeviceInUseNoLocation => 'In use';
+
+  @override
   String setDeviceLastActive(String location, String time) {
     return '$location · $time';
   }
@@ -5797,6 +5870,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get memAlbumsFamily => 'Our family albums';
+
+  @override
+  String get memAlbumsEmpty => 'No albums yet';
+
+  @override
+  String get memAlbumsEmptyDescription =>
+      'Create an album to gather memories by trip, holiday or anything you like.';
 
   @override
   String get memAlbumNew => 'New album';
@@ -6758,6 +6838,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careStatsTitle => 'Stats';
+
+  @override
+  String get careStatsEmpty => 'No stats for this week yet';
 
   @override
   String get memTrashTitle => 'Trash';

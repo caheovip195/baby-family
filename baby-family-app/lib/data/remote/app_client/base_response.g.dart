@@ -267,13 +267,48 @@ Map<String, dynamic> _$ReactionStateRespondToJson(
   'runtimeType': instance.$type,
 };
 
+PregnancyNamesRespond _$PregnancyNamesRespondFromJson(
+  Map<String, dynamic> json,
+) => PregnancyNamesRespond(
+  list: json['data'] == null
+      ? null
+      : PregnancyNameList.fromJson(json['data'] as Map<String, dynamic>),
+  $type: json['runtimeType'] as String?,
+);
+
+Map<String, dynamic> _$PregnancyNamesRespondToJson(
+  PregnancyNamesRespond instance,
+) => <String, dynamic>{'data': instance.list, 'runtimeType': instance.$type};
+
+PregnancyNameRespond _$PregnancyNameRespondFromJson(
+  Map<String, dynamic> json,
+) => PregnancyNameRespond(
+  name: json['data'] == null
+      ? null
+      : PregnancyNameRecord.fromJson(json['data'] as Map<String, dynamic>),
+  $type: json['runtimeType'] as String?,
+);
+
+Map<String, dynamic> _$PregnancyNameRespondToJson(
+  PregnancyNameRespond instance,
+) => <String, dynamic>{'data': instance.name, 'runtimeType': instance.$type};
+
+CareStatsRespond _$CareStatsRespondFromJson(Map<String, dynamic> json) =>
+    CareStatsRespond(
+      stats: json['data'] == null
+          ? null
+          : CareStats.fromJson(json['data'] as Map<String, dynamic>),
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$CareStatsRespondToJson(CareStatsRespond instance) =>
+    <String, dynamic>{'data': instance.stats, 'runtimeType': instance.$type};
+
 MemoryFeedRespond _$MemoryFeedRespondFromJson(Map<String, dynamic> json) =>
     MemoryFeedRespond(
-      memories:
-          (json['data'] as List<dynamic>?)
-              ?.map((e) => MemoryRecord.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          const <MemoryRecord>[],
+      memories: json['data'] == null
+          ? const <MemoryRecord>[]
+          : _memoryRecords(json['data']),
       nextCursor: json['nextCursor'] as String?,
       $type: json['runtimeType'] as String?,
     );

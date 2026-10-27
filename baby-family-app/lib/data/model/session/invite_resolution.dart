@@ -19,8 +19,11 @@ abstract class InviteResolution with _$InviteResolution {
     @JsonKey(name: 'message') String? message,
     @JsonKey(name: 'expiresAt') DateTime? expiresAt,
 
-    /// Lời mời CIRCLE: quan hệ + chỉ bé/thai kỳ được cấp quyền.
+    /// Lời mời CIRCLE: quan hệ + chỉ bé/thai kỳ được cấp quyền (kèm quyền
+    /// xem/tải ảnh từng bé) + tên gọi Bố/Mẹ đặt cho người được mời
+    /// (BF-20261026-006).
     @JsonKey(name: 'relation') String? relation,
+    @JsonKey(name: 'displayName') String? displayName,
     @JsonKey(name: 'children')
     @Default(<CircleSubjectRecord>[])
     List<CircleSubjectRecord> children,

@@ -11,6 +11,8 @@ import 'package:baby_family/data/repository/care.dart';
 import 'package:baby_family/data/repository/care_remote.dart';
 import 'package:baby_family/data/repository_imp/care.dart';
 import 'package:baby_family/data/repository_imp/care_remote.dart';
+import 'package:baby_family/data/repository_imp/local_db.dart';
+import 'package:baby_family/data/repository_imp/outbox.dart';
 import 'package:baby_family/data/service/care.dart';
 import 'package:baby_family/data/service_imp/care.dart';
 import 'package:baby_family/data/service_imp/care_remote.dart';
@@ -30,18 +32,20 @@ final careRemoteRepositoryProvider = Provider<ICareRemoteRepository>(
 /// nhiệm vụ, thư viện, tự thêm, hoàn thành/hoàn tác, đổi, bỏ khỏi hôm nay).
 final careServiceProvider = Provider<ICareService>(
   (ref) => kValueUseRemoteSession
-      ? CareRemoteServiceImp(
-          ref.watch(sessionRepositoryProvider),
-          ref.watch(appClockProvider),
-          ref.watch(careRepositoryProvider),
-          ref.watch(childRepositoryProvider),
-          ref.watch(familyRepositoryProvider),
-          ref.watch(memoryRepositoryProvider),
-          ref.watch(usRepositoryProvider),
-          ref.watch(careRemoteRepositoryProvider),
-          ref.watch(coupleRemoteRepositoryProvider),
-          uploader: MediaUploader(ref.watch(mediaRepositoryProvider)),
-        )
+      ? (CareRemoteServiceImp(
+            ref.watch(sessionRepositoryProvider),
+            ref.watch(appClockProvider),
+            ref.watch(careRepositoryProvider),
+            ref.watch(childRepositoryProvider),
+            ref.watch(familyRepositoryProvider),
+            ref.watch(memoryRepositoryProvider),
+            ref.watch(usRepositoryProvider),
+            ref.watch(careRemoteRepositoryProvider),
+            ref.watch(coupleRemoteRepositoryProvider),
+            uploader: MediaUploader(ref.watch(mediaRepositoryProvider)),
+          )
+          ..outbox = OutboxRepositoryImp('care')
+          ..localDb = LocalDbImp())
       : CareServiceImp(
           ref.watch(sessionRepositoryProvider),
           ref.watch(appClockProvider),

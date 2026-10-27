@@ -352,7 +352,31 @@ import { AdminCmsCatalogPublishingService } from '../../services/admin-cms-catal
 import { ADMIN_CMS_CATALOG_PUBLISHING_REPOSITORY } from '../../interfaces/repositories/admin-cms-catalog-publishing-repository.interface';
 import { AdminCmsCatalogPublishingRepository } from '../../repositories/admin-cms-catalog-publishing.repository';
 
+import { OfflineSyncController } from '../../controllers/offline-sync.controller';
+import { OFFLINE_SYNC_SERVICE } from '../../interfaces/services/offline-sync-service.interface';
+import { OFFLINE_SYNC_REPOSITORY } from '../../interfaces/repositories/offline-sync-repository.interface';
+import { OfflineSyncService } from '../../services/offline-sync.service';
+import { OfflineSyncRepository } from '../../repositories/offline-sync.repository';
+import { OFFLINE_COMMAND_SERVICE } from '../../interfaces/services/offline-command-service.interface';
+import { OFFLINE_COMMAND_REPOSITORY } from '../../interfaces/repositories/offline-command-repository.interface';
+import { OfflineCommandService } from '../../services/offline-command.service';
+import { OfflineCommandRepository } from '../../repositories/offline-command.repository';
+
+import { PregnancyNamingController } from '../../controllers/pregnancy-naming.controller';
+import { PregnancyNamingService } from '../../services/pregnancy-naming.service';
+import { PregnancyNamingRepository } from '../../repositories/pregnancy-naming.repository';
+import { PREGNANCY_NAMING_SERVICE } from '../../interfaces/services/pregnancy-naming-service.interface';
+import { PREGNANCY_NAMING_REPOSITORY } from '../../interfaces/repositories/pregnancy-naming-repository.interface';
+import { CareStatsController } from '../../controllers/care-stats.controller';
+import { CareStatsService } from '../../services/care-stats.service';
+import { CareStatsRepository } from '../../repositories/care-stats.repository';
+import { CARE_STATS_SERVICE } from '../../interfaces/services/care-stats-service.interface';
+import { CARE_STATS_REPOSITORY } from '../../interfaces/repositories/care-stats-repository.interface';
+
 export const APPLICATION_CONTROLLERS: Type[] = [
+  PregnancyNamingController,
+  CareStatsController,
+  OfflineSyncController,
   AdminCmsCatalogPublishingController,
   HelpCenterController,
   AdminCmsAuthController,
@@ -420,6 +444,14 @@ export const APPLICATION_CONTROLLERS: Type[] = [
 ];
 
 export const APPLICATION_PROVIDERS: Provider[] = [
+  { provide: PREGNANCY_NAMING_SERVICE, useClass: PregnancyNamingService },
+  { provide: PREGNANCY_NAMING_REPOSITORY, useClass: PregnancyNamingRepository },
+  { provide: CARE_STATS_SERVICE, useClass: CareStatsService },
+  { provide: CARE_STATS_REPOSITORY, useClass: CareStatsRepository },
+  { provide: OFFLINE_SYNC_REPOSITORY, useClass: OfflineSyncRepository },
+  { provide: OFFLINE_SYNC_SERVICE, useClass: OfflineSyncService },
+  { provide: OFFLINE_COMMAND_REPOSITORY, useClass: OfflineCommandRepository },
+  { provide: OFFLINE_COMMAND_SERVICE, useClass: OfflineCommandService },
   {
     provide: ADMIN_CMS_CATALOG_PUBLISHING_SERVICE,
     useClass: AdminCmsCatalogPublishingService,

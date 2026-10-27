@@ -11,10 +11,12 @@ import 'package:baby_family/data/repository/memory_feed.dart';
 import 'package:baby_family/data/repository/voice_recorder.dart';
 import 'package:baby_family/data/repository_imp/gallery.dart';
 import 'package:baby_family/data/repository_imp/local_media_index.dart';
+import 'package:baby_family/data/repository_imp/local_memory_db.dart';
 import 'package:baby_family/data/repository_imp/media.dart';
 import 'package:baby_family/data/repository_imp/memory.dart';
 import 'package:baby_family/data/repository_imp/memory_feed.dart';
 import 'package:baby_family/data/repository_imp/memory_library_remote.dart';
+import 'package:baby_family/data/repository_imp/outbox.dart';
 import 'package:baby_family/data/repository_imp/voice_recorder.dart';
 import 'package:baby_family/data/service/local_media.dart';
 import 'package:baby_family/data/service/memory.dart';
@@ -72,15 +74,18 @@ final localMediaServiceProvider = Provider<ILocalMediaService>(
 final memoryServiceProvider = Provider<IMemoryService>(
   (ref) => kValueUseRemoteSession
       ? (MemoryLibraryRemoteServiceImp(
-          ref.watch(sessionRepositoryProvider),
-          ref.watch(appClockProvider),
-          ref.watch(memoryRepositoryProvider),
-          ref.watch(childRepositoryProvider),
-          ref.watch(familyRepositoryProvider),
-          ref.watch(memoryFeedRepositoryProvider),
-          ref.watch(mediaRepositoryProvider),
-          MemoryLibraryRemoteRepositoryImp(),
-        )..localMedia = ref.watch(localMediaServiceProvider))
+            ref.watch(sessionRepositoryProvider),
+            ref.watch(appClockProvider),
+            ref.watch(memoryRepositoryProvider),
+            ref.watch(childRepositoryProvider),
+            ref.watch(familyRepositoryProvider),
+            ref.watch(memoryFeedRepositoryProvider),
+            ref.watch(mediaRepositoryProvider),
+            MemoryLibraryRemoteRepositoryImp(),
+          )
+          ..localMedia = ref.watch(localMediaServiceProvider)
+          ..outbox = OutboxRepositoryImp('memory')
+          ..localDb = LocalMemoryDbImp())
       : MemoryServiceImp(
           ref.watch(sessionRepositoryProvider),
           ref.watch(appClockProvider),

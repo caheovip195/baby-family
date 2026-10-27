@@ -38,7 +38,7 @@ class CareStatsMobileView extends HookConsumerWidget {
     } else if (controller.hasError) {
       body = ErrorState(onRetry: controller.load);
     } else if (stats == null) {
-      body = EmptyState(title: l10n.careStatsTitle);
+      body = EmptyState(title: l10n.careStatsEmpty);
     } else {
       body = _content(context, controller, stats);
     }
@@ -77,6 +77,8 @@ class CareStatsMobileView extends HookConsumerWidget {
     final items = <Widget>[
       AppWeekSelector(
         outlined: true,
+        onPrevious: controller.previousWeek,
+        onNext: controller.canGoNext ? controller.nextWeek : null,
         label: l10n.commonWeekRange(
           '${stats.weekStart.toDayMonth(locale)} – '
           '${stats.weekEnd.toDayMonth(locale)}',

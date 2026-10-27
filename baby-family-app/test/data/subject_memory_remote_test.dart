@@ -22,14 +22,18 @@ import 'package:baby_family/data/model/pregnancy/journey_week_record.dart';
 import 'package:baby_family/data/model/pregnancy/pregnancy_record.dart';
 import 'package:baby_family/data/model/recap/week_stats_record.dart';
 import 'package:baby_family/data/model/safety/report_record.dart';
+import 'package:baby_family/data/model/sync/change_item.dart';
+import 'package:baby_family/data/model/sync/outbox_entry.dart';
 import 'package:baby_family/data/provider/child.dart';
 import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/provider/memory.dart';
 import 'package:baby_family/data/provider/mock_store.dart';
 import 'package:baby_family/data/provider/session.dart';
+import 'package:baby_family/data/remote/app_client/base_response.dart';
 import 'package:baby_family/data/repository/base.dart';
 import 'package:baby_family/data/repository/media.dart';
 import 'package:baby_family/data/repository/memory_feed.dart';
+import 'package:baby_family/data/repository/outbox.dart';
 import 'package:baby_family/data/repository/pregnancy_remote.dart';
 import 'package:baby_family/data/repository/subject.dart';
 import 'package:baby_family/data/service_imp/child_remote.dart';
@@ -43,6 +47,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../helpers/design_qa.dart';
+import '../helpers/fake_local_memory_db.dart';
+import '../helpers/fake_outbox.dart';
 
 /// API giả cho bé/thai kỳ (BF-20261016-002).
 class _FakeSubjects implements ISubjectRepository {
@@ -112,9 +118,13 @@ class _FakeSubjects implements ISubjectRepository {
   Future<void> setChildCover(String childId, String? assetId) async =>
       calls.add('cover:$childId:$assetId');
 
+  final statsCalls = <String>[];
+
   @override
-  Future<ChildStatsRecord?> childStats(String childId) async =>
-      const ChildStatsRecord(memoryCount: 42, milestoneCount: 5);
+  Future<ChildStatsRecord?> childStats(String childId) async {
+    statsCalls.add(childId);
+    return const ChildStatsRecord(memoryCount: 42, milestoneCount: 5);
+  }
 
   @override
   Future<WeekStatsRecord?> weekStats(String familyId) async =>
@@ -299,12 +309,28 @@ class _FakeFeed implements IMemoryFeedRepository {
   String? failCursor;
   Completer<void>? gate;
 
+  /// Mất mạng (không có response) / server từ chối một lần với mã này.
+  bool offline = false;
+  int? rejectWith;
+
   @override
   Future<MemoryRecord?> createMemory(
     String idempotencyKey,
     JsonMap body,
   ) async {
     keys.add(idempotencyKey);
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/memories'));
+    }
+    final status = rejectWith;
+    if (status != null) {
+      rejectWith = null;
+      final options = RequestOptions(path: '/memories');
+      throw DioException(
+        requestOptions: options,
+        response: Response(requestOptions: options, statusCode: status),
+      );
+    }
     if (failNext) {
       failNext = false;
       throw StateError('response lost');
@@ -321,6 +347,9 @@ class _FakeFeed implements IMemoryFeedRepository {
     String? cursor,
     int? limit,
   }) async {
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/feed'));
+    }
     if (childId != null || pregnancyId != null) {
       subjectCalls.add(childId ?? 'preg:$pregnancyId');
       return (memories: const <MemoryRecord>[], nextCursor: null);
@@ -342,7 +371,43 @@ class _FakeFeed implements IMemoryFeedRepository {
   }
 
   @override
-  Future<MemoryRecord?> memory(String memoryId) async => latest;
+  Future<MemoryRecord?> memory(String memoryId) async {
+    memoryReads.add(memoryId);
+    return byId[memoryId] ?? latest;
+  }
+
+  final memoryReads = <String>[];
+  final byId = <String, MemoryRecord>{};
+
+  /// Trang changes theo cursor gửi lên; null = chưa cấu hình (trang rỗng).
+  Map<String?, ChangesPage> changePages = const {};
+  final changeCursors = <String?>[];
+  String? changesError;
+
+  @override
+  Future<ChangesPage> changes(
+    String familyId, {
+    String? cursor,
+    int? limit,
+  }) async {
+    changeCursors.add(cursor);
+    final code = changesError;
+    if (code != null) {
+      changesError = null;
+      final options = RequestOptions(path: '/changes');
+      throw DioException(
+        requestOptions: options,
+        response: Response(
+          requestOptions: options,
+          statusCode: 409,
+          data: {
+            'error': {'code': code},
+          },
+        ),
+      );
+    }
+    return changePages[cursor] ?? ChangesPage(nextCursor: cursor ?? 'c0');
+  }
 
   final updates = <(String, int, JsonMap)>[];
   int conflictsLeft = 0;
@@ -409,10 +474,20 @@ class _FakeFeed implements IMemoryFeedRepository {
 
   final reactionCalls = <String>[];
   final commentCalls = <String>[];
+  final reactionKeys = <String?>[];
+  final commentKeys = <String?>[];
   List<CommentRecord> commentPage = const [];
 
   @override
-  Future<ReactionState?> setReaction(String memoryId, String type) async {
+  Future<ReactionState?> setReaction(
+    String memoryId,
+    String type, {
+    String? idempotencyKey,
+  }) async {
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/reaction'));
+    }
+    reactionKeys.add(idempotencyKey);
     reactionCalls.add('put:$type');
     return ReactionState(
       memoryId: memoryId,
@@ -423,7 +498,14 @@ class _FakeFeed implements IMemoryFeedRepository {
   }
 
   @override
-  Future<ReactionState?> clearReaction(String memoryId) async {
+  Future<ReactionState?> clearReaction(
+    String memoryId, {
+    String? idempotencyKey,
+  }) async {
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/reaction'));
+    }
+    reactionKeys.add(idempotencyKey);
     reactionCalls.add('delete');
     return ReactionState(
       memoryId: memoryId,
@@ -433,14 +515,24 @@ class _FakeFeed implements IMemoryFeedRepository {
   }
 
   @override
-  Future<List<CommentRecord>> comments(String memoryId) async => commentPage;
+  Future<List<CommentRecord>> comments(String memoryId) async {
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/comments'));
+    }
+    return commentPage;
+  }
 
   @override
   Future<CommentRecord?> addComment(
     String memoryId,
     String body, {
     String? parentCommentId,
+    String? idempotencyKey,
   }) async {
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/comments'));
+    }
+    commentKeys.add(idempotencyKey);
     commentCalls.add('add:$body:${parentCommentId ?? '-'}');
     return CommentRecord(
       id: 'srv-c-new',
@@ -594,6 +686,144 @@ void main() {
     feed,
     media,
   );
+
+  test(
+    'BF-20261023-001: collection counts and covers exclude fixtures',
+    () async {
+      container.read(sessionRepositoryProvider).patchSession({
+        'familyId': 'real-family',
+      });
+      final collections = await memories().collections();
+      expect(collections, isNotEmpty);
+      expect(collections.every((item) => item.count == 0), isTrue);
+      expect(collections.every((item) => item.coverAsset == null), isTrue);
+    },
+  );
+
+  test(
+    'BF-20261023-001: child lookup excludes another family fixture',
+    () async {
+      container.read(sessionRepositoryProvider).patchSession({
+        'familyId': 'real-family',
+      });
+      expect(await children().child('haru'), isNull);
+      expect(await children().chapters('haru'), isEmpty);
+    },
+  );
+
+  test('BF-20261023-001: child stats exclude another family fixture', () async {
+    container.read(sessionRepositoryProvider).patchSession({
+      'familyId': 'real-family',
+    });
+    final stats = await children().stats('haru');
+    expect(stats.memories, 0);
+    expect(stats.firsts, 0);
+    expect(stats.voices, 0);
+  });
+
+  test(
+    'BF-20261023-001: child profile excludes another family fixture',
+    () async {
+      container.read(sessionRepositoryProvider).patchSession({
+        'familyId': 'real-family',
+      });
+      expect(await children().profile('haru'), isNull);
+    },
+  );
+
+  test(
+    'BF-20261023-001: child archive info excludes another family fixture',
+    () async {
+      container.read(sessionRepositoryProvider).patchSession({
+        'familyId': 'real-family',
+      });
+      final info = await children().archiveInfo('haru');
+      expect(info.addedByUserId, isNull);
+      expect(info.privateMemoryCount, 0);
+      expect(info.sharedMemoryCount, 0);
+      expect(info.canDeleteAt(DateTime(2100)), isFalse);
+    },
+  );
+
+  test('BF-20261023-001: day story does not read fixture metadata', () async {
+    expect(await memories().dayStory(), isNull);
+    container.read(sessionRepositoryProvider).patchSession({
+      kValueSessionKeyServerFamilyId: null,
+    });
+    expect(await memories().dayStory(), isNotNull);
+  });
+
+  test('BF-20261023-001: month recap does not read fixture metadata', () async {
+    expect(await memories().monthRecap(), isNull);
+    container.read(sessionRepositoryProvider).patchSession({
+      kValueSessionKeyServerFamilyId: null,
+    });
+    expect(await memories().monthRecap(), isNotNull);
+  });
+
+  test(
+    'BF-20261023-001: base weekly recap does not read fixture metadata',
+    () async {
+      expect(await memories().weeklyRecap(), isNull);
+      container.read(sessionRepositoryProvider).patchSession({
+        kValueSessionKeyServerFamilyId: null,
+      });
+      expect(await memories().weeklyRecap(), isNotNull);
+    },
+  );
+
+  test(
+    'BF-20261023-001: memory lookup rejects a fixture from another family',
+    () async {
+      final store = container.read(memoryRepositoryProvider);
+      final demoFamily =
+          container.read(sessionRepositoryProvider).session()['familyId']
+              as String;
+      final fixtureId = store.memories(demoFamily).first['id'] as String;
+      container.read(sessionRepositoryProvider).patchSession({
+        'familyId': 'real-family',
+      });
+      expect(await memories().memory(fixtureId), isNull);
+    },
+  );
+
+  test('BF-20261023-001: short search never queries sample memories', () async {
+    final result = await memories().search('a');
+    expect(result.media, isEmpty);
+    expect(result.diaries, isEmpty);
+  });
+
+  test('BF-20261023-001: server drafts exclude fixture drafts', () async {
+    final service = memories();
+    final saved = await service.saveDraft(
+      kind: MemoryKind.diary,
+      title: 'User draft',
+    );
+    final drafts = await service.drafts();
+    expect(drafts.any((draft) => draft.id == saved.id), isTrue);
+    expect(
+      drafts
+          .where((draft) => draft.location == DraftLocation.device)
+          .map((draft) => draft.id),
+      [saved.id],
+    );
+  });
+
+  test('BF-20261023-001: comments exclude foreign fixture memory', () async {
+    container.read(sessionRepositoryProvider).patchSession({
+      'familyId': 'real-family',
+    });
+    final store = container.read(mockStoreProvider);
+    final fixture = store.table('comments').first;
+    expect(await memories().comments(fixture['memoryId'] as String), isEmpty);
+  });
+
+  test('BF-20261023-001: unsent report never returns a mock receipt', () async {
+    expect(
+      memories().submitReport(targetId: 'not-on-server', reasonCode: 'spam'),
+      throwsStateError,
+    );
+  });
 
   test(
     'MEM-25: today\'s story comes from the server; seen stays on device',
@@ -905,15 +1135,92 @@ void main() {
       expect(placeholder.uploadTotal, 2);
       await service.uploadsSettled;
       final store = container.read(memoryRepositoryProvider);
-      expect(store.memory(placeholder.id)?['uploadFailed'], isTrue);
+      // Mất mạng: chờ có mạng để tự gửi lại (không phải lỗi).
+      expect(store.memory(placeholder.id)?['uploadWaiting'], isTrue);
+      expect(store.memory(placeholder.id)?['uploadFailed'], isFalse);
       expect(feed.created, isEmpty);
+      expect(service.pendingSyncCount, 1);
 
-      await service.retryUpload(placeholder.id);
+      await service.syncPending();
+      await service.uploadsSettled;
       expect(store.memory(placeholder.id), isNull);
       expect(feed.created.single['assetIds'], hasLength(2));
       expect(store.memory('srv-memory'), isNotNull);
     },
   );
+
+  test(
+    'offline-first: a memory made offline survives a restart and posts once',
+    () async {
+      final outbox = FakeOutbox();
+      final store = container.read(memoryRepositoryProvider);
+      feed.offline = true;
+      final first = memories()..outbox = outbox;
+      final placeholder = await first.create(
+        kind: MemoryKind.diary,
+        childIds: const [],
+        body: 'Ngủ trưa ngoan',
+        deferUpload: true,
+      );
+      expect(placeholder.uploadTotal, 0);
+      await first.uploadsSettled;
+      expect(store.memory(placeholder.id)?['uploadWaiting'], isTrue);
+      expect(outbox.entries.single.args['body'], 'Ngủ trưa ngoan');
+      final key = feed.keys.single;
+
+      // Tắt app: ký ức tạm trong RAM mất, outbox trên máy còn.
+      store.removeMemory(placeholder.id);
+      feed.offline = false;
+      final second = memories()..outbox = outbox;
+      // Mở app: outbox được đọc lại và gửi ngay khi có mạng.
+      await second.memories();
+      await second.uploadsSettled;
+
+      expect(feed.created.single['body'], 'Ngủ trưa ngoan');
+      // Cùng Idempotency-Key với lần gửi trước khi tắt app → không tạo trùng.
+      expect(feed.keys.last, key);
+      expect(outbox.entries, isEmpty);
+      expect(store.memory(placeholder.id), isNull);
+      expect(store.memory('srv-memory'), isNotNull);
+      expect(second.pendingSyncCount, 0);
+    },
+  );
+
+  test('offline-first: a server refusal waits for the user', () async {
+    final outbox = FakeOutbox();
+    final store = container.read(memoryRepositoryProvider);
+    feed.rejectWith = 422;
+    final service = memories()..outbox = outbox;
+    final placeholder = await service.create(
+      kind: MemoryKind.diary,
+      childIds: const [],
+      body: 'Hết dung lượng',
+      deferUpload: true,
+    );
+    await service.uploadsSettled;
+    expect(store.memory(placeholder.id)?['uploadFailed'], isTrue);
+    expect(outbox.entries.single.failed, isTrue);
+
+    // Có mạng lại không tự gửi thao tác bị từ chối.
+    await service.syncPending();
+    await service.uploadsSettled;
+    expect(feed.created, isEmpty);
+
+    await service.retryUpload(placeholder.id);
+    expect(feed.created.single['body'], 'Hết dung lượng');
+    expect(outbox.entries, isEmpty);
+
+    final cancelled = await service.create(
+      kind: MemoryKind.diary,
+      childIds: const [],
+      body: 'Bỏ',
+      deferUpload: true,
+    );
+    feed.offline = true;
+    await service.cancelUpload(cancelled.id);
+    expect(outbox.discarded, [cancelled.id]);
+    expect(store.memory(cancelled.id), isNull);
+  });
 
   test(
     'MEM-04: a video goes up with its duration, multipart when large',
@@ -940,6 +1247,8 @@ void main() {
 
   test('MEM-15/16: search and on-this-day come from the server', () async {
     final service = memories();
+    // BF-20261022-006: không có mục “tìm gần đây” mẫu của fixture.
+    expect(await service.searchRecents(), isEmpty);
     feed.searchRecords = [
       MemoryRecord(
         id: 'srv-found',
@@ -1087,6 +1396,60 @@ void main() {
     final week = await children().weekSummary();
     expect(week.moments, 7);
     expect(week.firsts, 2);
+  });
+
+  // BF-20261026-001: server chỉ có `profile-stats` cho bé; gọi với thai kỳ bị
+  // 404 làm màn hành trình thai kỳ báo lỗi.
+  test('PREG: pregnancy stats never call the child profile-stats', () async {
+    container.read(childRepositoryProvider).addChild({
+      'id': 'srv-preg',
+      'familyId': container
+          .read(sessionRepositoryProvider)
+          .session()['familyId'],
+      'name': 'Bi',
+      'kind': ChildKind.pregnancy.name,
+      kValueChildKeyServerSubject: true,
+    });
+    final stats = await children().stats('srv-preg');
+    expect(stats.childId, 'srv-preg');
+    expect(subjects.statsCalls, isEmpty);
+  });
+
+  // BF-20261022-006: gia đình thật không cộng số/ảnh mẫu của fixture
+  // (`children.json` → `stats.week`: 1 câu nói + 4 ảnh stock).
+  test('HOME-01: a new family has no sample quotes or photos', () async {
+    final session = container.read(sessionRepositoryProvider);
+    session.patchSession({'familyId': 'f-server-new'});
+    final empty = await children().weekSummary();
+    expect(empty.quotes, 0);
+    expect(empty.thumbnails, isEmpty);
+
+    // Ký ức đã đồng bộ trong tuần: câu nói và ảnh lấy từ chính chúng.
+    final repository = container.read(memoryRepositoryProvider);
+    final now = container.read(appClockProvider).now();
+    for (final (id, kind, media, at) in [
+      ('srv-photo-1', MemoryKind.photo, ['https://cdn/a.jpg'], now),
+      (
+        'srv-photo-2',
+        MemoryKind.photo,
+        ['https://cdn/b.jpg'],
+        now.subtract(const Duration(hours: 1)),
+      ),
+      ('srv-quote', MemoryKind.quote, <String>[], now),
+    ]) {
+      repository.addMemory({
+        'id': id,
+        'familyId': 'f-server-new',
+        'kind': kind.name,
+        'authorId': 'srv-me',
+        'occurredAt': at.toIso8601String(),
+        'mediaAssets': media,
+        'childIds': <String>[],
+      });
+    }
+    final week = await children().weekSummary();
+    expect(week.quotes, 1);
+    expect(week.thumbnails, ['https://cdn/a.jpg', 'https://cdn/b.jpg']);
   });
 
   test('ONB-05b: a child is created on the server, then mirrored', () async {
@@ -1532,6 +1895,269 @@ void main() {
     },
   );
 
+  test('offline-first: comments and reactions made offline show at once and '
+      'are sent once when back online', () async {
+    final outbox = FakeOutbox();
+    final service = memories()..outbox = outbox;
+    feed.pages = {
+      null: (
+        [
+          record(
+            'srv-1',
+          ).copyWith(reactions: const {'LOVE': 2}, commentCount: 1),
+        ],
+        null,
+      ),
+    };
+    feed.commentPage = [
+      CommentRecord(
+        id: 'srv-c-1',
+        memoryId: 'srv-1',
+        authorUserId: 'srv-partner',
+        body: 'Đáng yêu',
+        createdAt: DateTime.utc(2026, 10, 9),
+      ),
+    ];
+    await service.memories();
+    await service.comments('srv-1');
+
+    feed.offline = true;
+    // Đổi cảm xúc liên tiếp khi mất mạng: chỉ lần cuối được gửi.
+    await service.react('srv-1', '👏');
+    await service.react('srv-1', '😂');
+    var memory = await service.memory('srv-1');
+    expect(memory?.myReaction, '😂');
+    expect(memory?.reactions, {'❤️': 2, '😂': 1});
+
+    final comment = await service.addComment('srv-1', 'Nhớ con quá');
+    expect((await service.memory('srv-1'))?.commentCount, 2);
+    // Mất mạng: đọc lại bình luận vẫn có bản đã lưu + bình luận tạm.
+    final offlineList = await service.comments('srv-1');
+    expect(offlineList.map((c) => c.body), ['Đáng yêu', 'Nhớ con quá']);
+    await service.uploadsSettled;
+    expect(feed.commentCalls, isEmpty);
+    expect(
+      outbox.entries.map((e) => e.kind),
+      containsAll(['memory.reaction', 'memory.comment']),
+    );
+    expect(feed.reactionCalls, isEmpty);
+    feed.offline = false;
+    await service.syncPending();
+    await service.uploadsSettled;
+    expect(feed.reactionCalls, ['put:HAHA']);
+    expect(feed.commentCalls, ['add:Nhớ con quá:-']);
+    expect(outbox.entries, isEmpty);
+    memory = await service.memory('srv-1');
+    expect(memory?.myReaction, '😂');
+
+    // Bình luận chưa gửi bị xoá: chỉ bỏ khỏi hàng đợi.
+    feed.offline = true;
+    final draft = await service.addComment('srv-1', 'Thôi');
+    await service.deleteComment(draft.id);
+    expect(outbox.entries, isEmpty);
+    expect(comment.authorId, isNotNull);
+  });
+
+  test('offline-first: changes remove deleted memories, re-read edited ones '
+      'and update saved comments', () async {
+    final outbox = FakeOutbox();
+    final clock = _TestClock(DateTime(2026, 10, 10, 9));
+    final service = memories(clock: clock)..outbox = outbox;
+    feed.pages = {
+      null: ([record('srv-1'), record('srv-2')], null),
+    };
+    feed.commentPage = [
+      CommentRecord(
+        id: 'srv-c-1',
+        memoryId: 'srv-1',
+        authorUserId: 'srv-partner',
+        body: 'Đáng yêu',
+        createdAt: DateTime.utc(2026, 10, 9),
+      ),
+    ];
+    feed.changePages = {
+      // Lần đầu: chỉ lấy mốc (feed vừa tải đủ), không đọc lại ký ức.
+      null: const ChangesPage(
+        items: [
+          ChangeItem(entity: 'memory', id: 'srv-1', op: 'upsert', version: 1),
+        ],
+        nextCursor: 'c1',
+      ),
+      'c1': ChangesPage(
+        items: [
+          const ChangeItem(entity: 'memory', id: 'srv-2', op: 'delete'),
+          const ChangeItem(
+            entity: 'memory',
+            id: 'srv-1',
+            op: 'upsert',
+            version: 2,
+          ),
+          ChangeItem(
+            entity: 'memoryComment',
+            id: 'srv-c-2',
+            memoryId: 'srv-1',
+            op: 'upsert',
+            updatedAt: DateTime.utc(2026, 10, 10),
+            data: const {
+              'id': 'srv-c-2',
+              'memoryId': 'srv-1',
+              'body': 'Con giỏi quá',
+              'authorUserId': 'srv-partner',
+            },
+          ),
+          const ChangeItem(
+            entity: 'memoryComment',
+            id: 'srv-c-1',
+            memoryId: 'srv-1',
+            op: 'delete',
+          ),
+        ],
+        nextCursor: 'c2',
+      ),
+    };
+    await service.memories();
+    expect(outbox.cursors['srv-family'], 'c1');
+    expect(feed.memoryReads, isEmpty);
+    await service.comments('srv-1');
+
+    feed.byId['srv-1'] = record('srv-1', version: 2);
+    clock.advance(const Duration(hours: 1));
+    await service.memories();
+    expect(feed.changeCursors.last, 'c1');
+    expect(outbox.cursors['srv-family'], 'c2');
+    final store = container.read(memoryRepositoryProvider);
+    expect(store.memory('srv-2'), isNull);
+    expect(feed.memoryReads, ['srv-1']);
+    expect(store.memory('srv-1')?['remoteVersion'], 2);
+
+    // Mất mạng: bình luận đã lưu đã có thêm/xoá theo changes.
+    feed.offline = true;
+    expect((await service.comments('srv-1')).map((c) => c.body), [
+      'Con giỏi quá',
+    ]);
+
+    // Cursor quá hạn: bỏ mốc, lần sau bắt đầu lại.
+    feed.offline = false;
+    feed.changesError = 'SYNC_CURSOR_EXPIRED';
+    clock.advance(const Duration(hours: 1));
+    await service.memories();
+    expect(outbox.cursors.containsKey('srv-family'), isFalse);
+  });
+
+  test(
+    'local DB: memories and comments survive a restart and open offline',
+    () async {
+      final db = FakeLocalMemoryDb();
+      final store = container.read(memoryRepositoryProvider);
+      final first = memories()..localDb = db;
+      feed.pages = {
+        null: ([record('srv-1'), record('srv-2')], null),
+      };
+      feed.commentPage = [
+        CommentRecord(
+          id: 'srv-c-1',
+          memoryId: 'srv-1',
+          authorUserId: 'srv-partner',
+          body: 'Đáng yêu',
+          createdAt: DateTime.utc(2026, 10, 9),
+        ),
+      ];
+      await first.memories();
+      await first.comments('srv-1');
+      await first.flushLocalDb();
+      expect(db.rows['srv-family']?.keys, unorderedEquals(['srv-1', 'srv-2']));
+      expect(db.commentRows['srv-family']?['srv-1'], hasLength(1));
+      // Lần ghi sau chỉ ghi dòng đổi.
+      final writes = db.writes;
+      await first.flushLocalDb();
+      expect(db.writes, writes);
+
+      // Tắt app: kho trong RAM mất; mở lại khi mất mạng.
+      store
+        ..removeMemory('srv-1')
+        ..removeMemory('srv-2');
+      feed.offline = true;
+      final second = memories()..localDb = db;
+      final list = await second.memories();
+      expect(list.map((m) => m.id), containsAll(['srv-1', 'srv-2']));
+      expect((await second.comments('srv-1')).map((c) => c.body), ['Đáng yêu']);
+
+      // Ký ức bị xoá trên server (changes) → xoá khỏi DB ở lần ghi sau.
+      feed.offline = false;
+      store.removeMemory('srv-2');
+      await second.flushLocalDb();
+      expect(db.rows['srv-family']?.keys, ['srv-1']);
+    },
+  );
+
+  test(
+    'local DB: broken saved rows and an older format never crash the app',
+    () async {
+      final db = FakeLocalMemoryDb()
+        ..schema = kValueLocalDbSchemaVersion
+        ..rows['srv-family'] = {
+          'ok': {
+            'id': 'ok',
+            'familyId': 'any',
+            'kind': 'photo',
+            'authorId': 'u-1',
+            'occurredAt': '2026-10-01T08:00:00.000',
+            'remoteStatus': 'PUBLISHED',
+            // Field app chưa biết (bản lưu từ phiên bản mới hơn) bị bỏ qua.
+            'futureField': {'x': 1},
+          },
+          // Kiểu sai (vd app cũ đọc dòng của app mới): bỏ, không crash.
+          'bad': {'id': 'bad', 'kind': 42, 'occurredAt': 'not a date'},
+        }
+        ..commentRows['srv-family'] = {
+          'ok': [
+            {'id': 'c1', 'memoryId': 'ok', 'body': 'Hi', 'createdAt': 'x'},
+          ],
+        };
+      feed.offline = true;
+      final service = memories()..localDb = db;
+      final list = await service.memories();
+      expect(list.map((m) => m.id), contains('ok'));
+      expect(list.map((m) => m.id), isNot(contains('bad')));
+      expect(db.rows['srv-family']?.containsKey('bad'), isFalse);
+
+      // Định dạng cũ (khác schema) → xoá sạch, tải lại từ server.
+      final old = FakeLocalMemoryDb()
+        ..schema = kValueLocalDbSchemaVersion - 1
+        ..rows['srv-family'] = {
+          'old': {'id': 'old'},
+        };
+      await (memories()..localDb = old).memories();
+      expect(old.rows['srv-family'], isNull);
+    },
+  );
+
+  test('server: one record with a changed field type does not break the '
+      'whole feed page or the changes page', () {
+    final feedPage = MemoryFeedRespond.fromJson({
+      'data': [
+        {'id': 'good', 'kind': 'MOMENT', 'version': 1, 'newField': true},
+        {'id': 'bad', 'version': 'one'},
+      ],
+      'nextCursor': 'n1',
+    });
+    expect(feedPage.memories.map((m) => m.id), ['good']);
+    expect(feedPage.nextCursor, 'n1');
+
+    final changes = ChangesPage.fromJson({
+      'items': [
+        {'entity': 'memory', 'id': 'm1', 'op': 'upsert', 'version': 2},
+        {'entity': 'memory', 'id': 'm2', 'op': 'upsert', 'version': 'x'},
+        {'entity': 'memoryAlbum', 'id': 'a1', 'op': 'upsert'},
+      ],
+      'nextCursor': 'c9',
+      'hasMore': false,
+      'extra': 1,
+    });
+    expect(changes.items.map((c) => c.id), ['m1', 'a1']);
+    expect(changes.nextCursor, 'c9');
+  });
+
   test(
     'MEM-07/10: reactions and comments of server memories go through the API',
     () async {
@@ -1551,12 +2177,15 @@ void main() {
       expect((await service.memory('srv-1'))?.reactions, {'❤️': 2});
 
       await service.react('srv-1', '👏');
+      await service.uploadsSettled;
       expect(feed.reactionCalls, ['put:CLAP']);
+      expect(feed.reactionKeys.single, isNotNull);
       var memory = await service.memory('srv-1');
       expect(memory?.myReaction, '👏');
       expect(memory?.reactions, {'👏': 1, '❤️': 2});
       // Tapping the current reaction removes it (one per person, spec 7.12).
       await service.react('srv-1', '👏');
+      await service.uploadsSettled;
       expect(feed.reactionCalls.last, 'delete');
       memory = await service.memory('srv-1');
       expect(memory?.myReaction, isNull);
@@ -1581,7 +2210,9 @@ void main() {
         ' Cảm ơn ',
         parentId: 'srv-c-1',
       );
+      await service.uploadsSettled;
       expect(feed.commentCalls, ['add:Cảm ơn:srv-c-1']);
+      expect(feed.commentKeys.single, isNotNull);
       expect(reply.parentId, 'srv-c-1');
       expect((await service.memory('srv-1'))?.commentCount, 2);
       await service.editComment('srv-c-new', 'Cảm ơn nhé');

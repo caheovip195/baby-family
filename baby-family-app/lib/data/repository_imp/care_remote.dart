@@ -1,6 +1,7 @@
 import 'package:baby_family/data/model/care/badge_record.dart';
 import 'package:baby_family/data/model/care/calendar_event_record.dart';
 import 'package:baby_family/data/model/care/calendar_record.dart';
+import 'package:baby_family/data/model/care/care_stats.dart';
 import 'package:baby_family/data/model/care/family_tree_record.dart';
 import 'package:baby_family/data/model/care/hearts_me_record.dart';
 import 'package:baby_family/data/model/care/mission_board_record.dart';
@@ -199,4 +200,15 @@ class CareRemoteRepositoryImp extends BaseRepositoryImp
 
   @override
   Future<void> endSeries(String seriesId) => client!.endMissionSeries(seriesId);
+
+  @override
+  Future<CareStats?> careStats(
+    String familyId, {
+    String? weekStart,
+    String? childId,
+  }) async => (await client!.getCareStats(
+    familyId,
+    weekStart: weekStart,
+    childId: childId,
+  )).stats;
 }

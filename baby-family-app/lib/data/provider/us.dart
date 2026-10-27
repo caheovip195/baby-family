@@ -7,6 +7,8 @@ import 'package:baby_family/data/provider/session.dart';
 import 'package:baby_family/data/repository/couple_remote.dart';
 import 'package:baby_family/data/repository/us.dart';
 import 'package:baby_family/data/repository_imp/couple_remote.dart';
+import 'package:baby_family/data/repository_imp/local_db.dart';
+import 'package:baby_family/data/repository_imp/outbox.dart';
 import 'package:baby_family/data/repository_imp/us.dart';
 import 'package:baby_family/data/service/us.dart';
 import 'package:baby_family/data/service_imp/media_uploader.dart';
@@ -27,15 +29,17 @@ final coupleRemoteRepositoryProvider = Provider<ICoupleRemoteRepository>(
 /// lời nhờ — phần còn lại của Papa & Mama vẫn trên máy).
 final usServiceProvider = Provider<IUsService>(
   (ref) => kValueUseRemoteSession
-      ? UsRemoteServiceImp(
-          ref.watch(sessionRepositoryProvider),
-          ref.watch(appClockProvider),
-          ref.watch(usRepositoryProvider),
-          ref.watch(familyRepositoryProvider),
-          ref.watch(careRepositoryProvider),
-          ref.watch(coupleRemoteRepositoryProvider),
-          uploader: MediaUploader(ref.watch(mediaRepositoryProvider)),
-        )
+      ? (UsRemoteServiceImp(
+            ref.watch(sessionRepositoryProvider),
+            ref.watch(appClockProvider),
+            ref.watch(usRepositoryProvider),
+            ref.watch(familyRepositoryProvider),
+            ref.watch(careRepositoryProvider),
+            ref.watch(coupleRemoteRepositoryProvider),
+            uploader: MediaUploader(ref.watch(mediaRepositoryProvider)),
+          )
+          ..outbox = OutboxRepositoryImp('us')
+          ..localDb = LocalDbImp())
       : UsServiceImp(
           ref.watch(sessionRepositoryProvider),
           ref.watch(appClockProvider),

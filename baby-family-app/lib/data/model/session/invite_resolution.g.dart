@@ -20,6 +20,7 @@ _InviteResolution _$InviteResolutionFromJson(Map<String, dynamic> json) =>
           ? null
           : DateTime.parse(json['expiresAt'] as String),
       relation: json['relation'] as String?,
+      displayName: json['displayName'] as String?,
       children:
           (json['children'] as List<dynamic>?)
               ?.map(
@@ -41,5 +42,6 @@ Map<String, dynamic> _$InviteResolutionToJson(_InviteResolution instance) =>
       'message': instance.message,
       'expiresAt': instance.expiresAt?.toIso8601String(),
       'relation': instance.relation,
+      'displayName': instance.displayName,
       'children': instance.children.map((e) => e.toJson()).toList(),
     };

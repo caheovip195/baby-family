@@ -1,4 +1,15 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:baby_family/data/model/care/mission_history_day.dart';
+import 'package:baby_family/data/model/care/mission_history_entry.dart';
+import 'package:baby_family/data/provider/care.dart';
+import 'package:baby_family/data/provider/child.dart';
+import 'package:baby_family/data/provider/family.dart';
+import 'package:baby_family/data/provider/memory.dart';
+import 'package:baby_family/data/provider/mock_store.dart';
+import 'package:baby_family/data/provider/session.dart';
+import 'package:baby_family/data/provider/us.dart';
+import 'package:baby_family/data/service_imp/care.dart';
+import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/router/app_router.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
 import 'package:flutter/material.dart';
@@ -161,6 +172,29 @@ void main() {
     }
   });
 
+  // BF-20261026-003: việc cùng nhau chưa làm không ghi “đã xong”.
+  testWidgets('CARE-08 together task not done reads as missed', (tester) async {
+    await pumpRoute(
+      tester,
+      const MissionHistoryRoute(),
+      overrides: [
+        careServiceProvider.overrideWith(
+          (ref) => _TogetherMissed(
+            ref.watch(sessionRepositoryProvider),
+            ref.watch(appClockProvider),
+            ref.watch(careRepositoryProvider),
+            ref.watch(childRepositoryProvider),
+            ref.watch(familyRepositoryProvider),
+            ref.watch(memoryRepositoryProvider),
+            ref.watch(usRepositoryProvider),
+          ),
+        ),
+      ],
+    );
+    expect(find.text('Cùng nhau · Không kịp làm'), findsOneWidget);
+    expect(find.textContaining('Cùng nhau · đã xong'), findsNothing);
+  });
+
   group('navigation', () {
     testWidgets('CARE-01 calendar icon → CARE-07 → CAL-02', (tester) async {
       final router = await pumpRoute(
@@ -259,4 +293,31 @@ void main() {
       expect(router.topRoute.name, ChildProfileRoute.name);
     });
   });
+}
+
+/// Một việc cùng nhau trong ngày chưa ai làm.
+class _TogetherMissed extends CareServiceImp {
+  _TogetherMissed(
+    super.sessionRepository,
+    super.clock,
+    super.repository,
+    super.childRepository,
+    super.familyRepository,
+    super.memoryRepository,
+    super.usRepository,
+  );
+
+  @override
+  Future<List<MissionHistoryDay>> missionHistory() async => [
+    MissionHistoryDay(
+      date: today,
+      entries: const [
+        MissionHistoryEntry(
+          title: 'Cùng dọn góc đồ chơi',
+          ownerKind: MissionOwnerKind.together,
+          done: false,
+        ),
+      ],
+    ),
+  ];
 }

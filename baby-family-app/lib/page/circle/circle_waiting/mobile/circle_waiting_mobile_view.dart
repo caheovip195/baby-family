@@ -80,8 +80,12 @@ class CircleWaitingMobileView extends HookConsumerWidget {
           ),
         ),
         AppStepHeading(
-          title: l10n.circleWaitingTitle,
-          subtitle: l10n.circleWaitingSubtitle,
+          title: controller.awaitingApproval
+              ? l10n.circleAwaitingTitle
+              : l10n.circleWaitingTitle,
+          subtitle: controller.awaitingApproval
+              ? l10n.circleAwaitingSubtitle
+              : l10n.circleWaitingSubtitle,
           center: true,
           titleHeight: 1.3,
           subtitleSize: 17,

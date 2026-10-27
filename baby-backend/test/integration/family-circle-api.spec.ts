@@ -345,9 +345,15 @@ describe('Family Circle API (focused Nest module + PostgreSQL)', () => {
     });
     expect(Buffer.from(row.codeHash).toString()).not.toBe(i.code);
     const preview = data<{
-      children: { id: string; name: string }[];
+      children: {
+        id: string;
+        name: string;
+        permission: string;
+        allowDownload: boolean;
+      }[];
       type: string;
       relation: string;
+      displayName: string;
     }>(
       await post('/invites/resolve', { token: i.url.split('/').pop() }).expect(
         200,
@@ -358,8 +364,18 @@ describe('Family Circle API (focused Nest module + PostgreSQL)', () => {
     expect(preview.children.map((c) => c.id).sort()).toEqual(
       [childA, pregnancy].sort(),
     );
+    expect(preview.displayName).toBe('Synthetic relative');
+    expect(preview.children.find((c) => c.id === childA)).toMatchObject({
+      permission: 'VIEW',
+      allowDownload: false,
+    });
+    expect(preview.children.find((c) => c.id === pregnancy)).toMatchObject({
+      permission: 'COMMENT',
+      allowDownload: true,
+    });
     expect(JSON.stringify(preview)).not.toContain(childB);
     expect(JSON.stringify(preview)).not.toContain(privatePregnancy);
+    expect(JSON.stringify(preview)).not.toContain(parent);
     expect(data(await accept(i).expect(200))).toEqual({
       status: 'JOINED',
       familyId: fid,

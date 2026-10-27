@@ -95,7 +95,11 @@ class _PregnancyHome extends StatelessWidget {
       child: Column(
         children: [
           _HomeAppBar(controller: controller),
-          if (offline) OfflineBanner(onRetry: controller.load),
+          if (offline)
+            OfflineBanner(
+              pendingUploads: controller.pendingSync,
+              onRetry: controller.load,
+            ),
           Expanded(
             child: RefreshIndicator(
               onRefresh: controller.load,

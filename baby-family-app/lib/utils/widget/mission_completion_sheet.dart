@@ -20,11 +20,15 @@ class MissionCompletionSheet extends HookWidget {
   const MissionCompletionSheet({
     required this.hearts,
     required this.title,
+    this.pendingSync = false,
     super.key,
   });
 
   final int hearts;
   final String title;
+
+  /// Xong khi mất mạng: chưa biết Hearts, chưa lưu được khoảnh khắc.
+  final bool pendingSync;
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +108,9 @@ class MissionCompletionSheet extends HookWidget {
         Column(
           children: [
             Text(
-              l10n.careCompleteHearts(hearts),
+              pendingSync
+                  ? l10n.careCompletePendingSync
+                  : l10n.careCompleteHearts(hearts),
               textAlign: TextAlign.center,
               style: AppTypography.adapt(
                 context,
@@ -122,62 +128,64 @@ class MissionCompletionSheet extends HookWidget {
             ),
           ],
         ),
-        Container(
-          padding: const EdgeInsets.all(AppSpacing.s4),
-          decoration: BoxDecoration(
-            color: AppColors.resolve(context, kColorPrimary50FFF4F1),
-            borderRadius: BorderRadius.circular(AppRadius.xl),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                hasPhoto.value
-                    ? l10n.carePhotoSelected
-                    : l10n.careSaveMemoryQuestion,
-                style: AppTypography.adapt(context, AppTypography.title16),
-              ),
-              const SizedBox(height: AppSpacing.s3),
-              Row(
-                children: [
-                  photoButton(LucideIcons.camera, l10n.careCamera),
-                  const SizedBox(width: AppSpacing.itemGap),
-                  photoButton(LucideIcons.images, l10n.careGallery),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.s3),
-              Container(
-                constraints: const BoxConstraints(minHeight: 44),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.cardInset,
+        // Lưu khoảnh khắc cần mạng (tải ảnh, server cộng Hearts).
+        if (!pendingSync)
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.s4),
+            decoration: BoxDecoration(
+              color: AppColors.resolve(context, kColorPrimary50FFF4F1),
+              borderRadius: BorderRadius.circular(AppRadius.xl),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  hasPhoto.value
+                      ? l10n.carePhotoSelected
+                      : l10n.careSaveMemoryQuestion,
+                  style: AppTypography.adapt(context, AppTypography.title16),
                 ),
-                alignment: Alignment.centerLeft,
-                decoration: BoxDecoration(
-                  color: AppColors.resolve(context, kColorSurfaceFFFFFF),
-                  borderRadius: BorderRadius.circular(AppRadius.md),
+                const SizedBox(height: AppSpacing.s3),
+                Row(
+                  children: [
+                    photoButton(LucideIcons.camera, l10n.careCamera),
+                    const SizedBox(width: AppSpacing.itemGap),
+                    photoButton(LucideIcons.images, l10n.careGallery),
+                  ],
                 ),
-                child: TextField(
-                  controller: note,
-                  style: AppTypography.adapt(context, AppTypography.text14),
-                  decoration: InputDecoration(
-                    isDense: true,
-                    filled: false,
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    hintText: l10n.careNoteHint,
-                    hintStyle: AppTypography.adapt(
-                      context,
-                      AppTypography.text14.copyWith(
-                        color: kColorTextTertiary9C928A,
+                const SizedBox(height: AppSpacing.s3),
+                Container(
+                  constraints: const BoxConstraints(minHeight: 44),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.cardInset,
+                  ),
+                  alignment: Alignment.centerLeft,
+                  decoration: BoxDecoration(
+                    color: AppColors.resolve(context, kColorSurfaceFFFFFF),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                  ),
+                  child: TextField(
+                    controller: note,
+                    style: AppTypography.adapt(context, AppTypography.text14),
+                    decoration: InputDecoration(
+                      isDense: true,
+                      filled: false,
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      hintText: l10n.careNoteHint,
+                      hintStyle: AppTypography.adapt(
+                        context,
+                        AppTypography.text14.copyWith(
+                          color: kColorTextTertiary9C928A,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
         AppButton(label: l10n.careFinish, onPressed: close),
         Center(
           child: TextButton.icon(
@@ -212,8 +220,11 @@ Future<void> runMissionCompletionFlow(
   final result = await showAppBottomSheet<MissionCompletionChoice>(
     context,
     strongScrim: true,
-    builder: (_) =>
-        MissionCompletionSheet(hearts: completion.heartsEarned, title: title),
+    builder: (_) => MissionCompletionSheet(
+      hearts: completion.heartsEarned,
+      title: title,
+      pendingSync: completion.pendingSync,
+    ),
   );
   if (result?.undo ?? false) {
     await onUndo();

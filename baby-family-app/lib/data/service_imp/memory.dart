@@ -737,6 +737,12 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
   }
 
   @override
+  int get pendingSyncCount => 0;
+
+  @override
+  Future<void> syncPending() async {}
+
+  @override
   Future<int?> videoDurationSec(String path) async => null;
 
   @override

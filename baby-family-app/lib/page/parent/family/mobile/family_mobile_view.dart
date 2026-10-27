@@ -16,11 +16,13 @@ import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
 import 'package:baby_family/utils/widget/app_caps_label.dart';
 import 'package:baby_family/utils/widget/app_card.dart';
+import 'package:baby_family/utils/widget/app_grouped_list.dart';
 import 'package:baby_family/utils/widget/app_icon_badge.dart';
 import 'package:baby_family/utils/widget/app_initial_avatar.dart';
 import 'package:baby_family/utils/widget/app_page_header.dart';
 import 'package:baby_family/utils/widget/app_progress_bar.dart';
 import 'package:baby_family/utils/widget/app_relative_avatar.dart';
+import 'package:baby_family/utils/widget/app_settings_row.dart';
 import 'package:baby_family/utils/widget/app_square_icon_button.dart';
 import 'package:baby_family/utils/widget/app_tag_pill.dart';
 import 'package:baby_family/utils/widget/base_scaffold.dart';
@@ -41,7 +43,7 @@ part '../widgets/relative_row.dart';
 /// Dùng thử: người thân bị khoá → SUB-01; gói trả phí: “Quản lý gói” → SUB-03,
 /// người thân → FAM-04 (đang chờ tham gia → FAM-05), “Mời người thân
 /// (3/12)” → FAM-03. Bánh răng → FAM-07; các con → CHD-01 (thai kỳ →
-/// PREG-01), “Thêm con / thai kỳ” → CHD-04.
+/// PREG-01), “Thêm con / thai kỳ” → CHD-04; dòng “Cài đặt” cuối màn → SET-01.
 class FamilyMobileView extends HookConsumerWidget {
   const FamilyMobileView({super.key});
 
@@ -173,6 +175,18 @@ class FamilyMobileView extends HookConsumerWidget {
             _LockedRelatives(
               onTap: () => context.router.push(const PlansRoute()),
             ),
+          gap,
+          // SET-01 nằm trong “Gia đình & Cài đặt” (đặc tả 8.1) — trước đây Bố/
+          // Mẹ chỉ mở được từ màn chờ bạn đời (BF-20261026-002).
+          AppGroupedList(
+            children: [
+              AppSettingsRow(
+                icon: LucideIcons.settings,
+                title: l10n.settingsTitle,
+                onTap: () => context.router.push(const SettingsRoute()),
+              ),
+            ],
+          ),
         ],
       );
     }

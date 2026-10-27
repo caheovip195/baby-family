@@ -6,7 +6,7 @@ export interface CircleSubject {
   id: string;
   name: string;
   kind: 'CHILD' | 'PREGNANCY';
-  /** Only on `GET /me/circles`: the relative's own grant for this subject. */
+  /** `GET /me/circles`: the relative's own grant; Circle invite preview: the proposed grant. */
   permission?: string;
   allowDownload?: boolean;
 }
@@ -44,6 +44,8 @@ export class FamilyCirclePreview {
     public readonly children: CircleSubject[],
     public readonly expiresAt: Date,
     public readonly message: string | null,
+    /** Proposed call name for the invited relative (`payload.displayName`). */
+    public readonly displayName: string,
   ) {}
 }
 export class FamilyCircleBootstrap {

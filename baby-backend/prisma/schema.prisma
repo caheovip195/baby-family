@@ -3130,6 +3130,7 @@ model PregnancyNameCandidate {
   coupleSpaceId                                                                                 String              @map("couple_space_id") @db.Uuid
   pregnancyId                                                                                   String              @map("pregnancy_id") @db.Uuid
   nameEnc                                                                                       Bytes               @map("name_enc")
+  nameKey                                                                                       String?             @map("name_key") @db.VarChar(64)
   meaningEnc                                                                                    Bytes?              @map("meaning_enc")
   addedBy                                                                                       String              @map("added_by") @db.Uuid
   chosenAt                                                                                      DateTime?           @map("chosen_at") @db.Timestamptz(3)
@@ -3148,6 +3149,7 @@ model PregnancyNameCandidate {
 
   @@unique([id, familyId, coupleSpaceId])
   @@unique([id, familyId])
+  @@unique([pregnancyId, nameKey], map: "uq_pregnancy_name_key_active", where: raw("((deleted_at IS NULL) AND (name_key IS NOT NULL))"))
   @@index([pregnancyId], where: raw("(deleted_at IS NULL)"))
   @@map("pregnancy_name_candidates")
   @@schema("us")
@@ -3769,5 +3771,25 @@ model UserAssetVariant {
   @@map("user_asset_variants")
   // Raw-managed declarations; avoids adding generic CRUD for private upload internals.
   @@ignore
+  @@schema("app")
+}
+
+// Raw-managed viewer receipt log; content lives only in source entities.
+model OfflineMemoryChange {
+  id          String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  familyId    String    @map("family_id") @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  entity      String    @db.VarChar(20)
+  entityId    String    @map("entity_id")
+  memoryId    String    @map("memory_id") @db.Uuid
+  op          String    @db.VarChar(6)
+  fingerprint String
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(3)
+
+  // Partial cursor/latest indexes and foreign keys are owned by the DDL migration.
+  @@ignore
+  @@map("offline_memory_changes")
   @@schema("app")
 }
