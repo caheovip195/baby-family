@@ -34,6 +34,9 @@ export class NotificationDispatchSnapshot {
   urgency!: 'SOON' | 'NORMAL';
   requestKind!: 'TASK' | 'NEED';
   reactionRemoved!: boolean;
+  /** Nhắn tin (BF-20261101-001): loại cuộc trò chuyện và id để mở. */
+  chatKind?: 'FAMILY' | 'COUPLE';
+  chatConversationId?: string;
   constructor(values: NotificationDispatchSnapshot) {
     Object.assign(this, values);
   }

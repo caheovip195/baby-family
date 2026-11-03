@@ -13,6 +13,7 @@ export const NOTIFICATION_POLICY = {
     US: true,
     APPRECIATION: true,
     PROMOTIONS: false,
+    CHAT: true,
   },
   /** Existing user_settings JSON uses MEMORY; preserve it when adopting canonical groups. */
   categoryAliases: {
@@ -21,6 +22,7 @@ export const NOTIFICATION_POLICY = {
     US: [],
     APPRECIATION: [],
     PROMOTIONS: [],
+    CHAT: [],
   },
   /** Only names and identifiers may cross the notification boundary. */
   safeParamKeys: [

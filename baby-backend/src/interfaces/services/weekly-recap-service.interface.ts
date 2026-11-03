@@ -15,4 +15,17 @@ export interface IWeeklyRecapService {
   ): Promise<{ items: WeeklyRecapResponse[]; nextCursor: string | null }>;
   latest(actor: AuthPrincipal, familyId: string): Promise<WeeklyRecapResponse>;
   stats(actor: AuthPrincipal, familyId: string): Promise<WeekStats>;
+  /** REC-02 chia sẻ với người thân (gói có Family Circle). */
+  share(
+    actor: AuthPrincipal,
+    familyId: string,
+    recapId: string,
+    shared: boolean,
+  ): Promise<WeeklyRecapResponse>;
+  /** REC-02 lưu vào timeline (một ký ức mỗi recap). */
+  saveToTimeline(
+    actor: AuthPrincipal,
+    familyId: string,
+    recapId: string,
+  ): Promise<{ memoryId: string }>;
 }

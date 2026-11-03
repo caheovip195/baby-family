@@ -27,6 +27,7 @@ export interface CreateMilestoneTemplateInput {
   remindDaysBefore?: number | null;
   sortOrder?: number;
   status?: string;
+  version?: number;
 }
 export interface UpdateMilestoneTemplateInput {
   category?: string;
@@ -38,6 +39,7 @@ export interface UpdateMilestoneTemplateInput {
   remindDaysBefore?: number | null;
   sortOrder?: number;
   status?: string;
+  version?: number;
 }
 
 /** Persistence only: callers must enforce tenant access, business transitions and retention.  */

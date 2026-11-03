@@ -37,6 +37,9 @@ import { DataExportRepository } from '../repositories/data-export.repository';
 import { AccountDeletionService } from '../services/account-deletion.service';
 import { DataExportService } from '../services/data-export.service';
 import { NOTIFICATION_INBOX_REPOSITORY } from '../interfaces/repositories/notification-inbox-repository.interface';
+import { REALTIME_REPOSITORY } from '../interfaces/repositories/realtime-repository.interface';
+import { RealtimeRepository } from '../repositories/realtime.repository';
+import { RealtimeServerHolder } from '../common/realtime/realtime-server.holder';
 import { NOTIFICATION_DISPATCH_SERVICE } from '../interfaces/services/notification-dispatch-service.interface';
 import { NotificationInboxRepository } from '../repositories/notification-inbox.repository';
 import { NotificationDispatchService } from '../services/notification-dispatch.service';
@@ -67,6 +70,12 @@ import { OutboxRelayRepository } from '../repositories/outbox-relay.repository';
 import { ImageProcessorService } from '../services/image-processor.service';
 import { JobQueueService } from '../services/job-queue.service';
 import { JobRunnerService } from '../services/job-runner.service';
+import { BRIDGE_REPOSITORY } from '../interfaces/repositories/bridge-repository.interface';
+import { BridgeRepository } from '../repositories/bridge.repository';
+import { BRIDGE_MAINTENANCE_SERVICE } from '../interfaces/services/bridge-maintenance-service.interface';
+import { BridgeMaintenanceService } from '../services/bridge-maintenance.service';
+import { ERROR_REPORTER } from '../interfaces/services/error-reporter.interface';
+import { ErrorReporterService } from '../services/error-reporter.service';
 import { MediaMaintenanceService } from '../services/media-maintenance.service';
 import { MediaProcessingService } from '../services/media-processing.service';
 import { MediaTranscoderService } from '../services/media-transcoder.service';
@@ -223,6 +232,9 @@ import { MemoryHeartAwardRepository } from '../repositories/memory-heart-award.r
       useClass: NotificationDispatchService,
     },
     NotificationQueueWorker,
+    // Presence chat (BF-20261101-001): bỏ push cho người đang kết nối.
+    { provide: REALTIME_REPOSITORY, useClass: RealtimeRepository },
+    RealtimeServerHolder,
     { provide: WEEKLY_RECAP_REPOSITORY, useClass: WeeklyRecapRepository },
     { provide: WEEKLY_RECAP_SERVICE, useClass: WeeklyRecapService },
     WeeklyRecapQueueWorker,
@@ -247,6 +259,12 @@ import { MemoryHeartAwardRepository } from '../repositories/memory-heart-award.r
     { provide: MEDIA_MAINTENANCE_SERVICE, useClass: MediaMaintenanceService },
     { provide: MEMORY_CONTENT_REPOSITORY, useClass: MemoryContentRepository },
     { provide: MEMORY_MAINTENANCE_SERVICE, useClass: MemoryMaintenanceService },
+    { provide: ERROR_REPORTER, useClass: ErrorReporterService },
+    { provide: BRIDGE_REPOSITORY, useClass: BridgeRepository },
+    {
+      provide: BRIDGE_MAINTENANCE_SERVICE,
+      useClass: BridgeMaintenanceService,
+    },
     { provide: JOB_RUNNER_SERVICE, useClass: JobRunnerService },
     { provide: JOB_QUEUE_SERVICE, useClass: JobQueueService },
     { provide: OUTBOX_RELAY_SERVICE, useClass: OutboxRelayService },

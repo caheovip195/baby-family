@@ -38,6 +38,7 @@ function mapMilestoneTemplate(row: MilestoneTemplateRow): MilestoneTemplate {
     remindDaysBefore: row.remindDaysBefore,
     sortOrder: row.sortOrder,
     status: row.status,
+    version: row.version,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     deletedAt: row.deletedAt,
@@ -70,6 +71,7 @@ export class MilestoneTemplateRepository implements IMilestoneTemplateRepository
         : { remindDaysBefore: input.remindDaysBefore }),
       ...(input.sortOrder === undefined ? {} : { sortOrder: input.sortOrder }),
       ...(input.status === undefined ? {} : { status: input.status }),
+      ...(input.version === undefined ? {} : { version: input.version }),
     };
     return mapMilestoneTemplate(
       await this.prisma.milestoneTemplate.create({ data }),
@@ -130,6 +132,7 @@ export class MilestoneTemplateRepository implements IMilestoneTemplateRepository
       'remindDaysBefore',
       'sortOrder',
       'status',
+      'version',
     ]);
     const data: Prisma.MilestoneTemplateUncheckedUpdateManyInput = {
       ...(input.category === undefined ? {} : { category: input.category }),
@@ -151,6 +154,7 @@ export class MilestoneTemplateRepository implements IMilestoneTemplateRepository
         : { remindDaysBefore: input.remindDaysBefore }),
       ...(input.sortOrder === undefined ? {} : { sortOrder: input.sortOrder }),
       ...(input.status === undefined ? {} : { status: input.status }),
+      ...(input.version === undefined ? {} : { version: input.version }),
     };
     return this.prisma.$transaction(async (transaction) => {
       const result = await transaction.milestoneTemplate.updateMany({

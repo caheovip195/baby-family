@@ -196,6 +196,18 @@ class NotificationRemoteServiceImp extends NotificationServiceImp {
         l10n.notiBadgeEarned,
         '/care/badges',
       ),
+      // §7.25.1: câu trung tính, không nói tên / nội dung có bị gỡ.
+      'NOTI_CIRCLE_LEFT' => (
+        NotificationKind.invite,
+        l10n.notiCircleLeft,
+        '/family',
+      ),
+      // REC-04 bản cho ông bà (BF-20261030-003).
+      'NOTI_YEARBOOK_SHARED' => (
+        NotificationKind.memory,
+        l10n.notiYearBookShared,
+        '/circle/year-books',
+      ),
       _ => (NotificationKind.system, l10n.notiGeneric, null),
     };
     return AppNotification(

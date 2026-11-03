@@ -44,12 +44,12 @@ function fixture() {
 }
 
 describe('Internal persistence-backed application services', () => {
-  it('covers 117 internal tables and excludes manual HTTP services', () => {
-    expect(INTERNAL_SERVICE_TABLES).toHaveLength(117);
-    expect(INTERNAL_SERVICE_PROVIDERS).toHaveLength(117);
+  it('covers 123 internal tables and excludes manual HTTP services', () => {
+    expect(INTERNAL_SERVICE_TABLES).toHaveLength(123);
+    expect(INTERNAL_SERVICE_PROVIDERS).toHaveLength(123);
     expect(
       new Set(INTERNAL_SERVICE_TABLES.map((table) => table.model)).size,
-    ).toBe(117);
+    ).toBe(123);
     for (const name of [
       'Note',
       'User',

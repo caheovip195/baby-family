@@ -144,13 +144,16 @@ class CircleRemoteServiceImp extends CircleServiceImp {
     return const CirclePostDraft();
   }
 
-  /// SET-10: rời gia đình trên server rồi về CIR-WAIT. Gỡ nội dung đã đăng
-  /// ([removeContent]) chưa có API — nội dung được giữ cho gia đình.
+  /// SET-10: rời gia đình trên server rồi về CIR-WAIT; [removeContent] gỡ
+  /// toàn bộ ký ức / bình luận đã đăng (BF-20261030-003).
   @override
   Future<void> leaveFamily({bool removeContent = false}) async {
     final serverFamilyId = _serverFamilyId;
     if (serverFamilyId != null) {
-      await _onboarding.leaveCircle(serverFamilyId);
+      await _onboarding.leaveCircle(
+        serverFamilyId,
+        removeContent: removeContent,
+      );
       sessionRepository.patchSession({kValueSessionKeyServerFamilyId: null});
     }
     await super.leaveFamily(removeContent: removeContent);

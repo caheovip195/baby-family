@@ -11,6 +11,8 @@ export interface SavePerspectiveContent {
   body: string | null;
   audioAssetId: string | null;
   hiddenFromCircle: boolean;
+  /** Ảnh/video theo thứ tự; undefined = giữ bộ cũ (BF-20261030-006). */
+  assetIds?: string[];
 }
 export interface IMemoryPerspectiveContentRepository {
   list(
@@ -27,6 +29,14 @@ export interface IMemoryPerspectiveContentRepository {
     familyId: string,
     actorUserId: string,
   ): Promise<Asset | null>;
+  /** Ảnh/video của góc nhìn [id] mà người hỏi được dùng (cùng luật audio). */
+  findMedia(
+    assetIds: string[],
+    familyId: string,
+    actorUserId: string,
+  ): Promise<Asset[]>;
+  /** Asset id theo góc nhìn, đúng thứ tự. */
+  assetIds(perspectiveIds: string[]): Promise<Map<string, string[]>>;
   save(command: SavePerspectiveContent): Promise<MemoryPerspective>;
   remove(
     memoryId: string,

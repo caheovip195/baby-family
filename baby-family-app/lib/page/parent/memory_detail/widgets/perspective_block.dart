@@ -118,20 +118,63 @@ class _PerspectiveBlock extends StatelessWidget {
                   ),
                 ),
               ],
+              // MEM-24 ghi âm góc nhìn (BF-20261030-004).
+              if (perspective.voiceUrl case final url?) ...[
+                const SizedBox(height: AppSpacing.itemGap),
+                PlayableVoiceCard(
+                  title: l10n.memAuthorTells(callName),
+                  duration: memoryDuration(perspective.voiceDurationSec ?? 0),
+                  url: url,
+                ),
+              ],
               if (perspective.mediaAssets.isNotEmpty) ...[
                 const SizedBox(height: AppSpacing.itemGap),
                 Wrap(
                   spacing: AppSpacing.compact,
                   runSpacing: AppSpacing.compact,
                   children: [
-                    for (final asset in perspective.mediaAssets)
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(AppRadius.sm),
-                        child: Image(
-                          image: mediaImageProvider(asset),
-                          width: 72,
-                          height: 72,
-                          fit: BoxFit.cover,
+                    for (final (index, asset)
+                        in perspective.mediaAssets.indexed)
+                      GestureDetector(
+                        key: ValueKey('perspective-media-$index'),
+                        // MEM-08 cho ảnh/video của góc nhìn (BF-20261030-008).
+                        onTap: () => context.router.push(
+                          PhotoViewerRoute(
+                            memoryId: perspective.memoryId,
+                            index: index,
+                            perspectiveId: perspective.id,
+                          ),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              if (isLocalVideo(asset))
+                                Container(
+                                  width: 72,
+                                  height: 72,
+                                  color: AppColors.resolve(
+                                    context,
+                                    kColorTextPrimary2E2A27,
+                                  ),
+                                )
+                              else
+                                Image(
+                                  image: mediaImageProvider(asset),
+                                  width: 72,
+                                  height: 72,
+                                  fit: BoxFit.cover,
+                                ),
+                              if (isLocalVideo(asset) ||
+                                  (index < perspective.mediaVideos.length &&
+                                      perspective.mediaVideos[index] != null))
+                                const Icon(
+                                  LucideIcons.circlePlay,
+                                  color: kColorWhite,
+                                ),
+                            ],
+                          ),
                         ),
                       ),
                   ],

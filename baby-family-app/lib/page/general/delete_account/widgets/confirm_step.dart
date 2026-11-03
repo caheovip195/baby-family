@@ -2,7 +2,8 @@ part of '../mobile/delete_account_mobile_view.dart';
 
 /// SET-09c bước 3–4 — Xác thực & xác nhận (Pencil `sOUEE`): đăng nhập lại
 /// (Apple / OTP), điều xảy ra khi xoá, ô tích xác nhận, “Xoá tài khoản”.
-/// Bản thật chỉ có OTP: gửi mã → nhập 6 số → xác nhận.
+/// Bản thật: Apple / Google đã liên kết (BF-20261030-003) hoặc OTP (gửi mã →
+/// nhập 6 số → xác nhận).
 class _ConfirmStep extends StatelessWidget {
   const _ConfirmStep({
     required this.controller,
@@ -10,6 +11,7 @@ class _ConfirmStep extends StatelessWidget {
     required this.onDelete,
     required this.onSendOtp,
     required this.onVerifyOtp,
+    required this.onVerifyWith,
   });
 
   final DeleteAccountController controller;
@@ -17,14 +19,23 @@ class _ConfirmStep extends StatelessWidget {
   final VoidCallback onDelete;
   final VoidCallback onSendOtp;
   final VoidCallback onVerifyOtp;
+  final ValueChanged<AuthMethod> onVerifyWith;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     const gap = SizedBox(height: AppSpacing.cardInset);
-    final account = info.maskedAppleAccount;
+    final apple = info.maskedAppleAccount;
+    final google = info.maskedGoogleAccount;
+    final account = apple ?? google;
     final phone = info.maskedPhone;
-    final verifiedAs = account ?? phone;
+    String? label(String? masked, String provider) =>
+        masked == null ? null : (masked.isEmpty ? provider : masked);
+    final verifiedAs = switch (controller.verifiedWith) {
+      AuthMethod.apple => label(apple, 'Apple'),
+      AuthMethod.google => label(google, 'Google'),
+      _ => phone,
+    };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -39,14 +50,27 @@ class _ConfirmStep extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (account != null)
+              if (apple != null && !controller.verified)
                 AppButton.social(
                   label: l10n.authApple,
                   icon: LucideIcons.apple,
                   inverted: true,
                   height: 48,
-                  onPressed: controller.verify,
+                  onPressed: controller.isLoading
+                      ? null
+                      : () => onVerifyWith(AuthMethod.apple),
                 ),
+              if (google != null && !controller.verified) ...[
+                if (apple != null) const SizedBox(height: AppSpacing.s3),
+                AppButton.social(
+                  label: l10n.authGoogle,
+                  icon: LucideIcons.circleQuestionMark,
+                  height: 48,
+                  onPressed: controller.isLoading
+                      ? null
+                      : () => onVerifyWith(AuthMethod.google),
+                ),
+              ],
               if (controller.verified && verifiedAs != null) ...[
                 const SizedBox(height: AppSpacing.s3),
                 Container(

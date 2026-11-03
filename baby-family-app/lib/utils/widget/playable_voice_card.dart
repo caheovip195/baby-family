@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:baby_family/utils/widget/voice_card.dart';
 import 'package:flutter/material.dart';
@@ -70,8 +71,13 @@ class _PlayableVoiceCardState extends State<PlayableVoiceCard> {
     }
     var player = _player;
     if (player == null) {
-      player = _player = VideoPlayerController.networkUrl(Uri.parse(url))
-        ..addListener(_onTick);
+      // Ghi âm vừa thu (tệp trên máy) hoặc URL đã ký của server.
+      final local = !url.startsWith('http');
+      player = _player =
+          (local
+                ? VideoPlayerController.file(File(url))
+                : VideoPlayerController.networkUrl(Uri.parse(url)))
+            ..addListener(_onTick);
       await player.initialize();
     }
     if (player.value.isPlaying) {

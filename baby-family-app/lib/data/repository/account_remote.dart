@@ -92,6 +92,23 @@ abstract class IAccountRemoteRepository extends IBaseRepository {
   /// `GET /v1/me/sign-in-methods`.
   Future<List<SignInMethodRecord>> signInMethods();
 
+  /// Liên kết [provider] (`apple` | `google`) bằng JWT của nhà cung cấp
+  /// ([credential]: `{identityToken, nonce}` hoặc `{idToken}`).
+  Future<void> linkIdentity(
+    String provider,
+    JsonMap credential,
+    String reauthToken,
+  );
+
+  /// Gỡ liên kết; server giữ lại ít nhất một cách đăng nhập.
+  Future<void> unlinkIdentity(String provider, String reauthToken);
+
+  /// Xác thực lại bằng Apple / Google đã liên kết.
+  Future<ReauthTokenRecord?> reauthWithIdentity(
+    String provider,
+    JsonMap credential,
+  );
+
   /// SET-11/12 `GET /v1/support/help-center`.
   Future<HelpCenterRecord?> helpCenter(String locale);
 

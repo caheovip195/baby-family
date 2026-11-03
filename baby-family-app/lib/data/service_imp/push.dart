@@ -17,4 +17,11 @@ class PushServiceImp implements IPushService {
 
   @override
   Future<void> syncIfAuthorized() async {}
+
+  @override
+  Stream<String> openedLinks() => const Stream<String>.empty();
+
+  @override
+  Stream<({String title, String body, String? link})> foregroundMessages() =>
+      const Stream.empty();
 }

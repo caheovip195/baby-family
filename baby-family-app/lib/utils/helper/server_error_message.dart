@@ -60,8 +60,18 @@ String actionErrorMessage(Object error) {
     'MEMORY_VISIBILITY_INVALID' => l10n.errorMemoryNotEditable,
     'REAUTH_REQUIRED' => l10n.errorReauthRequired,
     'REAUTH_UNAVAILABLE' => l10n.errorServiceUnavailable,
+    'REAUTH_IDENTITY_REQUIRED' => l10n.errorReauthIdentity,
+    'LAST_SIGN_IN_METHOD' => l10n.errorLastSignInMethod,
+    'IDENTITY_IN_USE' ||
+    'IDENTITY_PROVIDER_ALREADY_LINKED' => l10n.errorIdentityInUse,
     'EXPORT_ALREADY_ACTIVE' => l10n.errorExportActive,
     'EXPORT_RATE_LIMITED' => l10n.errorRateLimited,
+    'GROWTH_DATE_INVALID' => l10n.errorGrowthDate,
+    'HANDOFF_TIME_INVALID' => l10n.errorHandoffTime,
+    'AI_UNAVAILABLE' || 'AI_BAD_OUTPUT' => l10n.errorAiUnavailable,
+    'AI_NOT_IN_PLAN' => l10n.errorAiNotInPlan,
+    'AI_DISABLED' => l10n.errorAiDisabled,
+    'AI_QUOTA_EXCEEDED' => l10n.errorAiQuota,
     'EVENT_DATE_INVALID' ||
     'EVENT_LUNAR_DATE_INVALID' => l10n.errorEventDateInvalid,
     _ when error is DioException && error.response == null => l10n.errorNetwork,

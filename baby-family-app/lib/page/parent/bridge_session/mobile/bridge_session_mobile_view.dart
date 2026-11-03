@@ -1,17 +1,22 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:baby_family/data/model/ai/ai_result.dart';
 import 'package:baby_family/data/model/family/member.dart';
 import 'package:baby_family/data/model/us/bridge_share.dart';
 import 'package:baby_family/page/parent/bridge_session/bridge_session_controller.dart';
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/extension/date_time.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/ai_consent.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/mission_text.dart';
 import 'package:baby_family/utils/helper/parent_color.dart';
+import 'package:baby_family/utils/helper/server_error_message.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
+import 'package:baby_family/utils/widget/app_bottom_sheet.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
 import 'package:baby_family/utils/widget/app_initial_avatar.dart';
+import 'package:baby_family/utils/widget/app_text_action.dart';
 import 'package:baby_family/utils/widget/app_text_input_sheet.dart';
 import 'package:baby_family/utils/widget/app_value_pill.dart';
 import 'package:baby_family/utils/widget/base_scaffold.dart';
@@ -229,6 +234,14 @@ class BridgeSessionMobileView extends HookConsumerWidget {
               )
             : null,
       ),
+      // AI 1.2: tóm tắt trung lập những gì hai bạn đã chia sẻ (bản nháp).
+      Center(
+        child: AppTextAction(
+          label: l10n.usBridgeAiSummary,
+          color: kColorUs7006A549F,
+          onPressed: () => _summarize(context, controller),
+        ),
+      ),
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -259,4 +272,81 @@ class BridgeSessionMobileView extends HookConsumerWidget {
       ],
     );
   }
+}
+
+/// Hỏi đồng ý lần đầu → tóm tắt → sheet có nhãn AI + “Báo cáo nội dung AI”.
+Future<void> _summarize(
+  BuildContext context,
+  BridgeSessionController controller,
+) async {
+  final AiDraftRecord? draft;
+  try {
+    draft = await runWithAiConsent(
+      context,
+      action: controller.summarize,
+      grant: controller.grantAiConsent,
+    );
+  } on Object catch (error) {
+    if (context.mounted) {
+      showAppSnackBar(context, actionErrorMessage(error));
+    }
+    return;
+  }
+  final summary = draft?.summary?.trim() ?? '';
+  if (summary.isEmpty || !context.mounted) {
+    return;
+  }
+  final invocationId = draft?.invocationId;
+  await showAppBottomSheet<void>(
+    context,
+    builder: (sheetContext) {
+      final l10n = sheetContext.l10n;
+      return AppBottomSheet(
+        title: l10n.usBridgeAiSummaryTitle,
+        children: [
+          Row(
+            children: [
+              Icon(
+                LucideIcons.sparkles,
+                size: 14,
+                color: AppColors.resolve(sheetContext, kColorUs7006A549F),
+              ),
+              const SizedBox(width: AppSpacing.compact),
+              Text(
+                l10n.commonAiSuggested,
+                style: AppTypography.adapt(sheetContext, AppTypography.small),
+              ),
+            ],
+          ),
+          Text(
+            summary,
+            style: AppTypography.adapt(
+              sheetContext,
+              AppTypography.body.copyWith(height: 1.5),
+            ),
+          ),
+          if (invocationId != null)
+            Center(
+              child: AppTextAction(
+                label: l10n.commonAiReport,
+                color: kColorTextTertiary9C928A,
+                onPressed: () async {
+                  Navigator.of(sheetContext).pop();
+                  try {
+                    await controller.reportSummary(invocationId, summary);
+                    if (context.mounted) {
+                      showAppSnackBar(context, context.l10n.commonAiReported);
+                    }
+                  } on Object catch (error) {
+                    if (context.mounted) {
+                      showAppSnackBar(context, actionErrorMessage(error));
+                    }
+                  }
+                },
+              ),
+            ),
+        ],
+      );
+    },
+  );
 }

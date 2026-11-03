@@ -8,11 +8,15 @@ class _CoupleToolTiles extends StatelessWidget {
     required this.onJournal,
     required this.onBridge,
     required this.onWeek,
+    required this.onHandoff,
   });
 
   final VoidCallback onJournal;
   final VoidCallback onBridge;
   final VoidCallback onWeek;
+
+  /// Bàn giao ca (7.13.8).
+  final VoidCallback onHandoff;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +25,7 @@ class _CoupleToolTiles extends StatelessWidget {
       (LucideIcons.notebookPen, l10n.usJournal, onJournal),
       (LucideIcons.waypoints, l10n.usBridgeShort, onBridge),
       (LucideIcons.chartNoAxesColumn, l10n.usWeekShort, onWeek),
+      (LucideIcons.arrowRightLeft, l10n.usHandoff, onHandoff),
     ];
     return IntrinsicHeight(
       child: Row(

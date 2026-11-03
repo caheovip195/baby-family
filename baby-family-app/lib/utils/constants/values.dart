@@ -290,3 +290,37 @@ const kValueMomentFeelings = [
   'peaceful',
   'proud',
 ];
+
+// --- Nhắn tin gia đình (CHAT-01…04, BF-20261101-001) ---
+
+/// Độ dài tối đa một tin nhắn (khớp `CHAT_POLICY.bodyMaxLength` của server).
+const kValueChatBodyMaxLength = 4000;
+
+/// Số tin mỗi trang khi đồng bộ / tải tin cũ (server tối đa 100).
+const kValueChatPageSize = 50;
+
+/// Số trang `afterSeq` tối đa mỗi lần đồng bộ; còn nữa thì lấy trang mới nhất.
+const kValueChatSyncMaxPages = 10;
+
+/// Số tin mỗi cuộc trò chuyện giữ trên máy (đọc offline).
+const kValueChatLocalMessageLimit = 300;
+
+/// “X đang nhập…” hiện trong khoảng này sau tín hiệu cuối.
+const kValueChatTypingVisible = Duration(seconds: 4);
+
+/// Gửi tín hiệu đang nhập tối đa một lần trong khoảng này.
+const kValueChatTypingThrottle = Duration(milliseconds: 2500);
+
+/// Gộp các lần đánh dấu đã đọc khi đang xem cuộc trò chuyện.
+const kValueChatReadDebounce = Duration(milliseconds: 800);
+
+/// Gộp các tín hiệu tin mới trước khi đọc lại danh sách cuộc trò chuyện.
+const kValueChatListRefreshDebounce = Duration(milliseconds: 400);
+
+/// Kết nối lại realtime: chờ ban đầu / tối đa (lùi dần, có ngẫu nhiên).
+const kValueRealtimeReconnectDelay = Duration(seconds: 1);
+const kValueRealtimeReconnectDelayMax = Duration(seconds: 30);
+
+/// Gửi `auth.refresh` trước khi access token hết hạn (nằm trong khoảng app tự
+/// gia hạn `kValueRenewAccessTokenBefore`).
+const kValueRealtimeTokenRefreshBefore = Duration(seconds: 90);

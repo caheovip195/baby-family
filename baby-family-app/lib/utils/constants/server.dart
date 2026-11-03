@@ -16,6 +16,9 @@ mixin Api {
   static const supportCategories = '/v1/support/categories';
   static const supportHelpCenter = '/v1/support/help-center';
   static const meSignInMethods = '/v1/me/sign-in-methods';
+  static const meIdentityApple = '/v1/me/identities/apple';
+  static const meIdentityGoogle = '/v1/me/identities/google';
+  static const meIdentity = '/v1/me/identities/{provider}';
   static const meFamilies = '/v1/me/families';
   static const meDefaultFamily = '/v1/me/default-family';
   static const catalogTimezones = '/v1/catalog/timezones';
@@ -67,6 +70,37 @@ mixin Api {
   static const pregnancyNameLike = '/v1/pregnancy-names/{nameId}/like';
   static const pregnancyNameChoose = '/v1/pregnancy-names/{nameId}/choose';
 
+  /// Câu hỏi kết nối + US-14 Tuần của hai ta (BF-20261027-002).
+  static const coupleQuestionToday =
+      '/v1/families/{familyId}/us/question/today';
+  static const coupleQuestionAnswer =
+      '/v1/families/{familyId}/us/question/today/answer';
+  static const coupleWeek = '/v1/families/{familyId}/us/week';
+  static const coupleHandoffs = '/v1/families/{familyId}/us/handoffs';
+  static const coupleBridges = '/v1/families/{familyId}/us/bridges';
+  static const coupleBridge = '/v1/families/{familyId}/us/bridges/{sessionId}';
+  static const coupleBridgeAction =
+      '/v1/families/{familyId}/us/bridges/{sessionId}/{action}';
+  static const coupleBridgeNextStep =
+      '/v1/families/{familyId}/us/bridges/{sessionId}/next-step';
+  static const coupleHandoffAck =
+      '/v1/families/{familyId}/us/handoffs/{handoffId}/acknowledge';
+
+  /// REC-03 tổng kết tháng tuổi (BF-20261027-003).
+  static const childMonthRecap = '/v1/children/{childId}/month-recap';
+  static const childGrowth = '/v1/children/{childId}/growth';
+
+  /// REC-04 Sách của con (BF-20261028-013).
+  static const childYearBook = '/v1/children/{childId}/year-book/{year}';
+  static const familyYearBook = '/v1/families/{familyId}/year-book/{year}';
+  static const familyYearBooks = '/v1/families/{familyId}/year-books';
+  static const aiStatus = '/v1/families/{familyId}/ai/status';
+  static const aiConsents = '/v1/families/{familyId}/ai/consents';
+  static const aiAction = '/v1/families/{familyId}/ai/{action}';
+  static const childDayStory = '/v1/children/{childId}/day-story';
+  static const childDayStoryDay = '/v1/children/{childId}/day-story/{date}';
+  static const childGrowthDay = '/v1/children/{childId}/growth/{date}';
+
   /// CARE-11 thống kê chăm con (mức gia đình).
   static const familyCareStats = '/v1/families/{familyId}/care-stats';
 
@@ -106,6 +140,10 @@ mixin Api {
   static const weeklyRecapLatest =
       '/v1/families/{familyId}/recaps/weekly/latest';
   static const homeWeekStats = '/v1/families/{familyId}/home/week-stats';
+  static const weeklyRecapShare =
+      '/v1/families/{familyId}/recaps/weekly/{recapId}/share';
+  static const weeklyRecapTimeline =
+      '/v1/families/{familyId}/recaps/weekly/{recapId}/timeline';
 
   // --- Bình luận & cảm xúc (MEM-07/10, mục 7.12) ---
   static const memoryComments = '/v1/memories/{memoryId}/comments';
@@ -148,6 +186,8 @@ mixin Api {
   // --- Tài khoản: xác thực lại, xoá, xuất dữ liệu (mục 7.25, SET-08/09) ---
   static const authReauthOtp = '/v1/auth/reauth/otp';
   static const authReauthVerify = '/v1/auth/reauth/verify';
+  static const authReauthApple = '/v1/auth/reauth/apple';
+  static const authReauthGoogle = '/v1/auth/reauth/google';
   static const meDeletionPreview = '/v1/me/deletion-preview';
   static const meDeletion = '/v1/me/deletion';
   static const meDeletionCancel = '/v1/me/deletion/cancel';
@@ -243,4 +283,14 @@ mixin Api {
   static const familyCircleLeave = '/v1/families/{familyId}/circle/leave';
   static const coupleAppreciationShareRespond =
       '/v1/families/{familyId}/us/appreciations/{appreciationId}/share-respond';
+
+  // --- Nhắn tin gia đình (CHAT-01…04, BF-20261101-001) ---
+  static const familyChats = '/v1/families/{familyId}/chats';
+  static const familyChatMessages =
+      '/v1/families/{familyId}/chats/{conversationId}/messages';
+  static const familyChatRead =
+      '/v1/families/{familyId}/chats/{conversationId}/read';
+
+  /// Socket.IO realtime: cùng host/cổng với API, gốc host (không `/api`).
+  static const realtimeSocketPath = '/socket.io';
 }

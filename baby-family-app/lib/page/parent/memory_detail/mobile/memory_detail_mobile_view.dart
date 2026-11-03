@@ -17,6 +17,7 @@ import 'package:baby_family/utils/widget/base_scaffold.dart';
 import 'package:baby_family/utils/widget/child_avatar.dart';
 import 'package:baby_family/utils/widget/error_state.dart';
 import 'package:baby_family/utils/widget/loading_progress.dart';
+import 'package:baby_family/utils/widget/playable_voice_card.dart';
 import 'package:baby_family/utils/widget/report_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

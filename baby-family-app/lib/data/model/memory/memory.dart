@@ -65,6 +65,9 @@ abstract class Memory with _$Memory {
     @JsonKey(name: 'mediaVideos') @Default([]) List<String?> mediaVideos,
     @JsonKey(name: 'uploadDone') int? uploadDone,
     @JsonKey(name: 'uploadTotal') int? uploadTotal,
+
+    /// Tiến độ đăng theo byte (0…1) của bài đang tải nền.
+    @JsonKey(name: 'uploadProgress') double? uploadProgress,
     @JsonKey(name: 'uploadFailed') @Default(false) bool uploadFailed,
 
     /// Offline-first (BF-20261022-001): đang chờ có mạng, sẽ tự gửi lại.

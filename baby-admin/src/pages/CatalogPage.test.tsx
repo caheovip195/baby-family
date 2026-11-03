@@ -52,7 +52,42 @@ describe('catalog publishing', () => {
     expect(canWriteCatalog('plan-versions', ['CONTENT'])).toBe(false);
     expect(canWriteCatalog('trial-policies', ['BILLING_OPS'])).toBe(true);
     expect(canWriteCatalog('plan-versions', ['OPS'])).toBe(true);
-    expect(canWriteCatalog('milestones', ['SUPER_ADMIN'])).toBe(false);
+    expect(canWriteCatalog('milestones', ['SUPER_ADMIN'])).toBe(true);
+    expect(canWriteCatalog('milestones', ['CONTENT'])).toBe(true);
+    expect(canWriteCatalog('milestones', ['OPS'])).toBe(false);
+    expect(canWriteCatalog('notification-templates', ['SUPER_ADMIN'])).toBe(
+      false,
+    );
+  });
+  it('BF-20261028-003: builds a typed milestone payload', () => {
+    expect(
+      catalogPayload('milestones', {
+        code: 'first_swim',
+        version: 2,
+        category: 'EXPERIENCE',
+        icon: 'waves',
+        titleI18n: { vi: 'Lần đầu đi bơi', en: 'First swim' },
+        promptI18n: { vi: 'Ở đâu?' },
+        sortOrder: 9,
+        dateRule: ' {"type":"BIRTH_MONTHS","months":12} ',
+        reason: 'Mới',
+      }),
+    ).toEqual({
+      code: 'first_swim',
+      version: 2,
+      category: 'EXPERIENCE',
+      icon: 'waves',
+      titleI18n: { vi: 'Lần đầu đi bơi', en: 'First swim' },
+      promptI18n: undefined,
+      sortOrder: 9,
+      isTraditional: false,
+      remindDaysBefore: null,
+      dateRule: { type: 'BIRTH_MONTHS', months: 12 },
+      reason: 'Mới',
+    });
+    expect(
+      catalogPayload('milestones', { code: 'x', dateRule: '' }),
+    ).toMatchObject({ dateRule: null });
   });
   it('requires a reason before publishing and refreshes after success', async () => {
     const publish = vi.spyOn(adminApi, 'transitionCatalog').mockResolvedValue({
@@ -195,7 +230,7 @@ describe('catalog publishing', () => {
     expect(
       screen.queryByRole('button', { name: 'Tạo mới' }),
     ).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole('tab', { name: 'Cột mốc' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Mẫu thông báo' }));
     expect(
       await screen.findByText(
         'Chưa hỗ trợ tạo/publish: schema catalog này chưa có phiên bản.',

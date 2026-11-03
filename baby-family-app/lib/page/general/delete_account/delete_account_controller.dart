@@ -4,6 +4,7 @@ import 'package:baby_family/data/provider/session.dart';
 import 'package:baby_family/data/provider/settings.dart';
 import 'package:baby_family/data/service/settings.dart';
 import 'package:baby_family/page/application_base.dart';
+import 'package:baby_family/utils/constants/enum.dart';
 import 'package:hooks_riverpod/legacy.dart';
 
 /// SET-09 — Xoá tài khoản, 3 màn trong một trang: 1 Tác động (SET-09),
@@ -101,11 +102,17 @@ class DeleteAccountController extends BaseNotifier {
     notifyListeners();
   }
 
-  /// Đăng nhập lại bằng Apple (bản mock).
-  void verify() {
+  /// Đăng nhập lại bằng Apple / Google đã liên kết (server cấp reauth
+  /// token, BF-20261030-003); huỷ hộp thoại của nhà cung cấp → [UserCancelled].
+  Future<void> verifyWith(AuthMethod method) async {
+    await whileLoading(() => settingsService.reauthWithSignIn(method));
     verified = true;
+    verifiedWith = method;
     notifyListeners();
   }
+
+  /// Phương thức vừa xác thực lại (null = OTP).
+  AuthMethod? verifiedWith;
 
   /// “Dùng mã OTP qua SĐT …” → gửi mã; lỗi ném ra để view báo snack bar.
   Future<void> sendOtp() async {

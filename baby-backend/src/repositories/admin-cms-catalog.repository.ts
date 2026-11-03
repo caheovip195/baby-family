@@ -65,6 +65,7 @@ export class AdminCmsCatalogRepository implements IAdminCmsCatalogRepository {
               remindDaysBefore: true,
               sortOrder: true,
               status: true,
+              version: true,
             },
           });
           break;

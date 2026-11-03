@@ -180,6 +180,16 @@ export class SafetyService implements ISafetyService {
         if (!(await this.repository.roleOf(input.familyId, input.targetId)))
           throw new NotFoundError('Target was not found.');
         return input.targetId;
+      case 'AI_OUTPUT': {
+        // Chỉ người đã nhận bản nháp đó báo cáo được; không có chủ sở hữu.
+        const requester = await this.repository.aiInvocationRequester(
+          input.familyId,
+          input.targetId,
+        );
+        if (requester !== actor.userId)
+          throw new NotFoundError('Target was not found.');
+        return null;
+      }
     }
   }
 }

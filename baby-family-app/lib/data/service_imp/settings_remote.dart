@@ -19,12 +19,14 @@ import 'package:baby_family/data/model/settings/sign_in_method_record.dart';
 import 'package:baby_family/data/model/settings/support_ticket.dart';
 import 'package:baby_family/data/model/settings/support_ticket_detail.dart';
 import 'package:baby_family/data/repository/account_remote.dart';
+import 'package:baby_family/data/repository/ai_remote.dart';
 import 'package:baby_family/data/repository/base.dart';
 import 'package:baby_family/data/repository/child.dart';
 import 'package:baby_family/data/repository/family.dart';
 import 'package:baby_family/data/repository/media.dart';
 import 'package:baby_family/data/repository/session.dart';
 import 'package:baby_family/data/repository/settings.dart';
+import 'package:baby_family/data/repository/social_credential.dart';
 import 'package:baby_family/data/service/session.dart';
 import 'package:baby_family/data/service_imp/media_uploader.dart';
 import 'package:baby_family/data/service_imp/offline_read.dart';
@@ -54,14 +56,20 @@ class SettingsRemoteServiceImp extends SettingsServiceImp {
     IChildRepository childRepository,
     this._remote,
     this._session,
-    this._media,
-  ) : super(sessionRepository, clock, _store, _family, childRepository);
+    this._media, [
+    this._social,
+    this._ai,
+  ]) : super(sessionRepository, clock, _store, _family, childRepository);
 
   final ISettingsRepository _store;
   final IFamilyRepository _family;
   final IAccountRemoteRepository _remote;
   final ISessionService _session;
   final IMediaRepository _media;
+  final ISocialCredentialRepository? _social;
+
+  /// Hạn mức AI tháng (BF-20261028-010); null (test) = không có số.
+  final IAiRemoteRepository? _ai;
 
   /// Mã xác thực lại, chỉ trong bộ nhớ; hết hạn thì server trả `REAUTH_REQUIRED`.
   String? _reauthToken;
@@ -156,6 +164,8 @@ class SettingsRemoteServiceImp extends SettingsServiceImp {
   /// cột mốc, recap, người thân, gói) vẫn chỉ lưu trên máy.
   static const _serverCategories = {
     'memories': 'MEMORIES',
+    // BF-20261101-001: push tin nhắn “Cả nhà” (Papa & Mama dùng `US`).
+    'chat': 'CHAT',
     'requests': 'REQUESTS',
     'couple': 'US',
     'thanks': 'APPRECIATION',
@@ -271,7 +281,16 @@ class SettingsRemoteServiceImp extends SettingsServiceImp {
     if (record == null) {
       return local;
     }
+    final ai = _ai;
+    final status = ai == null
+        ? null
+        : await whenOnline(
+            () => ai.status(_serverFamilyId!),
+            what: 'hạn mức AI',
+          );
     return local.copyWith(
+      remaining: status == null ? 0 : status.total - status.used,
+      total: status?.total ?? 0,
       enabled: record.aiEnabled ?? local.enabled,
       features: [
         for (final feature in local.features)
@@ -778,6 +797,18 @@ class SettingsRemoteServiceImp extends SettingsServiceImp {
     }
     final preview = await _remote.deletionPreview();
     final phone = sessionRepository.session()['phone'] as String?;
+    final linked = <AuthMethod, String>{};
+    try {
+      for (final record in await _remote.signInMethods()) {
+        final method = AuthMethod.values
+            .asNameMap()[record.provider?.toLowerCase()];
+        if (method != null && method != AuthMethod.phone) {
+          linked[method] = record.maskedHint ?? '';
+        }
+      }
+    } on DioException {
+      // Mất mạng: vẫn xác thực lại được bằng OTP.
+    }
 
     /// BF-20261023-001: API preview chưa có số ký ức đã đăng.
     return info.copyWith(
@@ -785,8 +816,9 @@ class SettingsRemoteServiceImp extends SettingsServiceImp {
       onlyParent:
           preview?.familyChoices.contains('DELETE_FAMILY') ?? info.onlyParent,
       purgeDate: today.add(Duration(days: preview?.graceDays ?? 30)),
-      // Server chưa có xác thực lại qua Apple — chỉ dùng OTP.
-      maskedAppleAccount: null,
+      // Xác thực lại bằng Apple / Google đã liên kết, hoặc OTP qua SĐT.
+      maskedAppleAccount: linked[AuthMethod.apple],
+      maskedGoogleAccount: linked[AuthMethod.google],
       maskedPhone: _maskPhone(phone),
     );
   }
@@ -811,6 +843,65 @@ class SettingsRemoteServiceImp extends SettingsServiceImp {
       throw StateError('Missing reauth token');
     }
     _reauthToken = value;
+  }
+
+  @override
+  Future<void> reauthWithSignIn(AuthMethod method) async {
+    if (!_remoteOn) {
+      return super.reauthWithSignIn(method);
+    }
+    final token = await _remote.reauthWithIdentity(
+      _providerOf(method),
+      await _credentialOf(method),
+    );
+    final value = token?.reauthToken;
+    if (value == null || value.isEmpty) {
+      throw StateError('Missing reauth token');
+    }
+    _reauthToken = value;
+  }
+
+  @override
+  Future<void> linkSignIn(AuthMethod method) async {
+    if (!_remoteOn) {
+      return super.linkSignIn(method);
+    }
+    final reauth = _reauthOrThrow;
+    await _remote.linkIdentity(
+      _providerOf(method),
+      await _credentialOf(method),
+      reauth,
+    );
+    _reauthToken = null;
+  }
+
+  @override
+  Future<void> unlinkSignIn(AuthMethod method) async {
+    if (!_remoteOn) {
+      return super.unlinkSignIn(method);
+    }
+    await _remote.unlinkIdentity(_providerOf(method), _reauthOrThrow);
+    _reauthToken = null;
+  }
+
+  /// `apple` | `google`; số điện thoại đổi qua màn đổi số.
+  String _providerOf(AuthMethod method) => switch (method) {
+    AuthMethod.apple => 'apple',
+    AuthMethod.google => 'google',
+    AuthMethod.phone => throw ArgumentError.value(method, 'method'),
+  };
+
+  /// JWT của nhà cung cấp lấy trên máy; server xác minh.
+  Future<JsonMap> _credentialOf(AuthMethod method) async {
+    final social = _social;
+    if (social == null) {
+      throw UnsupportedError(currentL10n().authProviderUnavailable);
+    }
+    if (method == AuthMethod.apple) {
+      final apple = await social.apple();
+      return {'identityToken': apple.identityToken, 'nonce': apple.rawNonce};
+    }
+    return {'idToken': await social.google()};
   }
 
   @override

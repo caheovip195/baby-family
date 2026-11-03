@@ -299,6 +299,13 @@ export class MissionBoardService implements IMissionBoardService {
     return mission;
   }
 
+  async authorizeReplay(actor: AuthPrincipal, id: string) {
+    const familyId = await this.repository.familyIdForMission(id, true);
+    if (!familyId)
+      throw new DomainError('Mission was not found.', 'MISSION_NOT_FOUND', 404);
+    await this.context(actor, familyId, 'write');
+  }
+
   async swapOptions(actor: AuthPrincipal, id: string) {
     await this.missionContext(actor, id, 'write');
     const view = await this.repository.find(id);

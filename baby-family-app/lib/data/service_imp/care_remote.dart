@@ -20,6 +20,7 @@ import 'package:baby_family/data/model/care/mission_history_entry.dart';
 import 'package:baby_family/data/model/care/mission_record.dart';
 import 'package:baby_family/data/model/care/mission_result_record.dart';
 import 'package:baby_family/data/model/care/mission_settings.dart';
+import 'package:baby_family/data/model/care/mission_swap_options_record.dart';
 import 'package:baby_family/data/model/care/mission_template.dart';
 import 'package:baby_family/data/model/care/mission_template_record.dart';
 import 'package:baby_family/data/model/care/swap_option.dart';
@@ -133,7 +134,12 @@ class CareRemoteServiceImp extends CareServiceImp {
   set outbox(IOutboxRepository? store) => _outbox.store = store;
 
   late final OutboxRunner _outbox = OutboxRunner(
-    send: _sendCompletion,
+    send: (entry) => switch (entry.kind) {
+      _createKind => _sendCreate(entry),
+      _seriesKind => _sendSeries(entry),
+      _swapKind => _sendSwap(entry),
+      _ => _sendCompletion(entry),
+    },
     onState: (entry, state) {
       if (state == OutboxState.failed) {
         // Server từ chối (đã hết hạn, đã bị đổi…): bỏ, bảng đọc lại từ server.
@@ -146,9 +152,91 @@ class CareRemoteServiceImp extends CareServiceImp {
   );
 
   static const _completeKind = 'mission.complete';
+  static const _createKind = 'mission.create';
+
+  /// Chuỗi lặp lại tạo khi mất mạng (BF-20261029-002).
+  static const _seriesKind = 'mission.series';
+
+  /// Đổi nhiệm vụ khi mất mạng bằng lựa chọn + token đã đọc (BF-20261029-002).
+  static const _swapKind = 'mission.swap';
 
   /// Kết quả lần gửi hoàn thành theo id thao tác.
   final _completed = <String, MissionResultRecord?>{};
+
+  /// Nhiệm vụ server vừa tạo theo id thao tác.
+  final _created = <String, MissionRecord?>{};
+
+  Future<void> _sendCreate(OutboxEntry entry) async {
+    final result = await _remote.createMission(
+      OutboxRunner.keyOf(entry.id),
+      Map<String, dynamic>.from(entry.args['body'] as Map),
+    );
+    if (result?.mission == null) {
+      throw StateError('Mission was not created');
+    }
+    _created[entry.id] = result!.mission;
+  }
+
+  /// Chuỗi server vừa tạo theo id thao tác.
+  final _createdSeries = <String, String?>{};
+
+  Future<void> _sendSeries(OutboxEntry entry) async {
+    final record = await _remote.createSeries(
+      entry.args['familyId'] as String,
+      OutboxRunner.keyOf(entry.id),
+      Map<String, dynamic>.from(entry.args['body'] as Map),
+    );
+    if (record?.id == null) {
+      throw StateError('Series was not created');
+    }
+    _createdSeries[entry.id] = record!.id;
+  }
+
+  Future<void> _sendSwap(OutboxEntry entry) async {
+    await _remote.swap(
+      entry.args['missionId'] as String,
+      OutboxRunner.keyOf(entry.id),
+      Map<String, dynamic>.from(entry.args['body'] as Map),
+    );
+  }
+
+  /// Ngày [day] có trong chuỗi chờ gửi (từ ngày bắt đầu, đúng thứ đã chọn).
+  static bool _seriesOn(OutboxEntry entry, DateTime day) {
+    final start = DateTime.tryParse('${entry.args['date']}');
+    if (start == null ||
+        DateTime(day.year, day.month, day.day).isBefore(start)) {
+      return false;
+    }
+    final days = (entry.args['body'] as Map?)?['days'] as List?;
+    return days == null ||
+        days.isEmpty ||
+        days.contains(_weekdays[day.weekday - 1]);
+  }
+
+  /// Nhiệm vụ tạo / đổi / chuỗi trên máy còn chờ gửi (bản tạm hiện trên bảng
+  /// của ngày đó).
+  List<Mission> _pendingCreated(DateTime day, String? childId) =>
+      [
+            for (final entry in _outbox.entries)
+              if (((entry.kind == _createKind || entry.kind == _swapKind) &&
+                      entry.args['date'] == _day.format(day)) ||
+                  (entry.kind == _seriesKind && _seriesOn(entry, day)))
+                Mission.fromJson({
+                  ...Map<String, dynamic>.from(entry.placeholder),
+                  'date': DateTime(
+                    day.year,
+                    day.month,
+                    day.day,
+                  ).toIso8601String(),
+                }),
+          ]
+          .where(
+            (m) =>
+                childId == null ||
+                m.childIds.isEmpty ||
+                m.childIds.contains(childId),
+          )
+          .toList();
 
   Future<void> _sendCompletion(OutboxEntry entry) async {
     _completed[entry.id] = await _remote.complete(
@@ -231,14 +319,37 @@ class CareRemoteServiceImp extends CareServiceImp {
       ? mission.copyWith(status: MissionStatus.done, completedAt: now)
       : mission;
 
-  CareBoard _applyPending(CareBoard board) => CareBoard(
-    date: board.date,
-    mine: board.mine.map(_withPending).toList(),
-    partner: board.partner,
-    together: board.together.map(_withPending).toList(),
-    heartsToday: board.heartsToday,
-    swapsLeft: board.swapsLeft,
-  );
+  /// Nhiệm vụ đã đổi trên máy, đang chờ gửi (ẩn khỏi bảng).
+  Set<String> get _pendingSwapped => {
+    for (final entry in _outbox.entries)
+      if (entry.kind == _swapKind) entry.args['missionId'] as String,
+  };
+
+  CareBoard _applyPending(CareBoard board, [String? childId]) {
+    final created = _pendingCreated(board.date, childId);
+    final swapped = _pendingSwapped;
+    final swaps = _outbox.entries
+        .where(
+          (entry) =>
+              entry.kind == _swapKind &&
+              entry.args['date'] == _day.format(board.date),
+        )
+        .length;
+    return CareBoard(
+      date: board.date,
+      mine: [
+        ...board.mine.where((m) => !swapped.contains(m.id)).map(_withPending),
+        ...created.where((m) => m.ownerKind == MissionOwnerKind.me),
+      ],
+      partner: board.partner,
+      together: [
+        ...board.together.map(_withPending),
+        ...created.where((m) => m.ownerKind == MissionOwnerKind.together),
+      ],
+      heartsToday: board.heartsToday,
+      swapsLeft: (board.swapsLeft - swaps).clamp(0, board.swapsLeft),
+    );
+  }
 
   static String _boardKey(DateTime day, String? childId) =>
       'board:${_day.format(day)}:${childId ?? '-'}';
@@ -286,7 +397,7 @@ class CareRemoteServiceImp extends CareServiceImp {
       final board = await _serverBoard(serverFamilyId, day, childId);
       _boardCache[key] = board;
       await _saveBoard(serverFamilyId, key, board);
-      return _applyPending(board);
+      return _applyPending(board, childId);
     } on DioException catch (error) {
       // Mất mạng: bảng đọc lần trước (cả sau khi mở lại app).
       if (!OutboxRunner.isTransient(error)) {
@@ -296,7 +407,7 @@ class CareRemoteServiceImp extends CareServiceImp {
       if (cached == null) {
         rethrow;
       }
-      return _applyPending(cached);
+      return _applyPending(cached, childId);
     }
   }
 
@@ -463,18 +574,43 @@ class CareRemoteServiceImp extends CareServiceImp {
       'scheduledTime': ?dueTime,
       if (childIds.isNotEmpty) 'childIds': childIds,
     };
-    final fingerprint = 'create:${body.toString()}';
-    final result = await _remote.createMission(
-      _pendingKeys[fingerprint] ??= _uuid.v4(),
-      body,
+    // Offline-first: gửi qua outbox (Idempotency-Key theo thao tác). Có mạng
+    // → nhiệm vụ của server; mất mạng → bản tạm trên bảng, tự gửi khi có mạng.
+    await _outbox.load();
+    final template = templateId == null
+        ? null
+        : (await templates()).where((t) => t.id == templateId).firstOrNull;
+    final entry = OutboxEntry(
+      id: _uuid.v4(),
+      kind: _createKind,
+      args: {'body': body, 'date': _day.format(day)},
+      placeholder: Mission(
+        id: _uuid.v4(),
+        title: title?.trim().isNotEmpty ?? false
+            ? title!.trim()
+            : template?.title ?? '',
+        ownerKind: ownerKind,
+        source: templateId == null
+            ? MissionSource.custom
+            : MissionSource.library,
+        templateId: templateId,
+        childIds: childIds,
+        date: day,
+        dueTime: dueTime,
+        icon: icon ?? template?.icon,
+      ).toJson(),
+      createdAt: now,
     );
-    _pendingKeys.remove(fingerprint);
-    final record = result?.mission;
-    final mission = record == null ? null : _toMission(record, ownerKind, day);
+    await _outbox.submit(entry);
+    _store.touch();
+    final record = _created.remove(entry.id);
+    if (record == null) {
+      return Mission.fromJson(entry.placeholder);
+    }
+    final mission = _toMission(record, ownerKind, day);
     if (mission == null) {
       throw StateError('Mission was not created');
     }
-    _store.touch();
     return mission;
   }
 
@@ -570,7 +706,14 @@ class CareRemoteServiceImp extends CareServiceImp {
     _store.touch();
   }
 
+  /// Lựa chọn đổi đọc gần nhất theo nhiệm vụ (kèm `optionsToken`).
+  final _swapCache = <String, JsonMap>{};
+
+  static const _swapTable = 'careSwapOptions';
+
   /// BF-20261023-001: id chưa có trên bảng server không dùng lựa chọn mẫu.
+  /// Offline-first (BF-20261029-002): lựa chọn + token được lưu trên máy để
+  /// mất mạng vẫn đổi được; token hết hạn thì server từ chối khi gửi.
   @override
   Future<SwapOption> swapOptions(String missionId) async {
     if (!_isServer(missionId)) {
@@ -578,12 +721,30 @@ class CareRemoteServiceImp extends CareServiceImp {
           ? super.swapOptions(missionId)
           : SwapOption(missionId: missionId);
     }
-    final record = await _remote.swapOptions(missionId);
-    final token = record?.optionsToken;
-    if (token != null) {
-      _swapTokens[missionId] = token;
+    final scope = _serverFamilyId!;
+    final MissionSwapOptionsRecord? record;
+    try {
+      record = await _remote.swapOptions(missionId);
+    } on DioException catch (error) {
+      if (!OutboxRunner.isTransient(error)) {
+        rethrow;
+      }
+      final saved = _swapCache[missionId] ?? await _savedSwap(scope, missionId);
+      if (saved == null) {
+        rethrow;
+      }
+      _swapCache[missionId] = saved;
+      _swapTokens[missionId] = saved['token'] as String;
+      final option = SwapOption.fromJson(
+        Map<String, dynamic>.from(saved['option'] as Map),
+      );
+      final pending = _outbox.entries.where((e) => e.kind == _swapKind).length;
+      return option.copyWith(
+        swapsLeft: (option.swapsLeft - pending).clamp(0, option.swapsLeft),
+      );
     }
-    return SwapOption(
+    final token = record?.optionsToken;
+    final option = SwapOption(
       missionId: missionId,
       options: [
         for (final option in record?.options ?? const <MissionTemplateRecord>[])
@@ -591,19 +752,102 @@ class CareRemoteServiceImp extends CareServiceImp {
       ],
       swapsLeft: record?.swapsLeft ?? 0,
     );
+    if (token != null) {
+      _swapTokens[missionId] = token;
+      final row = {
+        'id': missionId,
+        'token': token,
+        'option': option.toJson(),
+        'savedAt': now.toIso8601String(),
+      };
+      _swapCache[missionId] = row;
+      await _saveSwap(scope, row);
+    }
+    return option;
   }
 
+  Future<void> _saveSwap(String scope, JsonMap row) async {
+    final db = localDb;
+    if (db == null) {
+      return;
+    }
+    try {
+      await db.ensureSchema(kValueLocalDbSchemaVersion);
+      await db.putRows(scope, _swapTable, [row]);
+      // Lựa chọn của ngày cũ không còn dùng được.
+      final oldest = today.subtract(const Duration(days: 1));
+      await db.deleteRows(scope, _swapTable, [
+        for (final saved in await db.rows(scope, _swapTable))
+          if (DateTime.tryParse('${saved['savedAt']}')?.isBefore(oldest) ??
+              true)
+            saved['id'] as String,
+      ]);
+    } on Object catch (error) {
+      Logger().w('Không lưu được lựa chọn đổi nhiệm vụ: $error');
+    }
+  }
+
+  Future<JsonMap?> _savedSwap(String scope, String missionId) async {
+    try {
+      await localDb?.ensureSchema(kValueLocalDbSchemaVersion);
+      final row = (await localDb?.rows(
+        scope,
+        _swapTable,
+      ))?.where((row) => row['id'] == missionId).firstOrNull;
+      if (row == null || row['token'] is! String || row['option'] is! Map) {
+        return null;
+      }
+      return row;
+    } on Object catch (error) {
+      Logger().w('Bỏ lựa chọn đổi nhiệm vụ lưu trên máy: $error');
+      return null;
+    }
+  }
+
+  /// CARE-05 qua outbox: có mạng → đổi trên server ngay; mất mạng → bản tạm
+  /// của mẫu mới thay nhiệm vụ cũ trên bảng, tự gửi khi có mạng (cùng key).
   @override
   Future<void> swapMission(String missionId, String templateId) async {
     if (!_isServer(missionId)) {
       return super.swapMission(missionId, templateId);
     }
-    final token = _swapTokens[missionId] ?? '';
-    await _act(missionId, 'swap', () async {}, {
-      'templateId': templateId,
-      'optionsToken': token,
-    });
+    await ready();
+    await _outbox.load();
+    final known = _missions[missionId]!;
+    final option = _swapCache[missionId]?['option'];
+    final template = option is Map
+        ? SwapOption.fromJson(
+            Map<String, dynamic>.from(option),
+          ).options.where((t) => t.id == templateId).firstOrNull
+        : null;
+    final entry = OutboxEntry(
+      id: _uuid.v4(),
+      kind: _swapKind,
+      args: {
+        'missionId': missionId,
+        'date': _day.format(known.date),
+        'body': {
+          'templateId': templateId,
+          'optionsToken': _swapTokens[missionId] ?? '',
+        },
+      },
+      placeholder: known
+          .copyWith(
+            id: _uuid.v4(),
+            title: template?.title ?? known.title,
+            icon: template?.icon ?? known.icon,
+            hearts: template?.hearts ?? known.hearts,
+            category: template?.category ?? known.category,
+            templateId: templateId,
+            status: MissionStatus.todo,
+          )
+          .toJson(),
+      createdAt: now,
+    );
+    await _outbox.submit(entry);
     _swapTokens.remove(missionId);
+    _swapCache.remove(missionId);
+    _store.touch();
   }
 
   /// Hearts của CHÍNH tôi (BR-018) — server không có đường đọc Hearts người khác.
@@ -1253,7 +1497,9 @@ class CareRemoteServiceImp extends CareServiceImp {
   }
 
   /// Nhiệm vụ lặp lại tự thêm (mục 7.13.6): tạo chuỗi trên server; mỗi ngày
-  /// server bày một nhiệm vụ của chuỗi lên bảng.
+  /// server bày một nhiệm vụ của chuỗi lên bảng. Offline-first
+  /// (BF-20261029-002): qua outbox với Idempotency-Key; mất mạng → bản tạm
+  /// hiện trên bảng các ngày của chuỗi tới khi gửi xong.
   Future<Mission> _createSeries(
     String serverFamilyId, {
     required String title,
@@ -1272,29 +1518,40 @@ class CareRemoteServiceImp extends CareServiceImp {
       ],
       _ => const <String>[],
     };
-    final record = await _remote.createSeries(serverFamilyId, {
-      'title': title.trim(),
-      'owner': ownerKind == MissionOwnerKind.together ? 'TOGETHER' : 'ME',
-      if (childIds.isNotEmpty) 'childIds': childIds,
-      'scheduledTime': ?dueTime,
-      'startDate': _day.format(day),
-      if (days.isNotEmpty) 'days': days,
-    });
-    final id = record?.id;
-    if (id == null) {
-      throw StateError('Series was not created');
-    }
-    _store.touch();
-    return Mission(
-      id: 'series-$id',
+    await _outbox.load();
+    final placeholder = Mission(
+      id: _uuid.v4(),
       title: title.trim(),
       ownerKind: ownerKind,
+      source: MissionSource.series,
       date: day,
       dueTime: dueTime,
       childIds: childIds,
       hearts: 2,
       repeat: repeat,
     );
+    final entry = OutboxEntry(
+      id: _uuid.v4(),
+      kind: _seriesKind,
+      args: {
+        'familyId': serverFamilyId,
+        'date': _day.format(day),
+        'body': {
+          'title': title.trim(),
+          'owner': ownerKind == MissionOwnerKind.together ? 'TOGETHER' : 'ME',
+          if (childIds.isNotEmpty) 'childIds': childIds,
+          'scheduledTime': ?dueTime,
+          'startDate': _day.format(day),
+          if (days.isNotEmpty) 'days': days,
+        },
+      },
+      placeholder: placeholder.toJson(),
+      createdAt: now,
+    );
+    await _outbox.submit(entry);
+    _store.touch();
+    final id = _createdSeries.remove(entry.id);
+    return id == null ? placeholder : placeholder.copyWith(id: 'series-$id');
   }
 
   static const _weekdays = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'];

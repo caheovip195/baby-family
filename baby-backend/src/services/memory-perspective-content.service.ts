@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 import type { AuthPrincipal } from '../common/auth/auth-principal';
 import { DomainError, NotFoundError } from '../common/errors/domain.error';
 import type {
@@ -9,6 +9,10 @@ import { MEMORY_PERSPECTIVE_CONTENT_REPOSITORY } from '../interfaces/repositorie
 import type { IMemoryPerspectiveContentRepository } from '../interfaces/repositories/memory-perspective-content-repository.interface';
 import { APPLICATION_ACCESS_SERVICE } from '../interfaces/services/application-access-service.interface';
 import type { IApplicationAccessService } from '../interfaces/services/application-access-service.interface';
+import { MEDIA_POLICY } from '../config/media-policy';
+import type { MediaAssetResponseDto } from '../dto/media/media-response.dto';
+import { MEDIA_SERVICE } from '../interfaces/services/media-service.interface';
+import type { IMediaService } from '../interfaces/services/media-service.interface';
 import { MEMORY_LIBRARY_SERVICE } from '../interfaces/services/memory-library-service.interface';
 import type { IMemoryLibraryService } from '../interfaces/services/memory-library-service.interface';
 import type { IMemoryPerspectiveContentService } from '../interfaces/services/memory-perspective-content-service.interface';
@@ -23,7 +27,60 @@ export class MemoryPerspectiveContentService implements IMemoryPerspectiveConten
     private readonly library: IMemoryLibraryService,
     @Inject(APPLICATION_ACCESS_SERVICE)
     private readonly access: IApplicationAccessService,
+    @Optional()
+    @Inject(MEDIA_SERVICE)
+    private readonly media?: IMediaService,
   ) {}
+
+  /**
+   * MEM-24 ghi âm (BF-20261030-004) + ảnh/video (BF-20261030-006) của góc
+   * nhìn: URL có hạn ký theo quyền xem của người hỏi; asset chưa xử lý xong
+   * thì URL null.
+   */
+  private async withAudio(
+    actor: AuthPrincipal,
+    rows: PerspectiveContentResponseDto[],
+  ): Promise<PerspectiveContentResponseDto[]> {
+    const media = await this.repository.assetIds(rows.map((row) => row.id));
+    const ids = [
+      ...new Set([
+        ...rows.map((row) => row.audioAssetId).filter((id) => id),
+        ...[...media.values()].flat(),
+      ]),
+    ] as string[];
+    const byId = new Map<string, MediaAssetResponseDto>();
+    for (
+      let start = 0;
+      this.media && start < ids.length;
+      start += MEDIA_POLICY.maxBatchAssets
+    ) {
+      const signed = await this.media.signViewUrls(actor, {
+        assetIds: ids.slice(start, start + MEDIA_POLICY.maxBatchAssets),
+      });
+      for (const item of signed.items) byId.set(item.assetId, item);
+    }
+    return rows.map((row) => {
+      const item = row.audioAssetId ? byId.get(row.audioAssetId) : undefined;
+      const assets = (media.get(row.id) ?? []).map((assetId) => {
+        const asset = byId.get(assetId);
+        const urls = asset?.urls ?? {};
+        return {
+          assetId,
+          kind: asset?.kind ?? 'IMAGE',
+          url: urls.m1080 ?? urls.poster ?? urls.l2048 ?? urls.t320 ?? null,
+          videoUrl: asset?.kind === 'VIDEO' ? (urls.v1080 ?? null) : null,
+        };
+      });
+      return {
+        ...row,
+        assets,
+        audioUrl: item?.urls.a ?? Object.values(item?.urls ?? {})[0] ?? null,
+        audioUrlExpiresAt: item?.urlsExpireAt?.toISOString() ?? null,
+        audioDurationSec:
+          item?.durationMs == null ? null : Math.round(item.durationMs / 1000),
+      };
+    });
+  }
 
   async list(actor: AuthPrincipal, memoryId: string) {
     const memory = await this.library.read(actor, memoryId);
@@ -37,7 +94,7 @@ export class MemoryPerspectiveContentService implements IMemoryPerspectiveConten
       memory.familyId,
       isParent,
     );
-    return { items: rows.map(project) };
+    return { items: await this.withAudio(actor, rows.map(project)) };
   }
 
   async put(
@@ -63,9 +120,33 @@ export class MemoryPerspectiveContentService implements IMemoryPerspectiveConten
       input.audioAssetId === undefined
         ? (existing?.audioAssetId ?? null)
         : input.audioAssetId;
-    if (!body && !audioAssetId)
+    const assetIds =
+      input.assetIds === undefined ? undefined : [...new Set(input.assetIds)];
+    if (assetIds?.length) {
+      const media = await this.repository.findMedia(
+        assetIds,
+        memory.familyId,
+        actor.userId,
+      );
+      const usable = new Set(
+        media
+          .filter(
+            (asset) =>
+              ['IMAGE', 'VIDEO'].includes(asset.kind) &&
+              ['UPLOADED', 'PROCESSING', 'READY'].includes(asset.status),
+          )
+          .map((asset) => asset.id),
+      );
+      if (assetIds.some((id) => !usable.has(id)))
+        throw new DomainError(
+          'Photos and videos must be uploaded in this family and accessible.',
+          'PERSPECTIVE_MEDIA_INVALID',
+          422,
+        );
+    }
+    if (!body && !audioAssetId && !assetIds?.length)
       throw new DomainError(
-        'A perspective needs text or audio.',
+        'A perspective needs text, audio or photos.',
         'PERSPECTIVE_CONTENT_REQUIRED',
         422,
       );
@@ -88,17 +169,21 @@ export class MemoryPerspectiveContentService implements IMemoryPerspectiveConten
           422,
         );
     }
-    return project(
-      await this.repository.save({
-        memoryId,
-        familyId: memory.familyId,
-        authorUserId: actor.userId,
-        body,
-        audioAssetId,
-        hiddenFromCircle:
-          input.hiddenFromCircle ?? existing?.hiddenFromCircle ?? false,
-      }),
-    );
+    const [saved] = await this.withAudio(actor, [
+      project(
+        await this.repository.save({
+          memoryId,
+          familyId: memory.familyId,
+          authorUserId: actor.userId,
+          body,
+          audioAssetId,
+          hiddenFromCircle:
+            input.hiddenFromCircle ?? existing?.hiddenFromCircle ?? false,
+          assetIds,
+        }),
+      ),
+    ]);
+    return saved!;
   }
 
   async remove(actor: AuthPrincipal, memoryId: string) {

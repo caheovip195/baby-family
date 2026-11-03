@@ -10,6 +10,7 @@ import type {
 import { PrismaService } from '../database/prisma.service';
 import { DomainError, NotFoundError } from '../common/errors/domain.error';
 import { parseCirclePayload } from '../config/circle-policy';
+import { MEMORY_POLICY } from '../config/memory-policy';
 import type {
   CircleGrantInput,
   CircleInvitePayload,
@@ -278,7 +279,7 @@ export class FamilyCircleRepository implements IFamilyCircleRepository {
       await this.bump(tx, row.familyId);
     }, options);
   }
-  async leave(userId: string, familyId: string) {
+  async leave(userId: string, familyId: string, removeContent = false) {
     await this.prisma.$transaction(async (tx) => {
       await this.lockFamily(tx, familyId);
       const rows = await tx.circleMember.findMany({
@@ -309,6 +310,17 @@ export class FamilyCircleRepository implements IFamilyCircleRepository {
         });
         await this.revokeGrants(tx, row.id);
       }
+      if (removeContent) await this.removeContent(tx, familyId, userId);
+      // §7.25.1: Parent nhận thông báo trung tính (không lộ lựa chọn gỡ).
+      if (rows[0])
+        await tx.outboxEvent.create({
+          data: {
+            eventType: 'circle.left',
+            familyId,
+            aggregateId: rows[0].id,
+            payload: { familyId, circleMemberId: rows[0].id, userId },
+          },
+        });
       await tx.familyInvite.updateMany({
         where: { id: { in: pending.map((i) => i.id) } },
         data: { status: 'DECLINED', decidedAt: new Date() },
@@ -316,6 +328,91 @@ export class FamilyCircleRepository implements IFamilyCircleRepository {
       await this.bump(tx, familyId);
     }, options);
   }
+  /**
+   * “Gỡ toàn bộ”: ký ức của người rời vào thùng rác của gia đình (Parent còn
+   * khôi phục được trong hạn), bình luận (kèm trả lời) và cảm xúc bị gỡ. Thay đổi đồng
+   * bộ cho máy khác qua changes API (theo trạng thái).
+   */
+  private async removeContent(tx: Tx, familyId: string, userId: string) {
+    const now = new Date();
+    const trashed = await tx.$queryRaw<{ id: string }[]>`
+      UPDATE app.memories
+      SET status = 'TRASHED', trashed_at = ${now}, deleted_at = ${now},
+          trashed_by = ${userId}::uuid,
+          purge_after = ${new Date(now.getTime() + MEMORY_POLICY.trashRetentionMs)},
+          version = version + 1
+      WHERE family_id = ${familyId}::uuid AND author_user_id = ${userId}::uuid
+        AND author_role = 'CIRCLE' AND deleted_at IS NULL
+        AND status IN ('DRAFT', 'PROCESSING', 'PENDING_REVIEW', 'PUBLISHED')
+      RETURNING id::text AS id`;
+    if (trashed.length) {
+      await tx.$executeRaw`
+        UPDATE billing.family_usage
+        SET memory_count = GREATEST(memory_count - ${trashed.length}, 0),
+            version = version + 1
+        WHERE family_id = ${familyId}::uuid`;
+      await tx.outboxEvent.createMany({
+        data: trashed.map((row) => ({
+          eventType: 'memory.trashed',
+          aggregateId: row.id,
+          familyId,
+          payload: {
+            memoryId: row.id,
+            familyId,
+            trashedBy: userId,
+            reason: 'CIRCLE_LEFT',
+          },
+        })),
+      });
+    }
+    // Cảm xúc đã thả cũng là nội dung của người rời.
+    const reacted = await tx.reaction.findMany({
+      where: { familyId, userId, deletedAt: null },
+      select: { memoryId: true },
+    });
+    if (reacted.length) {
+      await tx.reaction.updateMany({
+        where: { familyId, userId, deletedAt: null },
+        data: { deletedAt: now },
+      });
+      const reactedIds = reacted.map((row) => row.memoryId);
+      await tx.$executeRaw`
+        UPDATE app.memories m
+        SET reaction_count = (SELECT count(*) FROM app.reactions r
+          WHERE r.memory_id = m.id AND r.family_id = m.family_id
+            AND r.deleted_at IS NULL)
+        WHERE m.family_id = ${familyId}::uuid
+          AND m.id = ANY(${reactedIds}::uuid[])`;
+    }
+    const own = await tx.comment.findMany({
+      where: {
+        familyId,
+        authorUserId: userId,
+        status: 'ACTIVE',
+        deletedAt: null,
+      },
+      select: { id: true, memoryId: true },
+    });
+    if (!own.length) return;
+    const ids = own.map((row) => row.id);
+    await tx.comment.updateMany({
+      where: {
+        familyId,
+        status: 'ACTIVE',
+        deletedAt: null,
+        OR: [{ id: { in: ids } }, { parentCommentId: { in: ids } }],
+      },
+      data: { status: 'DELETED', deletedAt: now },
+    });
+    const memoryIds = [...new Set(own.map((row) => row.memoryId))];
+    await tx.$executeRaw`
+      UPDATE app.memories m
+      SET comment_count = (SELECT count(*) FROM app.comments c
+        WHERE c.memory_id = m.id AND c.family_id = m.family_id
+          AND c.status = 'ACTIVE' AND c.deleted_at IS NULL)
+      WHERE m.family_id = ${familyId}::uuid AND m.id = ANY(${memoryIds}::uuid[])`;
+  }
+
   async overview(familyId: string) {
     const family = await this.prisma.family.findFirstOrThrow({
       where: { id: familyId, deletedAt: null },

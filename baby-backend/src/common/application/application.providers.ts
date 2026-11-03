@@ -373,7 +373,75 @@ import { CareStatsRepository } from '../../repositories/care-stats.repository';
 import { CARE_STATS_SERVICE } from '../../interfaces/services/care-stats-service.interface';
 import { CARE_STATS_REPOSITORY } from '../../interfaces/repositories/care-stats-repository.interface';
 
+import { CoupleQuestionController } from '../../controllers/couple-question.controller';
+import { CoupleQuestionService } from '../../services/couple-question.service';
+import { CoupleQuestionRepository } from '../../repositories/couple-question.repository';
+import { COUPLE_QUESTION_SERVICE } from '../../interfaces/services/couple-question-service.interface';
+import { COUPLE_QUESTION_REPOSITORY } from '../../interfaces/repositories/couple-question-repository.interface';
+
+import { MonthRecapController } from '../../controllers/month-recap.controller';
+import { MonthRecapService } from '../../services/month-recap.service';
+import { MonthRecapRepository } from '../../repositories/month-recap.repository';
+import { GrowthController } from '../../controllers/growth.controller';
+import { DayStoryController } from '../../controllers/day-story.controller';
+import { ChatController } from '../../controllers/chat.controller';
+import { RealtimeGateway } from '../../controllers/realtime.gateway';
+import { ChatService } from '../../services/chat.service';
+import { ChatRepository } from '../../repositories/chat.repository';
+import { RealtimeRepository } from '../../repositories/realtime.repository';
+import { RealtimeService } from '../../services/realtime.service';
+import { REALTIME_SERVICE } from '../../interfaces/services/realtime-service.interface';
+import { RealtimeServerHolder } from '../realtime/realtime-server.holder';
+import { CHAT_SERVICE } from '../../interfaces/services/chat-service.interface';
+import { CHAT_REPOSITORY } from '../../interfaces/repositories/chat-repository.interface';
+import { REALTIME_REPOSITORY } from '../../interfaces/repositories/realtime-repository.interface';
+import { HandoffController } from '../../controllers/handoff.controller';
+import { BridgeController } from '../../controllers/bridge.controller';
+import { AiController } from '../../controllers/ai.controller';
+import { AiService } from '../../services/ai.service';
+import { AiProviderService } from '../../services/ai-provider.service';
+import { AiRepository } from '../../repositories/ai.repository';
+import { AI_SERVICE } from '../../interfaces/services/ai-service.interface';
+import { AI_PROVIDER } from '../../interfaces/services/ai-provider.interface';
+import { AI_REPOSITORY } from '../../interfaces/repositories/ai-repository.interface';
+import { BridgeService } from '../../services/bridge.service';
+import { BridgeRepository } from '../../repositories/bridge.repository';
+import { BRIDGE_SERVICE } from '../../interfaces/services/bridge-service.interface';
+import { BRIDGE_REPOSITORY } from '../../interfaces/repositories/bridge-repository.interface';
+import { HandoffService } from '../../services/handoff.service';
+import { HandoffRepository } from '../../repositories/handoff.repository';
+import { HANDOFF_SERVICE } from '../../interfaces/services/handoff-service.interface';
+import { HANDOFF_REPOSITORY } from '../../interfaces/repositories/handoff-repository.interface';
+import { DayStoryRecapService } from '../../services/day-story-recap.service';
+import { DayStoryRecapRepository } from '../../repositories/day-story-recap.repository';
+import { DAY_STORY_RECAP_SERVICE } from '../../interfaces/services/day-story-recap-service.interface';
+import { DAY_STORY_RECAP_REPOSITORY } from '../../interfaces/repositories/day-story-recap-repository.interface';
+import { GrowthService } from '../../services/growth.service';
+import { GrowthRepository } from '../../repositories/growth.repository';
+import { GROWTH_SERVICE } from '../../interfaces/services/growth-service.interface';
+import { GROWTH_REPOSITORY } from '../../interfaces/repositories/growth-repository.interface';
+import {
+  FamilyYearBookController,
+  YearBookController,
+} from '../../controllers/year-book.controller';
+import { YearBookService } from '../../services/year-book.service';
+import { YearBookRepository } from '../../repositories/year-book.repository';
+import { YEAR_BOOK_SERVICE } from '../../interfaces/services/year-book-service.interface';
+import { YEAR_BOOK_REPOSITORY } from '../../interfaces/repositories/year-book-repository.interface';
+import { MONTH_RECAP_SERVICE } from '../../interfaces/services/month-recap-service.interface';
+import { MONTH_RECAP_REPOSITORY } from '../../interfaces/repositories/month-recap-repository.interface';
+
 export const APPLICATION_CONTROLLERS: Type[] = [
+  MonthRecapController,
+  GrowthController,
+  YearBookController,
+  FamilyYearBookController,
+  DayStoryController,
+  HandoffController,
+  ChatController,
+  BridgeController,
+  AiController,
+  CoupleQuestionController,
   PregnancyNamingController,
   CareStatsController,
   OfflineSyncController,
@@ -444,6 +512,30 @@ export const APPLICATION_CONTROLLERS: Type[] = [
 ];
 
 export const APPLICATION_PROVIDERS: Provider[] = [
+  { provide: MONTH_RECAP_SERVICE, useClass: MonthRecapService },
+  { provide: MONTH_RECAP_REPOSITORY, useClass: MonthRecapRepository },
+  { provide: GROWTH_SERVICE, useClass: GrowthService },
+  { provide: GROWTH_REPOSITORY, useClass: GrowthRepository },
+  { provide: YEAR_BOOK_SERVICE, useClass: YearBookService },
+  { provide: YEAR_BOOK_REPOSITORY, useClass: YearBookRepository },
+  { provide: DAY_STORY_RECAP_SERVICE, useClass: DayStoryRecapService },
+  { provide: DAY_STORY_RECAP_REPOSITORY, useClass: DayStoryRecapRepository },
+  { provide: HANDOFF_SERVICE, useClass: HandoffService },
+  { provide: HANDOFF_REPOSITORY, useClass: HandoffRepository },
+  // Nhắn tin + realtime (BF-20261101-001).
+  { provide: CHAT_SERVICE, useClass: ChatService },
+  { provide: CHAT_REPOSITORY, useClass: ChatRepository },
+  { provide: REALTIME_REPOSITORY, useClass: RealtimeRepository },
+  { provide: REALTIME_SERVICE, useClass: RealtimeService },
+  RealtimeServerHolder,
+  RealtimeGateway,
+  { provide: BRIDGE_SERVICE, useClass: BridgeService },
+  { provide: BRIDGE_REPOSITORY, useClass: BridgeRepository },
+  { provide: AI_SERVICE, useClass: AiService },
+  { provide: AI_PROVIDER, useClass: AiProviderService },
+  { provide: AI_REPOSITORY, useClass: AiRepository },
+  { provide: COUPLE_QUESTION_SERVICE, useClass: CoupleQuestionService },
+  { provide: COUPLE_QUESTION_REPOSITORY, useClass: CoupleQuestionRepository },
   { provide: PREGNANCY_NAMING_SERVICE, useClass: PregnancyNamingService },
   { provide: PREGNANCY_NAMING_REPOSITORY, useClass: PregnancyNamingRepository },
   { provide: CARE_STATS_SERVICE, useClass: CareStatsService },

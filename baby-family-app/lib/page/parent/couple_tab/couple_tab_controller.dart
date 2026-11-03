@@ -1,7 +1,10 @@
 import 'package:baby_family/data/dto/couple_today.dart';
+import 'package:baby_family/data/model/chat/chat_conversation.dart';
 import 'package:baby_family/data/model/child/child.dart';
 import 'package:baby_family/data/model/family/family.dart';
 import 'package:baby_family/data/model/family/member.dart';
+import 'package:baby_family/data/model/us/care_handoff.dart';
+import 'package:baby_family/data/provider/chat.dart';
 import 'package:baby_family/data/provider/child.dart';
 import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/provider/mock_store.dart';
@@ -24,9 +27,19 @@ final coupleTabControllerProvider =
 
 class CoupleTabController extends BaseNotifier {
   CoupleTabController(super.ref) {
-    ref.listen(mockRevisionProvider, (_, _) => load());
+    ref
+      ..listen(mockRevisionProvider, (_, _) => load())
+      // CHAT-04b: lối vào “Nhắn riêng” + số chưa đọc (BF-20261101-001).
+      ..listen(chatConversationsProvider, (_, _) => notifyListeners());
     load();
   }
+
+  /// Cuộc trò chuyện riêng Papa & Mama (null: chưa có / bản mock).
+  ChatConversation? get coupleChat => ref
+      .read(chatServiceProvider)
+      .conversations
+      .where((item) => item.isCouple)
+      .firstOrNull;
 
   IUsService get usService => ref.read(usServiceProvider);
 
@@ -35,6 +48,9 @@ class CoupleTabController extends BaseNotifier {
   Member? me;
   Member? partner;
   List<Child> children = const [];
+
+  /// Bàn giao ca (7.13.8), mới nhất trước.
+  List<CareHandoff> handoffs = const [];
   bool hasError = false;
   int _revision = 0;
 
@@ -78,6 +94,15 @@ class CoupleTabController extends BaseNotifier {
       children = results[3]! as List<Child>;
       family = results[4] as Family?;
       hasError = false;
+      // Bàn giao lỗi đọc không làm hỏng cả tab.
+      try {
+        handoffs = await usService.handoffs();
+      } catch (_) {
+        handoffs = const [];
+      }
+      if (isDisposed || revision != _revision) {
+        return;
+      }
     } catch (_) {
       if (isDisposed || revision != _revision) {
         return;
@@ -88,6 +113,47 @@ class CoupleTabController extends BaseNotifier {
       toIdle();
     }
     notifyListeners();
+  }
+
+  /// Bàn giao trong 24 giờ qua để hiện thẻ (mới nhất).
+  CareHandoff? get latestHandoff {
+    final latest = handoffs.firstOrNull;
+    final at = latest?.createdAt;
+    if (latest == null ||
+        (at != null &&
+            now.difference(at.toLocal()) > const Duration(days: 1))) {
+      return null;
+    }
+    return latest;
+  }
+
+  /// Bé đang chăm (không gồm thai kỳ).
+  List<Child> get babies =>
+      children.where((child) => !child.isPregnancy).toList();
+
+  Future<CareHandoff> sendHandoff({
+    required List<String> childIds,
+    DateTime? fedAt,
+    DateTime? sleptAt,
+    DateTime? wokeAt,
+    String? note,
+  }) async {
+    final handoff = await whileLoading(
+      () => usService.sendHandoff(
+        childIds: childIds,
+        fedAt: fedAt,
+        sleptAt: sleptAt,
+        wokeAt: wokeAt,
+        note: note,
+      ),
+    );
+    await load();
+    return handoff;
+  }
+
+  Future<void> acknowledgeHandoff(String handoffId) async {
+    await usService.acknowledgeHandoff(handoffId);
+    await load();
   }
 
   /// QC-01 “Check-in”: lấy hành động đang chờ (nếu là check-in) rồi xoá.
@@ -125,5 +191,10 @@ class CoupleTabController extends BaseNotifier {
       return;
     }
     await usService.answerQuestion(answer);
+    // Bản server không ghi vào kho trên máy: đọc lại để thấy câu trả lời
+    // (và của bạn đời khi cả hai đã trả lời).
+    if (!isDisposed) {
+      await load();
+    }
   }
 }

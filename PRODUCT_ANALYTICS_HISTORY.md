@@ -1393,3 +1393,404 @@ Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hi�
   - Thử trên máy thật.
   - Deploy migration và seed.
 - Trạng thái: Hoàn thành (còn các phần nêu ở "Theo dõi").
+
+## BF-20261027-002 — Câu hỏi kết nối + US-14 Tuần của hai ta (Claude làm cả backend và app; Codex hết quota)
+
+- Ngày làm: 2026-10-27T19:03:11+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiêp tính năng tiếp theo đi ,tự bạn làm đi , codex hết quota rùi"
+- Liên quan: checklist dòng "Câu hỏi kết nối", "US-14 Tuần của hai ta" (1.1); đặc tả 9.8 US-01 khối 3, US-14, phụ lục câu hỏi kết nối.
+- Vấn đề/mục tiêu: hai tính năng gắn kết cặp đôi 1.1 có UI nhưng chưa có dữ liệu thật — câu hỏi kết nối hằng ngày và "Tuần của hai ta".
+- Tác động sản phẩm/dữ liệu:
+  - Papa & Mama cùng nhận một câu hỏi mỗi ngày; trả lời riêng, chỉ thấy câu trả lời của nhau khi cả hai đã trả lời; câu trả lời lưu mã hoá.
+  - "Tuần của hai ta" hiện số check-in, lời nhờ được hỗ trợ, lời cảm ơn, nhiệm vụ cùng nhau — không điểm, không so sánh, không chia theo người. Người thân không thấy.
+- Quyết định & cơ sở:
+  - Câu hỏi là catalog có version (sau này Admin quản lý), không hardcode trên app.
+  - Chọn câu theo cặp + ngày để không cần job hay bảng phân phối.
+  - Đếm "được hỗ trợ" theo trạng thái kết thúc thật của từng loại lời nhờ.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Sau khi ra mắt nên đo:
+  - Tỉ lệ ngày có ít nhất một / cả hai người trả lời.
+  - Tỉ lệ mở "Tuần của hai ta".
+- Kết quả: hai dòng checklist hoàn thành (146/166); mọi check app / backend đạt.
+- Theo dõi:
+  - Admin câu hỏi; câu zh / ja.
+  - Lời cảm ơn nổi bật của tuần.
+  - Xem tuần trước trên app.
+  - Thử máy thật.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Theo dõi").
+
+## BF-20261027-003 — REC-03 Tổng kết tháng tuổi (Claude làm cả backend và app)
+
+- Ngày làm: 2026-10-27T19:21:35+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp REC-03 Tháng tuổi (backend + app), tự làm."
+- Liên quan: checklist dòng REC-03 (1.1); đặc tả 9.10 REC-03, 7.10 chương tháng; BF-20261019-008 (ảnh tháng), REC-02 tuần.
+- Vấn đề/mục tiêu: REC-03 "Tháng tuổi" có màn story nhưng chưa có dữ liệu thật — bố mẹ (và người thân được cấp bé) xem lại một tháng lớn lên của con.
+- Tác động sản phẩm/dữ liệu:
+  - Story tháng tuổi hiện số khoảnh khắc, lần đầu, giọng nói của đúng tháng tuổi, ảnh tháng này cạnh tháng trước, các ký ức lần đầu / giọng nói.
+  - Người thân chỉ thấy nội dung họ được xem.
+  - Tính khi đọc nên ký ức bị xoá hay ẩn tự biến mất khỏi recap (đúng quy tắc §7 Recap).
+- Quyết định & cơ sở:
+  - Dùng `age_month` sẵn có (cùng nguồn với chương tháng trên timeline) để số liệu khớp nhau.
+  - Không lưu bản tổng kết để không phải đồng bộ khi ký ức đổi.
+  - Ảnh qua API ảnh tháng đã ký URL.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Sau khi ra mắt nên đo tỉ lệ mở recap tháng khi bé tròn tháng và tỉ lệ có ảnh tháng cả hai tháng.
+- Kết quả: REC-03 hoàn thành (147/166); mọi check app / backend đạt (integration đạt ở lần chạy lại; lần đầu lỗi hạ tầng chập chờn, đã ghi rõ).
+- Theo dõi:
+  - Lưu / chia sẻ recap tháng.
+  - Chọn tháng cũ.
+  - Thử máy thật.
+  - Theo dõi các suite hạ tầng chập chờn khi máy bận.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Theo dõi").
+
+## BF-20261028-001 — Các mục MVP còn lại: làm phần làm được, liệt kê điều kiện đang vướng
+
+- Ngày làm: 2026-10-28T07:19:03+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: làm tiếp 12 mục MVP còn lại; mục vướng điều kiện thì làm phần làm được và nêu câu hỏi cụ thể.
+- Vấn đề/mục tiêu: các mục còn lại phần lớn cần cấu hình/tài khoản bên ngoài; cần đẩy phần trong tầm tay tới sẵn sàng để khi có cấu hình chỉ còn bật và thử.
+- Tác động sản phẩm/dữ liệu:
+  - Người dùng tự liên kết/gỡ Apple, Google trong Hồ sơ (xác thực lại trước, luôn giữ ít nhất một cách đăng nhập).
+  - Nhận/từ chối/xong lời nhờ khi mất mạng hiện ngay và tự gửi khi có mạng; bị từ chối thì trạng thái trở về như trước.
+  - Đội vận hành nhận báo lỗi khi job nền thất bại vĩnh viễn (chỉ metadata, không dữ liệu gia đình/trẻ).
+  - Có Privacy Manifest và bảng kê dữ liệu làm đầu vào cho chính sách quyền riêng tư / khai báo Store.
+- Quyết định & cơ sở:
+  - Xác thực lại ưu tiên OTP số điện thoại (đã có), không có số thì dùng Apple/Google đã liên kết — khớp API backend sẵn có.
+  - Lời nhờ hiển thị lạc quan nhưng Hearts vẫn do server ghi (BR-068), tránh lệch số liệu.
+  - Không tự soạn văn bản pháp lý; chỉ chuẩn bị dữ kiện kỹ thuật.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Sau ra mắt nên đo tỉ lệ tài khoản có ≥2 cách đăng nhập, số thao tác lời nhờ gửi trễ (offline) và tỉ lệ bị từ chối, số job thất bại vĩnh viễn/tuần. Chưa có dữ liệu đo.
+- Kết quả: phần làm được đã xong cho 4/12 mục; các mục còn lại vướng điều kiện ngoài, chưa tick.
+- Theo dõi: câu trả lời của người dùng cho các câu hỏi cấu hình; Idempotency-Key cho API thao tác lời nhờ; sửa ký ức / nhiệm vụ offline; catalog có version.
+- Trạng thái: Hoàn thành phần làm được; mọi kiểm tra app/backend đạt (các mục vướng điều kiện nêu ở "Theo dõi").
+
+## BF-20261028-002 — Xác nhận kiểm tra backend của BF-20261028-001 và làm tiếp: sửa ký ức khi offline
+
+- Ngày làm: 2026-10-28T07:33:00+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: chạy lại / xác nhận kiểm tra backend, ghi nhật ký, làm tiếp mục còn lại.
+- Vấn đề/mục tiêu: sửa ký ức khi mất mạng đang báo lỗi; bố mẹ hay sửa chú thích ngay sau khi đăng.
+- Tác động sản phẩm/dữ liệu: sửa chữ / bé / phạm vi / bình luận hiện ngay khi offline và tự đồng bộ; xung đột với bản mới hơn trên server thì server thắng và người dùng được báo để xem lại (không ghi đè lặng lẽ).
+- Quyết định & cơ sở: giữ `If-Match` với version gốc để không ghi đè sửa của người khác; đổi ảnh vẫn cần mạng vì phải tải ảnh trước.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Nên đo số bản sửa gửi trễ và tỉ lệ 412 sau ra mắt. Chưa có dữ liệu đo.
+- Kết quả: hoàn thành; kiểm tra backend của BF-20261028-001 xác nhận đạt.
+- Theo dõi: đổi ảnh / nhiệm vụ offline; các câu hỏi cấu hình còn chờ người dùng.
+- Trạng thái: Hoàn thành.
+
+## BF-20261028-003 — Làm tiếp các mục còn lại: tạo nhiệm vụ offline, catalog cột mốc có version
+
+- Ngày làm: 2026-10-28T09:20:42+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: tiếp tục các mục còn lại của checklist (ưu tiên MVP).
+- Vấn đề/mục tiêu: tạo nhiệm vụ khi mất mạng đang báo lỗi; đội nội dung chưa thêm/ngừng cột mốc được mà không sửa seed.
+- Tác động sản phẩm/dữ liệu:
+  - Bố mẹ tạo việc cho hôm nay/ngày khác khi offline, thấy ngay trên bảng, tự đồng bộ không trùng.
+  - Đội nội dung tạo cột mốc mới dạng nháp, publish khi duyệt, ngừng dùng có lý do; cột mốc gia đình đã ghi không bị ảnh hưởng.
+- Quyết định & cơ sở: cột mốc theo đúng mô hình nhiệm vụ (mỗi bản một mã, có `version`, không sửa bản đã publish) để giữ toàn vẹn FK `milestones.template_code`; mẫu thông báo để người dùng chọn mô hình.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Nên đo số nhiệm vụ tạo offline và số cột mốc mới được dùng sau publish. Chưa có dữ liệu đo.
+- Kết quả: hoàn thành phần làm được; mọi kiểm tra app/admin/backend đạt.
+- Theo dõi: mô hình version mẫu thông báo; đổi nhiệm vụ / chuỗi lặp / đổi ảnh offline; các câu hỏi cấu hình còn chờ.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Theo dõi").
+
+## BF-20261028-004 — Làm các tính năng còn lại (để sau các mục cần cấu hình): CHD-06 Tăng trưởng
+
+- Ngày làm: 2026-10-28T13:13:07+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: làm các tính năng còn lại, gác các mục cần cấu hình/quyết định.
+- Vấn đề/mục tiêu: bố mẹ ghi cân nặng/chiều cao sau mỗi lần khám và xem đường lớn lên của con, không bị so sánh/đánh giá.
+- Tác động sản phẩm/dữ liệu: dữ liệu sức khoẻ mới (cân nặng, chiều cao theo ngày) chỉ Parent thấy; không chuẩn tham chiếu; ghi được khi offline.
+- Quyết định & cơ sở: mỗi ngày một lần đo (PUT theo ngày, đơn giản và idempotent cho offline); chỉ Parent vì là dữ liệu sức khoẻ của trẻ (đặc tả không nêu người thân được xem — chọn hướng riêng tư hơn); chưa gắn gói/feature flag.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Nên đo số bé có ≥2 lần đo và tần suất ghi/tháng. Chưa có dữ liệu đo.
+- Kết quả: CHD-06 hoàn thành.
+- Theo dõi: có cho người thân xem không (cần người dùng quyết định); các tính năng còn lại.
+- Trạng thái: Hoàn thành.
+
+## BF-20261028-005 — Đăng bài: resume khi thoát app, hiển thị ngay kèm tiến độ, nén ảnh/video
+
+- Ngày làm: 2026-10-28T13:35:12+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: resume bài đang đăng khi thoát app; nén ảnh/video đẹp mà nhẹ; bài hiện ngay từ local kèm tiến độ upload.
+- Vấn đề/mục tiêu: bố mẹ đăng nhiều ảnh/video của con trên mạng di động; thoát app giữa chừng phải tải lại từ đầu, không biết còn bao lâu, file nặng tốn dung lượng và thời gian.
+- Tác động sản phẩm/dữ liệu: bài hiện ngay ở Home và Ký ức với % theo byte; mở lại app tiếp tục từ file đang dở; ảnh/video nhẹ hơn đáng kể (ước lượng theo thông số nén, chưa đo thực tế) — giảm chi phí lưu trữ S3 và băng thông.
+- Quyết định & cơ sở: ảnh 2560 px JPEG 85 (đủ nét cho màn hình điện thoại/máy tính bảng, trong giới hạn server 4096); video 720p (H.264) cân bằng chất lượng/dung lượng, không nén lại video đã nhỏ để tránh giảm chất lượng; resume theo file (đơn giản, an toàn với idempotency của server) thay vì giữa multipart.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Sau ra mắt nên đo: dung lượng trung bình mỗi ảnh/video, thời gian từ bấm Đăng tới xong, tỉ lệ bài resume sau khi mở lại app, tỉ lệ huỷ. Chưa có dữ liệu đo.
+- Kết quả: hoàn thành phần app; không đổi backend.
+- Theo dõi: đo dung lượng/chất lượng trên máy thật; cân nhắc resume giữa multipart và tải nền khi app ở background.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Theo dõi").
+
+## BF-20261028-006 — Làm tiếp tính năng còn lại: REC-01 Câu chuyện ngày (không AI)
+
+- Ngày làm: 2026-10-28T13:56:53+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: chỉ số sức khoẻ chỉ Papa/Mama xem (xác nhận); làm tiếp các tính năng còn lại.
+- Vấn đề/mục tiêu: cuối ngày bố mẹ muốn gói các khoảnh khắc của con thành một câu chuyện có ảnh bìa, đoạn văn và ảnh chọn lọc.
+- Tác động sản phẩm/dữ liệu: câu chuyện ngày lưu theo bé + ngày (tiêu đề, đoạn văn, ký ức, ảnh, ai thấy); chỉ dùng ký ức/ảnh người soạn được xem; quyết định chỉ số sức khoẻ chỉ Papa/Mama được ghi nhận.
+- Quyết định & cơ sở: làm bản không AI trước (AI thuộc 1.2, cần nhà cung cấp); một câu chuyện mỗi bé mỗi ngày để đơn giản và idempotent; chỉ Parent soạn.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Nên đo tỉ lệ ngày có ≥2 ký ức được lưu thành câu chuyện. Chưa có dữ liệu đo.
+- Kết quả: REC-01 hoàn thành (bản không AI).
+- Theo dõi: AI viết đoạn văn; người thân xem câu chuyện; lưu offline.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Theo dõi").
+
+## BF-20261028-007 — Làm tiếp tính năng còn lại: Bàn giao ca (handoff)
+
+- Ngày làm: 2026-10-28T13:59:27+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: làm tiếp các tính năng còn lại.
+- Vấn đề/mục tiêu: khi đổi ca chăm con, bố/mẹ cần báo nhanh bé đã ăn/ngủ lúc nào và lưu ý gì, không phải nhắn tin dài hay gọi điện.
+- Tác động sản phẩm/dữ liệu: dữ liệu mới giữa hai Parent (mốc giờ, ghi chú mã hoá, đã nhận); bạn đời nhận thông báo; không thống kê, không chấm điểm (không phải tracker y tế).
+- Quyết định & cơ sở: đặt ở tab Papa & Mama (việc giữa hai người); chỉ giữ thẻ mới nhất 24 giờ trên tab để gọn; gửi được khi offline (Idempotency-Key); mốc giờ giới hạn 24 giờ để tránh nhập nhầm.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Nên đo số bàn giao/tuần mỗi cặp, tỉ lệ "Đã nhận", tỉ lệ bàn giao kèm Lời nhờ. Chưa có dữ liệu đo.
+- Kết quả: Bàn giao ca hoàn thành.
+- Theo dõi: gắn Lời nhờ vào bàn giao; seed mẫu thông báo; thử push thật.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Theo dõi").
+
+## BF-20261028-008 — Làm tiếp: US-08…13 Cầu nối khi bất đồng + nhánh an toàn (không AI)
+
+- Ngày làm: 2026-10-28T14:41:58+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: làm phần tiếp theo.
+- Vấn đề/mục tiêu: lúc căng thẳng, hai bố mẹ cần một cách trung lập để nói cảm xúc/nhu cầu và chọn một bước nhỏ tiếp theo, không biến thành cãi nhau.
+- Tác động sản phẩm/dữ liệu: dữ liệu nhạy cảm mới giữa hai Parent (ý đã chia sẻ, bước tiếp theo) — mã hoá, tự xoá theo thời hạn lưu; nháp riêng và nhánh an toàn không bao giờ lên server; thông báo không lộ chi tiết.
+- Quyết định & cơ sở: ưu tiên riêng tư theo BR-030/AC-043 (không tự gửi nháp, không thắng/thua, không gamify); một phiên mở mỗi cặp; dọn dẹp khi đọc để đảm bảo xoá kể cả khi chưa có job.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Không nên đo nội dung; chỉ có thể đo tổng hợp ẩn danh (số phiên mở/đóng mỗi tuần, tỉ lệ đi tới bước tiếp theo) nếu được duyệt. Chưa có dữ liệu đo.
+- Kết quả: US-08…13 hoàn thành (bản không AI).
+- Theo dõi: AI viết lại/tóm tắt (1.2); đóng phiên khi xoá tài khoản; job dọn dẹp định kỳ; seed mẫu thông báo; danh sách đường dây hỗ trợ cần Content xác minh trước phát hành (đặc tả 7.17.3).
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Theo dõi").
+
+## BF-20261028-009 — Làm tiếp: sửa trùng schema (Cầu nối, Câu hỏi kết nối dùng bảng có sẵn) + dọn dẹp Cầu nối định kỳ
+
+- Ngày làm: 2026-10-28T15:37:55+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: làm tiếp.
+- Vấn đề/mục tiêu: dữ liệu Cầu nối phải tự xoá đúng hạn kể cả khi không ai mở app; và bảng tạo trùng với schema gốc làm phân tán dữ liệu nhạy cảm, có nguy cơ bị bỏ sót khi xoá tài khoản.
+- Tác động sản phẩm/dữ liệu: không đổi hành vi app; dữ liệu Cầu nối / Câu hỏi kết nối về đúng bảng gốc mà luồng xoá tài khoản và xoá gia đình đã bao phủ; nội dung Cầu nối được job mỗi giờ xoá đúng hạn.
+- Quyết định & cơ sở: dùng lại schema gốc thay vì giữ bảng trùng (đính chính BF-20261027-002, BF-20261028-008); chưa phát hành nên bỏ migration trùng an toàn.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Chưa có dữ liệu đo.
+- Kết quả: hoàn thành.
+- Theo dõi: seed mẫu thông báo; quyết định AI và REC-04.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Theo dõi").
+
+## BF-20261028-010 — AI 1.2 qua OpenRouter
+
+- Ngày làm: 2026-10-28T15:57:50+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: dùng OpenRouter, model `openrouter/free` cho các tính năng AI (API key người dùng cung cấp — không ghi vào nhật ký/repo).
+- Vấn đề/mục tiêu: bật các trợ giúp AI 1.2 (gợi ý chú thích, câu chuyện ngày, viết lại nhẹ nhàng, tóm tắt Cầu nối) với chi phí thấp (model miễn phí qua OpenRouter).
+- Tác động sản phẩm/dữ liệu: dữ liệu văn bản tối thiểu được gửi tới bên thứ ba (OpenRouter + model được định tuyến) chỉ khi người dùng bấm và đã đồng ý; không gửi ảnh/nhật ký/nháp riêng; câu có dấu hiệu không an toàn không gửi; chỉ lưu metadata lượt gọi; hạn mức theo gói.
+- Quyết định & cơ sở: dùng OpenRouter + `openrouter/free` theo yêu cầu người dùng; cấu hình qua env (đổi model/nhà cung cấp không cần sửa code); dùng lại schema AI có sẵn.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS; 2 lần gọi thật với dữ liệu giả lập. Nên đo: số lượt AI/tháng/gia đình, tỉ lệ dùng gợi ý (chọn vs bỏ), tỉ lệ lỗi/502, thời gian phản hồi; chất lượng model miễn phí cần theo dõi. Chưa có dữ liệu đo thực tế.
+- Kết quả: hoàn thành phần chính; key không được lưu ở đâu trong repo/nhật ký.
+- Theo dõi: xoay API key đã lộ trong chat; chọn model cố định; gợi ý nhiệm vụ AI; UI tóm tắt Cầu nối; luồng báo cáo nội dung AI; cập nhật chính sách quyền riêng tư (OpenRouter).
+- Trạng thái: Hoàn thành phần chính (còn các phần nêu ở "Theo dõi").
+
+## BF-20261028-011 — Làm tiếp AI: báo cáo nội dung AI thật + màn tóm tắt Cầu nối
+
+- Ngày làm: 2026-10-28T22:58:23+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: làm tiếp.
+- Vấn đề/mục tiêu: đáp ứng chính sách Google Play về nội dung AI (người dùng báo cáo được) và hoàn tất tóm tắt Cầu nối trên app.
+- Tác động sản phẩm/dữ liệu: báo cáo AI vào hàng kiểm duyệt có SLA như báo cáo khác, kèm đoạn người dùng tự gửi (server vẫn không lưu đầu ra AI); hai bạn đời có thể xem bản tóm tắt trung lập các ý đã chia sẻ.
+- Quyết định & cơ sở: dùng lại enum/luồng báo cáo có sẵn; chỉ người nhận bản nháp được báo cáo để tránh lạm dụng.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Nên đo số báo cáo AI/lượt AI theo model để quyết định model cố định. Chưa có dữ liệu đo.
+- Kết quả: hoàn thành.
+- Theo dõi: gợi ý nhiệm vụ AI; suite catalog 90 ngày chập chờn.
+- Trạng thái: Hoàn thành.
+
+## BF-20261028-012 — Làm tiếp AI: gợi ý nhiệm vụ (chỉ chọn trong catalog thật)
+
+- Ngày làm: 2026-10-28T23:19:30+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: làm tiếp.
+- Vấn đề/mục tiêu: gợi ý vài việc nhỏ phù hợp trong ngày, cân bằng các nhóm việc, không tạo việc vô nghĩa.
+- Tác động sản phẩm/dữ liệu: gửi cho AI danh sách mẫu (nội dung catalog, không riêng tư) + số việc đã xong theo nhóm (tổng hợp, không theo người); việc chọn luôn là mẫu thật có Hearts đúng catalog; không so sánh ai làm nhiều hơn.
+- Quyết định & cơ sở: “chọn từ danh sách” thay vì “sinh việc mới” để đúng quy tắc không bịa và giữ Hearts/kiểm duyệt catalog; thử lại 1 lần vì router miễn phí hay trả hỏng.
+- Cách kiểm chứng/đo lường: test nêu ở SESSIONS. Nên đo tỉ lệ chọn gợi ý → tạo nhiệm vụ, tỉ lệ 502 theo model. Chưa có dữ liệu đo.
+- Kết quả: AI 1.2 đủ 5 tính năng.
+- Theo dõi: model cố định; test phụ thuộc giờ.
+- Trạng thái: Hoàn thành.
+
+## BF-20261028-013 — REC-04 Sách của con (Year Story + PDF)
+
+- Ngày làm: 2026-10-28T23:49:19+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: làm REC-04; để sau test lời nhờ phụ thuộc giờ.
+- Vấn đề/mục tiêu: cho Papa/Mama gom ký ức một năm của bé thành cuốn sách theo tháng, chỉnh và xuất PDF để giữ/in.
+- Tác động sản phẩm/dữ liệu: tính năng mới 2.0; chỉ Parent; dữ liệu là lựa chọn + chú thích lưu ở `app.recaps`, không sao chép ảnh; PDF chỉ nằm trên máy người dùng. Gói dùng thử chỉ xem trước (đòn bẩy nâng cấp).
+- Quyết định và cơ sở: tự chọn ưu tiên cột mốc để sách có sẵn nội dung ngay; quyền xuất là cờ catalog `yearbook.export` (mở rộng được, không gắn tên gói), fallback theo giai đoạn PAID vì bản gói v1 bất biến; lưu offline-first theo quy tắc chung.
+- Đo lường đề xuất (chưa có dữ liệu): tỉ lệ Parent mở Sách của con, số sách đã lưu/năm, số lần xuất PDF, tỉ lệ bấm Nâng cấp từ ghi chú xem trước.
+- Kết quả: backend + app xong, toàn bộ kiểm tra qua (integration 688, app 912).
+- Theo dõi: sách cả nhà, bản cho ông bà (FAMILY), xem trước PDF trong app; muốn bật/tắt xuất theo gói thì phát hành bản gói mới có cờ `yearbook.export`.
+- Trạng thái: Hoàn thành (2026-10-29T00:12:33+07:00).
+
+## BF-20261029-001 — Offline-first: đổi ảnh ký ức khi mất mạng
+
+- Ngày làm: 2026-10-29T06:35:14+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: làm tiếp checklist, tạm bỏ qua CMS.
+- Vấn đề/mục tiêu: trước đây đổi ảnh của ký ức đã đăng cần có mạng (báo lỗi khi offline), lệch với nguyên tắc offline-first đã chốt.
+- Tác động sản phẩm/dữ liệu: người dùng thêm/bỏ/đổi bìa ảnh khi mất mạng, thấy ngay, tự gửi khi có mạng; ảnh mới vẫn nén trên máy và tải thẳng S3 như trước. Không đổi API/schema.
+- Quyết định và cơ sở: tải ảnh lúc gửi (không lúc bấm Lưu) để lưu được khi offline; nhớ asset đã tải để không tốn băng thông khi gửi lại; gộp các lần sửa để chỉ một `PATCH` với version gốc.
+- Đo lường đề xuất (chưa có dữ liệu): số bản sửa ảnh gửi sau khi có mạng lại, tỉ lệ bị từ chối (412/asset), số lần tải lại ảnh.
+- Kết quả: app xong, `make check` 914 test qua.
+- Theo dõi: offline đổi nhiệm vụ, tạo chuỗi lặp; thử máy thật.
+- Trạng thái: Hoàn thành (2026-10-29T06:39:13+07:00).
+
+## BF-20261029-002 — Offline-first: đổi nhiệm vụ và tạo chuỗi lặp khi mất mạng
+
+- Ngày làm: 2026-10-29T07:58:44+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: làm offline cho đổi nhiệm vụ và tạo chuỗi lặp.
+- Vấn đề/mục tiêu: hai thao tác trên bảng nhiệm vụ còn bắt buộc có mạng; gửi lại khi mạng chập chờn có thể tạo chuỗi trùng hoặc báo lỗi sai.
+- Tác động sản phẩm/dữ liệu: đổi nhiệm vụ / thêm việc lặp lại được khi mất mạng, thấy ngay trên bảng; server không tạo trùng chuỗi, không trừ lượt đổi hai lần. API thêm header tuỳ chọn, client cũ không ảnh hưởng.
+- Quyết định và cơ sở: dùng lại cơ chế idempotency offline có sẵn; lưu lựa chọn đổi ~1 ngày vì token gắn với bảng của ngày; server vẫn là nơi quyết định (token hết hạn → từ chối).
+- Đo lường đề xuất (chưa có dữ liệu): số lần đổi/tạo chuỗi gửi từ outbox, tỉ lệ đổi bị từ chối do token cũ, số replay idempotency.
+- Kết quả: backend + app xong; integration 688, unit 345, e2e 35, app 916 đều qua.
+- Theo dõi: thông báo khi đổi offline bị từ chối; thử máy thật.
+- Trạng thái: Hoàn thành (2026-10-29T08:12:34+07:00).
+
+## BF-20261030-001 — REC-04 Sách cả nhà
+
+- Ngày làm: 2026-10-30T12:44:35+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: làm tiếp checklist (REC-04 "chọn bé/cả nhà").
+- Vấn đề/mục tiêu: gia đình nhiều bé hoặc nhiều khoảnh khắc chung không có cuốn sách chung của năm.
+- Tác động sản phẩm/dữ liệu: thêm sách cả nhà (mọi ký ức của gia đình Parent được xem), lưu riêng với sách từng bé; quyền xuất theo cùng cờ gói `yearbook.export`. Không đổi schema.
+- Quyết định và cơ sở: cùng một màn với lựa chọn "bé / Cả nhà" để không thêm điểm vào mới; chỉ Parent như sách của con; khoảnh khắc chung chỉ vào sách cả nhà.
+- Đo lường đề xuất (chưa có dữ liệu): tỉ lệ sách cả nhà / sách bé được lưu, số lần xuất PDF sách cả nhà.
+- Kết quả: backend + app xong; kiểm tra qua (integration chỉ lỗi 1 test media chập chờn, chạy lại qua).
+- Theo dõi: bản cho ông bà (FAMILY), xem trước PDF trong app.
+- Trạng thái: Hoàn thành (2026-10-30T12:58:43+07:00).
+
+## BF-20261030-002 — REC-04 bản cho ông bà (gói Family) + xem trước PDF trong app
+
+- Ngày làm: 2026-10-30T13:34:50+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: bản sách cho ông bà ở gói Family; xem trước PDF trong app.
+- Vấn đề/mục tiêu: ma trận gói hứa "bản cho ông bà" ở gói Family; trước đó người thân không xem được sách và Parent chỉ xem được sách sau khi xuất file.
+- Tác động sản phẩm/dữ liệu: Parent gói Family chia sẻ sách (của bé / cả nhà) cho người thân; người thân chỉ thấy ký ức đã chọn mà họ vốn được xem. Gói dùng thử / House xem trước PDF trong app (đúng "Xem trước" của ma trận) và thấy lời mời nâng cấp ở chia sẻ + xuất.
+- Quyết định và cơ sở: quyền theo cờ catalog (`yearbook.circleShare`, mặc định theo `circle.enabled`), không theo tên gói; tắt chia sẻ là thu hồi ngay; PDF vẫn dựng trên máy, server không lưu file.
+- Đo lường đề xuất (chưa có dữ liệu): tỉ lệ sách được chia sẻ, số người thân mở sách, tỉ lệ mở xem trước → xuất, tỉ lệ bấm Nâng cấp từ thẻ chia sẻ / xem trước.
+- Kết quả: backend + app xong; integration 690, unit 345, e2e 35, app 924 qua.
+- Theo dõi: thông báo cho người thân khi có sách mới; thử xem trước trên máy thật.
+- Trạng thái: Hoàn thành (2026-10-30T13:51:31+07:00).
+
+## BF-20261030-003 — Rời gia đình gỡ nội dung, thông báo, xác thực lại Apple/Google khi xoá tài khoản
+
+- Ngày làm: 2026-10-30T14:40:27+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: tự tìm và làm các task tiếp theo.
+- Vấn đề/mục tiêu: đặc tả §7.25.1 cho người thân chọn gỡ toàn bộ nội dung khi rời và báo Parent trung tính — app có lựa chọn nhưng server bỏ qua; người dùng chỉ liên kết Apple/Google không xoá được tài khoản bằng phương thức đó; ông bà không biết khi có sách năm mới.
+- Tác động sản phẩm/dữ liệu: người thân kiểm soát nội dung của mình khi rời (ký ức vào thùng rác, Parent còn khôi phục trong hạn); Parent biết khi vòng tròn thay đổi mà không lộ chi tiết; xoá tài khoản đúng yêu cầu Store với mọi phương thức đăng nhập; sách năm chia sẻ có thông báo kéo người thân quay lại.
+- Quyết định và cơ sở: gỡ = chuyển thùng rác thay vì xoá cứng (giữ đường khôi phục, đồng bộ qua changes API); thông báo rời gia đình chỉ định danh; thông báo sách chỉ khi chuyển sang chia sẻ để không lặp.
+- Đo lường đề xuất (chưa có dữ liệu): tỉ lệ người thân chọn gỡ khi rời, số lần Parent khôi phục ký ức từ người rời, tỉ lệ mở sách từ thông báo, tỉ lệ xoá tài khoản xác thực bằng Apple/Google vs OTP.
+- Kết quả: backend + app xong; integration 691, unit 347, e2e 35, app 925 qua.
+- Theo dõi: chạy seed mẫu thông báo; cân nhắc gỡ cả cảm xúc; REC-02 chia sẻ recap tuần, ghi âm góc nhìn MEM-24.
+- Trạng thái: Hoàn thành (2026-10-30T14:54:07+07:00).
+
+## BF-20261030-004 — REC-02 chia sẻ / lưu / tải ảnh recap tuần, ghi âm góc nhìn MEM-24
+
+- Ngày làm: 2026-10-30T15:18:27+07:00 (Asia/Ho_Chi_Minh). Đính chính mã: tạo nhầm BF-20261031-001, đã sửa thành BF-20261030-004.
+- Yêu cầu: làm các task tiếp theo.
+- Vấn đề/mục tiêu: 3 nút của “Tuần của nhà mình” chưa làm gì thật; góc nhìn thứ hai chỉ có chữ dù đặc tả có ghi âm.
+- Tác động sản phẩm/dữ liệu: Bố Mẹ gói Family đưa recap tuần tới ông bà (kèm thông báo), lưu tuần thành một ký ức trên timeline, tải ảnh tổng kết để gửi nhóm chat; Parent còn lại kể bằng giọng nói. Ký ức lưu từ recap mặc định chỉ Bố Mẹ xem để không lộ ký ức riêng.
+- Quyết định và cơ sở: chia sẻ theo cờ catalog (`recap.circleShare`, mặc định theo `circle.enabled`); lưu timeline idempotent (một ký ức mỗi tuần); ảnh tổng kết dựng trên máy (không tốn server); ghi âm tải thẳng S3 như ký ức VOICE.
+- Đo lường đề xuất (chưa có dữ liệu): tỉ lệ recap được chia sẻ / lưu / tải ảnh, tỉ lệ người thân mở recap từ thông báo, tỉ lệ góc nhìn có ghi âm.
+- Kết quả: backend + app xong; integration 692, unit 348, e2e 35, app 927 qua.
+- Theo dõi: màn recap tuần cho người thân; ảnh/video trong góc nhìn; chạy seed mẫu thông báo.
+- Trạng thái: Hoàn thành (2026-10-30T15:32:07+07:00).
+
+## BF-20261030-005 — Mở thông báo đẩy đúng màn + recap tuần cho người thân
+
+- Ngày làm: 2026-10-30T16:03:51+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: làm tiếp màn recap tuần cho ông bà từ thông báo.
+- Vấn đề/mục tiêu: chạm thông báo chỉ mở app ở màn mặc định; ông bà nhận thông báo “tuần của nhà mình / sách năm” nhưng không có nơi mở.
+- Tác động sản phẩm/dữ liệu: mọi thông báo có deep link (ký ức, bình luận, lời nhờ, recap, sách năm, người thân rời) mở thẳng màn liên quan; ông bà xem recap tuần đã chia sẻ (chỉ đọc). Không đổi dữ liệu/API.
+- Quyết định và cơ sở: ánh xạ deep link theo vai trò ở app, người thân không bao giờ vào màn của Bố Mẹ (server vẫn kiểm quyền); chờ Splash xong để không đè luồng phiên.
+- Đo lường đề xuất (chưa có dữ liệu): tỉ lệ mở từ thông báo theo loại, tỉ lệ người thân mở recap / sách năm sau thông báo.
+- Kết quả: app xong, `make check` 931 test qua.
+- Theo dõi: thử FCM/APNs thật; banner khi app đang mở.
+- Trạng thái: Hoàn thành (2026-10-30T16:07:11+07:00).
+
+## BF-20261030-006 — Ảnh/video trong góc nhìn MEM-24, banner thông báo khi app đang mở
+
+- Ngày làm: 2026-10-30T16:08:31+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: làm tiếp.
+- Vấn đề/mục tiêu: góc nhìn thứ hai chưa thêm được ảnh; thông báo đến lúc đang dùng app bị bỏ lỡ.
+- Tác động sản phẩm/dữ liệu: Parent còn lại kể bằng chữ, giọng nói và ảnh của riêng mình; người đang mở app thấy ngay thông báo và mở màn liên quan. Dữ liệu ảnh dùng bảng có sẵn, không đổi schema.
+- Quyết định và cơ sở: giới hạn 6 ảnh là policy cấu hình; ảnh đi cùng luật quyền như audio (không dùng ảnh riêng tư của người khác); chỉ ảnh trước, video để sau vì cần giới hạn độ dài theo gói.
+- Đo lường đề xuất (chưa có dữ liệu): tỉ lệ góc nhìn có ảnh, tỉ lệ bấm “Xem” trên thanh báo.
+- Kết quả: backend + app xong; integration 693, unit 348, e2e 35, app 932 qua.
+- Theo dõi: video trong góc nhìn; thử FCM thật.
+- Trạng thái: Hoàn thành (2026-10-30T16:20:19+07:00).
+
+## BF-20261030-007 — Video trong góc nhìn MEM-24, sửa test lời nhờ phụ thuộc giờ
+
+- Ngày làm: 2026-10-30T16:33:35+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: làm tiếp.
+- Vấn đề/mục tiêu: góc nhìn thứ hai chưa thêm được video như đặc tả; một test backend hỏng ngẫu nhiên theo giờ chạy làm nhiễu bằng chứng kiểm tra.
+- Tác động sản phẩm/dữ liệu: Parent còn lại thêm video vào góc nhìn, cùng giới hạn độ dài theo gói như đăng ký ức (giữ nhất quán đòn bẩy nâng cấp). Không đổi API/schema. Test ổn định hơn, không đổi hành vi sản phẩm.
+- Quyết định và cơ sở: dùng chung một hàm sàng video cho mọi nơi chọn media để giới hạn gói không lệch nhau.
+- Đo lường đề xuất (chưa có dữ liệu): tỉ lệ góc nhìn có video, số lần video bị bỏ vì quá giới hạn.
+- Kết quả: app + test backend xong; integration 693, unit 348, e2e 35, app 933 qua.
+- Theo dõi: phát video trong khối góc nhìn.
+- Trạng thái: Hoàn thành (2026-10-30T16:41:59+07:00).
+
+## BF-20261030-008 — Xem ảnh / phát video của góc nhìn MEM-24
+
+- Ngày làm: 2026-10-30T16:50:03+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: làm tiếp.
+- Vấn đề/mục tiêu: ảnh/video trong góc nhìn thứ hai chỉ là ô nhỏ, video không xem được.
+- Tác động sản phẩm/dữ liệu: cả nhà xem ảnh, phát video của góc nhìn toàn màn hình như ảnh ký ức. Không đổi API/dữ liệu.
+- Quyết định và cơ sở: dùng lại MEM-08 để trải nghiệm xem thống nhất và không thêm màn hình mới.
+- Đo lường đề xuất (chưa có dữ liệu): số lần mở trình xem từ góc nhìn, tỉ lệ phát video góc nhìn.
+- Kết quả: app xong, `make check` 934 test qua.
+- Theo dõi: link tải bản gốc cho asset góc nhìn.
+- Trạng thái: Hoàn thành (2026-10-30T16:52:49+07:00).
+
+## BF-20261030-009 — Tải bản gốc ảnh/video của góc nhìn MEM-24
+
+- Ngày làm: 2026-10-30T17:00:05+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: làm tiếp.
+- Vấn đề/mục tiêu: tải ảnh từ góc nhìn chỉ được bản nén, khác với ảnh ký ức (bản gốc).
+- Tác động sản phẩm/dữ liệu: tải bản gốc ảnh/video của góc nhìn theo đúng quyền tải hiện có (người thân cần được cho phép tải), có giới hạn tần suất và ghi audit như ký ức.
+- Quyết định và cơ sở: mở rộng endpoint tải hiện có để không tạo đường tải thứ hai lệch quy tắc bảo mật.
+- Đo lường đề xuất (chưa có dữ liệu): số lượt tải bản gốc từ góc nhìn.
+- Kết quả: backend + app xong; kiểm tra qua (1 test quá thời gian khi máy bận, chạy lại qua).
+- Theo dõi: thử máy thật.
+- Trạng thái: Hoàn thành (2026-10-30T18:54:18+07:00).
+
+## BF-20261030-010 — Nhắc sự kiện CAL-02 gửi thông báo đẩy
+
+- Ngày làm: 2026-10-30T19:58:30+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: làm tiếp.
+- Vấn đề/mục tiêu: nhắc lịch (tiêm, khám, sinh nhật…) chỉ nằm trong hộp thư, không hiện thông báo trên máy — mất giá trị “nhắc”.
+- Tác động sản phẩm/dữ liệu: nhắc đến đúng giờ người dùng chọn qua push (vẫn theo tuỳ chọn/giờ yên tĩnh ở bước gửi), chạm mở Lịch; nhắc gói mở thẳng màn gói. Không đổi schema.
+- Quyết định và cơ sở: nhắc do người dùng đặt nên không tính vào trần 3 thông báo thường/ngày.
+- Đo lường đề xuất (chưa có dữ liệu): tỉ lệ nhắc được mở từ push.
+- Kết quả: backend + app xong; integration 694, unit 348, e2e 35, app 934 qua.
+- Theo dõi: thử FCM/APNs thật.
+- Trạng thái: Hoàn thành (2026-10-30T20:06:49+07:00).
+
+<a id="bf-20261030-011"></a>
+## BF-20261030-011 — Tính năng còn lại trước phát hành
+
+- Ngày làm: 2026-10-30T20:25:24+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Liệt kê tính năng còn lại chưa làm.
+- Role: ORCHESTRATOR/PM, DATA_ANALYST.
+- Vấn đề / mục tiêu: Biết phần còn chặn phát hành.
+- Quan sát: Checklist 153/166; 13 dòng mở chủ yếu là cấu hình Store/đăng nhập bên thứ ba/hạ tầng/pháp lý.
+- Phân tích / quyết định: Không đổi phạm vi; chỉ tổng hợp.
+- Tác động: Không đổi hành vi sản phẩm.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo.
+- Kết quả / trạng thái: Đã liệt kê.
+- Theo dõi: Các dòng chờ input người dùng.
+- Session: [BF-20261030-011](SESSIONS.md#bf-20261030-011).
+
+<a id="bf-20261030-012"></a>
+## BF-20261030-012 — Cấu hình môi trường đầy đủ
+
+- Ngày làm: 2026-10-30 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Đưa đủ biến môi trường vào .env từng folder.
+- Role: DEVOPS, SECURITY_PRIVACY, DATA_ANALYST.
+- Vấn đề / mục tiêu: Người dùng tự cấu hình môi trường từ một chỗ rõ ràng mỗi folder.
+- Quan sát: Nhiều tính năng (Papa & Mama mã hoá, admin, IAP, push) bị tắt trong Docker vì compose không truyền biến.
+- Phân tích / quyết định: `.env.example` là nguồn đầy đủ; `.env` local chỉ thêm khoá thiếu, không đổi giá trị cũ; secret thật của bên thứ ba để trống.
+- Tác động: Trên stack Docker local, các tính năng cần khoá mã hoá (check-in, cảm ơn, đặt tên, support, admin) giờ bật được; không đổi hành vi production.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo.
+- Kết quả / trạng thái: Hoàn thành, đã validate.
+- Theo dõi: Điền tài khoản thật để đóng các dòng checklist Apple/Google/IAP/push/pháp lý.
+- Session: [BF-20261030-012](SESSIONS.md#bf-20261030-012).
+
+<a id="bf-20261101-001"></a>
+## BF-20261101-001 — Nhắn tin trong gia đình và riêng Papa–Mama
+
+- Ngày làm: 2026-11-01T19:18:00+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Thêm chat realtime (WebSocket) cho Baby Family: thiết kế Pencil, backend, app offline-first.
+- Role: PRODUCT, BA, ARCHITECT, SECURITY_PRIVACY, DATA_ANALYST.
+- Vấn đề / mục tiêu: Gia đình hiện phải nhắn qua Zalo/Messenger (đặc tả §persona “gửi ảnh qua nhóm chat”), trao đổi bị tách khỏi không gian riêng tư của app. Mục tiêu: nhắn nhanh trong gia đình và kênh riêng Papa–Mama, chạy được khi mạng yếu.
+- Quan sát: Đặc tả nghiệp vụ v3 chưa có màn chat; kỹ thuật §12 đã định nghĩa realtime (Socket.IO, tín hiệu nhỏ, không gửi nội dung Papa & Mama qua socket).
+- Phân tích / quyết định: Giả định đã chọn (đặc tả chưa có chat, cần người dùng xác nhận) — hai cuộc trò chuyện cố định mỗi gia đình (FAMILY, COUPLE); người thân chỉ vào FAMILY khi đang có quyền xem gia đình; COUPLE chỉ hai Parent, nội dung mã hoá như dữ liệu Papa & Mama khác. Theo kỹ thuật §12, socket chỉ mang định danh/seq; nội dung luôn qua REST để kiểm quyền. Push chỉ khi người nhận không online, không chứa nội dung tin, không tính trần 3 push/ngày nhưng theo giờ yên tĩnh; người dùng tắt được nhóm “Tin nhắn cả nhà”. Chat không gắn gói (Circle vẫn cần gói có `circle.enabled` như mọi nội dung gia đình).
+- Tác động: Tính năng mới cho Parent và người thân (FAMILY), Parent (COUPLE); thêm 3 bảng, 4 endpoint REST, WebSocket cùng cổng API, nhóm thông báo `CHAT`. Thông báo chat không hiện trong hộp thư.
+- Giả thuyết / đo lường: Giả thuyết — có kênh chat trong app giúp người thân quay lại app thường xuyên hơn (liên quan WMFM). Chưa thêm tracking; chưa có dữ liệu đo.
+- Kết quả / trạng thái: Đã triển khai Pencil + backend + app, chạy thật hai tài khoản realtime trên local. Chưa có dữ liệu sử dụng.
+- Theo dõi: Người dùng xác nhận phạm vi (2 cuộc trò chuyện/gia đình, chưa có ảnh/1–1); khi phát hành, đo tỉ lệ gia đình có ≥1 tin/tuần và tác động lên người thân quay lại (chỉ đếm sự kiện, không lưu nội dung). Push FCM thật cần cấu hình.
+- Session: [BF-20261101-001](SESSIONS.md#bf-20261101-001).

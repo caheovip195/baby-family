@@ -7,6 +7,7 @@ part of 'weekly_recap.dart';
 // **************************************************************************
 
 _WeeklyRecap _$WeeklyRecapFromJson(Map<String, dynamic> json) => _WeeklyRecap(
+  id: json['id'] as String?,
   start: DateTime.parse(json['start'] as String),
   end: DateTime.parse(json['end'] as String),
   headline: json['headline'] as String? ?? '',
@@ -26,10 +27,14 @@ _WeeklyRecap _$WeeklyRecapFromJson(Map<String, dynamic> json) => _WeeklyRecap(
   togetherTitle: json['togetherTitle'] as String?,
   togetherBody: json['togetherBody'] as String?,
   pageCount: (json['pageCount'] as num?)?.toInt() ?? 1,
+  canShare: json['canShare'] as bool? ?? false,
+  shared: json['shared'] as bool? ?? false,
+  memoryId: json['memoryId'] as String?,
 );
 
 Map<String, dynamic> _$WeeklyRecapToJson(_WeeklyRecap instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'start': instance.start.toIso8601String(),
       'end': instance.end.toIso8601String(),
       'headline': instance.headline,
@@ -41,4 +46,7 @@ Map<String, dynamic> _$WeeklyRecapToJson(_WeeklyRecap instance) =>
       'togetherTitle': instance.togetherTitle,
       'togetherBody': instance.togetherBody,
       'pageCount': instance.pageCount,
+      'canShare': instance.canShare,
+      'shared': instance.shared,
+      'memoryId': instance.memoryId,
     };

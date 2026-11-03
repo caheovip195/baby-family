@@ -11,6 +11,7 @@ export interface MilestoneTemplateAttributes {
   remindDaysBefore: number | null;
   sortOrder: number;
   status: string;
+  version: number;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
@@ -26,6 +27,7 @@ export class MilestoneTemplate implements MilestoneTemplateAttributes {
   readonly remindDaysBefore: number | null;
   readonly sortOrder: number;
   readonly status: string;
+  readonly version: number;
   readonly createdAt: Date;
   readonly updatedAt: Date;
   readonly deletedAt: Date | null;
@@ -40,6 +42,7 @@ export class MilestoneTemplate implements MilestoneTemplateAttributes {
     this.remindDaysBefore = attributes.remindDaysBefore;
     this.sortOrder = attributes.sortOrder;
     this.status = attributes.status;
+    this.version = attributes.version;
     this.createdAt = attributes.createdAt;
     this.updatedAt = attributes.updatedAt;
     this.deletedAt = attributes.deletedAt;

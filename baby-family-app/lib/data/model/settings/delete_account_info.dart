@@ -15,7 +15,11 @@ abstract class DeleteAccountInfo with _$DeleteAccountInfo {
     @JsonKey(name: 'childNames') @Default([]) List<String> childNames,
     @JsonKey(name: 'postedMemories') @Default(0) int postedMemories,
     @JsonKey(name: 'onlyParent') @Default(false) bool onlyParent,
+
+    /// Apple / Google đã liên kết → xác thực lại bằng nhà cung cấp đó
+    /// (BF-20261030-003); null = không liên kết.
     @JsonKey(name: 'maskedAppleAccount') String? maskedAppleAccount,
+    @JsonKey(name: 'maskedGoogleAccount') String? maskedGoogleAccount,
     @JsonKey(name: 'maskedPhone') String? maskedPhone,
     @JsonKey(name: 'purgeDate') required DateTime purgeDate,
   }) = _DeleteAccountInfo;

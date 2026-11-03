@@ -375,11 +375,19 @@ void main() {
   });
 
   group('SET-03', () {
-    testWidgets('lists 11 groups with the partner in the quiet rule', (
+    testWidgets('lists 12 groups with the partner in the quiet rule', (
       tester,
     ) async {
       await pumpRoute(tester, const NotificationSettingsRoute());
       expect(find.text('Gộp lại trong 30 phút'), findsOneWidget);
+      // BF-20261101-001: thêm nhóm “Tin nhắn cả nhà” đẩy mục giờ yên tĩnh
+      // xuống dưới.
+      expect(find.text('Tin nhắn cả nhà'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Lời nhờ của Papa vượt giờ yên tĩnh'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text('Lời nhờ của Papa vượt giờ yên tĩnh'), findsOneWidget);
       expect(find.text('Tắt — lời nhờ “Sớm nhé” cũng chờ sau 6:30'), findsOne);
       await _tap(tester, find.text('Lời nhờ của Papa vượt giờ yên tĩnh'));

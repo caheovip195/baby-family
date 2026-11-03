@@ -28,11 +28,15 @@ abstract class IMemoryLibraryRemoteRepository extends IBaseRepository {
 
   Future<List<MemoryRecord>> favorites(String familyId);
 
-  Future<List<DownloadUrlRecord>> downloadUrls(String memoryId);
+  Future<List<DownloadUrlRecord>> downloadUrls(
+    String memoryId, {
+    String? perspectiveId,
+  });
 
   Future<List<PerspectiveRecord>> perspectives(String memoryId);
 
-  Future<PerspectiveRecord?> putPerspective(String memoryId, String body);
+  /// `{body, audioAssetId?}` (audioAssetId null = bỏ ghi âm).
+  Future<PerspectiveRecord?> putPerspective(String memoryId, JsonMap body);
 
   Future<List<MemoryPromptRecord>> prompts(String familyId, {String? childId});
 
@@ -50,6 +54,16 @@ abstract class IMemoryLibraryRemoteRepository extends IBaseRepository {
 
   /// REC-02: recap tuần mới nhất; null khi chưa có (404).
   Future<WeeklyRecapRecord?> latestWeeklyRecap(String familyId);
+
+  /// REC-02 chia sẻ / bỏ chia sẻ với người thân.
+  Future<WeeklyRecapRecord?> shareWeeklyRecap(
+    String familyId,
+    String recapId, {
+    required bool shared,
+  });
+
+  /// REC-02 lưu vào timeline → id ký ức server.
+  Future<String?> saveWeeklyRecapToTimeline(String familyId, String recapId);
 
   /// MEM-20: ảnh tháng của bé.
   Future<List<MonthlyPhotoRecord>> monthlyPhotos(String childId);

@@ -15,6 +15,8 @@ import {
   MODERATION_SLA_JOB,
   MODERATION_WORKFLOW_POLICY,
 } from '../config/moderation-workflow-policy';
+import { BRIDGE_MAINTENANCE_SERVICE } from '../interfaces/services/bridge-maintenance-service.interface';
+import type { IBridgeMaintenanceService } from '../interfaces/services/bridge-maintenance-service.interface';
 import { MODERATION_WORKFLOW_SERVICE } from '../interfaces/services/moderation-workflow-service.interface';
 import type { IModerationWorkflowService } from '../interfaces/services/moderation-workflow-service.interface';
 import { JOB_QUEUE_SERVICE } from '../interfaces/services/job-queue-service.interface';
@@ -56,6 +58,8 @@ export class MaintenanceQueueWorker
     @Inject(DATA_EXPORT_SERVICE) private readonly exports: IDataExportService,
     @Inject(MODERATION_WORKFLOW_SERVICE)
     private readonly moderation: IModerationWorkflowService,
+    @Inject(BRIDGE_MAINTENANCE_SERVICE)
+    private readonly bridges: IBridgeMaintenanceService,
   ) {}
 
   async onApplicationBootstrap(): Promise<void> {
@@ -142,7 +146,9 @@ export class MaintenanceQueueWorker
               ) => this.maintenance.purgeOrphans(new Date(), context)
             : schedule.job.name === JOBS.purgeTrash.name
               ? () => this.memories.purgeExpiredTrash(new Date())
-              : () => this.maintenance.reconcileUploads(new Date());
+              : schedule.job.name === JOBS.bridgeHousekeep.name
+                ? () => this.bridges.housekeep(new Date())
+                : () => this.maintenance.reconcileUploads(new Date());
     try {
       return await this.runner.execute(
         schedule.job,

@@ -6,6 +6,7 @@ import 'package:baby_family/data/provider/child.dart';
 import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/provider/memory.dart';
 import 'package:baby_family/data/provider/mock_store.dart';
+import 'package:baby_family/data/provider/session.dart';
 import 'package:baby_family/data/service/child.dart';
 import 'package:baby_family/data/service/family.dart';
 import 'package:baby_family/data/service/memory.dart';
@@ -39,6 +40,9 @@ class WeeklyRecapController extends BaseNotifier {
 
   DateTime get today => childService.today;
 
+  /// Người thân mở recap Bố Mẹ đã chia sẻ (BF-20261030-005): chỉ xem.
+  bool get readOnly => ref.read(sessionServiceProvider).current.state.isCircle;
+
   Child? childById(String? id) =>
       children.where((child) => child.id == id).firstOrNull;
 
@@ -48,10 +52,20 @@ class WeeklyRecapController extends BaseNotifier {
   Future<void> load() async {
     hasError = false;
     try {
+      // Tên bé / tên gọi chỉ để chú thích: người thân không đọc được danh
+      // sách đầy đủ thì vẫn hiện recap.
+      Future<List<T>> optional<T>(Future<List<T>> Function() read) async {
+        try {
+          return await read();
+        } catch (_) {
+          return const [];
+        }
+      }
+
       final (value, kids, people) = await (
         memoryService.weeklyRecap(),
-        childService.children(),
-        familyService.members(),
+        optional(childService.children),
+        optional(familyService.members),
       ).wait;
       if (isDisposed) {
         return;
@@ -67,5 +81,38 @@ class WeeklyRecapController extends BaseNotifier {
     }
     loaded = true;
     notifyListeners();
+  }
+
+  /// REC-02 chia sẻ / dừng chia sẻ với người thân (gói Family); trả trạng
+  /// thái mới.
+  Future<bool> toggleShare() async {
+    final current = recap;
+    if (current == null) {
+      return false;
+    }
+    final next = await whileLoading(
+      () => memoryService.shareWeeklyRecap(current, shared: !current.shared),
+    );
+    if (!isDisposed) {
+      recap = next;
+      notifyListeners();
+    }
+    return next.shared;
+  }
+
+  /// REC-02 lưu vào timeline (một ký ức mỗi tuần) → id ký ức.
+  Future<String?> saveToTimeline() async {
+    final current = recap;
+    if (current == null) {
+      return null;
+    }
+    final memoryId = await whileLoading(
+      () => memoryService.saveWeeklyRecapToTimeline(current),
+    );
+    if (!isDisposed && memoryId != null) {
+      recap = current.copyWith(memoryId: memoryId);
+      notifyListeners();
+    }
+    return memoryId;
   }
 }

@@ -41,7 +41,15 @@ export interface IFamilyCircleRepository {
     id: string,
     input: UpdateCircleMemberDto | 'PAUSED' | 'ACTIVE' | 'REMOVED',
   ): Promise<void>;
-  leave(userId: string, familyId: string): Promise<void>;
+  /**
+   * Rời gia đình; [removeContent] chuyển ký ức của người rời vào thùng rác và
+   * gỡ bình luận. Phát `circle.left` (Parent nhận thông báo trung tính).
+   */
+  leave(
+    userId: string,
+    familyId: string,
+    removeContent?: boolean,
+  ): Promise<void>;
   overview(familyId: string): Promise<FamilyCircleOverview>;
   myCircles(userId: string): Promise<FamilyCircleBootstrap[]>;
   resolveCircle(lookup: InviteLookup): Promise<FamilyCirclePreview | null>;

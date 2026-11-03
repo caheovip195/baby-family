@@ -15,7 +15,10 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WeeklyRecap {
 
-@JsonKey(name: 'start') DateTime get start;@JsonKey(name: 'end') DateTime get end;@JsonKey(name: 'headline') String get headline;@JsonKey(name: 'moments') int get moments;@JsonKey(name: 'firsts') int get firsts;@JsonKey(name: 'quotes') int get quotes;@JsonKey(name: 'heroAssets') List<String> get heroAssets;@JsonKey(name: 'highlights') List<Memory> get highlights;@JsonKey(name: 'togetherTitle') String? get togetherTitle;@JsonKey(name: 'togetherBody') String? get togetherBody;@JsonKey(name: 'pageCount') int get pageCount;
+/// Id recap của server (null = bản mock).
+@JsonKey(name: 'id') String? get id;@JsonKey(name: 'start') DateTime get start;@JsonKey(name: 'end') DateTime get end;@JsonKey(name: 'headline') String get headline;@JsonKey(name: 'moments') int get moments;@JsonKey(name: 'firsts') int get firsts;@JsonKey(name: 'quotes') int get quotes;@JsonKey(name: 'heroAssets') List<String> get heroAssets;@JsonKey(name: 'highlights') List<Memory> get highlights;@JsonKey(name: 'togetherTitle') String? get togetherTitle;@JsonKey(name: 'togetherBody') String? get togetherBody;@JsonKey(name: 'pageCount') int get pageCount;/// REC-02 (BF-20261030-004): gói cho chia sẻ với người thân / đang chia
+/// sẻ / ký ức đã lưu vào timeline.
+@JsonKey(name: 'canShare') bool get canShare;@JsonKey(name: 'shared') bool get shared;@JsonKey(name: 'memoryId') String? get memoryId;
 /// Create a copy of WeeklyRecap
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +31,16 @@ $WeeklyRecapCopyWith<WeeklyRecap> get copyWith => _$WeeklyRecapCopyWithImpl<Week
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WeeklyRecap&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.headline, headline) || other.headline == headline)&&(identical(other.moments, moments) || other.moments == moments)&&(identical(other.firsts, firsts) || other.firsts == firsts)&&(identical(other.quotes, quotes) || other.quotes == quotes)&&const DeepCollectionEquality().equals(other.heroAssets, heroAssets)&&const DeepCollectionEquality().equals(other.highlights, highlights)&&(identical(other.togetherTitle, togetherTitle) || other.togetherTitle == togetherTitle)&&(identical(other.togetherBody, togetherBody) || other.togetherBody == togetherBody)&&(identical(other.pageCount, pageCount) || other.pageCount == pageCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WeeklyRecap&&(identical(other.id, id) || other.id == id)&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.headline, headline) || other.headline == headline)&&(identical(other.moments, moments) || other.moments == moments)&&(identical(other.firsts, firsts) || other.firsts == firsts)&&(identical(other.quotes, quotes) || other.quotes == quotes)&&const DeepCollectionEquality().equals(other.heroAssets, heroAssets)&&const DeepCollectionEquality().equals(other.highlights, highlights)&&(identical(other.togetherTitle, togetherTitle) || other.togetherTitle == togetherTitle)&&(identical(other.togetherBody, togetherBody) || other.togetherBody == togetherBody)&&(identical(other.pageCount, pageCount) || other.pageCount == pageCount)&&(identical(other.canShare, canShare) || other.canShare == canShare)&&(identical(other.shared, shared) || other.shared == shared)&&(identical(other.memoryId, memoryId) || other.memoryId == memoryId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,start,end,headline,moments,firsts,quotes,const DeepCollectionEquality().hash(heroAssets),const DeepCollectionEquality().hash(highlights),togetherTitle,togetherBody,pageCount);
+int get hashCode => Object.hash(runtimeType,id,start,end,headline,moments,firsts,quotes,const DeepCollectionEquality().hash(heroAssets),const DeepCollectionEquality().hash(highlights),togetherTitle,togetherBody,pageCount,canShare,shared,memoryId);
 
 @override
 String toString() {
-  return 'WeeklyRecap(start: $start, end: $end, headline: $headline, moments: $moments, firsts: $firsts, quotes: $quotes, heroAssets: $heroAssets, highlights: $highlights, togetherTitle: $togetherTitle, togetherBody: $togetherBody, pageCount: $pageCount)';
+  return 'WeeklyRecap(id: $id, start: $start, end: $end, headline: $headline, moments: $moments, firsts: $firsts, quotes: $quotes, heroAssets: $heroAssets, highlights: $highlights, togetherTitle: $togetherTitle, togetherBody: $togetherBody, pageCount: $pageCount, canShare: $canShare, shared: $shared, memoryId: $memoryId)';
 }
 
 
@@ -48,7 +51,7 @@ abstract mixin class $WeeklyRecapCopyWith<$Res>  {
   factory $WeeklyRecapCopyWith(WeeklyRecap value, $Res Function(WeeklyRecap) _then) = _$WeeklyRecapCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'start') DateTime start,@JsonKey(name: 'end') DateTime end,@JsonKey(name: 'headline') String headline,@JsonKey(name: 'moments') int moments,@JsonKey(name: 'firsts') int firsts,@JsonKey(name: 'quotes') int quotes,@JsonKey(name: 'heroAssets') List<String> heroAssets,@JsonKey(name: 'highlights') List<Memory> highlights,@JsonKey(name: 'togetherTitle') String? togetherTitle,@JsonKey(name: 'togetherBody') String? togetherBody,@JsonKey(name: 'pageCount') int pageCount
+@JsonKey(name: 'id') String? id,@JsonKey(name: 'start') DateTime start,@JsonKey(name: 'end') DateTime end,@JsonKey(name: 'headline') String headline,@JsonKey(name: 'moments') int moments,@JsonKey(name: 'firsts') int firsts,@JsonKey(name: 'quotes') int quotes,@JsonKey(name: 'heroAssets') List<String> heroAssets,@JsonKey(name: 'highlights') List<Memory> highlights,@JsonKey(name: 'togetherTitle') String? togetherTitle,@JsonKey(name: 'togetherBody') String? togetherBody,@JsonKey(name: 'pageCount') int pageCount,@JsonKey(name: 'canShare') bool canShare,@JsonKey(name: 'shared') bool shared,@JsonKey(name: 'memoryId') String? memoryId
 });
 
 
@@ -65,9 +68,10 @@ class _$WeeklyRecapCopyWithImpl<$Res>
 
 /// Create a copy of WeeklyRecap
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? start = null,Object? end = null,Object? headline = null,Object? moments = null,Object? firsts = null,Object? quotes = null,Object? heroAssets = null,Object? highlights = null,Object? togetherTitle = freezed,Object? togetherBody = freezed,Object? pageCount = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? start = null,Object? end = null,Object? headline = null,Object? moments = null,Object? firsts = null,Object? quotes = null,Object? heroAssets = null,Object? highlights = null,Object? togetherTitle = freezed,Object? togetherBody = freezed,Object? pageCount = null,Object? canShare = null,Object? shared = null,Object? memoryId = freezed,}) {
   return _then(_self.copyWith(
-start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
+id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String?,start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
 as DateTime,end: null == end ? _self.end : end // ignore: cast_nullable_to_non_nullable
 as DateTime,headline: null == headline ? _self.headline : headline // ignore: cast_nullable_to_non_nullable
 as String,moments: null == moments ? _self.moments : moments // ignore: cast_nullable_to_non_nullable
@@ -78,7 +82,10 @@ as List<String>,highlights: null == highlights ? _self.highlights : highlights /
 as List<Memory>,togetherTitle: freezed == togetherTitle ? _self.togetherTitle : togetherTitle // ignore: cast_nullable_to_non_nullable
 as String?,togetherBody: freezed == togetherBody ? _self.togetherBody : togetherBody // ignore: cast_nullable_to_non_nullable
 as String?,pageCount: null == pageCount ? _self.pageCount : pageCount // ignore: cast_nullable_to_non_nullable
-as int,
+as int,canShare: null == canShare ? _self.canShare : canShare // ignore: cast_nullable_to_non_nullable
+as bool,shared: null == shared ? _self.shared : shared // ignore: cast_nullable_to_non_nullable
+as bool,memoryId: freezed == memoryId ? _self.memoryId : memoryId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -158,9 +165,11 @@ return $default(_that);case _:
 
 @JsonSerializable(explicitToJson: true)
 class _WeeklyRecap implements WeeklyRecap {
-  const _WeeklyRecap({@JsonKey(name: 'start') required this.start, @JsonKey(name: 'end') required this.end, @JsonKey(name: 'headline') this.headline = '', @JsonKey(name: 'moments') this.moments = 0, @JsonKey(name: 'firsts') this.firsts = 0, @JsonKey(name: 'quotes') this.quotes = 0, @JsonKey(name: 'heroAssets') final  List<String> heroAssets = const [], @JsonKey(name: 'highlights') final  List<Memory> highlights = const [], @JsonKey(name: 'togetherTitle') this.togetherTitle, @JsonKey(name: 'togetherBody') this.togetherBody, @JsonKey(name: 'pageCount') this.pageCount = 1}): _heroAssets = heroAssets,_highlights = highlights;
+  const _WeeklyRecap({@JsonKey(name: 'id') this.id, @JsonKey(name: 'start') required this.start, @JsonKey(name: 'end') required this.end, @JsonKey(name: 'headline') this.headline = '', @JsonKey(name: 'moments') this.moments = 0, @JsonKey(name: 'firsts') this.firsts = 0, @JsonKey(name: 'quotes') this.quotes = 0, @JsonKey(name: 'heroAssets') final  List<String> heroAssets = const [], @JsonKey(name: 'highlights') final  List<Memory> highlights = const [], @JsonKey(name: 'togetherTitle') this.togetherTitle, @JsonKey(name: 'togetherBody') this.togetherBody, @JsonKey(name: 'pageCount') this.pageCount = 1, @JsonKey(name: 'canShare') this.canShare = false, @JsonKey(name: 'shared') this.shared = false, @JsonKey(name: 'memoryId') this.memoryId}): _heroAssets = heroAssets,_highlights = highlights;
   factory _WeeklyRecap.fromJson(Map<String, dynamic> json) => _$WeeklyRecapFromJson(json);
 
+/// Id recap của server (null = bản mock).
+@override@JsonKey(name: 'id') final  String? id;
 @override@JsonKey(name: 'start') final  DateTime start;
 @override@JsonKey(name: 'end') final  DateTime end;
 @override@JsonKey(name: 'headline') final  String headline;
@@ -184,6 +193,11 @@ class _WeeklyRecap implements WeeklyRecap {
 @override@JsonKey(name: 'togetherTitle') final  String? togetherTitle;
 @override@JsonKey(name: 'togetherBody') final  String? togetherBody;
 @override@JsonKey(name: 'pageCount') final  int pageCount;
+/// REC-02 (BF-20261030-004): gói cho chia sẻ với người thân / đang chia
+/// sẻ / ký ức đã lưu vào timeline.
+@override@JsonKey(name: 'canShare') final  bool canShare;
+@override@JsonKey(name: 'shared') final  bool shared;
+@override@JsonKey(name: 'memoryId') final  String? memoryId;
 
 /// Create a copy of WeeklyRecap
 /// with the given fields replaced by the non-null parameter values.
@@ -198,16 +212,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WeeklyRecap&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.headline, headline) || other.headline == headline)&&(identical(other.moments, moments) || other.moments == moments)&&(identical(other.firsts, firsts) || other.firsts == firsts)&&(identical(other.quotes, quotes) || other.quotes == quotes)&&const DeepCollectionEquality().equals(other._heroAssets, _heroAssets)&&const DeepCollectionEquality().equals(other._highlights, _highlights)&&(identical(other.togetherTitle, togetherTitle) || other.togetherTitle == togetherTitle)&&(identical(other.togetherBody, togetherBody) || other.togetherBody == togetherBody)&&(identical(other.pageCount, pageCount) || other.pageCount == pageCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WeeklyRecap&&(identical(other.id, id) || other.id == id)&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.headline, headline) || other.headline == headline)&&(identical(other.moments, moments) || other.moments == moments)&&(identical(other.firsts, firsts) || other.firsts == firsts)&&(identical(other.quotes, quotes) || other.quotes == quotes)&&const DeepCollectionEquality().equals(other._heroAssets, _heroAssets)&&const DeepCollectionEquality().equals(other._highlights, _highlights)&&(identical(other.togetherTitle, togetherTitle) || other.togetherTitle == togetherTitle)&&(identical(other.togetherBody, togetherBody) || other.togetherBody == togetherBody)&&(identical(other.pageCount, pageCount) || other.pageCount == pageCount)&&(identical(other.canShare, canShare) || other.canShare == canShare)&&(identical(other.shared, shared) || other.shared == shared)&&(identical(other.memoryId, memoryId) || other.memoryId == memoryId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,start,end,headline,moments,firsts,quotes,const DeepCollectionEquality().hash(_heroAssets),const DeepCollectionEquality().hash(_highlights),togetherTitle,togetherBody,pageCount);
+int get hashCode => Object.hash(runtimeType,id,start,end,headline,moments,firsts,quotes,const DeepCollectionEquality().hash(_heroAssets),const DeepCollectionEquality().hash(_highlights),togetherTitle,togetherBody,pageCount,canShare,shared,memoryId);
 
 @override
 String toString() {
-  return 'WeeklyRecap(start: $start, end: $end, headline: $headline, moments: $moments, firsts: $firsts, quotes: $quotes, heroAssets: $heroAssets, highlights: $highlights, togetherTitle: $togetherTitle, togetherBody: $togetherBody, pageCount: $pageCount)';
+  return 'WeeklyRecap(id: $id, start: $start, end: $end, headline: $headline, moments: $moments, firsts: $firsts, quotes: $quotes, heroAssets: $heroAssets, highlights: $highlights, togetherTitle: $togetherTitle, togetherBody: $togetherBody, pageCount: $pageCount, canShare: $canShare, shared: $shared, memoryId: $memoryId)';
 }
 
 
@@ -218,7 +232,7 @@ abstract mixin class _$WeeklyRecapCopyWith<$Res> implements $WeeklyRecapCopyWith
   factory _$WeeklyRecapCopyWith(_WeeklyRecap value, $Res Function(_WeeklyRecap) _then) = __$WeeklyRecapCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'start') DateTime start,@JsonKey(name: 'end') DateTime end,@JsonKey(name: 'headline') String headline,@JsonKey(name: 'moments') int moments,@JsonKey(name: 'firsts') int firsts,@JsonKey(name: 'quotes') int quotes,@JsonKey(name: 'heroAssets') List<String> heroAssets,@JsonKey(name: 'highlights') List<Memory> highlights,@JsonKey(name: 'togetherTitle') String? togetherTitle,@JsonKey(name: 'togetherBody') String? togetherBody,@JsonKey(name: 'pageCount') int pageCount
+@JsonKey(name: 'id') String? id,@JsonKey(name: 'start') DateTime start,@JsonKey(name: 'end') DateTime end,@JsonKey(name: 'headline') String headline,@JsonKey(name: 'moments') int moments,@JsonKey(name: 'firsts') int firsts,@JsonKey(name: 'quotes') int quotes,@JsonKey(name: 'heroAssets') List<String> heroAssets,@JsonKey(name: 'highlights') List<Memory> highlights,@JsonKey(name: 'togetherTitle') String? togetherTitle,@JsonKey(name: 'togetherBody') String? togetherBody,@JsonKey(name: 'pageCount') int pageCount,@JsonKey(name: 'canShare') bool canShare,@JsonKey(name: 'shared') bool shared,@JsonKey(name: 'memoryId') String? memoryId
 });
 
 
@@ -235,9 +249,10 @@ class __$WeeklyRecapCopyWithImpl<$Res>
 
 /// Create a copy of WeeklyRecap
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? start = null,Object? end = null,Object? headline = null,Object? moments = null,Object? firsts = null,Object? quotes = null,Object? heroAssets = null,Object? highlights = null,Object? togetherTitle = freezed,Object? togetherBody = freezed,Object? pageCount = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? start = null,Object? end = null,Object? headline = null,Object? moments = null,Object? firsts = null,Object? quotes = null,Object? heroAssets = null,Object? highlights = null,Object? togetherTitle = freezed,Object? togetherBody = freezed,Object? pageCount = null,Object? canShare = null,Object? shared = null,Object? memoryId = freezed,}) {
   return _then(_WeeklyRecap(
-start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
+id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String?,start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
 as DateTime,end: null == end ? _self.end : end // ignore: cast_nullable_to_non_nullable
 as DateTime,headline: null == headline ? _self.headline : headline // ignore: cast_nullable_to_non_nullable
 as String,moments: null == moments ? _self.moments : moments // ignore: cast_nullable_to_non_nullable
@@ -248,7 +263,10 @@ as List<String>,highlights: null == highlights ? _self._highlights : highlights 
 as List<Memory>,togetherTitle: freezed == togetherTitle ? _self.togetherTitle : togetherTitle // ignore: cast_nullable_to_non_nullable
 as String?,togetherBody: freezed == togetherBody ? _self.togetherBody : togetherBody // ignore: cast_nullable_to_non_nullable
 as String?,pageCount: null == pageCount ? _self.pageCount : pageCount // ignore: cast_nullable_to_non_nullable
-as int,
+as int,canShare: null == canShare ? _self.canShare : canShare // ignore: cast_nullable_to_non_nullable
+as bool,shared: null == shared ? _self.shared : shared // ignore: cast_nullable_to_non_nullable
+as bool,memoryId: freezed == memoryId ? _self.memoryId : memoryId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

@@ -10,14 +10,23 @@ class PhotoViewerPage extends BaseHookWidget {
   const PhotoViewerPage({
     @PathParam('memoryId') required this.memoryId,
     @QueryParam('index') this.index,
+    @QueryParam('perspective') this.perspectiveId,
     super.key,
   });
 
   final String memoryId;
   final int? index;
 
+  /// Ảnh/video của một góc nhìn MEM-24 thay cho ảnh của ký ức
+  /// (BF-20261030-008).
+  final String? perspectiveId;
+
   @override
   Widget buildWidget(BuildContext context, WidgetRef ref) {
-    return PhotoViewerMobileView(memoryId: memoryId, index: index);
+    return PhotoViewerMobileView(
+      memoryId: memoryId,
+      index: index,
+      perspectiveId: perspectiveId,
+    );
   }
 }

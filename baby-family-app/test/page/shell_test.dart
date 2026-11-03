@@ -224,7 +224,7 @@ void main() {
       const AboutRoute(),
       // Batch 3.
       const BridgeStartRoute(),
-      const BridgeRewriteRoute(),
+      BridgeRewriteRoute(),
       BridgeInviteRoute(sessionId: 'br-1'),
       BridgeSessionRoute(sessionId: 'br-1'),
       BridgeNextStepRoute(sessionId: 'br-1'),

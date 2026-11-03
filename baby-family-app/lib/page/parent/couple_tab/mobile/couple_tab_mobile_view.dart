@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/data/model/family/member.dart';
+import 'package:baby_family/data/model/us/care_handoff.dart';
 import 'package:baby_family/data/model/us/couple_request.dart';
 import 'package:baby_family/data/model/us/daily_question.dart';
 import 'package:baby_family/data/model/us/mood_checkin.dart';
@@ -13,15 +14,19 @@ import 'package:baby_family/utils/extension/date_time.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/relative_time.dart';
+import 'package:baby_family/utils/helper/server_error_message.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_bottom_sheet.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
 import 'package:baby_family/utils/widget/app_dialog.dart';
+import 'package:baby_family/utils/widget/app_picker_field.dart';
 import 'package:baby_family/utils/widget/app_pill_button.dart';
 import 'package:baby_family/utils/widget/app_selectable_chip.dart';
 import 'package:baby_family/utils/widget/app_text_field.dart';
+import 'package:baby_family/utils/widget/app_toggle_row.dart';
 import 'package:baby_family/utils/widget/base_scaffold.dart';
+import 'package:baby_family/utils/widget/chat_entry_button.dart';
 import 'package:baby_family/utils/widget/error_state.dart';
 import 'package:baby_family/utils/widget/skeleton_block.dart';
 import 'package:baby_family/utils/widget/us_private_label.dart';
@@ -37,6 +42,8 @@ part '../widgets/checkin_sheet.dart';
 part '../widgets/couple_header.dart';
 part '../widgets/couple_tool_tiles.dart';
 part '../widgets/daily_question_card.dart';
+part '../widgets/handoff_card.dart';
+part '../widgets/handoff_sheet.dart';
 part '../widgets/mood_card.dart';
 part '../widgets/open_request_card.dart';
 part '../widgets/partner_left_feature.dart';
@@ -144,6 +151,12 @@ class CoupleTabMobileView extends HookConsumerWidget {
             context.l10n.usReplySent(partner?.callName ?? ''),
           ),
         ),
+      if (controller.latestHandoff case final handoff?)
+        _HandoffCard(
+          handoff: handoff,
+          controller: controller,
+          partnerName: partner?.callName ?? '',
+        ),
       for (final request in today.openRequests)
         _OpenRequestCard(
           request: request,
@@ -167,6 +180,7 @@ class CoupleTabMobileView extends HookConsumerWidget {
         onJournal: () => context.router.push(const PrivateJournalRoute()),
         onBridge: () => context.router.push(const BridgeStartRoute()),
         onWeek: () => context.router.push(const CoupleWeekRoute()),
+        onHandoff: () => _openHandoff(context, controller, partner),
       ),
     ];
     return ListView(
@@ -174,6 +188,13 @@ class CoupleTabMobileView extends HookConsumerWidget {
       children: [
         _CoupleHeader(
           onSettings: () => context.router.push(const CoupleSettingsRoute()),
+          onChat: switch (controller.coupleChat) {
+            final chat? => () => context.router.push(
+              ChatConversationRoute(conversationId: chat.id),
+            ),
+            null => null,
+          },
+          chatUnread: controller.coupleChat?.unreadCount ?? 0,
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(

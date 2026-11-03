@@ -40,6 +40,8 @@ export interface IMissionBoardService {
     key?: string,
     input?: SwapMissionDto | CompleteMissionDto,
   ): Promise<MissionActionResponseDto>;
+  /** Write access to the mission's family, even after the mission was swapped. */
+  authorizeReplay(actor: AuthPrincipal, id: string): Promise<void>;
   swapOptions(
     actor: AuthPrincipal,
     id: string,

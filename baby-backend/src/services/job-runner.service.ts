@@ -1,5 +1,5 @@
 import { hostname } from 'node:os';
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DomainError } from '../common/errors/domain.error';
 import { JobBusyError, PermanentJobError } from '../common/errors/job.error';
@@ -7,6 +7,8 @@ import type { JobPolicy } from '../config/jobs';
 import type { Environment } from '../config/environment';
 import { JOB_EXECUTION_REPOSITORY } from '../interfaces/repositories/job-execution-repository.interface';
 import type { IJobExecutionRepository } from '../interfaces/repositories/job-execution-repository.interface';
+import { ERROR_REPORTER } from '../interfaces/services/error-reporter.interface';
+import type { IErrorReporter } from '../interfaces/services/error-reporter.interface';
 import type {
   IJobRunnerService,
   JobExecutionOutcome,
@@ -23,6 +25,9 @@ export class JobRunnerService implements IJobRunnerService {
     @Inject(JOB_EXECUTION_REPOSITORY)
     private readonly runs: IJobExecutionRepository,
     config: ConfigService<Environment, true>,
+    @Optional()
+    @Inject(ERROR_REPORTER)
+    private readonly reporter?: IErrorReporter,
   ) {
     this.workerId = (
       config.get('WORKER_ID', { infer: true }) ?? `${hostname()}-${process.pid}`
@@ -53,6 +58,11 @@ export class JobRunnerService implements IJobRunnerService {
       this.logger.error(
         `Job ${policy.name} exhausted its attempts (${request.idempotencyKey}).`,
       );
+      this.reporter?.reportJob({
+        job: policy.name,
+        code: 'ATTEMPTS_EXHAUSTED',
+        attempt: policy.maxAttempts,
+      });
       throw new PermanentJobError(
         'ATTEMPTS_EXHAUSTED',
         'Job attempts are exhausted.',
@@ -107,10 +117,16 @@ export class JobRunnerService implements IJobRunnerService {
           this.logger.warn(`Could not record failure of job ${policy.name}.`);
           return null;
         });
-      if (status === 'FAILED')
+      if (status === 'FAILED') {
         this.logger.error(
           `Job ${policy.name} failed permanently (${code}, attempt ${lease.attemptNumber}).`,
         );
+        this.reporter?.reportJob({
+          job: policy.name,
+          code,
+          attempt: lease.attemptNumber,
+        });
+      }
       throw error;
     } finally {
       clearInterval(heartbeat);

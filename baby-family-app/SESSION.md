@@ -855,3 +855,142 @@ do agent tự đặt tên (06/10, 09/10, 11/10).
   - `ICareService.careStats({weekStart, childId})`; `CareRemoteServiceImp` gọi `GET /families/{fid}/care-stats` qua `OfflineReads`.
   - `CareStatsController`: tuần trước / tuần sau (không quá tuần này), đổi bé thì tải lại; `AppWeekSelector` có `onPrevious` / `onNext`.
 - Test: pregnancy_remote (PREG-07 qua API), care_remote (CARE-11 + bản đọc khi mất mạng). `make check` 879 pass.
+
+## 2026-10-27 — BF-20261027-002: Câu hỏi kết nối, US-14 Tuần của hai ta
+
+- Model `CoupleQuestionRecord`, `CoupleWeekRecord` / `CoupleWeekTogetherRecord`; client `getCoupleQuestion`, `answerCoupleQuestion` (PUT), `getCoupleWeek`; `ICoupleRemoteRepository.questionToday/answerQuestion/week`.
+- `UsRemoteServiceImp`:
+  - `coupleToday` gắn câu hỏi của server (chọn chữ theo `currentAppLanguage()`, thiếu thì `vi`); lỗi / mất mạng thì không hiện khối câu hỏi.
+  - `answerQuestion` gửi lên server.
+  - `coupleWeek` lấy dữ liệu server.
+  - Câu hỏi và tuần đọc qua `OfflineReads`.
+- `CoupleTabController.answerQuestion` tải lại sau khi trả lời (bản server không ghi vào kho trên máy).
+- Test: couple_remote (US-14 + bản đọc khi mất mạng; câu hỏi ẩn câu trả lời tới khi cả hai trả lời; mất mạng giữ câu đã đọc). `make check` 881 pass.
+
+## 2026-10-27 — BF-20261027-003: REC-03 Tổng kết tháng tuổi
+
+- Model `MonthRecapRecord`; client `getMonthRecap(childId, monthIndex:)`; `IMemoryFeedRepository.monthRecap`.
+- `MemoryRemoteServiceImp.monthRecap({childId})`:
+  - Chọn bé (mặc định bé đầu tiên đã chào đời) và đọc server qua `OfflineReads`; 404 (bé chưa tròn tháng) → trạng thái rỗng.
+  - Ảnh tháng này / trước lấy từ `monthlyPhotos()` (URL đã ký).
+  - Ký ức lần đầu / giọng nói lấy từ bản trên máy, thiếu thì đọc `GET /memories/:id` rồi phản chiếu.
+  - `pageCount` = 2 + phần lần đầu / giọng nói nếu có.
+- Test: subject_memory_remote REC-03 (404 → rỗng; số liệu, ký ức đọc từ server, `pageCount`). `make check` 882 pass.
+
+## 2026-10-28 — BF-20261028-001: liên kết/gỡ Apple/Google, lời nhờ offline, Privacy Manifest
+
+- SET-02 bản server: `ProfileSettingsController.changeLink` (OTP qua `_ReauthCodeSheet` nếu có số điện thoại, không thì xác thực bằng Apple/Google đã liên kết) → `ISettingsService.linkSignIn/unlinkSignIn`; client `/v1/me/identities/*`, `/v1/auth/reauth/{apple|google}`; l10n lỗi liên kết (4 ARB).
+- `UsRemoteServiceImp._act`: thao tác lời nhờ qua outbox `us.request-action` (đổi ngay trên máy, từ chối → trả về bản trước, mở lại app → hiện lại).
+- `ios/Runner/PrivacyInfo.xcprivacy` thêm vào target Runner.
+- Test: settings_remote (liên kết/gỡ cần xác thực lại, mã dùng một lần), couple_remote (lời nhờ offline). `make check` 884 pass.
+
+## 2026-10-28 — BF-20261028-002: sửa ký ức khi offline
+
+- `MemoryRemoteServiceImp._editOffline`: MEM-09 không đổi ảnh đi qua outbox `memory.edit` (đổi trên máy ngay, gộp bản sửa chưa gửi, giữ version gốc; từ chối → đọc lại bản server và ném lỗi; mở lại app → hiện lại).
+- Test: subject_memory_remote (sửa offline gộp, gửi một lần). `make check` 885 pass.
+
+## 2026-10-28 — BF-20261028-003: tạo nhiệm vụ offline, sửa OutboxRunner.submit
+
+- `CareRemoteServiceImp.createMission` (không lặp) qua outbox `mission.create`; bản tạm hiện trên bảng đúng ngày/bé tới khi server tạo.
+- `OutboxRunner.submit` giữ lỗi bị từ chối kể cả khi service bỏ thao tác trong `onState`.
+- Test: care_remote (tạo offline → một lần, cùng key). `make check` 886 pass.
+
+## 2026-10-28 — BF-20261028-004: CHD-06 Tăng trưởng
+
+- `GrowthEntry`/`GrowthListRecord`, client `getGrowth/putGrowth/deleteGrowth`, `IGrowthRemoteRepository`, `IGrowthService` (mock + `GrowthRemoteServiceImp` offline-first: outbox `growth`, local DB bảng `growth`), `growthServiceProvider`, sync khi có mạng (`app.dart`).
+- Màn `GrowthPage` (`/child/:childId/growth`): Cân nặng/Chiều cao, biểu đồ đường CustomPaint, disclaimer, lịch sử, sheet thêm/sửa/xoá; mở từ hồ sơ bé. l10n 4 ARB. Test: growth_remote (4), growth_test (3).
+
+## 2026-10-28 — BF-20261028-005: đăng bài resume + tiến độ + nén
+
+- Tiến độ theo byte (`uploadBytes(onProgress)`, `MediaUploader.upload(onProgress)`, `Memory.uploadProgress`), thẻ đang tải ở Home + Ký ức ("x/y ảnh · n%").
+- Resume theo file: `args.uploaded` của outbox + `OutboxRunner.patchArgs`; lỗi khi gửi giữ bản đã patch; 4xx khi tạo bài → tải lại.
+- Nén: ảnh 2560/85, m1080/80, t320/72; video 720p 30 fps, giữ gốc khi đã nhỏ; xoá file nén tạm. `make check` 894 pass.
+
+## 2026-10-28 — BF-20261028-006: REC-01 Câu chuyện ngày (không AI)
+
+- `DayStoryRecord`, client `getDayStory/putDayStory`, `IMemoryFeedRepository.dayStory/saveDayStory`; `MemoryRemoteServiceImp.dayStory/saveDayStory` (ghép ký ức + ảnh theo asset id, URL ↔ asset id).
+- Màn REC-01: không có AI → tự viết, ẩn "Viết lại" (`canRewrite`). l10n `recapDayDefaultTitle`. `make check` 895 pass.
+
+## 2026-10-28 — BF-20261028-007: Bàn giao ca
+
+- `CareHandoff` (+ `careHandoffList` lenient), client `createHandoff/getHandoffs/acknowledgeHandoff`, `ICoupleRemoteRepository`; `IUsService.handoffs/sendHandoff/acknowledgeHandoff` (mock + server qua outbox `us.handoff`).
+- Tab Papa & Mama: ô "Bàn giao ca", `_HandoffSheet` (bé, đã ăn/ngủ/dậy lúc, ghi chú, mở US-03), `_HandoffCard` + "Đã nhận". l10n 4 ARB. Test: couple_remote (offline gửi một lần), handoff_test (2). `make check` 898 pass.
+
+## 2026-10-28 — BF-20261028-008: Cầu nối (US-08…13) với server
+
+- `BridgeSessionRecord` (+ `bridgeSessionList` lenient; helper `_bridgeShares` tránh trùng tên field Freezed), client `createBridge/getBridges/getBridge/bridgeAction/bridgeNextStep`, `ICoupleRemoteRepository`.
+- `UsRemoteServiceImp`: nháp riêng chỉ trên máy; `sendBridgeInvite` gửi đúng ý đã chọn + thời hạn lưu rồi xoá nội dung nháp; các thao tác phiên qua server; US-13 không gọi server. `BridgeStartController.send` mở phiên mời/tạm dừng khi chưa có phiên đang diễn ra. `make check` 899 pass.
+
+## 2026-10-28 — BF-20261028-010: AI 1.2 qua server (OpenRouter)
+
+- `AiStatusRecord`/`AiDraftRecord`, client `getAiStatus/grantAiConsent/aiDraft`, `IAiRemoteRepository`, `IAiService` (mock + server; 428 → `AiConsentRequired`), `aiServiceProvider`, enum `AiFeature` (`enum_part/ai_feature.dart`).
+- `runWithAiConsent` + `AiConsentDialog`; MEM-04 gợi ý chú thích; US-09 `BridgeRewriteRoute(original)` + an toàn → US-13; REC-01 “Viết lại” bằng AI; SET-05 lượt còn lại. `make check` 900 pass.
+
+## 2026-10-28 — BF-20261028-011: báo cáo nội dung AI + tóm tắt Cầu nối
+
+- `AiDraftRecord.invocationId`; `IAiService` trả `AiDraftRecord`, thêm `report` (`/v1/reports`, đích `AI_OUTPUT`). “Báo cáo nội dung AI” thật ở US-09, REC-01, sheet gợi ý chú thích; US-11 “✨ Tóm tắt giúp hai bạn”. `make check` 902 pass.
+
+## 2026-10-28 — BF-20261028-012: gợi ý nhiệm vụ AI
+
+- `AiMissionPick` + `AiDraftRecord.missions`; `IAiService.missionSuggestions`; `AiFeature.missionSuggest`. CARE-04 “✨ Gợi ý cho hôm nay” → sheet → chọn trả `templateId` về CARE-03. `make check` 903 pass.
+
+## 2026-10-29 — BF-20261028-013: REC-04 Sách của con
+
+- `YearBookRecord` (+ `withDraft`, `saveBody`), `IYearBookService` mock/remote (outbox `yearbook.put`, cache local DB, sync ở `app.dart`), `YearBookPage` `/child/:childId/year-book` mở từ CHD-01. PDF dựng trên máy (`pdf` 3.12.0, `utils/helper/year_book_pdf.dart`, isolate), chia sẻ qua `share_plus`. `make check` 912 pass.
+
+## 2026-10-29 — BF-20261029-001: đổi ảnh ký ức offline
+
+- `MemoryServiceRemote.updateMemory` đổi ảnh qua outbox `memory.edit` (`payload.media`: `order` id/path, `serverIds`, `serverUrls`); `_mediaPatch` tải lúc gửi, resume qua `args.uploaded`; từ chối → `_revertMedia`; `_mirror` không ghi đè ảnh khi còn bản đổi ảnh chưa gửi. `make check` 914 pass.
+
+## 2026-10-29 — BF-20261029-002: đổi nhiệm vụ + chuỗi lặp offline
+
+- `ICareRemoteRepository.createSeries(familyId, key, body)`, `swap(missionId, key, body)`; `CareRemoteServiceImp` outbox `mission.series` / `mission.swap`, local DB `careSwapOptions`, `_applyPending` ẩn nhiệm vụ đã đổi + trừ lượt. `make check` 916 pass.
+
+## 2026-10-30 — BF-20261030-001: REC-04 Sách cả nhà
+
+- `YearBookRecord.childId` nullable (`isFamily`), `Api.familyYearBook`, `IYearBookRemoteRepository.get/put(familyId, childId?, year)`, `IYearBookService.book(null, year)`; `YearBookController.setFamily`, chip "bé / Cả nhà"; 4 khoá l10n `yearBookFamily*`. `make check` 918 pass.
+
+## 2026-10-30 — BF-20261030-002: REC-04 bản cho ông bà + xem trước PDF
+
+- `printing` 5.14.3; `YearBookPreviewPage` (`yearBookPdfViewerProvider` để test thay khung raster); `YearBookController.buildPdf/setShared/readOnly`; `_ShareCard`; `CircleYearBooksPage` từ CIR-06; route `/year-book?childId=&year=`; `IYearBookService.books()`. `make check` 924 pass.
+
+## 2026-10-30 — BF-20261030-003: rời gia đình gỡ nội dung, thông báo mới, reauth khi xoá tài khoản
+
+- `IOnboardingRepository.leaveCircle(familyId, removeContent:)` (body `{removeContent}`); `NOTI_CIRCLE_LEFT` → `/family`, `NOTI_YEARBOOK_SHARED` → `/circle/year-books`; `DeleteAccountInfo.maskedGoogleAccount`, `DeleteAccountController.verifyWith(AuthMethod)` thay `verify()` mock. `make check` 925 pass.
+
+## 2026-10-30 — BF-20261030-004: REC-02 chia sẻ/lưu/tải ảnh, MEM-24 ghi âm
+
+- `WeeklyRecap.id/canShare/shared/memoryId`, `IMemoryService.shareWeeklyRecap/saveWeeklyRecapToTimeline`, `RecapActions.shared`, ảnh tổng kết qua `RepaintBoundary`; `savePerspective(voicePath:, voiceDurationSec:, removeVoice:)`, `MemoryPerspective.voiceUrl/voiceDurationSec`, `PlayableVoiceCard` phát tệp trên máy. `make check` 927 pass.
+
+## 2026-10-30 — BF-20261030-005: chạm thông báo mở đúng màn, recap tuần người thân
+
+- `IPushService.openedLinks()`, `IPushTokenRepository.initialLink/onOpenedLink`, `routeForDeepLink` (`utils/router/deep_link_route.dart`), `_openDeepLink` trong `app.dart`; `WeeklyRecapController.readOnly` theo phiên người thân; CIR-06 dòng “Tuần của nhà mình”. `make check` 931 pass.
+
+## 2026-10-30 — BF-20261030-006: ảnh góc nhìn MEM-24, thanh báo push foreground
+
+- `PerspectiveRecord.assets` (`PerspectiveAssetRecord`), `MemoryPerspective.mediaAssetIds`; `MemoryPerspectiveController.addMedia/removeMedia` (tối đa 6, `ImagePicker.pickMultiImage`); `IPushService.foregroundMessages()` → `_showForeground` trong `app.dart` (SnackBar + “Xem”). `make check` 932 pass.
+
+## 2026-10-30 — BF-20261030-007: video góc nhìn MEM-24
+
+- `utils/helper/video_screening.dart` (`planVideoLimit`, `screenPickedMedia`) dùng chung cho `MemoryComposerController` và `MemoryPerspectiveController.addPicked`; ô video trên máy hiện biểu tượng. `make check` 933 pass.
+
+## 2026-10-30 — BF-20261030-008: MEM-08 cho ảnh/video góc nhìn
+
+- `PhotoViewerRoute(perspectiveId:)`, `photoViewerControllerProvider` khoá `({memoryId, perspectiveId})`, `MemoryPerspective.mediaVideos`; khối góc nhìn MEM-07 chạm mở MEM-08. `make check` 934 pass.
+
+## 2026-10-30 — BF-20261030-009: tải bản gốc ảnh góc nhìn
+
+- `IMemoryService.downloadUrls(memoryId, perspectiveId:)` → `download-urls?perspectiveId=`; MEM-08 chế độ góc nhìn dùng bản gốc. `make check` 934 pass.
+
+## 2026-10-30 — BF-20261030-010: deep link lịch / gói
+
+- `routeForDeepLink`: `calendar/…` → `/calendar`, `families/{id}/billing` → `/billing/plan` (Bố Mẹ). `make check` 934 pass.
+
+
+## 2026-11-01 — BF-20261101-001: nhắn tin cả nhà + Papa & Mama (Socket.IO)
+
+- Gói `socket_io_client 3.1.6`. Model `data/model/chat/*` (kind/role là `String`, `lenientList`), DTO `realtime_event`, `chat_timeline_item`, `chat_receipt`; enum `chat_send_state`, `realtime_status`, `chat_connection_banner`. Repository `chat_remote` (REST) + `realtime` (`IRealtimeRepository` bọc Socket.IO, origin từ `BABY_FAMILY_API_URL`, chỉ websocket, token mới mỗi lần nối lại, `auth.refresh`), service `IChatService`/`ChatServiceImp`, provider `data/provider/chat.dart`.
+- Offline-first: tin lưu bảng local `chatConversations`/`chatMessages` (giữ 300 tin/cuộc trò chuyện), gửi qua `OutboxRunner` sẵn có (`OutboxRepositoryImp('chat')`), Idempotency-Key = `clientKey`; mở hội thoại hiện local rồi đồng bộ `afterSeq`. Không tăng `kValueLocalDbSchemaVersion` (chỉ thêm bảng).
+- Màn `page/general/chat_list` (CHAT-01), `page/general/chat_conversation` (CHAT-02/03a–d); lối vào: nút tin nhắn + số chưa đọc ở `home_app_bar` và CIR-01, nút “Nhắn riêng” ở US-01; deep link `babyfamily://chats/{id}`; SET-03 thêm nhóm “Tin nhắn cả nhà” (`CHAT`). 42 khoá l10n `chat*` vi/en/ja/zh. `AuthorizationInterceptor.currentCertificate({forceRenew})` dùng chung cho socket.
+- Kiểm tra: `make check` EXIT 0 (946 test, analyze sạch; agent chính chạy lại xác nhận). Chạy thật 2 simulator (iPhone Air = Mama, iPhone 17 Pro = Bố) với backend Docker local: nhắn qua lại realtime hai chiều, “đang nhập…”, “đã xem” cập nhật tức thì. Build iOS cần `Podfile` nâng deployment target pods lên 15.0 (Xcode 27); `flutter build ios --simulator` vẫn lỗi `lipo -verify_arch` của Xcode 27 nên dùng `flutter run -d`.
+- Phần app do sub-agent MOBILE thực hiện, agent chính review/chạy kiểm tra; chưa commit.

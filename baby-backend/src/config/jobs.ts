@@ -145,6 +145,13 @@ export const JOBS = {
     backoffMs: 10_000,
     leaseMs: 120_000,
   },
+  bridgeHousekeep: {
+    queue: QUEUES.maintenance,
+    name: 'us.bridge-housekeep',
+    maxAttempts: 3,
+    backoffMs: 10_000,
+    leaseMs: 120_000,
+  },
 } as const satisfies Record<string, JobPolicy>;
 
 /**
@@ -158,6 +165,8 @@ export const SCHEDULES = [
   { job: JOBS.reconcileUploads, everyMs: 15 * 60 * 1000 },
   // Trash retention is 30 days (MEM-17); hourly keeps the overrun under an hour.
   { job: JOBS.purgeTrash, everyMs: 60 * 60 * 1000 },
+  // Cầu nối (7.17.4): hết hạn phiên bỏ dở + xoá nội dung quá thời hạn lưu.
+  { job: JOBS.bridgeHousekeep, everyMs: 60 * 60 * 1000 },
 ] as const;
 
 /** Primary consumer. Unknown event types remain unpublished for investigation. */
@@ -185,6 +194,16 @@ export const OUTBOX_ROUTES = {
   'us.request.acknowledge': JOBS.dispatchNotification,
   'us.checkin.shared': JOBS.dispatchNotification,
   'us.appreciation.created': JOBS.dispatchNotification,
+  'us.handoff.created': JOBS.dispatchNotification,
+  'us.bridge.invited': JOBS.dispatchNotification,
+  // BF-20261030-003: người thân rời gia đình (báo Parent), sách năm chia sẻ
+  // cho người thân.
+  'circle.left': JOBS.dispatchNotification,
+  'yearbook.shared': JOBS.dispatchNotification,
+  // REC-02 recap tuần chia sẻ với người thân (BF-20261030-004).
+  'recap.weekly.shared': JOBS.dispatchNotification,
+  // Nhắn tin (BF-20261101-001): push cho người nhận không online.
+  'chat.message.created': JOBS.dispatchNotification,
 } as const satisfies Record<string, JobPolicy>;
 export type OutboxEventType = keyof typeof OUTBOX_ROUTES;
 

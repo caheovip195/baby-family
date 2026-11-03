@@ -1,5 +1,12 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, Matches, Max, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsInt,
+  IsOptional,
+  Matches,
+  Max,
+  Min,
+} from 'class-validator';
 export class WeeklyRecapQueryDto {
   @IsOptional() @Matches(/^\d{4}-\d{2}-\d{2}$/) cursor?: string;
   @IsOptional() @Type(() => Number) @IsInt() @Min(1) @Max(50) limit = 20;
@@ -17,4 +24,12 @@ export interface WeeklyRecapResponse {
   content: WeeklyContent;
   contentParentsOnly?: { version: number; appreciationCount: number };
   coverAssetId: string | null;
+  /** Ký ức đã lưu vào timeline từ recap (REC-02, BF-20261030-004). */
+  memoryId: string | null;
+  /** Parent: gói cho phép chia sẻ với người thân. */
+  canShare?: boolean;
+}
+/** `PUT /families/:fid/recaps/weekly/:id/share`. */
+export class ShareWeeklyRecapDto {
+  @IsBoolean() shared!: boolean;
 }

@@ -7,9 +7,9 @@ import 'package:baby_family/utils/widget/app_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
 
-/// MEM-06 — ký ức đang tải nền trên dòng thời gian: ảnh nhỏ + chú thích,
-/// thanh tiến độ “Đang tải 3/8 ảnh…”; lỗi → “Tải lên chưa xong” + Thử lại /
-/// Huỷ (nội dung vẫn giữ trên máy).
+/// MEM-06 — ký ức đang tải nền trên dòng thời gian / Home: ảnh nhỏ + chú
+/// thích, thanh tiến độ theo byte “Đang tải 3/8 ảnh · 42%”; lỗi → “Tải lên
+/// chưa xong” + Thử lại / Huỷ (nội dung vẫn giữ trên máy).
 class UploadingMemoryCard extends StatelessWidget {
   const UploadingMemoryCard({
     required this.caption,
@@ -20,8 +20,12 @@ class UploadingMemoryCard extends StatelessWidget {
     required this.onCancel,
     this.waiting = false,
     this.photo,
+    this.progress,
     super.key,
   });
+
+  /// Tiến độ theo byte (0…1); null → theo số file [done]/[total].
+  final double? progress;
 
   final String caption;
   final String? photo;
@@ -38,6 +42,10 @@ class UploadingMemoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final secondary = AppColors.resolve(context, kColorTextSecondary6B625B);
+    final fraction = (progress ?? (total == 0 ? 0.0 : done / total)).clamp(
+      0.0,
+      1.0,
+    );
     return Container(
       padding: const EdgeInsets.all(AppSpacing.cardInset),
       decoration: BoxDecoration(
@@ -94,7 +102,10 @@ class UploadingMemoryCard extends StatelessWidget {
                           ? l10n.memUploadWaiting
                           : total == 0
                           ? l10n.memPosting
-                          : l10n.memUploadProgress(done, total),
+                          : l10n.memUploadProgressPercent(
+                              l10n.memUploadProgress(done, total),
+                              (fraction * 100).round(),
+                            ),
                       style: AppTypography.adapt(
                         context,
                         AppTypography.small.copyWith(
@@ -111,7 +122,7 @@ class UploadingMemoryCard extends StatelessWidget {
           ),
           if (!failed) ...[
             const SizedBox(height: AppSpacing.s3),
-            AppProgressBar(value: total == 0 ? 0 : done / total, height: 6),
+            AppProgressBar(value: fraction, height: 6),
           ] else ...[
             const SizedBox(height: AppSpacing.s2),
             Row(

@@ -17,6 +17,18 @@ _MemoryPerspective _$MemoryPerspectiveFromJson(Map<String, dynamic> json) =>
               ?.map((e) => e as String)
               .toList() ??
           const [],
+      mediaAssetIds:
+          (json['mediaAssetIds'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
+      mediaVideos:
+          (json['mediaVideos'] as List<dynamic>?)
+              ?.map((e) => e as String?)
+              .toList() ??
+          const [],
+      voiceUrl: json['voiceUrl'] as String?,
+      voiceDurationSec: (json['voiceDurationSec'] as num?)?.toInt(),
       createdAt: DateTime.parse(json['createdAt'] as String),
       hiddenFromRelatives: json['hiddenFromRelatives'] as bool? ?? false,
     );
@@ -28,6 +40,10 @@ Map<String, dynamic> _$MemoryPerspectiveToJson(_MemoryPerspective instance) =>
       'authorId': instance.authorId,
       'body': instance.body,
       'mediaAssets': instance.mediaAssets,
+      'mediaAssetIds': instance.mediaAssetIds,
+      'mediaVideos': instance.mediaVideos,
+      'voiceUrl': instance.voiceUrl,
+      'voiceDurationSec': instance.voiceDurationSec,
       'createdAt': instance.createdAt.toIso8601String(),
       'hiddenFromRelatives': instance.hiddenFromRelatives,
     };

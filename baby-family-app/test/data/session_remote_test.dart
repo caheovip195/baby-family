@@ -332,8 +332,11 @@ class _FakeOnboardingRepository implements IOnboardingRepository {
   Future<List<MyCircleRecord>> myCircles() async => server.circles;
 
   @override
-  Future<void> leaveCircle(String familyId) async {
-    server.left.add(familyId);
+  Future<void> leaveCircle(
+    String familyId, {
+    bool removeContent = false,
+  }) async {
+    server.left.add('$familyId:$removeContent');
     server.circles = const [];
   }
 }
@@ -1085,8 +1088,9 @@ void main() {
           'visibility': MemoryVisibility.family.name,
         });
 
-        await circle.leaveFamily();
-        expect(server.left, ['srv-fam']);
+        // BF-20261030-003: lựa chọn “gỡ toàn bộ” gửi lên server.
+        await circle.leaveFamily(removeContent: true);
+        expect(server.left, ['srv-fam:true']);
         expect(session.current.state, SessionState.circleWaiting);
         expect(
           container

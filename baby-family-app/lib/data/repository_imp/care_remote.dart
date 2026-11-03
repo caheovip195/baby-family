@@ -78,6 +78,21 @@ class CareRemoteRepositoryImp extends BaseRepositoryImp
   }
 
   @override
+  Future<MissionResultRecord?> swap(
+    String missionId,
+    String idempotencyKey,
+    JsonMap body,
+  ) async {
+    final rs = await client!.completeMission(
+      missionId,
+      'swap',
+      idempotencyKey,
+      body,
+    );
+    return rs.result;
+  }
+
+  @override
   Future<MissionResultRecord?> action(
     String missionId,
     String action, [
@@ -158,9 +173,14 @@ class CareRemoteRepositoryImp extends BaseRepositoryImp
   @override
   Future<MissionSeriesRecord?> createSeries(
     String familyId,
+    String idempotencyKey,
     JsonMap body,
   ) async {
-    final rs = await client!.createMissionSeries(familyId, body);
+    final rs = await client!.createMissionSeries(
+      familyId,
+      idempotencyKey,
+      body,
+    );
     return rs.series;
   }
 

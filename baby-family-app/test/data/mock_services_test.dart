@@ -432,7 +432,8 @@ void main() {
       expect((await family.familySettings()).name, 'Nhà Lan');
       final settings = c.read(settingsServiceProvider);
       expect((await settings.profileSettings()).signInMethods, hasLength(3));
-      expect((await settings.notificationSettings()).channels, hasLength(11));
+      // BF-20261101-001: thêm nhóm “Tin nhắn cả nhà” (CHAT).
+      expect((await settings.notificationSettings()).channels, hasLength(12));
       expect((await settings.securitySettings()).devices, hasLength(3));
       final info = await settings.deleteAccountInfo();
       expect((info.partnerName, info.onlyParent), ('Minh', false));

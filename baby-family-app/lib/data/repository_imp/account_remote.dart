@@ -165,6 +165,33 @@ class AccountRemoteRepositoryImp extends BaseRepositoryImp
       (await client!.getSignInMethods()).methods;
 
   @override
+  Future<void> linkIdentity(
+    String provider,
+    JsonMap credential,
+    String reauthToken,
+  ) {
+    final body = {...credential, 'reauthToken': reauthToken};
+    return provider == 'apple'
+        ? client!.linkAppleIdentity(body)
+        : client!.linkGoogleIdentity(body);
+  }
+
+  @override
+  Future<void> unlinkIdentity(String provider, String reauthToken) =>
+      client!.unlinkIdentity(provider, {'reauthToken': reauthToken});
+
+  @override
+  Future<ReauthTokenRecord?> reauthWithIdentity(
+    String provider,
+    JsonMap credential,
+  ) async {
+    final rs = provider == 'apple'
+        ? await client!.reauthApple(credential)
+        : await client!.reauthGoogle(credential);
+    return rs.token;
+  }
+
+  @override
   Future<HelpCenterRecord?> helpCenter(String locale) async =>
       (await client!.getHelpCenter(locale)).helpCenter;
 

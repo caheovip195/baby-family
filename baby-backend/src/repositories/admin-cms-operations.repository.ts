@@ -180,6 +180,21 @@ export class AdminCmsOperationsRepository implements IAdminCmsOperationsReposito
       });
       if (comment) return comment;
     }
+    if (row.targetType === 'AI_OUTPUT') {
+      // Server không lưu đầu ra AI: nội dung là phần người báo cáo gửi kèm,
+      // cùng metadata lượt gọi (tính năng, model) để rà soát prompt.
+      const invocation = await tx.aiInvocation.findFirst({
+        where: { id: row.targetId, familyId: { in: familyIds } },
+        select: { id: true, featureCode: true, modelId: true, status: true },
+      });
+      if (invocation)
+        return {
+          id: invocation.id,
+          title: `${invocation.featureCode} · ${invocation.modelId}`,
+          body: reports.find((report) => report.detail)?.detail ?? null,
+          status: invocation.status,
+        };
+    }
     throw new DomainError(
       'Reported content is unavailable or unsupported.',
       'ADMIN_REPORTED_CONTENT_UNAVAILABLE',

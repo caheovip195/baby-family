@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WeeklyRecapRecord {
 
-@JsonKey(name: 'id') String? get id;@JsonKey(name: 'periodStart') String? get periodStart;@JsonKey(name: 'periodEnd') String? get periodEnd;@JsonKey(name: 'visibility') String? get visibility;@JsonKey(name: 'content') WeeklyRecapContent? get content;
+@JsonKey(name: 'id') String? get id;@JsonKey(name: 'periodStart') String? get periodStart;@JsonKey(name: 'periodEnd') String? get periodEnd;@JsonKey(name: 'visibility') String? get visibility;@JsonKey(name: 'content') WeeklyRecapContent? get content;@JsonKey(name: 'memoryId') String? get memoryId;@JsonKey(name: 'canShare') bool get canShare;
 /// Create a copy of WeeklyRecapRecord
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $WeeklyRecapRecordCopyWith<WeeklyRecapRecord> get copyWith => _$WeeklyRecapRecor
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WeeklyRecapRecord&&(identical(other.id, id) || other.id == id)&&(identical(other.periodStart, periodStart) || other.periodStart == periodStart)&&(identical(other.periodEnd, periodEnd) || other.periodEnd == periodEnd)&&(identical(other.visibility, visibility) || other.visibility == visibility)&&(identical(other.content, content) || other.content == content));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WeeklyRecapRecord&&(identical(other.id, id) || other.id == id)&&(identical(other.periodStart, periodStart) || other.periodStart == periodStart)&&(identical(other.periodEnd, periodEnd) || other.periodEnd == periodEnd)&&(identical(other.visibility, visibility) || other.visibility == visibility)&&(identical(other.content, content) || other.content == content)&&(identical(other.memoryId, memoryId) || other.memoryId == memoryId)&&(identical(other.canShare, canShare) || other.canShare == canShare));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,periodStart,periodEnd,visibility,content);
+int get hashCode => Object.hash(runtimeType,id,periodStart,periodEnd,visibility,content,memoryId,canShare);
 
 @override
 String toString() {
-  return 'WeeklyRecapRecord(id: $id, periodStart: $periodStart, periodEnd: $periodEnd, visibility: $visibility, content: $content)';
+  return 'WeeklyRecapRecord(id: $id, periodStart: $periodStart, periodEnd: $periodEnd, visibility: $visibility, content: $content, memoryId: $memoryId, canShare: $canShare)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $WeeklyRecapRecordCopyWith<$Res>  {
   factory $WeeklyRecapRecordCopyWith(WeeklyRecapRecord value, $Res Function(WeeklyRecapRecord) _then) = _$WeeklyRecapRecordCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'id') String? id,@JsonKey(name: 'periodStart') String? periodStart,@JsonKey(name: 'periodEnd') String? periodEnd,@JsonKey(name: 'visibility') String? visibility,@JsonKey(name: 'content') WeeklyRecapContent? content
+@JsonKey(name: 'id') String? id,@JsonKey(name: 'periodStart') String? periodStart,@JsonKey(name: 'periodEnd') String? periodEnd,@JsonKey(name: 'visibility') String? visibility,@JsonKey(name: 'content') WeeklyRecapContent? content,@JsonKey(name: 'memoryId') String? memoryId,@JsonKey(name: 'canShare') bool canShare
 });
 
 
@@ -65,14 +65,16 @@ class _$WeeklyRecapRecordCopyWithImpl<$Res>
 
 /// Create a copy of WeeklyRecapRecord
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? periodStart = freezed,Object? periodEnd = freezed,Object? visibility = freezed,Object? content = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? periodStart = freezed,Object? periodEnd = freezed,Object? visibility = freezed,Object? content = freezed,Object? memoryId = freezed,Object? canShare = null,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,periodStart: freezed == periodStart ? _self.periodStart : periodStart // ignore: cast_nullable_to_non_nullable
 as String?,periodEnd: freezed == periodEnd ? _self.periodEnd : periodEnd // ignore: cast_nullable_to_non_nullable
 as String?,visibility: freezed == visibility ? _self.visibility : visibility // ignore: cast_nullable_to_non_nullable
 as String?,content: freezed == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
-as WeeklyRecapContent?,
+as WeeklyRecapContent?,memoryId: freezed == memoryId ? _self.memoryId : memoryId // ignore: cast_nullable_to_non_nullable
+as String?,canShare: null == canShare ? _self.canShare : canShare // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 /// Create a copy of WeeklyRecapRecord
@@ -164,7 +166,7 @@ return $default(_that);case _:
 
 @JsonSerializable(explicitToJson: true)
 class _WeeklyRecapRecord implements WeeklyRecapRecord {
-  const _WeeklyRecapRecord({@JsonKey(name: 'id') this.id, @JsonKey(name: 'periodStart') this.periodStart, @JsonKey(name: 'periodEnd') this.periodEnd, @JsonKey(name: 'visibility') this.visibility, @JsonKey(name: 'content') this.content});
+  const _WeeklyRecapRecord({@JsonKey(name: 'id') this.id, @JsonKey(name: 'periodStart') this.periodStart, @JsonKey(name: 'periodEnd') this.periodEnd, @JsonKey(name: 'visibility') this.visibility, @JsonKey(name: 'content') this.content, @JsonKey(name: 'memoryId') this.memoryId, @JsonKey(name: 'canShare') this.canShare = false});
   factory _WeeklyRecapRecord.fromJson(Map<String, dynamic> json) => _$WeeklyRecapRecordFromJson(json);
 
 @override@JsonKey(name: 'id') final  String? id;
@@ -172,6 +174,8 @@ class _WeeklyRecapRecord implements WeeklyRecapRecord {
 @override@JsonKey(name: 'periodEnd') final  String? periodEnd;
 @override@JsonKey(name: 'visibility') final  String? visibility;
 @override@JsonKey(name: 'content') final  WeeklyRecapContent? content;
+@override@JsonKey(name: 'memoryId') final  String? memoryId;
+@override@JsonKey(name: 'canShare') final  bool canShare;
 
 /// Create a copy of WeeklyRecapRecord
 /// with the given fields replaced by the non-null parameter values.
@@ -186,16 +190,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WeeklyRecapRecord&&(identical(other.id, id) || other.id == id)&&(identical(other.periodStart, periodStart) || other.periodStart == periodStart)&&(identical(other.periodEnd, periodEnd) || other.periodEnd == periodEnd)&&(identical(other.visibility, visibility) || other.visibility == visibility)&&(identical(other.content, content) || other.content == content));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WeeklyRecapRecord&&(identical(other.id, id) || other.id == id)&&(identical(other.periodStart, periodStart) || other.periodStart == periodStart)&&(identical(other.periodEnd, periodEnd) || other.periodEnd == periodEnd)&&(identical(other.visibility, visibility) || other.visibility == visibility)&&(identical(other.content, content) || other.content == content)&&(identical(other.memoryId, memoryId) || other.memoryId == memoryId)&&(identical(other.canShare, canShare) || other.canShare == canShare));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,periodStart,periodEnd,visibility,content);
+int get hashCode => Object.hash(runtimeType,id,periodStart,periodEnd,visibility,content,memoryId,canShare);
 
 @override
 String toString() {
-  return 'WeeklyRecapRecord(id: $id, periodStart: $periodStart, periodEnd: $periodEnd, visibility: $visibility, content: $content)';
+  return 'WeeklyRecapRecord(id: $id, periodStart: $periodStart, periodEnd: $periodEnd, visibility: $visibility, content: $content, memoryId: $memoryId, canShare: $canShare)';
 }
 
 
@@ -206,7 +210,7 @@ abstract mixin class _$WeeklyRecapRecordCopyWith<$Res> implements $WeeklyRecapRe
   factory _$WeeklyRecapRecordCopyWith(_WeeklyRecapRecord value, $Res Function(_WeeklyRecapRecord) _then) = __$WeeklyRecapRecordCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'id') String? id,@JsonKey(name: 'periodStart') String? periodStart,@JsonKey(name: 'periodEnd') String? periodEnd,@JsonKey(name: 'visibility') String? visibility,@JsonKey(name: 'content') WeeklyRecapContent? content
+@JsonKey(name: 'id') String? id,@JsonKey(name: 'periodStart') String? periodStart,@JsonKey(name: 'periodEnd') String? periodEnd,@JsonKey(name: 'visibility') String? visibility,@JsonKey(name: 'content') WeeklyRecapContent? content,@JsonKey(name: 'memoryId') String? memoryId,@JsonKey(name: 'canShare') bool canShare
 });
 
 
@@ -223,14 +227,16 @@ class __$WeeklyRecapRecordCopyWithImpl<$Res>
 
 /// Create a copy of WeeklyRecapRecord
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? periodStart = freezed,Object? periodEnd = freezed,Object? visibility = freezed,Object? content = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? periodStart = freezed,Object? periodEnd = freezed,Object? visibility = freezed,Object? content = freezed,Object? memoryId = freezed,Object? canShare = null,}) {
   return _then(_WeeklyRecapRecord(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,periodStart: freezed == periodStart ? _self.periodStart : periodStart // ignore: cast_nullable_to_non_nullable
 as String?,periodEnd: freezed == periodEnd ? _self.periodEnd : periodEnd // ignore: cast_nullable_to_non_nullable
 as String?,visibility: freezed == visibility ? _self.visibility : visibility // ignore: cast_nullable_to_non_nullable
 as String?,content: freezed == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
-as WeeklyRecapContent?,
+as WeeklyRecapContent?,memoryId: freezed == memoryId ? _self.memoryId : memoryId // ignore: cast_nullable_to_non_nullable
+as String?,canShare: null == canShare ? _self.canShare : canShare // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

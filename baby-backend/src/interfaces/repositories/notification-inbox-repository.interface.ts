@@ -29,6 +29,7 @@ export interface INotificationInboxRepository {
     lease: JobLease,
     decide: (
       snapshot: NotificationDispatchSnapshot,
-    ) => NotificationDispatchDecision[],
+    ) =>
+      NotificationDispatchDecision[] | Promise<NotificationDispatchDecision[]>,
   ): Promise<number>;
 }

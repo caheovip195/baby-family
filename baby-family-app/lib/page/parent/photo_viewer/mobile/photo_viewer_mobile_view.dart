@@ -33,14 +33,25 @@ const _dismissVelocity = 800.0;
 /// MEM-08 Xem ảnh toàn màn hình (Pencil `J8ZEtR`): nền đen, vuốt ngang chuyển
 /// ảnh, pinch zoom, vuốt xuống để đóng.
 class PhotoViewerMobileView extends HookConsumerWidget {
-  const PhotoViewerMobileView({required this.memoryId, this.index, super.key});
+  const PhotoViewerMobileView({
+    required this.memoryId,
+    this.index,
+    this.perspectiveId,
+    super.key,
+  });
 
   final String memoryId;
   final int? index;
+  final String? perspectiveId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final controller = ref.watch(photoViewerControllerProvider(memoryId));
+    final controller = ref.watch(
+      photoViewerControllerProvider((
+        memoryId: memoryId,
+        perspectiveId: perspectiveId,
+      )),
+    );
     final drag = useState(0.0);
     final zoomed = useState(false);
     final started = useRef(false);

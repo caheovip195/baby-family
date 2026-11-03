@@ -566,7 +566,15 @@ describe('Couple request API (PostgreSQL + ES256)', () => {
     expect(
       code(await create(parentA, { dueKind: 'TODAY_AT' }).expect(422)),
     ).toBe('REQUEST_DUE_INVALID');
-    const dueAt = new Date(Date.now() + 30 * 60_000).toISOString();
+    // BF-20261030-007: hạn “hôm nay” phải còn trong ngày theo giờ gia đình
+    // (Asia/Ho_Chi_Minh, UTC+7) — gần nửa đêm thì lùi vào trước 0:00.
+    const start = Date.now();
+    const day = 86_400_000,
+      offset = 7 * 3_600_000;
+    const midnight = Math.floor((start + offset) / day) * day + day - offset;
+    const dueAt = new Date(
+      Math.floor(start + Math.min(30 * 60_000, (midnight - start) / 2)),
+    ).toISOString();
     const own = await created({ dueKind: 'TODAY_AT', dueAt });
     expect(own.dueAt).toBe(dueAt);
     expect(new Date(own.expiresAt).getTime()).toBe(

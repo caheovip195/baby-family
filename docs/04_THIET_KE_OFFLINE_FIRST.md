@@ -126,6 +126,38 @@ Thiết kế này **tổng quát hoá** ba cơ chế trên, không viết lại 
   4. Một lệnh đọc mất mạng làm hỏng cả màn Home / Ký ức: `todayPrompt`, `tree`, `unreadCount`, `monthlyPhotos`, `collections`, `sealedLetters`, `albums`, `stats`. Sửa: helper `whenOnline()` và bản đọc gần nhất; `tree` lưu thêm ở local DB (`careTree`).
   5. Tab Chăm sóc / Home không ghi log khi tải lỗi. Đã thêm log.
 
+### Cập nhật BF-20261028-001 (thao tác lời nhờ)
+
+- Xem / nhận / từ chối / xong / ghi nhận / huỷ / hẹn nhắc lời nhờ của server đi qua outbox (`us.request-action`): đổi trạng thái trên máy ngay, mất mạng thì tự gửi khi có mạng, mở lại app thì hiện lại trạng thái đã chọn.
+- Server từ chối (4xx) → trả các field vừa đổi về bản trước và báo lỗi như gọi thẳng. Hearts của lời nhờ xong vẫn do server ghi (không cộng trên máy).
+- API thao tác lời nhờ chưa nhận `Idempotency-Key`: nếu lần gửi trước đã tới server nhưng mất phản hồi, lần gửi lại có thể bị từ chối chuyển trạng thái và app trả về bản trước tới lần đồng bộ danh sách kế tiếp.
+- Chưa có: tạo/đổi nhiệm vụ khi offline.
+
+### Cập nhật BF-20261028-002 (sửa ký ức)
+
+- MEM-09 sửa chữ / bé / phạm vi / bật-tắt bình luận đi qua outbox `memory.edit`: đổi trên máy ngay, mất mạng thì tự gửi `PATCH` + `If-Match` khi có mạng; các lần sửa chưa gửi của cùng ký ức gộp làm một, giữ version gốc.
+- Server từ chối (412 bản cũ, 4xx) → bỏ bản sửa, đọc lại bản server, báo lỗi như gọi thẳng. Mở lại app → hiện lại bản sửa chưa gửi.
+- Đổi ảnh (BF-20261029-001): bản sửa lưu thứ tự ảnh mới (`id` asset đã có / `path` file trên máy đã sao vào thư mục thao tác) cùng bộ ảnh server gốc; ảnh chỉ tải lên lúc gửi, asset đã tải lưu vào `args.uploaded` để gửi tiếp sau khi tắt app; khi gửi đổi thành `addAssetIds`/`removeAssetIds`/`coverAssetId`. Bị từ chối → bỏ file, hiện lại ảnh server. Còn bản đổi ảnh chưa gửi thì đồng bộ không ghi đè ảnh trên máy.
+
+### Cập nhật BF-20261028-003 (tạo nhiệm vụ)
+
+- Tạo nhiệm vụ một lần (không lặp) đi qua outbox `mission.create` với `Idempotency-Key` theo thao tác: mất mạng thì bản tạm hiện trên bảng của đúng ngày đó, có mạng tự tạo đúng một lần.
+- `OutboxRunner.submit` giữ lỗi bị từ chối cho đúng lệnh đang chờ kể cả khi service bỏ thao tác ngay trong `onState` (trước đây lỗi 4xx của hoàn thành nhiệm vụ / sửa ký ức có thể bị nuốt).
+- Bản tạm chưa hoàn thành/xoá được cho tới khi server tạo xong.
+
+### Cập nhật BF-20261029-002 (đổi nhiệm vụ, tạo chuỗi lặp)
+
+- Lựa chọn đổi + `optionsToken` đọc khi có mạng được lưu local DB (`careSwapOptions`, giữ ~1 ngày). Mất mạng: CARE-05 dùng bản đã lưu; đổi đi qua outbox `mission.swap` (`POST /missions/:id/swap` + `Idempotency-Key`), bảng ẩn nhiệm vụ cũ và hiện bản tạm của mẫu mới, lượt đổi còn lại trừ bản chờ gửi. Token hết hạn → server từ chối khi gửi, bỏ thao tác, bảng đọc lại.
+- Tạo chuỗi lặp đi qua outbox `mission.series` (`POST /families/:fid/mission-series` + `Idempotency-Key`): mất mạng thì bản tạm hiện trên bảng các ngày từ ngày bắt đầu, đúng thứ của chuỗi; có mạng tạo đúng một chuỗi, server bày nhiệm vụ hằng ngày.
+
+### Cập nhật BF-20261028-005 (đăng bài: resume, tiến độ, nén)
+
+- Bài vừa đăng hiện ngay từ bản trên máy (tab Ký ức **và** Home) với thẻ đang tải: tiến độ theo **byte** (`uploadProgress`, báo mỗi 1%) kèm số file đã xong.
+- Resume: mỗi file tải xong (asset id) được lưu vào `args.uploaded` của thao tác outbox; tắt app giữa chừng → mở lại hiện đúng tiến độ và chỉ nén + tải tiếp file còn thiếu. `OutboxRunner.patchArgs` lưu tiến độ; lỗi khi đang gửi giữ bản đã patch.
+- Server từ chối tạo bài (4xx, vd asset để quá lâu đã bị dọn) → xoá danh sách asset đã lưu, lần thử lại tải lại từ đầu.
+- Nén (client): ảnh chính cạnh dài 2560 px JPEG 85 (trước 4096/90), m1080 JPEG 80, t320 JPEG 72; video 720p 30 fps (trước 1080p), video mp4 đã nhỏ (cạnh ngắn ≤ 720, ≤ 4 Mbps) hoặc bản nén to hơn gốc thì giữ gốc; xoá file nén tạm sau khi đọc.
+- Giới hạn: file đang tải dở bị nén + tải lại từ đầu file đó (chưa resume giữa multipart); iOS/Android có thể dừng tải khi app ở nền lâu — tiếp tục khi mở app.
+
 ## 3. Kiến trúc đích (app)
 
 ```

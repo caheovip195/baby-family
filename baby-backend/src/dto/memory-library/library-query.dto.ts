@@ -3,6 +3,7 @@ import {
   IsInt,
   IsOptional,
   IsString,
+  IsUUID,
   Max,
   MaxLength,
   Min,
@@ -19,4 +20,9 @@ export interface OriginalDownloadResponse {
     expiresAt: string;
     fileName: string;
   }[];
+}
+
+/** `POST /memories/:id/download-urls?perspectiveId=` (BF-20261030-009). */
+export class DownloadUrlsQueryDto {
+  @IsOptional() @IsUUID() perspectiveId?: string;
 }

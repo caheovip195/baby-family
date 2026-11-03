@@ -234,6 +234,18 @@ import { REQUEST_CHILD_SERVICE } from '../../interfaces/services/request-child-s
 import { RequestChildService } from '../../services/request-child.service';
 import { REQUEST_SERVICE } from '../../interfaces/services/request-service.interface';
 import { RequestService } from '../../services/request.service';
+import { GROWTH_MEASUREMENT_SERVICE } from '../../interfaces/services/growth-measurement-service.interface';
+import { GrowthMeasurementService } from '../../services/growth-measurement.service';
+import { DAY_STORY_SERVICE } from '../../interfaces/services/day-story-service.interface';
+import { DayStoryService } from '../../services/day-story.service';
+import { CARE_HANDOFF_SERVICE } from '../../interfaces/services/care-handoff-service.interface';
+import { CareHandoffService } from '../../services/care-handoff.service';
+import { CHAT_CONVERSATION_SERVICE } from '../../interfaces/services/chat-conversation-service.interface';
+import { ChatConversationService } from '../../services/chat-conversation.service';
+import { CHAT_MESSAGE_SERVICE } from '../../interfaces/services/chat-message-service.interface';
+import { ChatMessageService } from '../../services/chat-message.service';
+import { CHAT_READ_STATE_SERVICE } from '../../interfaces/services/chat-read-state-service.interface';
+import { ChatReadStateService } from '../../services/chat-read-state.service';
 export const INTERNAL_SERVICE_PROVIDERS: Provider[] = [
   { provide: AI_USAGE_MONTHLY_SERVICE, useClass: AiUsageMonthlyService },
   { provide: ALBUM_MEMORY_SERVICE, useClass: AlbumMemoryService },
@@ -412,4 +424,10 @@ export const INTERNAL_SERVICE_PROVIDERS: Provider[] = [
   { provide: PREGNANCY_NAME_VOTE_SERVICE, useClass: PregnancyNameVoteService },
   { provide: REQUEST_CHILD_SERVICE, useClass: RequestChildService },
   { provide: REQUEST_SERVICE, useClass: RequestService },
+  { provide: GROWTH_MEASUREMENT_SERVICE, useClass: GrowthMeasurementService },
+  { provide: DAY_STORY_SERVICE, useClass: DayStoryService },
+  { provide: CARE_HANDOFF_SERVICE, useClass: CareHandoffService },
+  { provide: CHAT_CONVERSATION_SERVICE, useClass: ChatConversationService },
+  { provide: CHAT_MESSAGE_SERVICE, useClass: ChatMessageService },
+  { provide: CHAT_READ_STATE_SERVICE, useClass: ChatReadStateService },
 ];

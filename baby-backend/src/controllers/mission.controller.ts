@@ -3,17 +3,22 @@ import {
   Controller,
   Get,
   Inject,
+  Optional,
   Param,
   ParseUUIDPipe,
   Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { AccessTokenGuard } from '../common/auth/access-token.guard';
 import type { AuthPrincipal } from '../common/auth/auth-principal';
 import { CurrentActor } from '../common/auth/current-actor.decorator';
 import { IdempotencyKey } from '../common/http/idempotency-key.decorator';
+import { OptionalIdempotencyKey } from '../common/http/offline-idempotency-key.decorator';
+import { offlineCommand } from '../common/http/offline-command';
+import { OFFLINE_COMMAND_SERVICE } from '../interfaces/services/offline-command-service.interface';
+import type { IOfflineCommandService } from '../interfaces/services/offline-command-service.interface';
 import {
   CreateMissionDto,
   CompleteMissionDto,
@@ -56,6 +61,9 @@ export class MissionController {
     private readonly service: IMissionBoardService,
     @Inject(MISSION_MOMENT_SERVICE)
     private readonly moments: IMissionMomentService,
+    @Optional()
+    @Inject(OFFLINE_COMMAND_SERVICE)
+    private readonly offline?: IOfflineCommandService,
   ) {}
   @Get('templates')
   templates(
@@ -103,12 +111,26 @@ export class MissionController {
     return this.service.swapOptions(actor, id);
   }
   @Post(':id/swap')
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    required: false,
+    description: 'Optional UUID; replay returns the original response.',
+  })
   swap(
     @CurrentActor() actor: AuthPrincipal,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() input: SwapMissionDto,
+    @OptionalIdempotencyKey() key?: string,
   ) {
-    return this.service.act(actor, id, 'swap', undefined, input);
+    // Offline-first (BF-20261029-002): gửi lại cùng key trả kết quả lần đầu
+    // thay vì báo optionsToken đã dùng.
+    return offlineCommand(
+      this.offline,
+      key,
+      { operation: 'mission.swap', actor, resourceId: id, body: input },
+      () => this.service.act(actor, id, 'swap', undefined, input),
+      () => this.service.authorizeReplay(actor, id),
+    );
   }
   /** CARE-06 “Lưu lại khoảnh khắc” → family memory linked to the mission. */
   @Post(':id/moment')

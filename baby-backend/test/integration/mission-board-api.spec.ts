@@ -800,12 +800,22 @@ describe('Daily missions API (PostgreSQL + ES256)', () => {
         ),
       ).toBe(true);
       const oldId = own.id;
+      const swapBody = {
+        templateId: options.options[0]!.id,
+        optionsToken: options.optionsToken,
+      };
+      const swapKey = randomUUID();
       const swapped = data<{ removedId: string; mission: MyMissionDto }>(
-        await action(own.id, 'swap', parentA, {
-          templateId: options.options[0]!.id,
-          optionsToken: options.optionsToken,
-        }).expect(201),
+        await action(own.id, 'swap', parentA, swapBody, swapKey).expect(201),
       );
+      if (count === 0) {
+        // BF-20261029-002: the offline outbox resends with the same key and
+        // gets the first result back, without spending another swap.
+        const replay = data<{ removedId: string; mission: MyMissionDto }>(
+          await action(oldId, 'swap', parentA, swapBody, swapKey).expect(201),
+        );
+        expect(replay).toEqual(swapped);
+      }
       expect(swapped.removedId).toBe(oldId);
       const replacement = swapped.mission;
       expect(replacement.id).not.toBe(oldId);
@@ -1005,6 +1015,26 @@ describe('Daily missions API (PostgreSQL + ES256)', () => {
       }).expect(201),
     );
     expect(daily.days).toHaveLength(7);
+    // BF-20261029-002: a resend with the same Idempotency-Key creates no
+    // second series.
+    const seriesKey = randomUUID();
+    const once = data<{ id: string }>(
+      await createSeries({ title: 'Đọc sách' })
+        .set('Idempotency-Key', seriesKey)
+        .expect(201),
+    );
+    const again = data<{ id: string }>(
+      await createSeries({ title: 'Đọc sách' })
+        .set('Idempotency-Key', seriesKey)
+        .expect(201),
+    );
+    expect(again.id).toBe(once.id);
+    expect(
+      await prisma.missionSeries.count({
+        where: { familyId, title: 'Đọc sách' },
+      }),
+    ).toBe(1);
+    await call('delete', parentA, `/mission-series/${once.id}`).expect(204);
     await createSeries({ title: 'Ngày khác', days: [other] }).expect(201);
     const invalid = await createSeries({
       title: 'Hôm qua',

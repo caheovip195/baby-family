@@ -13,6 +13,7 @@ import 'package:baby_family/data/model/memory/milestone_template_record.dart';
 import 'package:baby_family/data/model/memory/monthly_photo_record.dart';
 import 'package:baby_family/data/model/memory/perspective_record.dart';
 import 'package:baby_family/data/model/memory/upload_intent.dart';
+import 'package:baby_family/data/model/memory/upload_status.dart';
 import 'package:baby_family/data/model/recap/week_stats_record.dart';
 import 'package:baby_family/data/model/recap/weekly_recap_record.dart';
 import 'package:baby_family/data/model/sync/change_item.dart';
@@ -126,8 +127,15 @@ class _FakeLibrary implements IMemoryLibraryRemoteRepository {
   ];
 
   @override
-  Future<List<DownloadUrlRecord>> downloadUrls(String memoryId) async => [
-    const DownloadUrlRecord(url: 'https://orig/1.jpg'),
+  Future<List<DownloadUrlRecord>> downloadUrls(
+    String memoryId, {
+    String? perspectiveId,
+  }) async => [
+    DownloadUrlRecord(
+      url: perspectiveId == null
+          ? 'https://orig/1.jpg'
+          : 'https://orig/$perspectiveId.jpg',
+    ),
   ];
 
   @override
@@ -141,18 +149,53 @@ class _FakeLibrary implements IMemoryLibraryRemoteRepository {
     ),
   ];
 
+  JsonMap? lastBody;
+
   @override
   Future<PerspectiveRecord?> putPerspective(
     String memoryId,
-    String body,
+    JsonMap body,
   ) async {
-    calls.add('perspective:$memoryId:$body');
+    lastBody = body;
+    final audio = body.containsKey('audioAssetId')
+        ? ':audio=${body['audioAssetId']}'
+        : '';
+    calls.add('perspective:$memoryId:${body['body']}$audio');
     return PerspectiveRecord(
       id: 'p-2',
       memoryId: memoryId,
       authorUserId: 'srv-me',
-      body: body,
+      body: body['body'] as String?,
+      audioAssetId: body['audioAssetId'] as String?,
+      audioUrl: body['audioAssetId'] == null ? null : 'https://cdn/voice.m4a',
+      audioDurationSec: body['audioAssetId'] == null ? null : 4,
+      assets: [
+        for (final id in (body['assetIds'] as List? ?? const []))
+          PerspectiveAssetRecord(
+            assetId: id as String,
+            url: 'https://cdn/$id.jpg',
+          ),
+      ],
     );
+  }
+
+  @override
+  Future<WeeklyRecapRecord?> shareWeeklyRecap(
+    String familyId,
+    String recapId, {
+    required bool shared,
+  }) async {
+    calls.add('recap-share:$recapId:$shared');
+    return recap?.copyWith(visibility: shared ? 'FAMILY' : 'PARENTS');
+  }
+
+  @override
+  Future<String?> saveWeeklyRecapToTimeline(
+    String familyId,
+    String recapId,
+  ) async {
+    calls.add('recap-timeline:$recapId');
+    return 'srv-top';
   }
 
   @override
@@ -307,6 +350,13 @@ class _FakeMedia extends Fake implements IMediaRepository {
     String idempotencyKey,
     JsonMap body,
   ) async => const UploadIntent(assetId: 'asset-month', status: 'READY');
+
+  @override
+  Future<int?> mediaDurationMs(String path) async => 4000;
+
+  @override
+  Future<UploadStatus?> assetStatus(String assetId) async =>
+      UploadStatus(assetId: assetId, status: 'READY');
 }
 
 void main() {
@@ -471,8 +521,34 @@ void main() {
     expect(perspectives.single.body, 'Hôm đó con cười suốt');
     await memories.savePerspective(id, body: ' Mẹ nhớ mãi ');
     expect(library.calls.last, 'perspective:$id:Mẹ nhớ mãi');
+    // BF-20261030-004: ghi âm tải lên rồi gắn audioAssetId; bỏ → null.
+    final voiced = await memories.savePerspective(
+      id,
+      body: '',
+      voicePath: '/tmp/voice.m4a',
+      voiceDurationSec: 4,
+    );
+    expect(library.calls.last, 'perspective:$id::audio=asset-month');
+    expect(voiced.voiceUrl, 'https://cdn/voice.m4a');
+    expect(voiced.voiceDurationSec, 4);
+    await memories.savePerspective(id, body: 'Chữ', removeVoice: true);
+    expect(library.calls.last, 'perspective:$id:Chữ:audio=null');
+    // BF-20261030-006: ảnh mới tải lên → assetIds; ảnh đã có giữ asset id.
+    library.lastBody = null;
+    final photos = await memories.savePerspective(
+      id,
+      body: 'Ảnh',
+      mediaAssets: const ['/tmp/p1.jpg'],
+    );
+    expect(library.lastBody?['assetIds'], ['asset-month']);
+    expect(photos.mediaAssets, ['https://cdn/asset-month.jpg']);
+    expect(photos.mediaAssetIds, ['asset-month']);
 
     expect(await memories.downloadUrls(id), ['https://orig/1.jpg']);
+    // BF-20261030-009: bản gốc ảnh của góc nhìn.
+    expect(await memories.downloadUrls(id, perspectiveId: 'p-2'), [
+      'https://orig/p-2.jpg',
+    ]);
   });
 
   test('prompts, milestones and sealed letters use the server', () async {
@@ -602,6 +678,14 @@ void main() {
     expect(recap?.headline, isNotEmpty);
     expect(recap?.highlights.map((memory) => memory.id), ['srv-top']);
     expect(recap?.heroAssets, ['https://cdn/top.jpg']);
+
+    // BF-20261030-004: chia sẻ với người thân, lưu vào timeline.
+    expect(recap?.shared, isFalse);
+    final shared = await memories.shareWeeklyRecap(recap!, shared: true);
+    expect(shared.shared, isTrue);
+    expect(library.calls.last, 'recap-share:r-1:true');
+    expect(await memories.saveWeeklyRecapToTimeline(shared), 'srv-top');
+    expect(library.calls.last, 'recap-timeline:r-1');
   });
 
   test(

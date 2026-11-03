@@ -1,15 +1,19 @@
 import { Checkbox, Form, Input, InputNumber, Select } from 'antd';
 
 export type WritableCatalogKind =
-  'missions' | 'plan-versions' | 'trial-policies';
+  'missions' | 'milestones' | 'plan-versions' | 'trial-policies';
 export const isWritableCatalog = (kind: string): kind is WritableCatalogKind =>
-  ['missions', 'plan-versions', 'trial-policies'].includes(kind);
+  ['missions', 'milestones', 'plan-versions', 'trial-policies'].includes(kind);
+
+/** Nhiệm vụ / cột mốc: định danh bằng mã, bản nháp nằm ngay trong danh sách. */
+export const isCodeCatalog = (kind: string) =>
+  kind === 'missions' || kind === 'milestones';
 
 export function canWriteCatalog(kind: string, roles: string[]): boolean {
   return (
     isWritableCatalog(kind) &&
     (roles.includes('SUPER_ADMIN') ||
-      (kind === 'missions'
+      (isCodeCatalog(kind)
         ? roles.includes('CONTENT')
         : roles.some((r) => ['OPS', 'BILLING_OPS'].includes(r))))
   );
@@ -108,6 +112,64 @@ export function CatalogFields({ kind }: { kind: WritableCatalogKind }) {
         </Form.Item>
       </>
     );
+  if (kind === 'milestones')
+    return (
+      <>
+        <Form.Item
+          name="code"
+          label="Mã mới (chữ thường, số, _)"
+          rules={[
+            ...required,
+            {
+              pattern: /^[a-z][a-z0-9_]{0,39}$/,
+              message: 'Mã bắt đầu bằng chữ thường, chỉ gồm a-z, 0-9, _.',
+            },
+          ]}
+        >
+          <Input maxLength={40} />
+        </Form.Item>
+        {number('version', 'Phiên bản', 1)}
+        {select('category', 'Nhóm', [
+          'TRADITIONAL',
+          'EMOTION',
+          'MOTOR',
+          'LANGUAGE',
+          'FOOD',
+          'BODY',
+          'EXPERIENCE',
+          'FAMILY',
+          'PREGNANCY',
+        ])}
+        {text('icon', 'Biểu tượng', 40)}
+        {text(['titleI18n', 'vi'], 'Tên (vi)')}
+        {text(['titleI18n', 'en'], 'Tên (en)')}
+        <Form.Item name={['promptI18n', 'vi']} label="Gợi ý (vi)">
+          <Input />
+        </Form.Item>
+        <Form.Item name={['promptI18n', 'en']} label="Gợi ý (en)">
+          <Input />
+        </Form.Item>
+        {number('sortOrder', 'Thứ tự', 0, 2147483647)}
+        {number('remindDaysBefore', 'Nhắc trước (ngày)', 0, 30, true)}
+        <Form.Item
+          name="dateRule"
+          label='Quy tắc ngày (JSON, vd {"type":"BIRTH_MONTHS","months":12}; để trống nếu không có)'
+          rules={[
+            {
+              validator: (_, value: string | undefined) =>
+                !value?.trim()
+                  ? Promise.resolve()
+                  : jsonRule.validator(_, value),
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item name="isTraditional" valuePropName="checked">
+          <Checkbox>Cột mốc truyền thống</Checkbox>
+        </Form.Item>
+      </>
+    );
   if (kind === 'plan-versions')
     return (
       <>
@@ -189,9 +251,16 @@ export const catalogDefaults = (kind: WritableCatalogKind) =>
         multiChildOk: false,
         requestable: false,
       }
-    : kind === 'plan-versions'
-      ? { version: 1, entitlementRank: 0, quotas: '{}', features: '{}' }
-      : { version: 1 };
+    : kind === 'milestones'
+      ? {
+          version: 1,
+          category: 'EXPERIENCE',
+          sortOrder: 0,
+          isTraditional: false,
+        }
+      : kind === 'plan-versions'
+        ? { version: 1, entitlementRank: 0, quotas: '{}', features: '{}' }
+        : { version: 1 };
 
 export function catalogPayload(
   kind: WritableCatalogKind,
@@ -212,6 +281,17 @@ export function catalogPayload(
         .split(',')
         .filter((v) => v.trim())
         .map(Number),
+    };
+  }
+  if (kind === 'milestones') {
+    const prompt = values.promptI18n as Record<string, string> | undefined;
+    const rule = String(values.dateRule ?? '').trim();
+    return {
+      ...values,
+      isTraditional: Boolean(values.isTraditional),
+      remindDaysBefore: values.remindDaysBefore ?? null,
+      dateRule: rule ? (JSON.parse(rule) as unknown) : null,
+      ...(prompt?.vi && prompt?.en ? {} : { promptI18n: undefined }),
     };
   }
   const prompt = values.memoryPromptI18n as Record<string, string> | undefined;

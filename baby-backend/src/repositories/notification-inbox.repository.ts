@@ -124,6 +124,10 @@ export class NotificationInboxRepository implements INotificationInboxRepository
             },
           ],
         },
+        // Tin nhắn có màn chat riêng (BF-20261101-001); hộp thư chỉ giữ push.
+        {
+          OR: [{ subjectType: null }, { subjectType: { not: 'chat_message' } }],
+        },
         // Private couple categories are never readable by a Circle recipient.
         {
           OR: [
@@ -280,7 +284,7 @@ export class NotificationInboxRepository implements INotificationInboxRepository
         if (ids.length)
           await tx.$queryRaw`SELECT id FROM app.users WHERE id = ANY(${ids}::uuid[]) ORDER BY id FOR UPDATE`;
         let count = 0;
-        for (const decision of decide(snapshot)) {
+        for (const decision of await Promise.resolve(decide(snapshot))) {
           const recipient = snapshot.candidates.find(
             (c) => c.userId === decision.recipientUserId && c.canView,
           );
@@ -335,8 +339,49 @@ export class NotificationInboxRepository implements INotificationInboxRepository
       childIds: string[] = [],
       childNames: string[] = [],
       urgency: 'NORMAL' | 'SOON' = 'NORMAL',
-      requestKind: 'TASK' | 'NEED' = 'TASK';
-    if (
+      requestKind: 'TASK' | 'NEED' = 'TASK',
+      chatKind: 'FAMILY' | 'COUPLE' | undefined,
+      chatConversationId: string | undefined;
+    if (event.eventType === 'chat.message.created') {
+      // Nhắn tin (BF-20261101-001): thành viên còn quyền và chưa đọc tới tin.
+      const message = await tx.chatMessage.findFirst({
+        where: { id: subjectId, familyId, deletedAt: null },
+      });
+      const conversation = message
+        ? await tx.chatConversation.findFirst({
+            where: { id: message.conversationId, familyId, deletedAt: null },
+          })
+        : null;
+      if (!message || !conversation) return null;
+      actorUserId = message.senderUserId;
+      chatKind = conversation.kind === 'COUPLE' ? 'COUPLE' : 'FAMILY';
+      chatConversationId = conversation.id;
+      let members = [...parentIds, ...circles.map((c) => c.userId)];
+      if (chatKind === 'COUPLE') {
+        const pair = await tx.coupleSpace.findFirst({
+          where: {
+            id: conversation.coupleSpaceId ?? '',
+            familyId,
+            status: 'ACTIVE',
+            deletedAt: null,
+            disabledAt: null,
+          },
+        });
+        if (!pair) return null;
+        members = parentIds.filter((id) =>
+          [pair.parentAUserId, pair.parentBUserId].includes(id),
+        );
+      }
+      const read = await tx.chatReadState.findMany({
+        where: {
+          conversationId: conversation.id,
+          deletedAt: null,
+          lastReadSeq: { gte: message.seq },
+        },
+        select: { userId: true },
+      });
+      validIds = members.filter((id) => !read.some((r) => r.userId === id));
+    } else if (
       [
         'memory.review_requested',
         'memory.submitted',
@@ -369,6 +414,56 @@ export class NotificationInboxRepository implements INotificationInboxRepository
       actorUserId = submitted ? author : (memory.reviewedBy ?? '');
       if (!submitted && !memory.reviewedAt) return null;
       validIds = submitted ? parentIds : [author];
+    } else if (event.eventType === 'circle.left') {
+      // Thành viên đã rời (status LEFT): chỉ Parent nhận, không có nội dung.
+      const member = await tx.circleMember.findFirst({
+        where: { id: subjectId, familyId, status: 'LEFT' },
+        select: { userId: true },
+      });
+      if (!member) return null;
+      actorUserId = member.userId;
+      validIds = [...parentIds];
+    } else if (event.eventType === 'recap.weekly.shared') {
+      // Recap tuần còn chia sẻ; mọi người thân đang hoạt động (nội dung recap
+      // lọc theo quyền xem của từng người khi mở).
+      const recap = await tx.recap.findFirst({
+        where: {
+          id: subjectId,
+          familyId,
+          period: 'WEEK',
+          visibility: 'FAMILY',
+          deletedAt: null,
+        },
+      });
+      if (!recap) return null;
+      actorUserId = string(payload.actorUserId);
+      validIds = circles.map((c) => c.userId);
+    } else if (event.eventType === 'yearbook.shared') {
+      // Sách còn đang chia sẻ; người thân được xem bé (sách cả nhà: mọi người
+      // thân đang hoạt động).
+      const recap = await tx.recap.findFirst({
+        where: {
+          id: subjectId,
+          familyId,
+          period: 'YEAR',
+          visibility: 'FAMILY',
+          deletedAt: null,
+        },
+        include: { child: true },
+      });
+      if (!recap || object(recap.content).shared !== true) return null;
+      actorUserId = string(payload.actorUserId);
+      if (recap.childId && recap.child && !recap.child.deletedAt) {
+        childIds = [recap.childId];
+        childNames = [recap.child.nickname ?? recap.child.name ?? ''];
+      }
+      validIds = circles
+        .filter(
+          (c) =>
+            recap.childId === null ||
+            c.circleGrants.some((g) => g.childId === recap.childId),
+        )
+        .map((c) => c.userId);
     } else if (
       event.eventType.startsWith('memory.') ||
       event.eventType === 'comment.created' ||
@@ -498,6 +593,34 @@ export class NotificationInboxRepository implements INotificationInboxRepository
         if (!row) return null;
         actorUserId = row.fromUserId;
         target = row.toUserId;
+      } else if (event.eventType === 'us.bridge.invited') {
+        const row = await tx.conflictSession.findFirst({
+          where: {
+            id: subjectId,
+            familyId,
+            coupleSpaceId: pair.id,
+            deletedAt: null,
+            status: { in: ['INVITED', 'ACTIVE', 'PAUSED', 'AGREED'] },
+          },
+        });
+        if (!row) return null;
+        actorUserId = row.openedBy;
+        target =
+          pair.parentAUserId === actorUserId
+            ? pair.parentBUserId
+            : pair.parentAUserId;
+      } else if (event.eventType === 'us.handoff.created') {
+        const row = await tx.careHandoff.findFirst({
+          where: {
+            id: subjectId,
+            familyId,
+            coupleSpaceId: pair.id,
+            deletedAt: null,
+          },
+        });
+        if (!row) return null;
+        actorUserId = row.fromUserId;
+        target = row.toUserId;
       } else return null;
     }
     const candidates: NotificationRecipient[] = [];
@@ -588,6 +711,8 @@ export class NotificationInboxRepository implements INotificationInboxRepository
       requestKind,
       reactionRemoved:
         event.eventType === 'reaction.changed' && payload.type === null,
+      chatKind,
+      chatConversationId,
     });
   }
 
@@ -632,7 +757,11 @@ export class NotificationInboxRepository implements INotificationInboxRepository
         priority: decision.priority,
         locale: recipient.locale,
         subjectId: snapshot.subjectId,
-        subjectType: decision.tab === 'FAMILY' ? 'memory' : 'us',
+        subjectType: snapshot.chatKind
+          ? 'chat_message'
+          : decision.tab === 'FAMILY'
+            ? 'memory'
+            : 'us',
         payloadReference: reference,
         sensitive: decision.sensitive,
         expiresAt: new Date(
@@ -657,7 +786,8 @@ export class NotificationInboxRepository implements INotificationInboxRepository
       return;
     }
     let pushAt = decision.pushAt;
-    if (pushAt && decision.category !== 'REQUESTS') {
+    // Tin nhắn không tính vào trần push/ngày (người nhận đang chờ trả lời).
+    if (pushAt && decision.category !== 'REQUESTS' && !snapshot.chatKind) {
       const localDay = (date: Date) =>
         new Intl.DateTimeFormat('en-CA', {
           timeZone: recipient.timezone,

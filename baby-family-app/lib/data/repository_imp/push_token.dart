@@ -58,4 +58,41 @@ class PushTokenRepositoryImp extends BaseRepositoryImp
   Stream<String> get onTokenRefresh => _ready
       ? FirebaseMessaging.instance.onTokenRefresh
       : const Stream<String>.empty();
+
+  static String? _linkOf(RemoteMessage? message) {
+    final link = message?.data['deepLink'];
+    return link is String && link.isNotEmpty ? link : null;
+  }
+
+  @override
+  Future<String?> initialLink() async {
+    if (!_ready) {
+      return null;
+    }
+    try {
+      return _linkOf(await FirebaseMessaging.instance.getInitialMessage());
+    } on Object catch (error) {
+      Logger().w('Đọc thông báo mở app thất bại: $error');
+      return null;
+    }
+  }
+
+  @override
+  Stream<({String title, String body, String? link})> get onForeground => _ready
+      ? FirebaseMessaging.onMessage.map(
+          (message) => (
+            title: message.notification?.title ?? '',
+            body: message.notification?.body ?? '',
+            link: _linkOf(message),
+          ),
+        )
+      : const Stream.empty();
+
+  @override
+  Stream<String> get onOpenedLink => _ready
+      ? FirebaseMessaging.onMessageOpenedApp
+            .map(_linkOf)
+            .where((link) => link != null)
+            .cast<String>()
+      : const Stream<String>.empty();
 }

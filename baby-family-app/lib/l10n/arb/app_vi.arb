@@ -12984,5 +12984,770 @@
   "memCommentsOff": "Bình luận đã tắt cho ký ức này",
   "@memCommentsOff": {
     "description": "MEM-07/09 bật/tắt bình luận theo ký ức"
+  },
+  "errorLastSignInMethod": "Cần giữ ít nhất một cách đăng nhập. Bạn liên kết cách khác trước rồi gỡ nhé.",
+  "@errorLastSignInMethod": {
+    "description": "Lỗi LAST_SIGN_IN_METHOD khi gỡ liên kết"
+  },
+  "errorIdentityInUse": "Tài khoản này đã liên kết với một hồ sơ khác hoặc bạn đã liên kết loại này rồi.",
+  "@errorIdentityInUse": {
+    "description": "Lỗi IDENTITY_IN_USE / IDENTITY_PROVIDER_ALREADY_LINKED"
+  },
+  "errorReauthIdentity": "Bạn xác thực lại bằng đúng tài khoản đã liên kết nhé.",
+  "@errorReauthIdentity": {
+    "description": "Lỗi REAUTH_IDENTITY_REQUIRED"
+  },
+  "setSignInReauthTitle": "Xác thực lại",
+  "@setSignInReauthTitle": {
+    "description": "Tiêu đề sheet nhập mã xác thực lại trước khi liên kết/gỡ phương thức đăng nhập"
+  },
+  "growthTitle": "Tăng trưởng",
+  "@growthTitle": {
+    "description": "Tiêu đề CHD-06"
+  },
+  "growthEntry": "Tăng trưởng",
+  "@growthEntry": {
+    "description": "Dòng mở CHD-06 ở hồ sơ bé"
+  },
+  "growthEntryHint": "Cân nặng, chiều cao theo ngày",
+  "@growthEntryHint": {
+    "description": "Phụ đề dòng mở CHD-06"
+  },
+  "growthWeight": "Cân nặng",
+  "@growthWeight": {
+    "description": "Tab cân nặng"
+  },
+  "growthHeight": "Chiều cao",
+  "@growthHeight": {
+    "description": "Tab chiều cao"
+  },
+  "growthAdd": "Thêm lần đo",
+  "@growthAdd": {
+    "description": "Nút thêm lần đo"
+  },
+  "growthEdit": "Sửa lần đo",
+  "@growthEdit": {
+    "description": "Tiêu đề sheet sửa"
+  },
+  "growthEmpty": "Chưa có lần đo nào. Thêm cân nặng hoặc chiều cao của lần khám gần nhất nhé.",
+  "@growthEmpty": {
+    "description": "Trạng thái rỗng"
+  },
+  "growthChartHint": "Cần ít nhất 2 lần đo để vẽ biểu đồ.",
+  "@growthChartHint": {
+    "description": "Biểu đồ chưa đủ điểm"
+  },
+  "growthDisclaimer": "Biểu đồ chỉ là số đo của bé, không so với chuẩn và không thay thế tư vấn của bác sĩ.",
+  "@growthDisclaimer": {
+    "description": "Disclaimer CHD-06"
+  },
+  "growthPrivacy": "Chỉ Papa và Mama xem được số đo.",
+  "@growthPrivacy": {
+    "description": "Dòng riêng tư"
+  },
+  "growthDate": "Ngày đo",
+  "@growthDate": {
+    "description": "Nhãn ngày"
+  },
+  "growthWeightLabel": "Cân nặng (kg)",
+  "@growthWeightLabel": {
+    "description": "Ô nhập cân nặng"
+  },
+  "growthHeightLabel": "Chiều cao (cm)",
+  "@growthHeightLabel": {
+    "description": "Ô nhập chiều cao"
+  },
+  "growthNote": "Ghi chú",
+  "@growthNote": {
+    "description": "Ô ghi chú"
+  },
+  "growthNeedValue": "Nhập cân nặng hoặc chiều cao hợp lệ.",
+  "@growthNeedValue": {
+    "description": "Lỗi nhập"
+  },
+  "growthPending": "Chờ đồng bộ",
+  "@growthPending": {
+    "description": "Nhãn lần đo chưa gửi"
+  },
+  "growthSaved": "Đã lưu lần đo.",
+  "@growthSaved": {
+    "description": "Snackbar đã lưu"
+  },
+  "errorGrowthDate": "Ngày đo phải từ ngày sinh tới hôm nay.",
+  "@errorGrowthDate": {
+    "description": "Lỗi GROWTH_DATE_INVALID"
+  },
+  "growthKg": "{value} kg",
+  "@growthKg": {
+    "description": "Giá trị cân nặng",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "growthCm": "{value} cm",
+  "@growthCm": {
+    "description": "Giá trị chiều cao",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "memUploadProgressPercent": "{progress} · {percent}%",
+  "@memUploadProgressPercent": {
+    "description": "MEM-06: tiến độ tải nền kèm phần trăm theo byte",
+    "placeholders": {
+      "progress": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "recapDayDefaultTitle": "Một ngày của {name}",
+  "@recapDayDefaultTitle": {
+    "description": "REC-01: tiêu đề mặc định khi chưa lưu câu chuyện",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "usHandoff": "Bàn giao ca",
+  "@usHandoff": {
+    "description": "Ô lối vào Bàn giao ca"
+  },
+  "usHandoffTitle": "Bàn giao ca cho {name}",
+  "@usHandoffTitle": {
+    "description": "Tiêu đề sheet bàn giao",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "usHandoffHint": "Ghi nhanh tình trạng của bé để {name} nắm khi nhận ca.",
+  "@usHandoffHint": {
+    "description": "Gợi ý sheet bàn giao",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "usHandoffChildren": "Bé nào",
+  "@usHandoffChildren": {
+    "description": "Nhãn chọn bé"
+  },
+  "usHandoffFed": "Đã ăn lúc",
+  "@usHandoffFed": {
+    "description": "Nhãn giờ ăn"
+  },
+  "usHandoffSlept": "Đã ngủ lúc",
+  "@usHandoffSlept": {
+    "description": "Nhãn giờ ngủ"
+  },
+  "usHandoffWoke": "Đã dậy lúc",
+  "@usHandoffWoke": {
+    "description": "Nhãn giờ dậy"
+  },
+  "usHandoffPickTime": "Chọn giờ",
+  "@usHandoffPickTime": {
+    "description": "Chưa chọn giờ"
+  },
+  "usHandoffNote": "Ghi chú",
+  "@usHandoffNote": {
+    "description": "Nhãn ghi chú"
+  },
+  "usHandoffNoteHint": "Ví dụ: bé hơi quấy, đã thay tã…",
+  "@usHandoffNoteHint": {
+    "description": "Gợi ý ghi chú"
+  },
+  "usHandoffAttachRequest": "Nhờ {name} làm tiếp việc gì đó",
+  "@usHandoffAttachRequest": {
+    "description": "Tuỳ chọn gửi kèm lời nhờ",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "usHandoffSend": "Gửi bàn giao",
+  "@usHandoffSend": {
+    "description": "Nút gửi"
+  },
+  "usHandoffSent": "Đã gửi bàn giao cho {name}",
+  "@usHandoffSent": {
+    "description": "Snackbar đã gửi",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "usHandoffNeedContent": "Chọn ít nhất một mốc giờ hoặc viết ghi chú.",
+  "@usHandoffNeedContent": {
+    "description": "Lỗi nội dung trống"
+  },
+  "usHandoffFrom": "{name} bàn giao ca · {time}",
+  "@usHandoffFrom": {
+    "description": "Tiêu đề thẻ nhận",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "usHandoffMine": "Bạn đã bàn giao · {time}",
+  "@usHandoffMine": {
+    "description": "Tiêu đề thẻ đã gửi",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "usHandoffFedAt": "Đã ăn lúc {time}",
+  "@usHandoffFedAt": {
+    "description": "Dòng giờ ăn",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "usHandoffSleptAt": "Đã ngủ lúc {time}",
+  "@usHandoffSleptAt": {
+    "description": "Dòng giờ ngủ",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "usHandoffWokeAt": "Đã dậy lúc {time}",
+  "@usHandoffWokeAt": {
+    "description": "Dòng giờ dậy",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "usHandoffAck": "Đã nhận",
+  "@usHandoffAck": {
+    "description": "Nút đã nhận ca"
+  },
+  "usHandoffAcked": "{name} đã nhận ca",
+  "@usHandoffAcked": {
+    "description": "Trạng thái đã nhận",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "usHandoffWaiting": "Chờ {name} nhận",
+  "@usHandoffWaiting": {
+    "description": "Trạng thái chờ nhận",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "usHandoffPending": "Chờ đồng bộ",
+  "@usHandoffPending": {
+    "description": "Bàn giao chưa gửi"
+  },
+  "usHandoffNotMedical": "Chỉ để nắm nhanh, không phải theo dõi y tế.",
+  "@usHandoffNotMedical": {
+    "description": "Ghi chú không phải tracker y tế"
+  },
+  "errorHandoffTime": "Mốc giờ phải trong 24 giờ qua.",
+  "@errorHandoffTime": {
+    "description": "Lỗi HANDOFF_TIME_INVALID"
+  },
+  "usHandoffAckedByMe": "Bạn đã nhận ca",
+  "@usHandoffAckedByMe": {
+    "description": "Người nhận đã bấm Đã nhận"
+  },
+  "aiConsentTitle": "Dùng gợi ý AI?",
+  "@aiConsentTitle": {
+    "description": "Tiêu đề hộp đồng ý AI lần đầu"
+  },
+  "aiConsentBody": "Để gợi ý, Baby Family gửi {data} tới nhà cung cấp AI (OpenRouter). Không gửi ảnh, nhật ký riêng hay nháp riêng. Gợi ý chỉ là bản nháp để bạn sửa hoặc bỏ.",
+  "@aiConsentBody": {
+    "description": "Nội dung hộp đồng ý AI",
+    "placeholders": {
+      "data": {
+        "type": "String"
+      }
+    }
+  },
+  "aiConsentAccept": "Đồng ý & tiếp tục",
+  "@aiConsentAccept": {
+    "description": "Nút đồng ý AI"
+  },
+  "aiDataCaption": "vài từ bạn gõ và loại ký ức",
+  "@aiDataCaption": {
+    "description": "Dữ liệu gửi khi gợi ý chú thích"
+  },
+  "aiDataDayStory": "chú thích các ký ức bạn chọn trong ngày",
+  "@aiDataDayStory": {
+    "description": "Dữ liệu gửi khi viết câu chuyện ngày"
+  },
+  "aiDataRewrite": "câu bạn muốn viết lại",
+  "@aiDataRewrite": {
+    "description": "Dữ liệu gửi khi viết lại"
+  },
+  "aiDataBridge": "những ý hai bạn đã chọn chia sẻ trong phiên",
+  "@aiDataBridge": {
+    "description": "Dữ liệu gửi khi tóm tắt Cầu nối"
+  },
+  "aiCaptionSheetTitle": "Gợi ý chú thích",
+  "@aiCaptionSheetTitle": {
+    "description": "Tiêu đề sheet gợi ý chú thích"
+  },
+  "errorAiUnavailable": "AI đang tạm nghỉ, bạn thử lại sau nhé.",
+  "@errorAiUnavailable": {
+    "description": "Lỗi AI_UNAVAILABLE / AI_BAD_OUTPUT"
+  },
+  "errorAiNotInPlan": "Gói hiện tại chưa có gợi ý AI.",
+  "@errorAiNotInPlan": {
+    "description": "Lỗi AI_NOT_IN_PLAN"
+  },
+  "errorAiDisabled": "Bạn đã tắt AI trong Cài đặt.",
+  "@errorAiDisabled": {
+    "description": "Lỗi AI_DISABLED"
+  },
+  "errorAiQuota": "Đã dùng hết lượt AI của tháng này.",
+  "@errorAiQuota": {
+    "description": "Lỗi AI_QUOTA_EXCEEDED"
+  },
+  "usBridgeAiSummary": "✨ Tóm tắt giúp hai bạn",
+  "@usBridgeAiSummary": {
+    "description": "Nút tóm tắt Cầu nối bằng AI"
+  },
+  "usBridgeAiSummaryTitle": "Hai bạn đã chia sẻ",
+  "@usBridgeAiSummaryTitle": {
+    "description": "Tiêu đề sheet tóm tắt Cầu nối"
+  },
+  "aiDataMission": "nhóm tuổi của bé, danh sách việc gợi ý có sẵn và số việc đã xong theo nhóm 14 ngày qua",
+  "@aiDataMission": {
+    "description": "Dữ liệu gửi khi gợi ý nhiệm vụ"
+  },
+  "careAiSuggest": "✨ Gợi ý cho hôm nay",
+  "@careAiSuggest": {
+    "description": "Nút gợi ý nhiệm vụ AI ở thư viện"
+  },
+  "careAiSuggestTitle": "Gợi ý cho hôm nay",
+  "@careAiSuggestTitle": {
+    "description": "Tiêu đề sheet gợi ý nhiệm vụ AI"
+  },
+  "yearBookEntry": "Sách của con",
+  "@yearBookEntry": {
+    "description": "REC-04 mục ở hồ sơ bé"
+  },
+  "yearBookEntryHint": "Ảnh đẹp nhất theo từng tháng, xuất PDF",
+  "@yearBookEntryHint": {
+    "description": "REC-04 mô tả mục"
+  },
+  "yearBookTitle": "Sách của con",
+  "@yearBookTitle": {
+    "description": "REC-04 tiêu đề"
+  },
+  "yearBookDefaultTitle": "Năm {year} của {name}",
+  "@yearBookDefaultTitle": {
+    "description": "REC-04 tên sách mặc định",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "year": {
+        "type": "String"
+      }
+    }
+  },
+  "yearBookPdfSubtitle": "Những khoảnh khắc nhà mình đã lưu",
+  "@yearBookPdfSubtitle": {
+    "description": "REC-04 phụ đề bìa PDF"
+  },
+  "yearBookChapter": "Tháng {month}",
+  "@yearBookChapter": {
+    "description": "REC-04 tên chương mặc định",
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "yearBookBookName": "Tên sách",
+  "@yearBookBookName": {
+    "description": "REC-04 sửa tên sách"
+  },
+  "yearBookChapterName": "Tên chương",
+  "@yearBookChapterName": {
+    "description": "REC-04 sửa tên chương"
+  },
+  "yearBookCaption": "Chú thích",
+  "@yearBookCaption": {
+    "description": "REC-04 sửa chú thích"
+  },
+  "yearBookHint": "Chạm ảnh để chọn hoặc bỏ, chạm chú thích để sửa.",
+  "@yearBookHint": {
+    "description": "REC-04 hướng dẫn"
+  },
+  "yearBookEmpty": "Năm này chưa có ký ức nào của bé.",
+  "@yearBookEmpty": {
+    "description": "REC-04 trống"
+  },
+  "yearBookSelected": "{count} ký ức trong sách",
+  "@yearBookSelected": {
+    "description": "REC-04 số ký ức đã chọn",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "yearBookPreviewOnly": "Gói hiện tại chỉ xem trước sách. Nâng cấp để xuất PDF.",
+  "@yearBookPreviewOnly": {
+    "description": "REC-04 gói chỉ xem trước"
+  },
+  "yearBookUpgrade": "Nâng cấp",
+  "@yearBookUpgrade": {
+    "description": "REC-04 nút nâng cấp"
+  },
+  "yearBookPending": "Đã lưu trên máy, sẽ đồng bộ khi có mạng.",
+  "@yearBookPending": {
+    "description": "REC-04 chờ đồng bộ"
+  },
+  "yearBookExport": "Xuất PDF",
+  "@yearBookExport": {
+    "description": "REC-04 nút xuất"
+  },
+  "yearBookExporting": "Đang dựng sách…",
+  "@yearBookExporting": {
+    "description": "REC-04 đang xuất"
+  },
+  "yearBookUnsaved": "Bạn có thay đổi chưa lưu.",
+  "@yearBookUnsaved": {
+    "description": "REC-04 chưa lưu"
+  },
+  "yearBookFamily": "Cả nhà",
+  "@yearBookFamily": {
+    "description": "REC-04 chip chọn sách cả nhà"
+  },
+  "yearBookFamilyTitle": "Sách cả nhà",
+  "@yearBookFamilyTitle": {
+    "description": "REC-04 tiêu đề sách cả nhà"
+  },
+  "yearBookFamilyDefaultTitle": "Năm {year} của nhà mình",
+  "@yearBookFamilyDefaultTitle": {
+    "description": "REC-04 tên mặc định sách cả nhà",
+    "placeholders": {
+      "year": {
+        "type": "String"
+      }
+    }
+  },
+  "yearBookFamilyEmpty": "Năm này nhà mình chưa có ký ức nào.",
+  "@yearBookFamilyEmpty": {
+    "description": "REC-04 sách cả nhà chưa có ký ức"
+  },
+  "yearBookPreview": "Xem trước",
+  "@yearBookPreview": {
+    "description": "REC-04 nút / tiêu đề xem trước PDF"
+  },
+  "yearBookShared": "Sách năm của nhà",
+  "@yearBookShared": {
+    "description": "REC-04 danh sách sách đã chia sẻ (người thân)"
+  },
+  "yearBookSharedEmpty": "Bố mẹ chưa chia sẻ sách nào.",
+  "@yearBookSharedEmpty": {
+    "description": "REC-04 chưa có sách chia sẻ"
+  },
+  "yearBookShareTitle": "Chia sẻ với ông bà, người thân",
+  "@yearBookShareTitle": {
+    "description": "REC-04 bản cho ông bà: công tắc"
+  },
+  "yearBookShareHint": "Người thân được xem bé đọc được bản đã lưu, chỉ những ký ức đã chọn.",
+  "@yearBookShareHint": {
+    "description": "REC-04 bản cho ông bà: mô tả"
+  },
+  "yearBookShareLocked": "Gói Family cho phép chia sẻ sách với ông bà, người thân.",
+  "@yearBookShareLocked": {
+    "description": "REC-04 bản cho ông bà: gói chưa cho phép"
+  },
+  "notiCircleLeft": "Một người thân đã rời vòng tròn gia đình",
+  "@notiCircleLeft": {
+    "description": "NOTI_CIRCLE_LEFT (Parent, trung tính)"
+  },
+  "notiYearBookShared": "Bố mẹ vừa chia sẻ một cuốn sách năm với bạn",
+  "@notiYearBookShared": {
+    "description": "NOTI_YEARBOOK_SHARED (người thân)"
+  },
+  "recapUnshared": "Đã dừng chia sẻ với người thân",
+  "@recapUnshared": {
+    "description": "REC-02 dừng chia sẻ"
+  },
+  "recapSharedStop": "Đã chia sẻ · chạm để dừng",
+  "@recapSharedStop": {
+    "description": "REC-02 nút chính khi đã chia sẻ"
+  },
+  "memVoiceStop": "Dừng",
+  "@memVoiceStop": {
+    "description": "MEM-24 ô ghi âm: dừng ghi"
+  },
+  "notiOpen": "Xem",
+  "@notiOpen": {
+    "description": "Thanh báo thông báo đến khi app đang mở: mở màn liên quan"
+  },
+  "chatTitle": "Tin nhắn",
+  "@chatTitle": {
+    "description": "CHAT-01 tiêu đề / lối vào Tin nhắn"
+  },
+  "chatListSubtitle": "{familyName} · {count, plural, =1{1 cuộc trò chuyện} other{{count} cuộc trò chuyện}}",
+  "@chatListSubtitle": {
+    "description": "CHAT-01 dòng phụ: tên gia đình · số cuộc trò chuyện",
+    "placeholders": {
+      "familyName": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatFamilyTitle": "Cả nhà",
+  "@chatFamilyTitle": {
+    "description": "Tên cuộc trò chuyện cả nhà"
+  },
+  "chatCoupleTitle": "Papa & Mama",
+  "@chatCoupleTitle": {
+    "description": "Tên cuộc trò chuyện riêng Papa & Mama"
+  },
+  "chatOnlyTwo": "Chỉ hai bạn thấy",
+  "@chatOnlyTwo": {
+    "description": "CHAT-01 nhãn khoá cuộc trò chuyện riêng"
+  },
+  "chatMembersSummary": "{count, plural, =0{{parents}} other{{parents} + {count} người thân}}",
+  "@chatMembersSummary": {
+    "description": "CHAT-01 thành viên: tên Bố Mẹ + số người thân",
+    "placeholders": {
+      "parents": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatPreviewMine": "Bạn: {text}",
+  "@chatPreviewMine": {
+    "description": "Xem trước tin cuối của tôi",
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPreviewOther": "{name}: {text}",
+  "@chatPreviewOther": {
+    "description": "Xem trước tin cuối của người khác",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "chatNoMessagesYet": "Chưa có tin nhắn",
+  "@chatNoMessagesYet": {
+    "description": "CHAT-01 cuộc trò chuyện chưa có tin"
+  },
+  "chatToday": "Hôm nay",
+  "@chatToday": {
+    "description": "Ngăn cách ngày: hôm nay"
+  },
+  "chatYesterday": "Hôm qua",
+  "@chatYesterday": {
+    "description": "Ngăn cách ngày / thời gian: hôm qua"
+  },
+  "chatInfoNote": "Mỗi gia đình có 2 cuộc trò chuyện: “Cả nhà” cho Papa, Mama và người thân; “Papa & Mama” chỉ dành cho hai bạn.",
+  "@chatInfoNote": {
+    "description": "CHAT-01 ghi chú cuối danh sách"
+  },
+  "chatListEmptyTitle": "Chưa có cuộc trò chuyện nào",
+  "@chatListEmptyTitle": {
+    "description": "CHAT-01 không có cuộc trò chuyện"
+  },
+  "chatListEmptyDescription": "Cuộc trò chuyện của nhà mình sẽ hiện ở đây.",
+  "@chatListEmptyDescription": {
+    "description": "CHAT-01 mô tả trạng thái rỗng"
+  },
+  "chatMembersCount": "{count} thành viên",
+  "@chatMembersCount": {
+    "description": "CHAT-02 dòng phụ: số thành viên",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatMembersTooltip": "Thành viên",
+  "@chatMembersTooltip": {
+    "description": "CHAT-02 nút xem thành viên"
+  },
+  "chatCoupleSubtitle": "Tin nhắn riêng của hai bạn, người thân không xem được",
+  "@chatCoupleSubtitle": {
+    "description": "CHAT-03d dòng phụ riêng tư"
+  },
+  "chatCoupleNote": "Chỉ Papa & Mama thấy cuộc trò chuyện này",
+  "@chatCoupleNote": {
+    "description": "CHAT-03d ghi chú cuối hội thoại"
+  },
+  "chatComposerHint": "Nhắn cho cả nhà…",
+  "@chatComposerHint": {
+    "description": "Ô soạn tin cả nhà"
+  },
+  "chatComposerCoupleHint": "Nhắn riêng cho {callName}…",
+  "@chatComposerCoupleHint": {
+    "description": "Ô soạn tin riêng (tên gọi bạn đời)",
+    "placeholders": {
+      "callName": {
+        "type": "String"
+      }
+    }
+  },
+  "chatSend": "Gửi",
+  "@chatSend": {
+    "description": "Nút gửi tin"
+  },
+  "chatSending": "Đang gửi…",
+  "@chatSending": {
+    "description": "Tin đang gửi"
+  },
+  "chatWaiting": "Đang chờ gửi",
+  "@chatWaiting": {
+    "description": "Tin chờ có mạng"
+  },
+  "chatFailed": "Chưa gửi được · Chạm để gửi lại",
+  "@chatFailed": {
+    "description": "Tin gửi lỗi"
+  },
+  "chatSent": "Đã gửi",
+  "@chatSent": {
+    "description": "Tin đã gửi, chưa ai xem"
+  },
+  "chatSeen": "Đã xem",
+  "@chatSeen": {
+    "description": "Tin đã được xem (Papa & Mama)"
+  },
+  "chatSeenBy": "Đã xem · {names}",
+  "@chatSeenBy": {
+    "description": "Đã xem bởi (tên)",
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "chatSeenByMore": "Đã xem · {names} +{count}",
+  "@chatSeenByMore": {
+    "description": "Đã xem bởi (tên) + số người nữa",
+    "placeholders": {
+      "names": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatTyping": "{name} đang nhập…",
+  "@chatTyping": {
+    "description": "Một người đang nhập",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chatTypingMany": "{count} người đang nhập…",
+  "@chatTypingMany": {
+    "description": "Nhiều người đang nhập",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatOfflineSubtitle": "{count, plural, =0{Tin nhắn sẽ tự gửi khi có mạng} other{Tin nhắn sẽ tự gửi khi có mạng · {count} tin đang chờ}}",
+  "@chatOfflineSubtitle": {
+    "description": "CHAT-03a băng ngoại tuyến",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatReconnectingTitle": "Đang kết nối lại…",
+  "@chatReconnectingTitle": {
+    "description": "CHAT-03b tiêu đề"
+  },
+  "chatReconnectingSubtitle": "Tin nhắn mới sẽ hiện ngay khi kết nối xong",
+  "@chatReconnectingSubtitle": {
+    "description": "CHAT-03b dòng phụ"
+  },
+  "chatEmptyTitle": "Chưa có tin nhắn nào",
+  "@chatEmptyTitle": {
+    "description": "CHAT-03c tiêu đề"
+  },
+  "chatEmptyDescription": "Gửi lời chào đầu tiên tới cả nhà 👋",
+  "@chatEmptyDescription": {
+    "description": "CHAT-03c mô tả (cả nhà)"
+  },
+  "chatEmptyCoupleDescription": "Gửi lời nhắn riêng đầu tiên cho nhau ❤️",
+  "@chatEmptyCoupleDescription": {
+    "description": "CHAT-03c mô tả (Papa & Mama)"
+  },
+  "chatHelloSuggestion": "Chào cả nhà 👋",
+  "@chatHelloSuggestion": {
+    "description": "CHAT-03c gợi ý lời chào"
+  },
+  "chatNotFound": "Không mở được cuộc trò chuyện này",
+  "@chatNotFound": {
+    "description": "Không mở được cuộc trò chuyện"
+  },
+  "chatUnread": "{count, plural, =0{Không có tin mới} other{{count} tin chưa đọc}}",
+  "@chatUnread": {
+    "description": "Nhãn trợ năng số tin chưa đọc",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatCoupleEntry": "Nhắn riêng",
+  "@chatCoupleEntry": {
+    "description": "CHAT-04b nút nhắn riêng ở Papa & Mama"
+  },
+  "chatSomeone": "Thành viên",
+  "@chatSomeone": {
+    "description": "Tên thay thế khi không rõ người gửi"
+  },
+  "chatLoadError": "Chưa tải được tin mới. Đang hiện tin đã lưu.",
+  "@chatLoadError": {
+    "description": "Không tải được tin nhắn (đang dùng bản trên máy)"
   }
 }

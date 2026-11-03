@@ -6,12 +6,14 @@ import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/extension/date_time.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/ai_consent.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
 import 'package:baby_family/utils/helper/lucide_icon.dart';
 import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:baby_family/utils/helper/memory_text.dart';
 import 'package:baby_family/utils/helper/mission_text.dart';
+import 'package:baby_family/utils/helper/server_error_message.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
 import 'package:baby_family/utils/widget/app_text_action.dart';
@@ -187,13 +189,39 @@ class DayStoryMobileView extends HookConsumerWidget {
         body: story.body,
         aiGenerated: story.aiGenerated,
         manual: controller.manual,
-        onRewrite: () {
+        canRewrite: controller.canRewrite,
+        onRewrite: () async {
+          if (!controller.canRewriteFromSample) {
+            try {
+              await runWithAiConsent<void>(
+                context,
+                action: controller.writeWithAi,
+                grant: controller.grantAiConsent,
+              );
+            } on Object catch (error) {
+              if (context.mounted) {
+                showAppSnackBar(context, actionErrorMessage(error));
+              }
+            }
+            return;
+          }
           controller.rewrite();
           showAppSnackBar(context, l10n.recapDayRewritten);
         },
         onManual: controller.writeManually,
         onChanged: controller.setBody,
-        onReport: () => showAppSnackBar(context, l10n.commonAiReported),
+        onReport: () async {
+          try {
+            await controller.reportAi();
+            if (context.mounted) {
+              showAppSnackBar(context, l10n.commonAiReported);
+            }
+          } on Object catch (error) {
+            if (context.mounted) {
+              showAppSnackBar(context, actionErrorMessage(error));
+            }
+          }
+        },
       ),
       Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

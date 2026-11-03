@@ -5,9 +5,11 @@ import 'package:baby_family/data/dto/processed_media.dart';
 import 'package:baby_family/data/model/child/child_record.dart';
 import 'package:baby_family/data/model/child/child_stats_record.dart';
 import 'package:baby_family/data/model/memory/comment_record.dart';
+import 'package:baby_family/data/model/memory/day_story_record.dart';
 import 'package:baby_family/data/model/memory/media_asset_record.dart';
 import 'package:baby_family/data/model/memory/media_grid_item_record.dart';
 import 'package:baby_family/data/model/memory/memory_record.dart';
+import 'package:baby_family/data/model/memory/month_recap_record.dart';
 import 'package:baby_family/data/model/memory/on_this_day_record.dart';
 import 'package:baby_family/data/model/memory/reaction_state.dart';
 import 'package:baby_family/data/model/memory/timeline_item_record.dart';
@@ -158,6 +160,9 @@ class _FakeMedia implements IMediaRepository {
 
   /// Số lần xin upload tiếp theo bị lỗi mạng (MEM-06 thử lại).
   int failNext = 0;
+
+  /// PUT thứ n (từ 0) lên S3 bị mất mạng một lần; -1 = không lỗi.
+  int failUploadAfter = -1;
   final completedParts = <List<JsonMap>>[];
 
   @override
@@ -252,8 +257,18 @@ class _FakeMedia implements IMediaRepository {
   @override
   Future<List<JsonMap>> uploadBytes(
     UploadInstruction instruction,
-    Uint8List bytes,
-  ) async {
+    Uint8List bytes, {
+    UploadProgress? onProgress,
+  }) async {
+    if (failUploadAfter == 0) {
+      failUploadAfter = -1;
+      throw DioException(requestOptions: RequestOptions(path: '/s3'));
+    }
+    if (failUploadAfter > 0) {
+      failUploadAfter--;
+    }
+    onProgress?.call(bytes.length ~/ 2, bytes.length);
+    onProgress?.call(bytes.length, bytes.length);
     uploaded.add(bytes.length);
     return [
       for (final part in instruction.parts) {'n': part.n, 'etag': 'e${part.n}'},
@@ -379,6 +394,45 @@ class _FakeFeed implements IMemoryFeedRepository {
   final memoryReads = <String>[];
   final byId = <String, MemoryRecord>{};
 
+  /// REC-01 (BF-20261028-006).
+  DayStoryRecord? dayStoryRecord;
+  final savedDayStories = <String, JsonMap>{};
+
+  @override
+  Future<DayStoryRecord?> dayStory(String childId, {String? date}) async =>
+      dayStoryRecord;
+
+  @override
+  Future<SavedDayStoryRecord?> saveDayStory(
+    String childId,
+    String date,
+    JsonMap body,
+  ) async {
+    savedDayStories['$childId|$date'] = body;
+    return SavedDayStoryRecord.fromJson(body);
+  }
+
+  /// REC-03 (BF-20261027-003): null = 404 (bé chưa tròn tháng).
+  MonthRecapRecord? monthRecapRecord;
+  final monthRecapCalls = <String>[];
+
+  @override
+  Future<MonthRecapRecord?> monthRecap(
+    String childId, {
+    int? monthIndex,
+  }) async {
+    monthRecapCalls.add(childId);
+    final record = monthRecapRecord;
+    if (record == null) {
+      final options = RequestOptions(path: '/month-recap');
+      throw DioException(
+        requestOptions: options,
+        response: Response(requestOptions: options, statusCode: 404),
+      );
+    }
+    return record;
+  }
+
   /// Trang changes theo cursor gửi lên; null = chưa cấu hình (trang rỗng).
   Map<String?, ChangesPage> changePages = const {};
   final changeCursors = <String?>[];
@@ -411,6 +465,9 @@ class _FakeFeed implements IMemoryFeedRepository {
 
   final updates = <(String, int, JsonMap)>[];
   int conflictsLeft = 0;
+
+  /// Chạy trước mỗi `PATCH` (ném lỗi = lần gửi đó thất bại).
+  void Function()? updateHook;
   MemoryRecord? latest;
 
   @override
@@ -419,6 +476,12 @@ class _FakeFeed implements IMemoryFeedRepository {
     int version,
     JsonMap body,
   ) async {
+    if (offline) {
+      throw DioException(
+        requestOptions: RequestOptions(path: '/memories/$memoryId'),
+      );
+    }
+    updateHook?.call();
     updates.add((memoryId, version, body));
     if (conflictsLeft > 0) {
       conflictsLeft--;
@@ -1081,6 +1144,130 @@ void main() {
     expect(memory?.mediaVideos, [null, 'https://cdn/vid.mp4']);
   });
 
+  test('BF-20261029-001: photo edits offline show at once, merge with text '
+      'edits and upload only when sent; a failed send resumes', () async {
+    final outbox = FakeOutbox();
+    final service = memories()..outbox = outbox;
+    MediaAssetRecord asset(String id) => MediaAssetRecord(
+      assetId: id,
+      kind: 'IMAGE',
+      status: 'READY',
+      urls: {'m1080': 'https://cdn/$id.jpg'},
+      urlsExpireAt: DateTime.now().add(const Duration(hours: 1)),
+    );
+    feed.latest = MemoryRecord(
+      id: 'srv-photos',
+      kind: 'MOMENT',
+      status: 'PUBLISHED',
+      authorUserId: 'srv-me',
+      visibility: 'FAMILY',
+      version: 5,
+      occurredAt: DateTime.utc(2026, 10, 1),
+      createdAt: DateTime.utc(2026, 10, 1),
+      assets: [asset('a1'), asset('a2')],
+    );
+    await service.refreshMemory('srv-photos');
+
+    feed.offline = true;
+    media.failNext = 100;
+    final edited = await service.updateMemory(
+      'srv-photos',
+      mediaAssets: const ['https://cdn/a2.jpg', '/tmp/new.jpg'],
+    );
+    expect(edited.mediaAssets, ['https://cdn/a2.jpg', '/tmp/new.jpg']);
+    expect(media.intents, isEmpty, reason: 'upload waits for the send');
+    // Sửa tiếp chữ và thêm ảnh: gộp thành một bản, ảnh vừa chọn vẫn còn.
+    await service.updateMemory(
+      'srv-photos',
+      body: 'Cả nhà đi biển',
+      mediaAssets: const ['/tmp/new.jpg', 'https://cdn/a2.jpg', '/tmp/b.jpg'],
+    );
+    expect(
+      outbox.entries.where((entry) => entry.kind == 'memory.edit'),
+      hasLength(1),
+    );
+    final local = await service.memory('srv-photos');
+    expect(local?.mediaAssets, [
+      '/tmp/new.jpg',
+      'https://cdn/a2.jpg',
+      '/tmp/b.jpg',
+    ]);
+    expect(local?.mediaVideos, [null, null, null]);
+
+    // Ảnh tải xong, PATCH mất mạng → lần sau không tải lại.
+    feed.offline = false;
+    media.failNext = 0;
+    var patchFails = true;
+    feed.updateHook = () {
+      if (patchFails) {
+        patchFails = false;
+        throw DioException(
+          requestOptions: RequestOptions(path: '/memories/srv-photos'),
+        );
+      }
+    };
+    await service.syncPending();
+    await service.uploadsSettled;
+    expect(media.intents, hasLength(2));
+    expect(feed.updates, isEmpty);
+    expect(outbox.entries.single.args['uploaded'], {
+      '0': 'asset-1',
+      '2': 'asset-2',
+    });
+
+    await service.syncPending();
+    await service.uploadsSettled;
+    expect(media.intents, hasLength(2), reason: 'uploaded assets are reused');
+    final (id, version, body) = feed.updates.single;
+    expect((id, version), ('srv-photos', 5));
+    expect(body, {
+      'body': 'Cả nhà đi biển',
+      'addAssetIds': ['asset-1', 'asset-2'],
+      'removeAssetIds': ['a1'],
+      'coverAssetId': 'asset-1',
+    });
+    expect(outbox.entries, isEmpty);
+  });
+
+  test('BF-20261029-001: a refused photo edit drops its files and reloads the '
+      'server photos', () async {
+    final outbox = FakeOutbox();
+    final service = memories()..outbox = outbox;
+    feed.latest = MemoryRecord(
+      id: 'srv-photos',
+      kind: 'MOMENT',
+      status: 'PUBLISHED',
+      authorUserId: 'srv-me',
+      visibility: 'FAMILY',
+      version: 2,
+      occurredAt: DateTime.utc(2026, 10, 1),
+      createdAt: DateTime.utc(2026, 10, 1),
+      assets: [
+        MediaAssetRecord(
+          assetId: 'a1',
+          kind: 'IMAGE',
+          status: 'READY',
+          urls: const {'m1080': 'https://cdn/a1.jpg'},
+          urlsExpireAt: DateTime.now().add(const Duration(hours: 1)),
+        ),
+      ],
+    );
+    await service.refreshMemory('srv-photos');
+    feed.conflictsLeft = 1;
+    await expectLater(
+      service.updateMemory(
+        'srv-photos',
+        mediaAssets: const ['/tmp/new.jpg', 'https://cdn/a1.jpg'],
+      ),
+      throwsA(isA<DioException>()),
+    );
+    expect(outbox.entries, isEmpty);
+    expect(outbox.discarded, isNotEmpty);
+    expect((await service.memory('srv-photos'))?.mediaAssets, [
+      'https://cdn/a1.jpg',
+    ]);
+  });
+
   test(
     'MEM-07/09: detail reloads; edits add, remove, re-cover photos',
     () async {
@@ -1185,6 +1372,47 @@ void main() {
       expect(second.pendingSyncCount, 0);
     },
   );
+
+  test('BF-20261028-005: a post resumes after a restart from the file it '
+      'stopped at and reports byte progress', () async {
+    final outbox = FakeOutbox();
+    final store = container.read(memoryRepositoryProvider);
+    final first = memories()..outbox = outbox;
+    final progress = <double>[];
+    // Ảnh đầu (3 file: chính + m1080 + t320) xong, mất mạng giữa ảnh thứ hai.
+    media.failUploadAfter = 4;
+    final placeholder = await first.create(
+      kind: MemoryKind.photo,
+      childIds: const [],
+      body: 'Đi biển',
+      mediaAssets: const ['/tmp/a.jpg', '/tmp/b.jpg'],
+      deferUpload: true,
+    );
+    // Bài hiện ngay trên máy, trước khi tải xong.
+    expect(store.memory(placeholder.id)?['body'], 'Đi biển');
+    await first.uploadsSettled;
+    final row = store.memory(placeholder.id)!;
+    expect(row['uploadWaiting'], isTrue);
+    expect(row['uploadDone'], 1);
+    progress.add((row['uploadProgress'] as num).toDouble());
+    expect(progress.single, greaterThanOrEqualTo(0.5));
+    expect(progress.single, lessThan(1));
+    expect(outbox.entries.single.args['uploaded'], {'0': 'asset-1'});
+    expect(feed.created, isEmpty);
+
+    // Tắt app rồi mở lại: hiện lại đúng tiến độ, chỉ tải tiếp ảnh thứ hai.
+    store.removeMemory(placeholder.id);
+    final intentsBefore = media.intents.length;
+    final second = memories()..outbox = outbox;
+    await second.memories();
+    await second.uploadsSettled;
+    expect(media.intents.length - intentsBefore, 1);
+    expect(feed.created.single['assetIds'], [
+      'asset-1',
+      'asset-${media.intents.length}',
+    ]);
+    expect(outbox.entries, isEmpty);
+  });
 
   test('offline-first: a server refusal waits for the user', () async {
     final outbox = FakeOutbox();
@@ -1895,6 +2123,39 @@ void main() {
     },
   );
 
+  test('BF-20261028-001: memory edits offline show at once, merge and are sent '
+      'once with the original version', () async {
+    final outbox = FakeOutbox();
+    final service = memories()..outbox = outbox;
+    feed.pages = {
+      null: ([record('srv-1', version: 3)], null),
+    };
+    await service.memories();
+
+    feed.offline = true;
+    final edited = await service.updateMemory('srv-1', body: 'Sửa lần một');
+    expect(edited.body, 'Sửa lần một');
+    await service.updateMemory('srv-1', title: 'Tiêu đề mới');
+    final pending = outbox.entries.where((e) => e.kind == 'memory.edit');
+    expect(pending, hasLength(1));
+    expect(feed.updates, isEmpty);
+    expect((await service.memory('srv-1'))?.title, 'Tiêu đề mới');
+
+    feed.offline = false;
+    await service.syncPending();
+    await service.uploadsSettled;
+    final (id, version, body) = feed.updates.single;
+    expect((id, version), ('srv-1', 3));
+    expect(body, {'body': 'Sửa lần một', 'title': 'Tiêu đề mới'});
+    expect(outbox.entries, isEmpty);
+    expect(
+      container
+          .read(memoryRepositoryProvider)
+          .memory('srv-1')?['remoteVersion'],
+      4,
+    );
+  });
+
   test('offline-first: comments and reactions made offline show at once and '
       'are sent once when back online', () async {
     final outbox = FakeOutbox();
@@ -2156,6 +2417,117 @@ void main() {
     });
     expect(changes.items.map((c) => c.id), ['m1', 'a1']);
     expect(changes.nextCursor, 'c9');
+  });
+
+  test('BF-20261028-006: REC-01 day story from the day memories, saved with '
+      'the chosen photos', () async {
+    final service = memories();
+    expect(await service.dayStory(childId: 'kid'), isNull);
+    MemoryRecord withPhoto(String id) => record(id).copyWith(
+      title: 'Đi công viên',
+      assets: [
+        MediaAssetRecord(
+          assetId: 'asset-$id',
+          status: 'READY',
+          urls: {'m1080': 'https://s3/$id?sig=1'},
+          urlsExpireAt: DateTime.utc(2099),
+        ),
+      ],
+    );
+    feed.byId['srv-a'] = withPhoto('srv-a');
+    feed.byId['srv-b'] = withPhoto('srv-b');
+    feed.dayStoryRecord = DayStoryRecord.fromJson({
+      'childId': 'kid',
+      'date': '2026-10-07',
+      'memories': [
+        {
+          'memoryId': 'srv-a',
+          'kind': 'MOMENT',
+          'title': 'Đi công viên',
+          'occurredAt': '2026-10-07T03:00:00.000Z',
+          'assetIds': ['asset-srv-a'],
+        },
+        {
+          'memoryId': 'srv-b',
+          'kind': 'MOMENT',
+          'occurredAt': '2026-10-07T05:00:00.000Z',
+          'assetIds': ['asset-srv-b'],
+        },
+        // Dòng hỏng từ server: bỏ, không hỏng cả màn.
+        {'memoryId': 42},
+      ],
+    });
+    final story = await service.dayStory(childId: 'kid');
+    expect(story?.aiGenerated, isFalse);
+    expect(story?.items.map((item) => item.id), ['srv-a', 'srv-b']);
+    expect(story?.items.every((item) => item.selected), isTrue);
+    expect(story?.items.first.kindCode, 'photo');
+    expect(story?.photoOptions, hasLength(2));
+    expect(story?.coverAsset, story?.photoOptions.first);
+
+    await service.saveDayStory(
+      story!.copyWith(
+        title: ' Ngày ở công viên ',
+        body: 'Con chạy khắp nơi',
+        items: [story.items.first, story.items.last.copyWith(selected: false)],
+        photoAssets: [story.photoOptions.last],
+        coverAsset: story.photoOptions.last,
+        visibility: MemoryVisibility.family,
+      ),
+    );
+    expect(feed.savedDayStories['kid|2026-10-07'], {
+      'title': 'Ngày ở công viên',
+      'body': 'Con chạy khắp nơi',
+      'memoryIds': ['srv-a'],
+      'assetIds': ['asset-srv-b'],
+      'coverAssetId': 'asset-srv-b',
+      'visibility': 'FAMILY',
+    });
+
+    // Đã lưu: mở lại thấy đúng lựa chọn đã lưu.
+    feed.dayStoryRecord = feed.dayStoryRecord!.copyWith(
+      saved: const SavedDayStoryRecord(
+        title: 'Ngày ở công viên',
+        memoryIds: ['srv-a'],
+        assetIds: ['asset-srv-b'],
+        coverAssetId: 'asset-srv-b',
+        visibility: 'FAMILY',
+      ),
+    );
+    final reopened = await service.dayStory(childId: 'kid');
+    expect(reopened?.title, 'Ngày ở công viên');
+    expect(reopened?.items.map((item) => item.selected), [true, false]);
+    expect(reopened?.photoAssets, [reopened?.photoOptions.last]);
+    expect(reopened?.visibility, MemoryVisibility.family);
+  });
+
+  test('REC-03: the month-of-age recap comes from the server', () async {
+    final service = memories();
+    // Bé chưa tròn tháng (404): trạng thái rỗng, không số liệu mẫu.
+    expect(await service.monthRecap(childId: 'kid'), isNull);
+
+    feed.monthRecapRecord = const MonthRecapRecord(
+      childId: 'kid',
+      monthIndex: 2,
+      start: '2026-09-05',
+      end: '2026-10-04',
+      moments: 3,
+      firsts: 1,
+      voices: 0,
+      firstMemoryIds: ['srv-first'],
+    );
+    feed.byId['srv-first'] = record('srv-first');
+    final recap = await service.monthRecap(childId: 'kid');
+    expect(feed.monthRecapCalls.last, 'kid');
+    expect(recap?.monthIndex, 2);
+    expect(recap?.start, DateTime(2026, 9, 5));
+    expect(recap?.moments, 3);
+    expect(recap?.firsts, 1);
+    // Ký ức chưa có trên máy: đọc từ server rồi dùng bản phản chiếu.
+    expect(recap?.firstMemories.single.id, 'srv-first');
+    expect(feed.memoryReads, ['srv-first']);
+    expect(recap?.voiceMemories, isEmpty);
+    expect(recap?.pageCount, 3);
   });
 
   test(

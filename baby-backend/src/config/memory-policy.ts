@@ -39,6 +39,8 @@ export const MEMORY_POLICY = {
   todayStoryCap: 60,
   /** Spec §7.8.3 / MEM-17: trashed memories are kept 30 days, then purged. */
   trashRetentionMs: 30 * 24 * 60 * 60 * 1000,
+  /** MEM-24 ảnh/video tối đa trong một góc nhìn (BF-20261030-006). */
+  perspectiveMaxAssets: 6,
   /** Memories purged per `memory.purge-trash` run; the next run continues. */
   purgeBatchSize: 100,
   /** Spec §7.12: comments are text ≤ 1,000 characters, editable for 15 minutes. */

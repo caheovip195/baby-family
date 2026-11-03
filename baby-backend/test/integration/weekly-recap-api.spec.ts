@@ -599,6 +599,69 @@ describe('BF-20261019-007 weekly recaps (isolated Nest module + PostgreSQL + ES2
       where: { memoryId: ids.get('walk'), childId: childB },
     });
   });
+  it('BF-20261030-004: Parents share the recap with relatives and save it to the timeline once', async () => {
+    await prisma.recap.updateMany({
+      where: { familyId },
+      data: { visibility: 'PARENTS', memoryId: null },
+    });
+    const latest = data<WeeklyRecapResponse>(
+      await call('get', path + '/recaps/weekly/latest').expect(200),
+    );
+    expect(latest).toMatchObject({ canShare: true, memoryId: null });
+    const share = (shared: unknown, user = parent) =>
+      request(app.getHttpServer())
+        .put(`/api/v1${path}/recaps/weekly/${latest.id}/share`)
+        .set('Authorization', tokens.get(user)!)
+        .send({ shared });
+    const events = () =>
+      prisma.outboxEvent.count({
+        where: { familyId, eventType: 'recap.weekly.shared' },
+      });
+    const before = await events();
+    expect(
+      data<WeeklyRecapResponse>(await share(true).expect(200)).visibility,
+    ).toBe('FAMILY');
+    await share(true).expect(200);
+    expect(await events()).toBe(before + 1);
+    await share('yes').expect(400);
+    expect([403, 404]).toContain((await share(false, circle)).status);
+    await call('get', path + '/recaps/weekly/latest', circle).expect(200);
+
+    const save = (user = parent) =>
+      call('post', path + `/recaps/weekly/${latest.id}/timeline`, user);
+    const first = data<{ memoryId: string }>(await save().expect(200));
+    const again = data<{ memoryId: string }>(await save(partner).expect(200));
+    expect(again.memoryId).toBe(first.memoryId);
+    expect([403, 404]).toContain((await save(circle)).status);
+    const memory = await prisma.memory.findUniqueOrThrow({
+      where: { id: first.memoryId },
+    });
+    expect(memory).toMatchObject({
+      kind: 'MOMENT',
+      visibility: 'PARENTS',
+      familyMoment: true,
+      authorUserId: parent,
+      status: 'PUBLISHED',
+    });
+    expect(memory.title).toMatch(/^(Tuần của nhà mình|Our family's week) /);
+    expect(
+      data<WeeklyRecapResponse>(
+        await call('get', path + '/recaps/weekly/latest').expect(200),
+      ).memoryId,
+    ).toBe(first.memoryId);
+
+    await share(false).expect(200);
+    await call('get', path + '/recaps/weekly/latest', circle).expect(404);
+    await prisma.recap.updateMany({
+      where: { familyId },
+      data: { memoryId: null },
+    });
+    await prisma.memoryAsset.deleteMany({
+      where: { memoryId: first.memoryId },
+    });
+    await prisma.memory.delete({ where: { id: first.memoryId } });
+  });
+
   it('serves this week with ACL, validates paging and gates expired Parents outside the data allowlist', async () => {
     const stats = data<WeekStats>(
       await call('get', path + '/home/week-stats', circle).expect(200),

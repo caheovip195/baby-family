@@ -42,7 +42,7 @@ void main() {
     testWidgets('design qa us_09', (tester) async {
       await pumpRoute(
         tester,
-        const BridgeRewriteRoute(),
+        BridgeRewriteRoute(),
         size: const Size(390, 1040),
       );
       expect(find.text('TRUNG TÍNH'), findsOne);

@@ -1,6 +1,8 @@
 import 'package:baby_family/data/model/memory/comment_record.dart';
+import 'package:baby_family/data/model/memory/day_story_record.dart';
 import 'package:baby_family/data/model/memory/media_grid_item_record.dart';
 import 'package:baby_family/data/model/memory/memory_record.dart';
+import 'package:baby_family/data/model/memory/month_recap_record.dart';
 import 'package:baby_family/data/model/memory/on_this_day_record.dart';
 import 'package:baby_family/data/model/memory/reaction_state.dart';
 import 'package:baby_family/data/model/memory/timeline_item_record.dart';
@@ -40,6 +42,24 @@ class MemoryFeedRepositoryImp extends BaseRepositoryImp
     );
     return (memories: rs.memories, nextCursor: rs.nextCursor);
   }
+
+  @override
+  Future<DayStoryRecord?> dayStory(String childId, {String? date}) async =>
+      (await client!.getDayStory(childId, date: date)).story;
+
+  @override
+  Future<SavedDayStoryRecord?> saveDayStory(
+    String childId,
+    String date,
+    JsonMap body,
+  ) async => (await client!.putDayStory(childId, date, body)).saved;
+
+  @override
+  Future<MonthRecapRecord?> monthRecap(
+    String childId, {
+    int? monthIndex,
+  }) async =>
+      (await client!.getMonthRecap(childId, monthIndex: monthIndex)).recap;
 
   @override
   Future<ChangesPage> changes(String familyId, {String? cursor, int? limit}) =>

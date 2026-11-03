@@ -61,6 +61,17 @@ abstract class ISettingsService extends IBaseService {
   /// SET-09c: xác thực lại bằng [code]; sai mã thì ném lỗi.
   Future<void> verifyReauth(String code);
 
+  /// Xác thực lại bằng Apple / Google đã liên kết (mở hộp thoại của nhà cung
+  /// cấp; đóng hộp thoại → `SocialSignInCancelled`).
+  Future<void> reauthWithSignIn(AuthMethod method);
+
+  /// SET bảo mật: liên kết Apple / Google sau khi xác thực lại.
+  Future<void> linkSignIn(AuthMethod method);
+
+  /// Gỡ liên kết sau khi xác thực lại; server giữ ít nhất một cách đăng nhập
+  /// (`LAST_SIGN_IN_METHOD`).
+  Future<void> unlinkSignIn(AuthMethod method);
+
   /// SET-09c “Xoá tài khoản”: tài khoản chờ xoá 30 ngày rồi đăng xuất. Mock
   /// đăng xuất và nạp lại seed `fresh`. [keepMemories] = giữ ký ức đã đăng cho
   /// gia đình (ẩn danh).

@@ -8,4 +8,11 @@ abstract class IPushService extends IBaseService {
 
   /// Mở app: nếu đã được phép từ trước thì gửi lại token (token có thể đổi).
   Future<void> syncIfAuthorized();
+
+  /// Deep link của thông báo đẩy người dùng chạm (kể cả thông báo đã mở app
+  /// từ trạng thái tắt) (BF-20261030-005).
+  Stream<String> openedLinks();
+
+  /// Thông báo đến khi app đang mở → app hiện thanh báo (BF-20261030-006).
+  Stream<({String title, String body, String? link})> foregroundMessages();
 }

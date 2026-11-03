@@ -48,6 +48,15 @@ export interface IMemoryLibraryRepository {
     cursor: LibraryCursor | null,
     limit: number,
   ): Promise<LibraryCursor[]>;
+  /**
+   * Ảnh/video của góc nhìn [perspectiveId] thuộc ký ức [memoryId] (cùng luật
+   * asset của ký ức; người thân không thấy góc nhìn đã ẩn) — BF-20261030-009.
+   */
+  perspectiveMedia(
+    memoryId: string,
+    perspectiveId: string,
+    includeHidden: boolean,
+  ): Promise<{ assets: Asset[]; variants: AssetVariant[] } | null>;
   auditDownload(
     userId: string,
     familyId: string,

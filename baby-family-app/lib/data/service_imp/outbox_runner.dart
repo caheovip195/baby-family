@@ -42,6 +42,10 @@ class OutboxRunner {
   final _entries = <String, OutboxEntry>{};
   final _rejected = <String, Object>{};
   final _timers = <String, Timer>{};
+
+  /// Thao tác đang chờ [submit]: lỗi bị từ chối giữ lại cho lệnh đó ném ra,
+  /// kể cả khi service bỏ thao tác ngay trong [onState].
+  final _submitting = <String>{};
   Future<void>? _loading;
   Future<void> _queue = Future.value();
 
@@ -84,10 +88,23 @@ class OutboxRunner {
     schedule(entry.id);
   }
 
+  /// Lưu tiến độ của thao tác đang gửi vào [OutboxEntry.args] (vd asset đã
+  /// tải xong) để mở lại app thì gửi tiếp, không làm lại từ đầu.
+  Future<void> patchArgs(String id, Map<String, dynamic> args) async {
+    final entry = _entries[id];
+    if (entry == null) {
+      return;
+    }
+    _entries[id] = entry.copyWith(args: {...entry.args, ...args});
+    await _save();
+  }
+
   /// Bỏ thao tác chưa gửi (người dùng huỷ / thao tác sau thay thế).
   Future<bool> remove(String id) async {
     _timers.remove(id)?.cancel();
-    _rejected.remove(id);
+    if (!_submitting.contains(id)) {
+      _rejected.remove(id);
+    }
     if (_entries.remove(id) == null) {
       return false;
     }
@@ -99,9 +116,15 @@ class OutboxRunner {
   /// trong hàng đợi, tự gửi sau). Bị từ chối (4xx) → bỏ khỏi hàng đợi và ném
   /// lỗi của server để màn hình báo như khi gọi thẳng.
   Future<bool> submit(OutboxEntry entry) async {
-    await add(entry);
-    await _queue;
-    final error = _rejected.remove(entry.id);
+    _submitting.add(entry.id);
+    final Object? error;
+    try {
+      await add(entry);
+      await _queue;
+    } finally {
+      _submitting.remove(entry.id);
+      error = _rejected.remove(entry.id);
+    }
     if (error != null) {
       await remove(entry.id);
       throw error;
@@ -171,10 +194,15 @@ class OutboxRunner {
       if (!retry) {
         _rejected[id] = error;
       }
-      final next = entry.copyWith(attempts: entry.attempts + 1, failed: !retry);
-      if (!_entries.containsKey(id)) {
+      // Bản mới nhất: [patchArgs] có thể đã lưu tiến độ trong lúc gửi.
+      final current = _entries[id];
+      if (current == null) {
         return;
       }
+      final next = current.copyWith(
+        attempts: current.attempts + 1,
+        failed: !retry,
+      );
       _entries[id] = next;
       await _save();
       onState(next, retry ? OutboxState.waiting : OutboxState.failed);

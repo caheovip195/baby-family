@@ -1,7 +1,10 @@
 import 'package:baby_family/data/model/us/appreciation_record.dart';
 import 'package:baby_family/data/model/us/appreciation_wall.dart';
+import 'package:baby_family/data/model/us/bridge_session_record.dart';
+import 'package:baby_family/data/model/us/care_handoff.dart';
 import 'package:baby_family/data/model/us/checkin_record.dart';
 import 'package:baby_family/data/model/us/checkin_today.dart';
+import 'package:baby_family/data/model/us/couple_question_record.dart';
 import 'package:baby_family/data/model/us/journal_entry_record.dart';
 import 'package:baby_family/data/model/us/journal_list.dart';
 import 'package:baby_family/data/model/us/request_created.dart';
@@ -90,4 +93,47 @@ abstract class ICoupleRemoteRepository extends IBaseRepository {
   Future<UsSettingsRecord?> usSettings();
 
   Future<UsSettingsRecord?> updateUsSettings(JsonMap patch);
+
+  /// Cầu nối (BF-20261028-008).
+  Future<BridgeSessionRecord?> createBridge(
+    String familyId,
+    String idempotencyKey,
+    JsonMap body,
+  );
+
+  Future<List<BridgeSessionRecord>> bridges(String familyId);
+
+  Future<BridgeSessionRecord?> bridge(String familyId, String sessionId);
+
+  Future<BridgeSessionRecord?> bridgeAction(
+    String familyId,
+    String sessionId,
+    String action, [
+    JsonMap body = const {},
+  ]);
+
+  Future<BridgeSessionRecord?> bridgeNextStep(
+    String familyId,
+    String sessionId,
+    JsonMap body,
+  );
+
+  /// Bàn giao ca (BF-20261028-007).
+  Future<CareHandoff?> createHandoff(
+    String familyId,
+    String idempotencyKey,
+    JsonMap body,
+  );
+
+  Future<List<CareHandoff>> handoffs(String familyId);
+
+  Future<CareHandoff?> acknowledgeHandoff(String familyId, String handoffId);
+
+  /// Câu hỏi kết nối hôm nay (BF-20261027-002).
+  Future<CoupleQuestionRecord?> questionToday(String familyId);
+
+  Future<CoupleQuestionRecord?> answerQuestion(String familyId, String answer);
+
+  /// US-14 Tuần của hai ta.
+  Future<CoupleWeekRecord?> week(String familyId, {String? weekStart});
 }

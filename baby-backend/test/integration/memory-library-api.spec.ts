@@ -409,6 +409,72 @@ describe('Memory library API (focused module + PostgreSQL)', () => {
         .items,
     ).toEqual([]);
   });
+  it('BF-20261030-009: signs perspective originals with the memory download rules', async () => {
+    const photo = randomUUID();
+    await prisma.asset.create({
+      data: {
+        id: photo,
+        familyId,
+        uploaderUserId: parentB,
+        kind: 'IMAGE',
+        status: 'READY',
+        storageKey: `fam/${familyId}/p-raw`,
+        storageBucket: 'bf-media',
+        mime: 'image/jpeg',
+        declaredSize: 100n,
+        sizeBytes: 100n,
+        keepOriginal: true,
+      },
+    });
+    await prisma.assetVariant.create({
+      data: {
+        familyId,
+        assetId: photo,
+        variantCode: 'orig',
+        storageBucket: 'bf-media',
+        storageKey: `fam/${familyId}/perspective-original.jpg`,
+        mime: 'image/jpeg',
+        sizeBytes: 100n,
+      },
+    });
+    const perspective = await prisma.memoryPerspective.create({
+      data: {
+        familyId,
+        memoryId: sharedId,
+        authorUserId: parentB,
+        body: 'Bố kể',
+        hiddenFromCircle: true,
+      },
+    });
+    await prisma.memoryPerspectiveAsset.create({
+      data: {
+        perspectiveId: perspective.id,
+        assetId: photo,
+        familyId,
+        sortOrder: 0,
+      },
+    });
+    const path = (id: string) =>
+      `/api/v1/memories/${sharedId}/download-urls?perspectiveId=${id}`;
+    const result = data<OriginalDownloadResponse>(
+      await http('post', path(perspective.id), parent).expect(200),
+    );
+    expect(result.items).toEqual([
+      expect.objectContaining({
+        assetId: photo,
+        url: `https://storage.invalid/fam/${familyId}/perspective-original.jpg`,
+      }),
+    ]);
+    // Góc nhìn ẩn với người thân; id lạ / sai định dạng. Dùng Papa (parentB
+    // dành cho test giới hạn tần suất).
+    await http('post', path(perspective.id), circle).expect(404);
+    await http('post', path(randomUUID()), parent).expect(404);
+    await http('post', path('nope'), parent).expect(400);
+    await prisma.memoryPerspectiveAsset.deleteMany({
+      where: { perspectiveId: perspective.id },
+    });
+    await prisma.memoryPerspective.delete({ where: { id: perspective.id } });
+  });
   it('rechecks ended membership, redacts ungranted pregnancy and hides sensitive pregnancy content', async () => {
     await prisma.circleMember.updateMany({
       where: { familyId, userId: circle },

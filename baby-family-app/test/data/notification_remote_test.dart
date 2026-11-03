@@ -102,6 +102,21 @@ void main() {
           readAt: DateTime.utc(2026, 10, 7, 1),
         ),
         NotificationRecord(
+          id: 'n6',
+          tab: 'FAMILY',
+          templateCode: 'NOTI_CIRCLE_LEFT',
+          params: const {'actorUserId': 'srv-relative', 'entityId': 'cm-1'},
+          createdAt: DateTime.utc(2026, 10, 6),
+          readAt: DateTime.utc(2026, 10, 6, 1),
+        ),
+        NotificationRecord(
+          id: 'n7',
+          tab: 'FAMILY',
+          templateCode: 'NOTI_YEARBOOK_SHARED',
+          createdAt: DateTime.utc(2026, 10, 5),
+          readAt: DateTime.utc(2026, 10, 5, 1),
+        ),
+        NotificationRecord(
           id: 'n3',
           tab: 'FAMILY',
           templateCode: 'NOTI_SOMETHING_NEW',
@@ -109,8 +124,20 @@ void main() {
         ),
       ];
       final inbox = await service().notifications();
-      expect(inbox.map((item) => item.id), ['n2', 'n1', 'n3', 'n4', 'n5']);
-      expect(inbox.last.route, '/care/badges');
+      expect(inbox.map((item) => item.id), [
+        'n2',
+        'n1',
+        'n3',
+        'n4',
+        'n5',
+        'n6',
+        'n7',
+      ]);
+      expect(inbox[4].route, '/care/badges');
+      // BF-20261030-003: rời gia đình (trung tính), sách năm được chia sẻ.
+      expect(inbox[5].text, 'Một người thân đã rời vòng tròn gia đình');
+      expect(inbox[5].route, '/family');
+      expect(inbox[6].route, '/circle/year-books');
       final reminder = inbox[3];
       expect(reminder.text, 'Bạn có một lịch hẹn sắp tới');
       expect(reminder.route, '/calendar');

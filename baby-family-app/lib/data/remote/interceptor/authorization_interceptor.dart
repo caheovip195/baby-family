@@ -101,13 +101,37 @@ class AuthorizationInterceptor extends Interceptor {
     );
   }
 
-  static Future<AuthCertificate?> _renew() async {
+  /// Chứng chỉ có access token còn hạn cho kết nối realtime (Socket.IO,
+  /// BF-20261101-001): dùng chung luồng gia hạn với request HTTP (một lần
+  /// gia hạn cho mọi nơi gọi). [forceRenew] khi server báo token đã hết hạn
+  /// dù đồng hồ máy chưa thấy. null = hết phiên / chưa gia hạn được (mạng).
+  static Future<AuthCertificate?> currentCertificate({
+    bool forceRenew = false,
+  }) async {
+    final certificate = await readCertificate();
+    if (certificate?.accessToken == null) {
+      return null;
+    }
+    if (!forceRenew && !_needsRenewAt(certificate!, DateTime.now())) {
+      return certificate;
+    }
+    final renewed = await (_pendingRenew ??= _renew(
+      force: forceRenew,
+    ).whenComplete(() => _pendingRenew = null));
+    if (renewed?.accessToken == null ||
+        _isAccessExpiredAt(renewed!, DateTime.now())) {
+      return null;
+    }
+    return renewed;
+  }
+
+  static Future<AuthCertificate?> _renew({bool force = false}) async {
     final certificate = await readCertificate();
     final refreshToken = certificate?.refreshToken;
     if (certificate == null || refreshToken == null || refreshToken.isEmpty) {
       return null;
     }
-    if (!_needsRenewAt(certificate, DateTime.now())) {
+    if (!force && !_needsRenewAt(certificate, DateTime.now())) {
       // Request khác vừa gia hạn xong.
       return certificate;
     }

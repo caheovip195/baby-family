@@ -17,10 +17,16 @@ import 'package:share_plus/share_plus.dart';
 /// MEM-08 Xem ảnh toàn màn hình: vuốt ngang chuyển ảnh, pinch zoom, vuốt
 /// xuống để đóng; Tải về • Chia sẻ • Yêu thích • Thông tin.
 final photoViewerControllerProvider = ChangeNotifierProvider.autoDispose
-    .family<PhotoViewerController, String>(PhotoViewerController.new);
+    .family<PhotoViewerController, ({String memoryId, String? perspectiveId})>(
+      (ref, key) => PhotoViewerController(
+        ref,
+        key.memoryId,
+        perspectiveId: key.perspectiveId,
+      ),
+    );
 
 class PhotoViewerController extends BaseNotifier {
-  PhotoViewerController(super.ref, this.memoryId) {
+  PhotoViewerController(super.ref, this.memoryId, {this.perspectiveId}) {
     ref
       ..listen(mockRevisionProvider, (_, _) => load())
       ..listen(appLanguageProvider, (_, _) => load());
@@ -28,6 +34,12 @@ class PhotoViewerController extends BaseNotifier {
   }
 
   final String memoryId;
+
+  /// Xem ảnh/video của góc nhìn này (MEM-24) thay vì ảnh của ký ức.
+  final String? perspectiveId;
+
+  /// Ảnh của góc nhìn đang xem (để tải về đúng ảnh).
+  List<String> _perspectiveSources = const [];
 
   IMemoryService get memoryService => ref.read(memoryServiceProvider);
   IChildService get childService => ref.read(childServiceProvider);
@@ -72,7 +84,7 @@ class PhotoViewerController extends BaseNotifier {
       if (isDisposed) {
         return;
       }
-      memory = value;
+      memory = await _withPerspective(value);
       children = kids;
       members = people;
     } catch (_) {
@@ -85,9 +97,37 @@ class PhotoViewerController extends BaseNotifier {
     notifyListeners();
   }
 
+  /// Góc nhìn: ký ức hiển thị bằng ảnh/video + lời kể của góc nhìn đó.
+  Future<Memory?> _withPerspective(Memory? value) async {
+    final id = perspectiveId;
+    if (id == null || value == null) {
+      return value;
+    }
+    final view = (await memoryService.perspectives(
+      memoryId,
+    )).where((item) => item.id == id).firstOrNull;
+    if (view == null) {
+      return value;
+    }
+    _perspectiveSources = view.mediaAssets;
+    return value.copyWith(
+      mediaAssets: view.mediaAssets,
+      mediaVideos: view.mediaVideos,
+      body: view.body.isEmpty ? value.body : view.body,
+    );
+  }
+
   /// MEM-08 “Tải về”: link bản gốc của ảnh đang xem (null ở bản mock).
   Future<String?> originalUrl() async {
-    final urls = await memoryService.downloadUrls(memoryId);
+    final id = perspectiveId;
+    final urls = await memoryService.downloadUrls(memoryId, perspectiveId: id);
+    if (id != null && urls.isEmpty) {
+      // Bản mock / chưa có bản gốc: ảnh đang hiển thị của góc nhìn.
+      final sources = _perspectiveSources;
+      return sources.isEmpty
+          ? null
+          : sources[page.clamp(0, sources.length - 1)];
+    }
     if (urls.isEmpty) {
       return null;
     }

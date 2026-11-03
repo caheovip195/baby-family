@@ -65,6 +65,23 @@
         }
       },
       {
+        "code": "chat",
+        "icon": "message-circle",
+        "enabled": true,
+        "title": {
+          "vi": "Tin nhắn cả nhà",
+          "en": "Family messages",
+          "zh": "全家消息",
+          "ja": "家族のメッセージ"
+        },
+        "hint": {
+          "vi": "Tin nhắn riêng của Papa & Mama theo mục Papa & Mama",
+          "en": "Papa & Mama private messages follow the Papa & Mama setting",
+          "zh": "Papa & Mama 私信跟随 Papa & Mama 设置",
+          "ja": "Papa & Mama の個別メッセージは Papa & Mama の設定に従います"
+        }
+      },
+      {
         "code": "requests",
         "icon": "hand-heart",
         "enabled": true,

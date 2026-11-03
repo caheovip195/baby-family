@@ -1,7 +1,9 @@
+import 'package:baby_family/data/model/ai/ai_result.dart';
 import 'package:baby_family/data/model/family/member.dart';
 import 'package:baby_family/data/model/us/bridge_option.dart';
 import 'package:baby_family/data/model/us/bridge_session.dart';
 import 'package:baby_family/data/model/us/bridge_share.dart';
+import 'package:baby_family/data/provider/ai.dart';
 import 'package:baby_family/data/provider/app_setting.dart';
 import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/provider/mock_store.dart';
@@ -35,6 +37,18 @@ class BridgeSessionController extends BaseNotifier {
   bool loaded = false;
   bool hasError = false;
   bool busy = false;
+
+  /// Tóm tắt Cầu nối bằng AI (chỉ ý đã chia sẻ, BF-20261028-011).
+  Future<AiDraftRecord> summarize() =>
+      ref.read(aiServiceProvider).bridgeSummary(sessionId);
+
+  Future<void> grantAiConsent(AiFeature feature) =>
+      ref.read(aiServiceProvider).grantConsent(feature);
+
+  Future<void> reportSummary(String invocationId, String text) => ref
+      .read(aiServiceProvider)
+      .report(invocationId: invocationId, text: text);
+
   BridgeSession? session;
   Member? me;
   Member? partner;

@@ -8,6 +8,9 @@ import 'package:baby_family/data/repository/base.dart';
 
 /// Tải media lên (tài liệu kỹ thuật 10.2): xin upload-intent → PUT thẳng lên
 /// object storage bằng presigned URL → complete.
+/// Số byte đã gửi / tổng số byte của một file.
+typedef UploadProgress = void Function(int sent, int total);
+
 abstract class IMediaRepository extends IBaseRepository {
   /// `POST /v1/media/upload-intents`; giữ nguyên [idempotencyKey] khi thử lại.
   Future<UploadIntent?> createUploadIntent(String idempotencyKey, JsonMap body);
@@ -28,10 +31,12 @@ abstract class IMediaRepository extends IBaseRepository {
 
   /// PUT [bytes] tới presigned URL với đúng các header đã ký. Multipart: PUT
   /// từng part, trả `[{n, etag}]` cho [completeUpload]; single trả rỗng.
+  /// [onProgress] báo số byte đã gửi / tổng (hiện tiến độ đăng bài).
   Future<List<JsonMap>> uploadBytes(
     UploadInstruction instruction,
-    Uint8List bytes,
-  );
+    Uint8List bytes, {
+    UploadProgress? onProgress,
+  });
 
   /// `GET /v1/media/{id}`: trạng thái xử lý (PROCESSING | READY | FAILED…).
   Future<UploadStatus?> assetStatus(String assetId);

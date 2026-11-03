@@ -8,10 +8,19 @@ import 'package:lucide_flutter/lucide_flutter.dart';
 /// 10/20, icon `wifi-off` 16 `bg`, tiêu đề 13/700 `bg`, dòng phụ 12 `border`,
 /// “Thử lại” 13/700 `primary-300`. Đặt ngay dưới app bar.
 class OfflineBanner extends StatelessWidget {
-  const OfflineBanner({this.pendingUploads = 0, this.onRetry, super.key});
+  const OfflineBanner({
+    this.pendingUploads = 0,
+    this.onRetry,
+    this.subtitle,
+    super.key,
+  });
 
   /// Số ký ức chờ tải lên.
   final int pendingUploads;
+
+  /// Dòng phụ riêng của màn (CHAT-03a “Tin nhắn sẽ tự gửi khi có mạng…”);
+  /// null = dòng ký ức chờ tải lên.
+  final String? subtitle;
   final VoidCallback? onRetry;
 
   @override
@@ -44,7 +53,7 @@ class OfflineBanner extends StatelessWidget {
                     ),
                     const SizedBox(height: 1),
                     Text(
-                      l10n.stateOfflineSubtitle(pendingUploads),
+                      subtitle ?? l10n.stateOfflineSubtitle(pendingUploads),
                       style: AppTypography.small.copyWith(
                         color: AppColors.resolve(context, kColorBorderEADFD6),
                       ),

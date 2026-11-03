@@ -5,6 +5,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { Logger } from 'nestjs-pino';
 import type { Environment } from './config/environment';
+import { RedisIoAdapter } from './common/realtime/redis-io.adapter';
 
 export function configureApp(app: INestApplication): void {
   const config = app.get(ConfigService<Environment, true>);
@@ -26,6 +27,10 @@ export function configureApp(app: INestApplication): void {
       forbidNonWhitelisted: true,
       forbidUnknownValues: true,
     }),
+  );
+  // Realtime Socket.IO qua Valkey để nhiều instance API cùng phát (§12).
+  app.useWebSocketAdapter(
+    new RedisIoAdapter(app, config.get('REDIS_URL', { infer: true })),
   );
   app.enableShutdownHooks();
   if (config.get('SWAGGER_ENABLED', { infer: true })) {

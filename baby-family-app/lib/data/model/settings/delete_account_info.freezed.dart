@@ -15,7 +15,9 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$DeleteAccountInfo {
 
-@JsonKey(name: 'userName') String get userName;@JsonKey(name: 'partnerName') String? get partnerName;@JsonKey(name: 'partnerCallName') String? get partnerCallName;@JsonKey(name: 'familyName') String get familyName;@JsonKey(name: 'childNames') List<String> get childNames;@JsonKey(name: 'postedMemories') int get postedMemories;@JsonKey(name: 'onlyParent') bool get onlyParent;@JsonKey(name: 'maskedAppleAccount') String? get maskedAppleAccount;@JsonKey(name: 'maskedPhone') String? get maskedPhone;@JsonKey(name: 'purgeDate') DateTime get purgeDate;
+@JsonKey(name: 'userName') String get userName;@JsonKey(name: 'partnerName') String? get partnerName;@JsonKey(name: 'partnerCallName') String? get partnerCallName;@JsonKey(name: 'familyName') String get familyName;@JsonKey(name: 'childNames') List<String> get childNames;@JsonKey(name: 'postedMemories') int get postedMemories;@JsonKey(name: 'onlyParent') bool get onlyParent;/// Apple / Google đã liên kết → xác thực lại bằng nhà cung cấp đó
+/// (BF-20261030-003); null = không liên kết.
+@JsonKey(name: 'maskedAppleAccount') String? get maskedAppleAccount;@JsonKey(name: 'maskedGoogleAccount') String? get maskedGoogleAccount;@JsonKey(name: 'maskedPhone') String? get maskedPhone;@JsonKey(name: 'purgeDate') DateTime get purgeDate;
 /// Create a copy of DeleteAccountInfo
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +30,16 @@ $DeleteAccountInfoCopyWith<DeleteAccountInfo> get copyWith => _$DeleteAccountInf
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeleteAccountInfo&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.partnerName, partnerName) || other.partnerName == partnerName)&&(identical(other.partnerCallName, partnerCallName) || other.partnerCallName == partnerCallName)&&(identical(other.familyName, familyName) || other.familyName == familyName)&&const DeepCollectionEquality().equals(other.childNames, childNames)&&(identical(other.postedMemories, postedMemories) || other.postedMemories == postedMemories)&&(identical(other.onlyParent, onlyParent) || other.onlyParent == onlyParent)&&(identical(other.maskedAppleAccount, maskedAppleAccount) || other.maskedAppleAccount == maskedAppleAccount)&&(identical(other.maskedPhone, maskedPhone) || other.maskedPhone == maskedPhone)&&(identical(other.purgeDate, purgeDate) || other.purgeDate == purgeDate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeleteAccountInfo&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.partnerName, partnerName) || other.partnerName == partnerName)&&(identical(other.partnerCallName, partnerCallName) || other.partnerCallName == partnerCallName)&&(identical(other.familyName, familyName) || other.familyName == familyName)&&const DeepCollectionEquality().equals(other.childNames, childNames)&&(identical(other.postedMemories, postedMemories) || other.postedMemories == postedMemories)&&(identical(other.onlyParent, onlyParent) || other.onlyParent == onlyParent)&&(identical(other.maskedAppleAccount, maskedAppleAccount) || other.maskedAppleAccount == maskedAppleAccount)&&(identical(other.maskedGoogleAccount, maskedGoogleAccount) || other.maskedGoogleAccount == maskedGoogleAccount)&&(identical(other.maskedPhone, maskedPhone) || other.maskedPhone == maskedPhone)&&(identical(other.purgeDate, purgeDate) || other.purgeDate == purgeDate));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,userName,partnerName,partnerCallName,familyName,const DeepCollectionEquality().hash(childNames),postedMemories,onlyParent,maskedAppleAccount,maskedPhone,purgeDate);
+int get hashCode => Object.hash(runtimeType,userName,partnerName,partnerCallName,familyName,const DeepCollectionEquality().hash(childNames),postedMemories,onlyParent,maskedAppleAccount,maskedGoogleAccount,maskedPhone,purgeDate);
 
 @override
 String toString() {
-  return 'DeleteAccountInfo(userName: $userName, partnerName: $partnerName, partnerCallName: $partnerCallName, familyName: $familyName, childNames: $childNames, postedMemories: $postedMemories, onlyParent: $onlyParent, maskedAppleAccount: $maskedAppleAccount, maskedPhone: $maskedPhone, purgeDate: $purgeDate)';
+  return 'DeleteAccountInfo(userName: $userName, partnerName: $partnerName, partnerCallName: $partnerCallName, familyName: $familyName, childNames: $childNames, postedMemories: $postedMemories, onlyParent: $onlyParent, maskedAppleAccount: $maskedAppleAccount, maskedGoogleAccount: $maskedGoogleAccount, maskedPhone: $maskedPhone, purgeDate: $purgeDate)';
 }
 
 
@@ -48,7 +50,7 @@ abstract mixin class $DeleteAccountInfoCopyWith<$Res>  {
   factory $DeleteAccountInfoCopyWith(DeleteAccountInfo value, $Res Function(DeleteAccountInfo) _then) = _$DeleteAccountInfoCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'userName') String userName,@JsonKey(name: 'partnerName') String? partnerName,@JsonKey(name: 'partnerCallName') String? partnerCallName,@JsonKey(name: 'familyName') String familyName,@JsonKey(name: 'childNames') List<String> childNames,@JsonKey(name: 'postedMemories') int postedMemories,@JsonKey(name: 'onlyParent') bool onlyParent,@JsonKey(name: 'maskedAppleAccount') String? maskedAppleAccount,@JsonKey(name: 'maskedPhone') String? maskedPhone,@JsonKey(name: 'purgeDate') DateTime purgeDate
+@JsonKey(name: 'userName') String userName,@JsonKey(name: 'partnerName') String? partnerName,@JsonKey(name: 'partnerCallName') String? partnerCallName,@JsonKey(name: 'familyName') String familyName,@JsonKey(name: 'childNames') List<String> childNames,@JsonKey(name: 'postedMemories') int postedMemories,@JsonKey(name: 'onlyParent') bool onlyParent,@JsonKey(name: 'maskedAppleAccount') String? maskedAppleAccount,@JsonKey(name: 'maskedGoogleAccount') String? maskedGoogleAccount,@JsonKey(name: 'maskedPhone') String? maskedPhone,@JsonKey(name: 'purgeDate') DateTime purgeDate
 });
 
 
@@ -65,7 +67,7 @@ class _$DeleteAccountInfoCopyWithImpl<$Res>
 
 /// Create a copy of DeleteAccountInfo
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? userName = null,Object? partnerName = freezed,Object? partnerCallName = freezed,Object? familyName = null,Object? childNames = null,Object? postedMemories = null,Object? onlyParent = null,Object? maskedAppleAccount = freezed,Object? maskedPhone = freezed,Object? purgeDate = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? userName = null,Object? partnerName = freezed,Object? partnerCallName = freezed,Object? familyName = null,Object? childNames = null,Object? postedMemories = null,Object? onlyParent = null,Object? maskedAppleAccount = freezed,Object? maskedGoogleAccount = freezed,Object? maskedPhone = freezed,Object? purgeDate = null,}) {
   return _then(_self.copyWith(
 userName: null == userName ? _self.userName : userName // ignore: cast_nullable_to_non_nullable
 as String,partnerName: freezed == partnerName ? _self.partnerName : partnerName // ignore: cast_nullable_to_non_nullable
@@ -75,6 +77,7 @@ as String,childNames: null == childNames ? _self.childNames : childNames // igno
 as List<String>,postedMemories: null == postedMemories ? _self.postedMemories : postedMemories // ignore: cast_nullable_to_non_nullable
 as int,onlyParent: null == onlyParent ? _self.onlyParent : onlyParent // ignore: cast_nullable_to_non_nullable
 as bool,maskedAppleAccount: freezed == maskedAppleAccount ? _self.maskedAppleAccount : maskedAppleAccount // ignore: cast_nullable_to_non_nullable
+as String?,maskedGoogleAccount: freezed == maskedGoogleAccount ? _self.maskedGoogleAccount : maskedGoogleAccount // ignore: cast_nullable_to_non_nullable
 as String?,maskedPhone: freezed == maskedPhone ? _self.maskedPhone : maskedPhone // ignore: cast_nullable_to_non_nullable
 as String?,purgeDate: null == purgeDate ? _self.purgeDate : purgeDate // ignore: cast_nullable_to_non_nullable
 as DateTime,
@@ -157,7 +160,7 @@ return $default(_that);case _:
 
 @JsonSerializable(explicitToJson: true)
 class _DeleteAccountInfo implements DeleteAccountInfo {
-  const _DeleteAccountInfo({@JsonKey(name: 'userName') this.userName = '', @JsonKey(name: 'partnerName') this.partnerName, @JsonKey(name: 'partnerCallName') this.partnerCallName, @JsonKey(name: 'familyName') this.familyName = '', @JsonKey(name: 'childNames') final  List<String> childNames = const [], @JsonKey(name: 'postedMemories') this.postedMemories = 0, @JsonKey(name: 'onlyParent') this.onlyParent = false, @JsonKey(name: 'maskedAppleAccount') this.maskedAppleAccount, @JsonKey(name: 'maskedPhone') this.maskedPhone, @JsonKey(name: 'purgeDate') required this.purgeDate}): _childNames = childNames;
+  const _DeleteAccountInfo({@JsonKey(name: 'userName') this.userName = '', @JsonKey(name: 'partnerName') this.partnerName, @JsonKey(name: 'partnerCallName') this.partnerCallName, @JsonKey(name: 'familyName') this.familyName = '', @JsonKey(name: 'childNames') final  List<String> childNames = const [], @JsonKey(name: 'postedMemories') this.postedMemories = 0, @JsonKey(name: 'onlyParent') this.onlyParent = false, @JsonKey(name: 'maskedAppleAccount') this.maskedAppleAccount, @JsonKey(name: 'maskedGoogleAccount') this.maskedGoogleAccount, @JsonKey(name: 'maskedPhone') this.maskedPhone, @JsonKey(name: 'purgeDate') required this.purgeDate}): _childNames = childNames;
   factory _DeleteAccountInfo.fromJson(Map<String, dynamic> json) => _$DeleteAccountInfoFromJson(json);
 
 @override@JsonKey(name: 'userName') final  String userName;
@@ -173,7 +176,10 @@ class _DeleteAccountInfo implements DeleteAccountInfo {
 
 @override@JsonKey(name: 'postedMemories') final  int postedMemories;
 @override@JsonKey(name: 'onlyParent') final  bool onlyParent;
+/// Apple / Google đã liên kết → xác thực lại bằng nhà cung cấp đó
+/// (BF-20261030-003); null = không liên kết.
 @override@JsonKey(name: 'maskedAppleAccount') final  String? maskedAppleAccount;
+@override@JsonKey(name: 'maskedGoogleAccount') final  String? maskedGoogleAccount;
 @override@JsonKey(name: 'maskedPhone') final  String? maskedPhone;
 @override@JsonKey(name: 'purgeDate') final  DateTime purgeDate;
 
@@ -190,16 +196,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeleteAccountInfo&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.partnerName, partnerName) || other.partnerName == partnerName)&&(identical(other.partnerCallName, partnerCallName) || other.partnerCallName == partnerCallName)&&(identical(other.familyName, familyName) || other.familyName == familyName)&&const DeepCollectionEquality().equals(other._childNames, _childNames)&&(identical(other.postedMemories, postedMemories) || other.postedMemories == postedMemories)&&(identical(other.onlyParent, onlyParent) || other.onlyParent == onlyParent)&&(identical(other.maskedAppleAccount, maskedAppleAccount) || other.maskedAppleAccount == maskedAppleAccount)&&(identical(other.maskedPhone, maskedPhone) || other.maskedPhone == maskedPhone)&&(identical(other.purgeDate, purgeDate) || other.purgeDate == purgeDate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeleteAccountInfo&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.partnerName, partnerName) || other.partnerName == partnerName)&&(identical(other.partnerCallName, partnerCallName) || other.partnerCallName == partnerCallName)&&(identical(other.familyName, familyName) || other.familyName == familyName)&&const DeepCollectionEquality().equals(other._childNames, _childNames)&&(identical(other.postedMemories, postedMemories) || other.postedMemories == postedMemories)&&(identical(other.onlyParent, onlyParent) || other.onlyParent == onlyParent)&&(identical(other.maskedAppleAccount, maskedAppleAccount) || other.maskedAppleAccount == maskedAppleAccount)&&(identical(other.maskedGoogleAccount, maskedGoogleAccount) || other.maskedGoogleAccount == maskedGoogleAccount)&&(identical(other.maskedPhone, maskedPhone) || other.maskedPhone == maskedPhone)&&(identical(other.purgeDate, purgeDate) || other.purgeDate == purgeDate));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,userName,partnerName,partnerCallName,familyName,const DeepCollectionEquality().hash(_childNames),postedMemories,onlyParent,maskedAppleAccount,maskedPhone,purgeDate);
+int get hashCode => Object.hash(runtimeType,userName,partnerName,partnerCallName,familyName,const DeepCollectionEquality().hash(_childNames),postedMemories,onlyParent,maskedAppleAccount,maskedGoogleAccount,maskedPhone,purgeDate);
 
 @override
 String toString() {
-  return 'DeleteAccountInfo(userName: $userName, partnerName: $partnerName, partnerCallName: $partnerCallName, familyName: $familyName, childNames: $childNames, postedMemories: $postedMemories, onlyParent: $onlyParent, maskedAppleAccount: $maskedAppleAccount, maskedPhone: $maskedPhone, purgeDate: $purgeDate)';
+  return 'DeleteAccountInfo(userName: $userName, partnerName: $partnerName, partnerCallName: $partnerCallName, familyName: $familyName, childNames: $childNames, postedMemories: $postedMemories, onlyParent: $onlyParent, maskedAppleAccount: $maskedAppleAccount, maskedGoogleAccount: $maskedGoogleAccount, maskedPhone: $maskedPhone, purgeDate: $purgeDate)';
 }
 
 
@@ -210,7 +216,7 @@ abstract mixin class _$DeleteAccountInfoCopyWith<$Res> implements $DeleteAccount
   factory _$DeleteAccountInfoCopyWith(_DeleteAccountInfo value, $Res Function(_DeleteAccountInfo) _then) = __$DeleteAccountInfoCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'userName') String userName,@JsonKey(name: 'partnerName') String? partnerName,@JsonKey(name: 'partnerCallName') String? partnerCallName,@JsonKey(name: 'familyName') String familyName,@JsonKey(name: 'childNames') List<String> childNames,@JsonKey(name: 'postedMemories') int postedMemories,@JsonKey(name: 'onlyParent') bool onlyParent,@JsonKey(name: 'maskedAppleAccount') String? maskedAppleAccount,@JsonKey(name: 'maskedPhone') String? maskedPhone,@JsonKey(name: 'purgeDate') DateTime purgeDate
+@JsonKey(name: 'userName') String userName,@JsonKey(name: 'partnerName') String? partnerName,@JsonKey(name: 'partnerCallName') String? partnerCallName,@JsonKey(name: 'familyName') String familyName,@JsonKey(name: 'childNames') List<String> childNames,@JsonKey(name: 'postedMemories') int postedMemories,@JsonKey(name: 'onlyParent') bool onlyParent,@JsonKey(name: 'maskedAppleAccount') String? maskedAppleAccount,@JsonKey(name: 'maskedGoogleAccount') String? maskedGoogleAccount,@JsonKey(name: 'maskedPhone') String? maskedPhone,@JsonKey(name: 'purgeDate') DateTime purgeDate
 });
 
 
@@ -227,7 +233,7 @@ class __$DeleteAccountInfoCopyWithImpl<$Res>
 
 /// Create a copy of DeleteAccountInfo
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? userName = null,Object? partnerName = freezed,Object? partnerCallName = freezed,Object? familyName = null,Object? childNames = null,Object? postedMemories = null,Object? onlyParent = null,Object? maskedAppleAccount = freezed,Object? maskedPhone = freezed,Object? purgeDate = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? userName = null,Object? partnerName = freezed,Object? partnerCallName = freezed,Object? familyName = null,Object? childNames = null,Object? postedMemories = null,Object? onlyParent = null,Object? maskedAppleAccount = freezed,Object? maskedGoogleAccount = freezed,Object? maskedPhone = freezed,Object? purgeDate = null,}) {
   return _then(_DeleteAccountInfo(
 userName: null == userName ? _self.userName : userName // ignore: cast_nullable_to_non_nullable
 as String,partnerName: freezed == partnerName ? _self.partnerName : partnerName // ignore: cast_nullable_to_non_nullable
@@ -237,6 +243,7 @@ as String,childNames: null == childNames ? _self._childNames : childNames // ign
 as List<String>,postedMemories: null == postedMemories ? _self.postedMemories : postedMemories // ignore: cast_nullable_to_non_nullable
 as int,onlyParent: null == onlyParent ? _self.onlyParent : onlyParent // ignore: cast_nullable_to_non_nullable
 as bool,maskedAppleAccount: freezed == maskedAppleAccount ? _self.maskedAppleAccount : maskedAppleAccount // ignore: cast_nullable_to_non_nullable
+as String?,maskedGoogleAccount: freezed == maskedGoogleAccount ? _self.maskedGoogleAccount : maskedGoogleAccount // ignore: cast_nullable_to_non_nullable
 as String?,maskedPhone: freezed == maskedPhone ? _self.maskedPhone : maskedPhone // ignore: cast_nullable_to_non_nullable
 as String?,purgeDate: null == purgeDate ? _self.purgeDate : purgeDate // ignore: cast_nullable_to_non_nullable
 as DateTime,

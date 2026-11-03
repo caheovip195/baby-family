@@ -31,8 +31,9 @@ USER node
 CMD ["npm", "run", "db:migrate:deploy"]
 
 FROM build AS production-dependencies
-# Prisma CLI is an optional peer of @prisma/client; keep it in migrate only.
-RUN npm prune --omit=dev --omit=optional --ignore-scripts \
+# Keep optional dependencies: the API also loads sharp (profile images), whose
+# native binaries ship as optional packages (BF-20261101-001 rebuild fix).
+RUN npm prune --omit=dev --ignore-scripts \
     && npm cache clean --force
 
 # The worker keeps optional dependencies: sharp ships its native binaries that way.

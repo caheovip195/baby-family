@@ -34,6 +34,7 @@ class MediaUploader {
     required String purpose,
     String? idempotencyKey,
     Uint8List? bytes,
+    void Function(double fraction)? onProgress,
   }) async {
     final media = await _process(path, bytes);
     return _send(
@@ -43,6 +44,7 @@ class MediaUploader {
           _media.createUploadIntent(idempotencyKey ?? const Uuid().v4(), body),
       complete: (assetId, parts) =>
           _media.completeUpload(assetId, parts: parts),
+      onProgress: onProgress,
     );
   }
 
@@ -66,6 +68,7 @@ class MediaUploader {
     required Future<UploadIntent?> Function(JsonMap body) create,
     required Future<void> Function(String assetId, List<JsonMap> parts)
     complete,
+    void Function(double fraction)? onProgress,
   }) async {
     final variants = [
       for (final variant in media.variants)
@@ -100,8 +103,21 @@ class MediaUploader {
     }
     final upload = intent?.upload;
     if (intent?.status == 'PENDING_UPLOAD' && upload != null) {
+      // Tiến độ theo byte của file chính + mọi biến thể.
+      final total =
+          media.bytes.length +
+          variants.fold<int>(0, (sum, item) => sum + item.variant.bytes.length);
+      var sentBefore = 0;
+      UploadProgress? progress() => onProgress == null
+          ? null
+          : (sent, _) => onProgress((sentBefore + sent) / total);
       // File chính và từng biến thể đi thẳng lên S3 qua URL presign.
-      final parts = await _media.uploadBytes(upload, media.bytes);
+      final parts = await _media.uploadBytes(
+        upload,
+        media.bytes,
+        onProgress: progress(),
+      );
+      sentBefore += media.bytes.length;
       final byCode = {
         for (final (:variant, sha: _) in variants) variant.code: variant,
       };
@@ -111,10 +127,16 @@ class MediaUploader {
         if (variant == null || instruction == null) {
           throw StateError('Unknown variant upload ${variantUpload.code}');
         }
-        await _media.uploadBytes(instruction, variant.bytes);
+        await _media.uploadBytes(
+          instruction,
+          variant.bytes,
+          onProgress: progress(),
+        );
+        sentBefore += variant.bytes.length;
       }
       await complete(assetId, parts);
     }
+    onProgress?.call(1);
     return assetId;
   }
 

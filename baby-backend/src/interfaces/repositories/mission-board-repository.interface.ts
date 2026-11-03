@@ -12,7 +12,11 @@ import type {
 export const MISSION_BOARD_REPOSITORY = Symbol('MISSION_BOARD_REPOSITORY');
 export interface IMissionBoardRepository {
   familyIdForActor(userId: string, childId?: string): Promise<string | null>;
-  familyIdForMission(id: string): Promise<string | null>;
+  /** [includeRemoved]: also a soft-removed mission (offline replay of a swap). */
+  familyIdForMission(
+    id: string,
+    includeRemoved?: boolean,
+  ): Promise<string | null>;
   board(
     familyId: string,
     userId: string,

@@ -141,6 +141,7 @@ describe('Notification & AI settings API (focused module + PostgreSQL)', () => {
         US: true,
         APPRECIATION: true,
         PROMOTIONS: false,
+        CHAT: true,
       },
       circleDigestMode: 'DIGEST',
       circleDigestTime: '19:00',

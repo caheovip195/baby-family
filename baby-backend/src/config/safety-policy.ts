@@ -4,7 +4,9 @@
  */
 export const SAFETY_POLICY = {
   version: 1,
-  reportTargets: ['MEMORY', 'COMMENT', 'USER'] as const,
+  // AI_OUTPUT (BF-20261028-010/011): bản nháp AI; server không lưu đầu ra nên
+  // người báo cáo gửi kèm nội dung đã thấy trong `note`.
+  reportTargets: ['MEMORY', 'COMMENT', 'USER', 'AI_OUTPUT'] as const,
   reasons: [
     'INAPPROPRIATE',
     'HARASSMENT',

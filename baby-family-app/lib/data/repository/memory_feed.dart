@@ -1,6 +1,8 @@
 import 'package:baby_family/data/model/memory/comment_record.dart';
+import 'package:baby_family/data/model/memory/day_story_record.dart';
 import 'package:baby_family/data/model/memory/media_grid_item_record.dart';
 import 'package:baby_family/data/model/memory/memory_record.dart';
+import 'package:baby_family/data/model/memory/month_recap_record.dart';
 import 'package:baby_family/data/model/memory/on_this_day_record.dart';
 import 'package:baby_family/data/model/memory/reaction_state.dart';
 import 'package:baby_family/data/model/memory/timeline_item_record.dart';
@@ -42,6 +44,19 @@ abstract class IMemoryFeedRepository extends IBaseRepository {
 
   /// `GET /v1/families/{fid}/changes` (offline-first; null cursor = bắt đầu).
   Future<ChangesPage> changes(String familyId, {String? cursor, int? limit});
+
+  /// REC-01: `GET /v1/children/{id}/day-story`.
+  Future<DayStoryRecord?> dayStory(String childId, {String? date});
+
+  /// REC-01: `PUT /v1/children/{id}/day-story/{date}`.
+  Future<SavedDayStoryRecord?> saveDayStory(
+    String childId,
+    String date,
+    JsonMap body,
+  );
+
+  /// REC-03: `GET /v1/children/{id}/month-recap`.
+  Future<MonthRecapRecord?> monthRecap(String childId, {int? monthIndex});
 
   /// `GET /v1/memories/{id}`.
   Future<MemoryRecord?> memory(String memoryId);

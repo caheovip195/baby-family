@@ -23,6 +23,8 @@ const templateSchema = z
       'CALENDAR',
       'BADGES',
       'BILLING',
+      // BF-20261101-001: tin nhắn nhóm cả nhà (chat riêng Papa & Mama dùng US).
+      'CHAT',
     ]),
     priority: z.enum(['NORMAL', 'HIGH']),
     enabled: z.boolean(),
@@ -45,7 +47,7 @@ const templateSchema = z
     }
     if (
       item.sensitive !==
-      !['MEMORIES', 'BADGES', 'BILLING'].includes(item.category)
+      !['MEMORIES', 'BADGES', 'BILLING', 'CHAT'].includes(item.category)
     ) {
       context.addIssue({
         code: 'custom',

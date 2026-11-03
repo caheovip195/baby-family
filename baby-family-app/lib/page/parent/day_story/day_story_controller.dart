@@ -1,11 +1,14 @@
 import 'package:baby_family/data/model/child/child.dart';
 import 'package:baby_family/data/model/memory/day_story.dart';
+import 'package:baby_family/data/provider/ai.dart';
 import 'package:baby_family/data/provider/child.dart';
 import 'package:baby_family/data/provider/memory.dart';
+import 'package:baby_family/data/service/ai.dart';
 import 'package:baby_family/data/service/child.dart';
 import 'package:baby_family/data/service/memory.dart';
 import 'package:baby_family/page/application_base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
+import 'package:baby_family/utils/constants/values.dart';
 import 'package:hooks_riverpod/legacy.dart';
 
 /// REC-01 — Câu chuyện ngày (Pencil `kIqYL`, mục 9.10 + AI 7.18): ảnh bìa,
@@ -65,6 +68,8 @@ class DayStoryController extends BaseNotifier {
       }
       original = value;
       story = value;
+      // Không có đoạn văn gợi ý (bản server chưa có AI): soạn tay luôn.
+      manual = !(value?.aiGenerated ?? true);
       child = kids.where((kid) => kid.id == value?.childId).firstOrNull;
     } catch (_) {
       if (isDisposed) {
@@ -131,6 +136,59 @@ class DayStoryController extends BaseNotifier {
     }
     story = value.copyWith(body: body, aiGenerated: false);
   }
+
+  /// “Viết lại” bằng AI: bản mẫu có đoạn văn gợi ý sẵn; bản server gọi AI
+  /// (BF-20261028-010) với các ký ức đang tick.
+  bool get canRewrite => (original?.aiGenerated ?? false) || _serverAi;
+
+  bool get _serverAi => kValueUseRemoteSession;
+
+  /// Bản mẫu: “Viết lại” lấy lại đoạn văn gợi ý có sẵn (không gọi AI).
+  bool get canRewriteFromSample => original?.aiGenerated ?? false;
+
+  IAiService get aiService => ref.read(aiServiceProvider);
+
+  /// AI viết đoạn văn từ ký ức đang chọn; ném [AiConsentRequired] lần đầu.
+  Future<void> writeWithAi() async {
+    final value = story;
+    if (value == null) {
+      return;
+    }
+    final draft = await whileLoading(
+      () => aiService.dayStory(
+        childId: value.childId,
+        date: value.date,
+        memoryIds: [
+          for (final item in value.items)
+            if (item.selected) item.id,
+        ],
+      ),
+    );
+    final text = draft.story?.trim() ?? '';
+    if (isDisposed || text.isEmpty) {
+      return;
+    }
+    aiInvocationId = draft.invocationId;
+    manual = false;
+    _update((current) => current.copyWith(body: text, aiGenerated: true));
+  }
+
+  /// Lượt AI đã viết đoạn văn đang hiện (để “Báo cáo nội dung AI”).
+  String? aiInvocationId;
+
+  /// Báo cáo đoạn văn AI đang hiện; false khi không có lượt AI thật (bản mẫu).
+  Future<bool> reportAi() async {
+    final id = aiInvocationId;
+    final body = story?.body ?? '';
+    if (id == null) {
+      return false;
+    }
+    await aiService.report(invocationId: id, text: body);
+    return true;
+  }
+
+  Future<void> grantAiConsent(AiFeature feature) =>
+      aiService.grantConsent(feature);
 
   /// “Viết lại”: lấy lại đoạn văn gợi ý bởi AI.
   void rewrite() {

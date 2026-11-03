@@ -74,7 +74,8 @@ class OnboardingRepositoryImp extends BaseRepositoryImp
   }
 
   @override
-  Future<void> leaveCircle(String familyId) => client!.leaveCircle(familyId);
+  Future<void> leaveCircle(String familyId, {bool removeContent = false}) =>
+      client!.leaveCircle(familyId, {'removeContent': removeContent});
 
   @override
   Future<InviteDecision?> declineInvite(String code) async {

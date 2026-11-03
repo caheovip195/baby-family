@@ -6,8 +6,14 @@ import 'package:baby_family/data/model/memory/upload_intent.dart';
 import 'package:baby_family/data/model/memory/upload_status.dart';
 import 'package:baby_family/data/model/us/appreciation_record.dart';
 import 'package:baby_family/data/model/us/appreciation_wall.dart';
+import 'package:baby_family/data/model/us/bridge_next_step.dart';
+import 'package:baby_family/data/model/us/bridge_session.dart';
+import 'package:baby_family/data/model/us/bridge_session_record.dart';
+import 'package:baby_family/data/model/us/bridge_share.dart';
+import 'package:baby_family/data/model/us/care_handoff.dart';
 import 'package:baby_family/data/model/us/checkin_record.dart';
 import 'package:baby_family/data/model/us/checkin_today.dart';
+import 'package:baby_family/data/model/us/couple_question_record.dart';
 import 'package:baby_family/data/model/us/couple_request.dart';
 import 'package:baby_family/data/model/us/journal_entry_record.dart';
 import 'package:baby_family/data/model/us/journal_list.dart';
@@ -79,8 +85,9 @@ class _FakeMedia extends Fake implements IMediaRepository {
   @override
   Future<List<JsonMap>> uploadBytes(
     UploadInstruction instruction,
-    Uint8List bytes,
-  ) async => const [];
+    Uint8List bytes, {
+    UploadProgress? onProgress,
+  }) async => const [];
 
   @override
   Future<UploadStatus?> completeUpload(
@@ -319,6 +326,18 @@ class _FakeCouple implements ICoupleRemoteRepository {
     String action, [
     JsonMap body = const {},
   ]) async {
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/requests'));
+    }
+    final status = rejectWith;
+    if (status != null) {
+      rejectWith = null;
+      final options = RequestOptions(path: '/requests');
+      throw DioException(
+        requestOptions: options,
+        response: Response(requestOptions: options, statusCode: status),
+      );
+    }
     actions.add('$action:${body.keys.join(',')}');
     return RequestRecord(
       id: requestId,
@@ -333,6 +352,190 @@ class _FakeCouple implements ICoupleRemoteRepository {
       },
       createdAt: DateTime.utc(2026, 10, 10),
       respondedAt: DateTime.utc(2026, 10, 10, 1),
+    );
+  }
+
+  // Câu hỏi kết nối + US-14 (BF-20261027-002).
+  CoupleQuestionRecord question = const CoupleQuestionRecord(
+    date: '2026-10-27',
+    code: 'small_smile_today',
+    textI18n: {
+      'vi': 'Điều nhỏ nào hôm nay làm bạn mỉm cười?',
+      'en': 'What small thing made you smile today?',
+    },
+    partnerAnswered: true,
+  );
+  final answers = <String>[];
+
+  @override
+  Future<CoupleQuestionRecord?> questionToday(String familyId) async {
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/question'));
+    }
+    return question;
+  }
+
+  @override
+  Future<CoupleQuestionRecord?> answerQuestion(
+    String familyId,
+    String answer,
+  ) async {
+    answers.add(answer);
+    // Cả hai đã trả lời → server trả câu của bạn đời.
+    return question = question.copyWith(
+      myAnswer: answer,
+      partnerAnswer: 'Cả nhà ăn tối cùng nhau',
+    );
+  }
+
+  // Cầu nối (BF-20261028-008).
+  final bridgeBodies = <JsonMap>[];
+  final bridgeKeys = <String>[];
+  final bridgeCalls = <String>[];
+
+  BridgeSessionRecord _bridgeRecord(String status) =>
+      BridgeSessionRecord.fromJson({
+        'id': 'srv-bridge',
+        'status': status,
+        'initiatorUserId': 'srv-me',
+        'shares': [
+          {
+            'userId': 'srv-me',
+            'feelings': bridgeBodies.lastOrNull?['feelings'] ?? const [],
+            'needs': bridgeBodies.lastOrNull?['needs'] ?? const [],
+            'message': bridgeBodies.lastOrNull?['message'],
+          },
+          {
+            'userId': 'srv-partner',
+            'feelings': ['misunderstood'],
+            'needs': ['listened'],
+            'understood': true,
+          },
+          // Dòng hỏng: bỏ qua.
+          {'userId': 42},
+        ],
+        'nextStep': {
+          'code': 'talk_after_sleep',
+          'agreedUserIds': ['srv-partner'],
+        },
+      });
+
+  @override
+  Future<BridgeSessionRecord?> createBridge(
+    String familyId,
+    String idempotencyKey,
+    JsonMap body,
+  ) async {
+    bridgeKeys.add(idempotencyKey);
+    bridgeBodies.add(body);
+    return _bridgeRecord('INVITED');
+  }
+
+  @override
+  Future<List<BridgeSessionRecord>> bridges(String familyId) async => [
+    if (bridgeBodies.isNotEmpty) _bridgeRecord('NEXT_STEP'),
+  ];
+
+  @override
+  Future<BridgeSessionRecord?> bridge(String familyId, String sessionId) async {
+    if (sessionId != 'srv-bridge') {
+      final options = RequestOptions(path: '/bridges');
+      throw DioException(
+        requestOptions: options,
+        response: Response(requestOptions: options, statusCode: 404),
+      );
+    }
+    return _bridgeRecord('ACTIVE');
+  }
+
+  @override
+  Future<BridgeSessionRecord?> bridgeAction(
+    String familyId,
+    String sessionId,
+    String action, [
+    JsonMap body = const {},
+  ]) async {
+    bridgeCalls.add('$action:${body['message'] ?? ''}');
+    return null;
+  }
+
+  @override
+  Future<BridgeSessionRecord?> bridgeNextStep(
+    String familyId,
+    String sessionId,
+    JsonMap body,
+  ) async {
+    bridgeCalls.add('next:${body['code']}');
+    return null;
+  }
+
+  // Bàn giao ca (BF-20261028-007).
+  final handoffBodies = <JsonMap>[];
+  final handoffKeys = <String>[];
+  final acknowledged = <String>[];
+
+  @override
+  Future<CareHandoff?> createHandoff(
+    String familyId,
+    String idempotencyKey,
+    JsonMap body,
+  ) async {
+    handoffKeys.add(idempotencyKey);
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/handoffs'));
+    }
+    handoffBodies.add(body);
+    return CareHandoff(id: 'srv-handoff-${handoffBodies.length}');
+  }
+
+  @override
+  Future<List<CareHandoff>> handoffs(String familyId) async {
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/handoffs'));
+    }
+    return [
+      for (var i = handoffBodies.length; i > 0; i--)
+        CareHandoff.fromJson({
+          ...handoffBodies[i - 1],
+          'id': 'srv-handoff-$i',
+          'direction': 'SENT',
+        }),
+      CareHandoff(
+        id: 'srv-in',
+        direction: 'RECEIVED',
+        note: 'Bé ngủ ngoan',
+        createdAt: DateTime.utc(2026, 10, 28, 1),
+      ),
+    ];
+  }
+
+  @override
+  Future<CareHandoff?> acknowledgeHandoff(
+    String familyId,
+    String handoffId,
+  ) async {
+    acknowledged.add(handoffId);
+    return null;
+  }
+
+  @override
+  Future<CoupleWeekRecord?> week(String familyId, {String? weekStart}) async {
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/week'));
+    }
+    return CoupleWeekRecord(
+      weekStart: '2026-10-26',
+      weekEnd: '2026-11-01',
+      checkins: 5,
+      requestsHelped: 2,
+      thanks: 3,
+      togetherMissions: 1,
+      together: [
+        CoupleWeekTogetherRecord(
+          title: 'Tắm cho con cùng nhau',
+          date: DateTime.utc(2026, 10, 27, 12),
+        ),
+      ],
     );
   }
 }
@@ -394,22 +597,65 @@ void main() {
     final us = service();
     expect(await us.bridgeSession('br-1'), isNull);
     final store = container.read(usRepositoryProvider);
+    // BF-20261028-008: trên máy chỉ còn nháp riêng; phiên đã mời đọc server.
     store.addBridgeSession({
       ...store.bridgeSession('br-1')!,
       'id': 'real-bridge',
       'familyId': 'real-family',
+      'status': 'draft',
     });
     expect((await us.bridgeSession('real-bridge'))?.id, 'real-bridge');
+    store.addBridgeSession({
+      ...store.bridgeSession('br-1')!,
+      'id': 'real-invited',
+      'familyId': 'real-family',
+    });
+    expect(await us.bridgeSession('real-invited'), isNull);
     session.patchSession({kValueSessionKeyServerFamilyId: null});
     expect(await us.bridgeSession('br-1'), isNotNull);
   });
 
-  // BF-20261022-006: chưa có API → trạng thái rỗng, không nội dung mẫu.
-  test('US week recap and bridge rewrite have no sample content', () async {
-    final us = service();
-    expect(await us.coupleWeek(), isNull);
-    expect(await us.rewriteSuggestion(), isNull);
+  // BF-20261022-006: Cầu nối chưa có API → không nội dung mẫu.
+  test('bridge rewrite has no sample content', () async {
+    expect(await service().rewriteSuggestion(), isNull);
   });
+
+  test('US-14: the week of the two of us comes from the server', () async {
+    final us = service();
+    final week = await us.coupleWeek();
+    expect(week?.start, DateTime(2026, 10, 26));
+    expect(week?.checkins, 5);
+    expect(week?.requestsHelped, 2);
+    expect(week?.thanks, 3);
+    expect(week?.togetherMissions, 1);
+    expect(week?.together.single.title, 'Tắm cho con cùng nhau');
+    // Mất mạng: bản đọc gần nhất.
+    remote.offline = true;
+    expect((await us.coupleWeek())?.checkins, 5);
+  });
+
+  test(
+    'connection question: answers stay hidden until both answered',
+    () async {
+      final us = service();
+      var today = await us.coupleToday();
+      expect(today.question?.id, 'small_smile_today');
+      expect(today.question?.text, isNotEmpty);
+      expect(today.question?.partnerAnswered, isTrue);
+      expect(today.question?.partnerAnswer, isNull);
+
+      await us.answerQuestion('  Con cười khi tắm  ');
+      expect(remote.answers, ['Con cười khi tắm']);
+      today = await us.coupleToday();
+      expect(today.question?.myAnswer, 'Con cười khi tắm');
+      expect(today.question?.partnerAnswer, 'Cả nhà ăn tối cùng nhau');
+
+      // Mất mạng lúc mở Papa & Mama: không hỏng màn, giữ câu đã đọc.
+      remote.offline = true;
+      today = await us.coupleToday();
+      expect(today.question?.myAnswer, 'Con cười khi tắm');
+    },
+  );
 
   test(
     'offline-first: Papa & Mama opens offline after a restart and items made '
@@ -496,6 +742,157 @@ void main() {
     },
   );
 
+  test('BF-20261028-001: request actions offline show at once, are sent once '
+      'when back online and roll back when refused', () async {
+    final outbox = FakeOutbox();
+    final us = service()..outbox = outbox;
+    remote.page = [
+      RequestRecord(
+        id: 'srv-incoming',
+        senderUserId: 'srv-partner',
+        receiverUserId: 'srv-me',
+        kind: 'TASK',
+        title: 'Tắm cho bé',
+        status: 'SENT',
+        createdAt: DateTime.utc(2026, 10, 10),
+      ),
+    ];
+    await us.requests();
+    final store = container.read(usRepositoryProvider);
+
+    remote.offline = true;
+    await us.accept('srv-incoming');
+    expect(
+      store.request('srv-incoming')?['status'],
+      RequestStatus.accepted.name,
+    );
+    expect(outbox.entries.single.kind, 'us.request-action');
+    expect(remote.actions, isEmpty);
+
+    remote.offline = false;
+    await us.syncPending();
+    await us.outboxSettled;
+    expect(remote.actions, ['accept:']);
+    expect(outbox.entries, isEmpty);
+
+    // Server từ chối: trạng thái về như trước, báo lỗi như gọi thẳng.
+    remote.rejectWith = 409;
+    await expectLater(
+      us.markDone('srv-incoming'),
+      throwsA(isA<DioException>()),
+    );
+    expect(
+      store.request('srv-incoming')?['status'],
+      RequestStatus.accepted.name,
+    );
+    expect(outbox.entries, isEmpty);
+  });
+
+  test('BF-20261028-007: a handoff made offline shows at once and is sent once '
+      'when back online', () async {
+    final outbox = FakeOutbox();
+    final us = service()..outbox = outbox;
+    final fedAt = DateTime(2026, 10, 28, 7, 30);
+    remote.offline = true;
+    final draft = await us.sendHandoff(
+      childIds: const ['kid-1'],
+      fedAt: fedAt,
+      note: '  Bé hơi quấy  ',
+    );
+    expect(draft.pending, isTrue);
+    expect(draft.note, 'Bé hơi quấy');
+    expect(outbox.entries.single.kind, 'us.handoff');
+    await expectLater(us.sendHandoff(note: '   '), throwsArgumentError);
+
+    remote.offline = false;
+    // Bản chờ hiện đầu danh sách cho tới khi gửi xong.
+    final listed = await us.handoffs();
+    expect(listed.first.pending, isTrue);
+    await us.syncPending();
+    await us.outboxSettled;
+    expect(outbox.entries, isEmpty);
+    expect(remote.handoffBodies.single, {
+      'childIds': ['kid-1'],
+      'fedAt': fedAt.toUtc().toIso8601String(),
+      'note': 'Bé hơi quấy',
+    });
+    // Lần thử offline và lần gửi lại cùng Idempotency-Key.
+    expect(remote.handoffKeys.toSet(), hasLength(1));
+    final online = await us.handoffs();
+    expect(online.map((h) => h.id), ['srv-handoff-1', 'srv-in']);
+    expect(online.last.received, isTrue);
+    await us.acknowledgeHandoff('srv-in');
+    expect(remote.acknowledged, ['srv-in']);
+  });
+
+  test('BF-20261028-008: the private draft stays on the device; only the '
+      'chosen shares are sent', () async {
+    final us = service();
+    final store = container.read(usRepositoryProvider);
+    final familyId =
+        container.read(sessionRepositoryProvider).session()['familyId']
+            as String;
+    final me =
+        container.read(sessionRepositoryProvider).session()['userId'] as String;
+    await us.saveBridgeDraft(
+      BridgeSession(
+        id: 'br-local',
+        initiatorUserId: me,
+        privateNote: 'Điều mình chưa muốn nói',
+        retentionDays: 7,
+        shares: [
+          BridgeShare(
+            userId: me,
+            feelings: const ['exhausted'],
+            needs: const ['practical_help'],
+            message: 'Em cần anh phụ buổi tối',
+          ),
+        ],
+      ),
+    );
+    expect((await us.bridgeDraft())?.id, 'br-local');
+    await us.sendBridgeInvite('br-local');
+    expect(remote.bridgeBodies.single, {
+      'feelings': ['exhausted'],
+      'needs': ['practical_help'],
+      'message': 'Em cần anh phụ buổi tối',
+      'retentionDays': 7,
+    });
+    expect(remote.bridgeBodies.single.toString(), isNot(contains('chưa muốn')));
+    // Nháp riêng trên máy được xoá nội dung sau khi gửi.
+    final local = store
+        .bridgeSessions(familyId)
+        .firstWhere((row) => row['id'] == 'br-local');
+    expect(local['privateNote'], isNull);
+    expect((await us.bridgeDraft())?.id, isNot('br-local'));
+
+    final sessions = await us.bridgeSessions();
+    expect(sessions.single.status, BridgeStatus.nextStep);
+    expect(sessions.single.initiatorUserId, me);
+    expect(sessions.single.shares, hasLength(2));
+    expect(sessions.single.shares.first.userId, me);
+    expect(sessions.single.nextStep?.code, 'talk_after_sleep');
+    expect((await us.bridgeSession('srv-bridge'))?.status, BridgeStatus.active);
+    expect(await us.bridgeSession('br-unknown'), isNull);
+
+    await us.joinBridge('srv-bridge');
+    await us.markBridgeUnderstood('srv-bridge');
+    await us.clarifyBridgeShare('srv-bridge', 'Chỉ 3 tối');
+    await us.chooseNextStep('srv-bridge', const BridgeNextStep(code: 'hug'));
+    await us.confirmNextStep('srv-bridge');
+    await us.pauseBridge('srv-bridge');
+    await us.closeBridge('srv-bridge');
+    expect(remote.bridgeCalls, [
+      'join:',
+      'understood:',
+      'clarify:Chỉ 3 tối',
+      'next:hug',
+      'confirm:',
+      'pause:',
+      'close:',
+    ]);
+  });
+
   test('offline-first: a refused check-in shows the server error', () async {
     final outbox = FakeOutbox();
     final us = service()..outbox = outbox;
@@ -557,8 +954,8 @@ void main() {
         ),
       );
       final today = await us.coupleToday();
-      // Câu hỏi kết nối (1.1) chưa có API: không hiện câu hỏi mẫu.
-      expect(today.question, isNull);
+      // Câu hỏi kết nối từ server, không phải câu mẫu (BF-20261027-002).
+      expect(today.question?.id, 'small_smile_today');
       expect(today.partnerCheckin?.mood, MoodCode.tired);
       expect(today.partnerCheckin?.needs, [CoupleNeed.childcare]);
 

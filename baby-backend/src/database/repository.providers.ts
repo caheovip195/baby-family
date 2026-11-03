@@ -244,6 +244,18 @@ import { REQUEST_CHILD_REPOSITORY } from '../interfaces/repositories/request-chi
 import { RequestChildRepository } from '../repositories/request-child.repository';
 import { REQUEST_REPOSITORY } from '../interfaces/repositories/request-repository.interface';
 import { RequestRepository } from '../repositories/request.repository';
+import { GROWTH_MEASUREMENT_REPOSITORY } from '../interfaces/repositories/growth-measurement-repository.interface';
+import { GrowthMeasurementRepository } from '../repositories/growth-measurement.repository';
+import { DAY_STORY_REPOSITORY } from '../interfaces/repositories/day-story-repository.interface';
+import { DayStoryRepository } from '../repositories/day-story.repository';
+import { CARE_HANDOFF_REPOSITORY } from '../interfaces/repositories/care-handoff-repository.interface';
+import { CareHandoffRepository } from '../repositories/care-handoff.repository';
+import { CHAT_CONVERSATION_REPOSITORY } from '../interfaces/repositories/chat-conversation-repository.interface';
+import { ChatConversationRepository } from '../repositories/chat-conversation.repository';
+import { CHAT_MESSAGE_REPOSITORY } from '../interfaces/repositories/chat-message-repository.interface';
+import { ChatMessageRepository } from '../repositories/chat-message.repository';
+import { CHAT_READ_STATE_REPOSITORY } from '../interfaces/repositories/chat-read-state-repository.interface';
+import { ChatReadStateRepository } from '../repositories/chat-read-state.repository';
 export const DATABASE_REPOSITORY_PROVIDERS: Provider[] = [
   { provide: AI_USAGE_MONTHLY_REPOSITORY, useClass: AiUsageMonthlyRepository },
   { provide: ALBUM_MEMORY_REPOSITORY, useClass: AlbumMemoryRepository },
@@ -478,4 +490,16 @@ export const DATABASE_REPOSITORY_PROVIDERS: Provider[] = [
   },
   { provide: REQUEST_CHILD_REPOSITORY, useClass: RequestChildRepository },
   { provide: REQUEST_REPOSITORY, useClass: RequestRepository },
+  {
+    provide: GROWTH_MEASUREMENT_REPOSITORY,
+    useClass: GrowthMeasurementRepository,
+  },
+  { provide: DAY_STORY_REPOSITORY, useClass: DayStoryRepository },
+  { provide: CARE_HANDOFF_REPOSITORY, useClass: CareHandoffRepository },
+  {
+    provide: CHAT_CONVERSATION_REPOSITORY,
+    useClass: ChatConversationRepository,
+  },
+  { provide: CHAT_MESSAGE_REPOSITORY, useClass: ChatMessageRepository },
+  { provide: CHAT_READ_STATE_REPOSITORY, useClass: ChatReadStateRepository },
 ];

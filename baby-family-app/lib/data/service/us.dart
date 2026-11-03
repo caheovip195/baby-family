@@ -2,6 +2,7 @@ import 'package:baby_family/data/dto/couple_today.dart';
 import 'package:baby_family/data/model/us/bridge_next_step.dart';
 import 'package:baby_family/data/model/us/bridge_option.dart';
 import 'package:baby_family/data/model/us/bridge_session.dart';
+import 'package:baby_family/data/model/us/care_handoff.dart';
 import 'package:baby_family/data/model/us/couple_request.dart';
 import 'package:baby_family/data/model/us/couple_settings.dart';
 import 'package:baby_family/data/model/us/couple_week.dart';
@@ -159,6 +160,22 @@ abstract class IUsService extends IBaseService {
 
   /// US-14: tuần của hai ta.
   Future<CoupleWeek?> coupleWeek();
+
+  /// Bàn giao ca (7.13.8): mới nhất trước, gồm bản chờ gửi.
+  Future<List<CareHandoff>> handoffs();
+
+  /// Ghi nhanh tình trạng bé cho bạn đời; cần ít nhất một mốc giờ hoặc ghi
+  /// chú. Mất mạng → lưu trên máy, tự gửi khi có mạng.
+  Future<CareHandoff> sendHandoff({
+    List<String> childIds = const [],
+    DateTime? fedAt,
+    DateTime? sleptAt,
+    DateTime? wokeAt,
+    String? note,
+  });
+
+  /// Người nhận bấm “Đã nhận”.
+  Future<void> acknowledgeHandoff(String handoffId);
 
   /// Offline-first (BF-20261022-004): gửi lại thao tác đang chờ (vừa có mạng).
   /// Bản mock: không làm gì.

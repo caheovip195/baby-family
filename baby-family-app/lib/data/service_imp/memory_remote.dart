@@ -6,12 +6,14 @@ import 'package:baby_family/data/dto/memory_search_result.dart';
 import 'package:baby_family/data/model/memory/collection_summary.dart';
 import 'package:baby_family/data/model/memory/comment_record.dart';
 import 'package:baby_family/data/model/memory/day_story.dart';
+import 'package:baby_family/data/model/memory/day_story_item.dart';
 import 'package:baby_family/data/model/memory/media_asset_record.dart';
 import 'package:baby_family/data/model/memory/memory.dart';
 import 'package:baby_family/data/model/memory/memory_comment.dart';
 import 'package:baby_family/data/model/memory/memory_draft_item.dart';
 import 'package:baby_family/data/model/memory/memory_record.dart';
 import 'package:baby_family/data/model/memory/month_recap.dart';
+import 'package:baby_family/data/model/memory/month_recap_record.dart';
 import 'package:baby_family/data/model/memory/on_this_day_group.dart';
 import 'package:baby_family/data/model/memory/on_this_day_record.dart';
 import 'package:baby_family/data/model/memory/report_receipt.dart';
@@ -38,8 +40,10 @@ import 'package:baby_family/data/service_imp/outbox_runner.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/helper/app_clock.dart';
+import 'package:baby_family/utils/helper/app_l10n.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
 import 'package:baby_family/utils/helper/lenient_json.dart';
+import 'package:baby_family/utils/helper/memory_text.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -204,13 +208,217 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
 
   /// BF-20261023-001: chưa có nguồn câu chuyện ngày của gia đình trên server.
   @override
-  Future<DayStory?> dayStory({String? childId}) async =>
-      _serverFamilyId == null ? super.dayStory(childId: childId) : null;
+  Future<DayStory?> dayStory({String? childId}) async {
+    if (_serverFamilyId == null) {
+      return super.dayStory(childId: childId);
+    }
+    await ready();
+    // REC-01 (BF-20261028-006, không AI): bé được chọn hoặc bé đầu tiên.
+    final id = childId ?? _firstBornChild();
+    if (id == null) {
+      return null;
+    }
+    final record = await _reads.read([
+      'dayStory',
+      _serverFamilyId,
+      id,
+    ], () => _feed.dayStory(id));
+    final date = DateTime.tryParse(record?.date ?? '');
+    if (record == null || date == null) {
+      return null;
+    }
+    final saved = record.saved;
+    if (record.memories.isEmpty && saved == null) {
+      return null;
+    }
+    // Ảnh: URL đã ký của ký ức trên máy (thiếu thì đọc server), theo asset id.
+    final rows = await _recapMemories([
+      for (final memory in record.memories) memory.memoryId,
+    ]);
+    final urlOf = <String, String>{};
+    for (final memory in rows) {
+      final row = _memories.memory(memory.id);
+      final ids = [...(row?['mediaAssetIds'] as List? ?? const [])];
+      for (var i = 0; i < ids.length && i < memory.mediaAssets.length; i++) {
+        urlOf['${ids[i]}'] = memory.mediaAssets[i];
+      }
+    }
+    final options = [
+      for (final memory in record.memories)
+        for (final assetId in memory.assetIds) ?urlOf[assetId],
+    ];
+    _dayStoryAssets[id] = {
+      for (final MapEntry(:key, :value) in urlOf.entries) value: key,
+    };
+    final l10n = currentL10n();
+    final time = DateFormat('HH:mm');
+    final selectedPhotos = saved == null
+        ? options
+        : [for (final assetId in saved.assetIds) ?urlOf[assetId]];
+    final name = _children.child(id)?['name'] as String? ?? '';
+    return DayStory(
+      date: date,
+      childId: id,
+      title: saved?.title ?? l10n.recapDayDefaultTitle(name),
+      body: saved?.body ?? '',
+      aiGenerated: false,
+      items: [
+        for (final memory in record.memories)
+          DayStoryItem(
+            id: memory.memoryId,
+            title:
+                memory.title ??
+                memoryKindLabel(
+                  l10n,
+                  _appKinds[memory.kind] ?? MemoryKind.photo,
+                ),
+            kindCode: switch (memory.kind) {
+              'MISSION' => 'mission',
+              'VOICE' => 'voice',
+              'QUOTE' => 'quote',
+              _ when memory.assetIds.isNotEmpty => 'photo',
+              _ => 'other',
+            },
+            time: memory.occurredAt == null
+                ? null
+                : time.format(memory.occurredAt!.toLocal()),
+            selected:
+                saved == null || saved.memoryIds.contains(memory.memoryId),
+          ),
+      ],
+      photoAssets: selectedPhotos,
+      photoOptions: options,
+      coverAsset: urlOf[saved?.coverAssetId] ?? selectedPhotos.firstOrNull,
+      visibility: saved?.visibility == 'FAMILY'
+          ? MemoryVisibility.family
+          : MemoryVisibility.parents,
+    );
+  }
+
+  /// REC-01: URL ảnh → asset id của lần đọc gần nhất theo bé.
+  final _dayStoryAssets = <String, Map<String, String>>{};
+
+  @override
+  Future<void> saveDayStory(DayStory story) async {
+    if (_serverFamilyId == null) {
+      return super.saveDayStory(story);
+    }
+    final assets = _dayStoryAssets[story.childId] ?? const {};
+    final assetIds = [for (final url in story.photoAssets) ?assets[url]];
+    final cover = assets[story.coverAsset];
+    await _feed.saveDayStory(story.childId, _day.format(story.date), {
+      'title': story.title.trim(),
+      'body': story.body.trim().isEmpty ? null : story.body.trim(),
+      'memoryIds': [
+        for (final item in story.items)
+          if (item.selected) item.id,
+      ],
+      'assetIds': assetIds,
+      'coverAssetId': assetIds.contains(cover) ? cover : null,
+      // Câu chuyện chỉ chia cho bố mẹ hoặc cả nhà.
+      'visibility': story.visibility == MemoryVisibility.family
+          ? 'FAMILY'
+          : 'PARENTS',
+    });
+  }
+
+  String? _firstBornChild() => _children
+      .children(familyId)
+      .where(
+        (row) =>
+            row['kind'] == ChildKind.baby.name &&
+            row['archived'] != true &&
+            row[kValueChildKeyServerSubject] == true,
+      )
+      .map((row) => row['id'] as String)
+      .firstOrNull;
 
   /// BF-20261023-001: không dùng tổng kết tháng mẫu khi chưa có API tương ứng.
   @override
-  Future<MonthRecap?> monthRecap({String? childId}) async =>
-      _serverFamilyId == null ? super.monthRecap(childId: childId) : null;
+  Future<MonthRecap?> monthRecap({String? childId}) async {
+    if (_serverFamilyId == null) {
+      return super.monthRecap(childId: childId);
+    }
+    await ready();
+    // REC-03 (BF-20261027-003): bé được chọn, hoặc bé đầu tiên đã chào đời.
+    final id =
+        childId ??
+        _children
+            .children(familyId)
+            .where(
+              (row) =>
+                  row['kind'] == ChildKind.baby.name &&
+                  row['archived'] != true &&
+                  row[kValueChildKeyServerSubject] == true,
+            )
+            .map((row) => row['id'] as String)
+            .firstOrNull;
+    if (id == null) {
+      return null;
+    }
+    final MonthRecapRecord? record;
+    try {
+      record = await _reads.read([
+        'monthRecap',
+        _serverFamilyId,
+        id,
+      ], () => _feed.monthRecap(id));
+    } on DioException catch (error) {
+      // Bé chưa tròn tháng / không xem được: trạng thái rỗng.
+      if (error.response?.statusCode == 404) {
+        return null;
+      }
+      rethrow;
+    }
+    final month = record?.monthIndex;
+    final start = DateTime.tryParse(record?.start ?? '');
+    final end = DateTime.tryParse(record?.end ?? '');
+    if (record == null || month == null || start == null || end == null) {
+      return null;
+    }
+    // Ảnh tháng: dùng danh sách ảnh tháng đã có URL (MEM-20).
+    final photos = await whenOnline(() => monthlyPhotos(id), what: 'ảnh tháng');
+    String? photoOf(int index) => photos
+        ?.where((photo) => photo.monthIndex == index)
+        .map((photo) => photo.asset)
+        .nonNulls
+        .firstOrNull;
+    final firsts = await _recapMemories(record.firstMemoryIds);
+    final voices = await _recapMemories(record.voiceMemoryIds);
+    return MonthRecap(
+      childId: id,
+      monthIndex: month,
+      start: start,
+      end: end,
+      moments: record.moments,
+      firsts: record.firsts,
+      voices: record.voices,
+      previousPhotoAsset: photoOf(month - 1),
+      currentPhotoAsset: photoOf(month),
+      firstMemories: firsts,
+      voiceMemories: voices,
+      // Trang: ảnh tháng + số liệu, rồi lần đầu / giọng nói nếu có.
+      pageCount: 2 + (firsts.isEmpty ? 0 : 1) + (voices.isEmpty ? 0 : 1),
+    );
+  }
+
+  /// Ký ức của recap: bản trên máy, thiếu thì đọc từ server và phản chiếu.
+  Future<List<Memory>> _recapMemories(List<String> ids) async {
+    final result = <Memory>[];
+    for (final id in ids) {
+      if (_memories.memory(id) == null) {
+        final record = await whenOnline(() => _feed.memory(id), what: 'ký ức');
+        if (record != null) {
+          _mirror(record);
+        }
+      }
+      final row = _memories.memory(id);
+      if (row != null) {
+        result.add(Memory.fromJson(row));
+      }
+    }
+    return result;
+  }
 
   /// BF-20261023-001: bản thư viện đọc API recap; bản nền không dùng fixture.
   @override
@@ -505,12 +713,35 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
         },
       );
     }
+    // Resume (BF-20261028-005): asset đã tải xong của bài đang gửi được lưu
+    // trong outbox → mở lại app chỉ tải tiếp file còn thiếu.
+    final active = _activeUpload;
+    final uploaded = _uploadedOf(active);
     final assetIds = <String>[];
-    for (final path in mediaAssets) {
-      assetIds.add(await _upload(serverFamilyId, path));
-      final active = _activeUpload;
+    for (var index = 0; index < mediaAssets.length; index++) {
+      final known = uploaded['$index'];
+      if (known != null) {
+        assetIds.add(known);
+        continue;
+      }
+      assetIds.add(
+        await _upload(
+          serverFamilyId,
+          mediaAssets[index],
+          onProgress: active == null
+              ? null
+              : (fraction) => _reportProgress(
+                  active,
+                  (index + fraction) / mediaAssets.length,
+                ),
+        ),
+      );
       if (active != null) {
-        _memories.updateMemory(active, {'uploadDone': assetIds.length});
+        uploaded['$index'] = assetIds.last;
+        await _outbox.patchArgs(active, {_uploadedKey: uploaded});
+        if (_memories.memory(active) != null) {
+          _memories.updateMemory(active, {'uploadDone': assetIds.length});
+        }
       }
     }
     final pregnancyId = childIds
@@ -557,7 +788,17 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
         },
     };
     final fingerprint = jsonEncode(payload);
-    final record = await _feed.createMemory(_keyFor(fingerprint), payload);
+    final MemoryRecord? record;
+    try {
+      record = await _feed.createMemory(_keyFor(fingerprint), payload);
+    } on DioException catch (error) {
+      // Server từ chối (vd asset đã bị dọn vì để quá lâu): lần thử lại tải
+      // ảnh/video lại từ đầu thay vì dùng asset cũ.
+      if (active != null && !OutboxRunner.isTransient(error)) {
+        await _outbox.patchArgs(active, {_uploadedKey: <String, String>{}});
+      }
+      rethrow;
+    }
     _pendingKeys.remove(fingerprint);
     final createdId = record?.id;
     if (createdId != null) {
@@ -607,6 +848,42 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
   static const _createKind = 'memory.create';
   static const _commentKind = 'memory.comment';
   static const _reactionKind = 'memory.reaction';
+  static const _editKind = 'memory.edit';
+
+  /// `args` của bài đang gửi: chỉ số file → asset id đã tải xong.
+  static const _uploadedKey = 'uploaded';
+
+  /// Phần trăm đã báo gần nhất theo bài (báo mỗi 1% để không vẽ lại liên tục).
+  final _lastPercent = <String, int>{};
+
+  Map<String, String> _uploadedOf(String? entryId) {
+    final saved = entryId == null ? null : _outbox[entryId]?.args[_uploadedKey];
+    return saved is Map
+        ? {
+            for (final MapEntry(:key, :value) in saved.entries)
+              if (value is String) '$key': value,
+          }
+        : <String, String>{};
+  }
+
+  void _reportProgress(String entryId, double progress) {
+    final percent = (progress.clamp(0, 1) * 100).floor();
+    if (_lastPercent[entryId] == percent || _memories.memory(entryId) == null) {
+      return;
+    }
+    _lastPercent[entryId] = percent;
+    _memories.updateMemory(entryId, {'uploadProgress': percent / 100});
+  }
+
+  /// Tiến độ đã có của bài (số file đã tải xong) — hiện lại sau khi mở app.
+  JsonMap _savedProgress(OutboxEntry entry) {
+    final total = (entry.args['mediaAssets'] as List? ?? const []).length;
+    final done = _uploadedOf(entry.id).length.clamp(0, total);
+    return {
+      'uploadDone': done,
+      'uploadProgress': total == 0 ? 0.0 : done / total,
+    };
+  }
 
   String? _activeUpload;
 
@@ -622,6 +899,7 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
   Future<void> _sendEntry(OutboxEntry entry) => switch (entry.kind) {
     _commentKind => _sendComment(entry),
     _reactionKind => _sendReaction(entry),
+    _editKind => _sendEdit(entry),
     _ => _replay(entry),
   };
 
@@ -639,6 +917,68 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
         if (state == OutboxState.failed) {
           unawaited(_outbox.remove(entry.id));
         }
+      case _editKind:
+        if (state == OutboxState.failed) {
+          // Server không nhận (vd 412 bản cũ): bỏ bản sửa, đọc lại bản server.
+          final memoryId = entry.args['memoryId'] as String;
+          _revertMedia(memoryId, entry);
+          unawaited(_outbox.remove(entry.id));
+          unawaited(outbox?.discardFiles(entry.id));
+          unawaited(_reloadMemory(memoryId));
+        }
+    }
+  }
+
+  Future<void> _sendEdit(OutboxEntry entry) async {
+    final payload = Map<String, dynamic>.from(entry.args['payload'] as Map);
+    final media = payload.remove('media');
+    if (media is Map) {
+      payload.addAll(
+        await _mediaPatch(entry, Map<String, dynamic>.from(media)),
+      );
+    }
+    final MemoryRecord? record;
+    try {
+      record = await _feed.updateMemory(
+        entry.args['memoryId'] as String,
+        entry.args['version'] as int,
+        payload,
+      );
+    } on DioException catch (error) {
+      // Server từ chối asset (vd đã bị dọn): lần thử lại tải ảnh từ đầu.
+      if (media is Map && !OutboxRunner.isTransient(error)) {
+        await _outbox.patchArgs(entry.id, {_uploadedKey: <String, String>{}});
+      }
+      rethrow;
+    }
+    if (record != null) {
+      _mirror(record);
+    }
+  }
+
+  /// Bản đổi ảnh bị từ chối: hiện lại ảnh server, xoá hạn URL để lần đọc
+  /// lại ghi đè ảnh.
+  void _revertMedia(String memoryId, OutboxEntry entry) {
+    final payload = entry.args['payload'];
+    final media = payload is Map ? payload['media'] : null;
+    if (media is! Map || _memories.memory(memoryId) == null) {
+      return;
+    }
+    _memories.updateMemory(memoryId, {
+      'mediaAssets': [...(media['serverUrls'] as List? ?? const [])],
+      'mediaVideos': null,
+      'mediaUrlsExpireAt': null,
+    });
+  }
+
+  Future<void> _reloadMemory(String memoryId) async {
+    try {
+      final current = await _feed.memory(memoryId);
+      if (current != null) {
+        _mirror(current);
+      }
+    } on DioException {
+      return;
     }
   }
 
@@ -654,10 +994,11 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
     }
     switch (state) {
       case OutboxState.sending:
+        _lastPercent.remove(id);
         _memories.updateMemory(id, {
           'uploadFailed': false,
           'uploadWaiting': false,
-          'uploadDone': 0,
+          ..._savedProgress(entry),
         });
       case OutboxState.waiting:
         _memories.updateMemory(id, {
@@ -676,12 +1017,23 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
 
   /// Mở app: hiện lại ký ức tạm còn chờ.
   void _restoreEntry(OutboxEntry entry) {
+    if (entry.kind == _editKind) {
+      // Bản sửa chưa gửi: hiện lại trên bản đã lưu.
+      final id = entry.args['memoryId'] as String;
+      if (_memories.memory(id) != null) {
+        _memories.updateMemory(
+          id,
+          Map<String, dynamic>.from(entry.args['local'] as Map),
+        );
+      }
+      return;
+    }
     if (entry.kind != _createKind || _memories.memory(entry.id) != null) {
       return;
     }
     _memories.addMemory({
       ...entry.placeholder,
-      'uploadDone': 0,
+      ..._savedProgress(entry),
       'uploadFailed': entry.failed,
       'uploadWaiting': false,
     });
@@ -857,7 +1209,11 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
   /// Ảnh/video (MEM-04): upload-intent → PUT (multipart khi lớn) →
   /// complete; nội dung đã có trên server (trùng SHA-256) thì dùng lại asset.
   /// Key idempotency theo nội dung để bấm Lưu lại sau lỗi không tạo trùng.
-  Future<String> _upload(String serverFamilyId, String path) async {
+  Future<String> _upload(
+    String serverFamilyId,
+    String path, {
+    void Function(double fraction)? onProgress,
+  }) async {
     final bytes = await _media.readLocalFile(path);
     final fingerprint = 'upload:$serverFamilyId:${sha256.convert(bytes)}';
     final assetId = await MediaUploader(_media).upload(
@@ -866,6 +1222,7 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
       purpose: 'MEMORY',
       idempotencyKey: _keyFor(fingerprint),
       bytes: bytes,
+      onProgress: onProgress,
     );
     if (MediaUploader.isAudio(path)) {
       // VOICE: server cần audio READY (đã đo thời lượng) khi tạo ký ức.
@@ -944,59 +1301,231 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
       if (commentsEnabled != null &&
           commentsEnabled != (row['commentsEnabled'] ?? true))
         'commentsEnabled': commentsEnabled,
-      if (mediaAssets != null) ...await _mediaPatch(row, mediaAssets),
+      if (mediaAssets != null) 'media': ?_mediaSpec(memoryId, row, mediaAssets),
     };
     if (version == null || payload.isEmpty) {
       return Memory.fromJson(row);
     }
-    try {
-      final record = await _feed.updateMemory(memoryId, version, payload);
-      if (record != null) {
-        _mirror(record);
-      }
-    } on DioException catch (error) {
-      if (error.response?.statusCode == 412) {
-        final current = await _feed.memory(memoryId);
-        if (current != null) {
-          _mirror(current);
-        }
-      }
-      rethrow;
-    }
-    return (await memory(memoryId)) ?? Memory.fromJson(row);
+    return _editOffline(
+      memoryId,
+      version,
+      payload,
+      (media) => super.updateMemory(
+        memoryId,
+        title: title,
+        body: body,
+        childIds: childIds,
+        occurredAt: occurredAt,
+        visibility: visibility,
+        commentsEnabled: commentsEnabled,
+        mediaAssets: media,
+      ),
+    );
   }
 
-  /// MEM-09 đổi ảnh: URL đang có ↔ asset id (lưu khi phản chiếu); ảnh mới
-  /// trên máy tải lên trước; ảnh đầu danh sách là bìa.
-  Future<JsonMap> _mediaPatch(JsonMap row, List<String> next) async {
-    final current = [...(row['mediaAssets'] as List? ?? const [])];
-    final ids = [...(row['mediaAssetIds'] as List? ?? const [])];
-    final idOf = {
-      for (var i = 0; i < current.length && i < ids.length; i++)
-        current[i] as String: ids[i] as String,
+  /// MEM-09 sửa chữ / bé / phạm vi / bình luận / ảnh: đổi trên máy ngay rồi
+  /// gửi qua outbox (mất mạng: tự gửi khi có mạng). Bản sửa chưa gửi của cùng
+  /// ký ức được gộp (giữ version gốc). Ảnh mới được sao vào thư mục của thao
+  /// tác và chỉ tải lên lúc gửi (BF-20261029-001). Server từ chối (412 bản
+  /// cũ…) → đọc lại bản server và báo lỗi.
+  Future<Memory> _editOffline(
+    String memoryId,
+    int version,
+    JsonMap payload,
+    Future<Memory> Function(List<String>? media) applyLocal,
+  ) async {
+    await _loadOutbox();
+    final id = _uuid.v4();
+    var merged = payload;
+    var baseVersion = version;
+    final replaced = <String>[];
+    for (final pending in [..._outbox.entries]) {
+      if (pending.kind == _editKind &&
+          pending.args['memoryId'] == memoryId &&
+          pending.id != _outbox.active) {
+        merged = {
+          ...Map<String, dynamic>.from(pending.args['payload'] as Map),
+          ...merged,
+        };
+        baseVersion = pending.args['version'] as int;
+        replaced.add(pending.id);
+      }
+    }
+    final spec = merged['media'];
+    List<String>? display;
+    if (spec is Map) {
+      // Sao file trước khi bỏ bản sửa cũ (ảnh của nó có thể còn được chọn).
+      final media = await _keepMedia(id, Map<String, dynamic>.from(spec));
+      merged = {...merged, 'media': media};
+      display = _displayOf(media);
+    }
+    for (final old in replaced) {
+      await _outbox.remove(old);
+      await outbox?.discardFiles(old);
+    }
+    final before = {..._memories.memory(memoryId)!};
+    await applyLocal(display);
+    if (display != null) {
+      _memories.updateMemory(memoryId, {
+        'mediaVideos': _videosOf(display, before),
+      });
+    }
+    final after = _memories.memory(memoryId)!;
+    final local = {
+      for (final entry in after.entries)
+        if (jsonEncode(before[entry.key]) != jsonEncode(entry.value))
+          entry.key: entry.value,
     };
-    final serverFamilyId = _serverFamilyId!;
-    final added = <String>[];
-    final ordered = <String>[];
-    for (final source in next) {
-      final known = idOf[source];
-      if (known != null) {
-        ordered.add(known);
+    try {
+      await _outbox.submit(
+        OutboxEntry(
+          id: id,
+          kind: _editKind,
+          args: {
+            'memoryId': memoryId,
+            'version': baseVersion,
+            'payload': merged,
+            'local': local,
+          },
+          createdAt: now,
+        ),
+      );
+    } on DioException {
+      await outbox?.discardFiles(id);
+      await _reloadMemory(memoryId);
+      rethrow;
+    }
+    return (await memory(memoryId)) ?? Memory.fromJson(after);
+  }
+
+  /// Bộ ảnh server của ký ức (URL ↔ asset id cùng thứ tự): lấy từ bản sửa ảnh
+  /// còn chờ nếu có (ảnh trên máy đã đổi theo bản đó), không thì từ bản đã
+  /// phản chiếu.
+  (List<String>, List<String>) _serverMedia(String memoryId, JsonMap row) {
+    for (final pending in _outbox.entries) {
+      if (pending.kind != _editKind || pending.args['memoryId'] != memoryId) {
         continue;
       }
-      final uploaded = await _upload(serverFamilyId, source);
-      added.add(uploaded);
-      ordered.add(uploaded);
+      final payload = pending.args['payload'];
+      final media = payload is Map ? payload['media'] : null;
+      if (media is Map) {
+        return (
+          [...(media['serverUrls'] as List? ?? const []).cast<String>()],
+          [...(media['serverIds'] as List? ?? const []).cast<String>()],
+        );
+      }
+    }
+    final urls = [...(row['mediaAssets'] as List? ?? const [])];
+    final ids = [...(row['mediaAssetIds'] as List? ?? const [])];
+    final count = urls.length < ids.length ? urls.length : ids.length;
+    return (
+      [for (var i = 0; i < count; i++) urls[i] as String],
+      [for (var i = 0; i < count; i++) ids[i] as String],
+    );
+  }
+
+  /// MEM-09 đổi ảnh: thứ tự mới gồm asset đã có (`id`) và file trên máy chưa
+  /// tải (`path`); ảnh đầu danh sách là bìa. null = không đổi.
+  JsonMap? _mediaSpec(String memoryId, JsonMap row, List<String> next) {
+    final (urls, ids) = _serverMedia(memoryId, row);
+    final idOf = {for (var i = 0; i < urls.length; i++) urls[i]: ids[i]};
+    final order = [
+      for (final source in next)
+        if (idOf[source] case final id?) {'id': id} else {'path': source},
+    ];
+    final unchanged =
+        order.length == ids.length &&
+        order.indexed.every((item) => item.$2['id'] == ids[item.$1]);
+    if (unchanged) {
+      return null;
+    }
+    return {'order': order, 'serverIds': ids, 'serverUrls': urls};
+  }
+
+  /// Sao các file trên máy của [media] vào thư mục của thao tác [entryId].
+  Future<JsonMap> _keepMedia(String entryId, JsonMap media) async {
+    final order = [
+      for (final item in media['order'] as List? ?? const [])
+        Map<String, dynamic>.from(item as Map),
+    ];
+    final paths = [
+      for (final item in order)
+        if (item['path'] case final String path) path,
+    ];
+    final kept = await outbox?.keepFiles(entryId, paths) ?? paths;
+    var next = 0;
+    return {
+      ...media,
+      'order': [
+        for (final item in order)
+          if (item['path'] is String) {'path': kept[next++]} else item,
+      ],
+    };
+  }
+
+  /// Ảnh hiển thị trên máy theo thứ tự mới: URL của asset đã có, file chưa tải.
+  List<String> _displayOf(JsonMap media) {
+    final ids = [...(media['serverIds'] as List? ?? const [])];
+    final urls = [...(media['serverUrls'] as List? ?? const [])];
+    final display = <String>[];
+    for (final item in media['order'] as List? ?? const []) {
+      final map = item as Map;
+      final index = ids.indexOf(map['id']);
+      if (map['path'] case final String path) {
+        display.add(path);
+      } else if (index >= 0 && index < urls.length) {
+        display.add(urls[index] as String);
+      }
+    }
+    return display;
+  }
+
+  /// Video phát được theo ảnh mới (tra theo URL đang hiện; file chưa tải:
+  /// null như bài đang đăng).
+  List<String?> _videosOf(List<String> display, JsonMap row) {
+    final urls = [...(row['mediaAssets'] as List? ?? const [])];
+    final videos = [...(row['mediaVideos'] as List? ?? const [])];
+    final videoOf = {
+      for (var i = 0; i < urls.length && i < videos.length; i++)
+        urls[i]: videos[i] as String?,
+    };
+    return [for (final url in display) videoOf[url]];
+  }
+
+  /// Gửi bản sửa ảnh: tải file còn thiếu (asset đã tải lưu vào outbox để mở
+  /// lại app thì tải tiếp) rồi đổi thành add/remove/cover cho `PATCH`.
+  Future<JsonMap> _mediaPatch(OutboxEntry entry, JsonMap media) async {
+    final serverIds = [
+      ...(media['serverIds'] as List? ?? const []).cast<String>(),
+    ];
+    final uploaded = _uploadedOf(entry.id);
+    final added = <String>[];
+    final ordered = <String>[];
+    for (final (index, item) in (media['order'] as List? ?? const []).indexed) {
+      final map = item as Map;
+      if (map['id'] case final String id) {
+        ordered.add(id);
+        continue;
+      }
+      final assetId =
+          uploaded['$index'] ??
+          await _upload(_serverFamilyId!, map['path'] as String);
+      if (uploaded['$index'] == null) {
+        uploaded['$index'] = assetId;
+        await _outbox.patchArgs(entry.id, {_uploadedKey: uploaded});
+      }
+      added.add(assetId);
+      ordered.add(assetId);
     }
     final removed = [
-      for (final id in idOf.values)
+      for (final id in serverIds)
         if (!ordered.contains(id)) id,
     ];
     final cover = ordered.firstOrNull;
     final changed =
         added.isNotEmpty ||
         removed.isNotEmpty ||
-        (cover != null && ids.isNotEmpty && cover != ids.first);
+        (cover != null && serverIds.isNotEmpty && cover != serverIds.first);
     return {
       if (added.isNotEmpty) 'addAssetIds': added,
       if (removed.isNotEmpty) 'removeAssetIds': removed,
@@ -2178,9 +2707,11 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
     final current = DateTime.tryParse(
       existing['mediaUrlsExpireAt'] as String? ?? '',
     );
-    // Bộ ảnh đổi (MEM-09) hoặc URL sắp hết hạn → ghi lại ảnh.
+    // Bộ ảnh đổi (MEM-09) hoặc URL sắp hết hạn → ghi lại ảnh; bản đổi ảnh
+    // chưa gửi thì giữ ảnh trên máy tới khi gửi xong.
     final refreshMedia =
         ready &&
+        !_pendingMedia(id) &&
         (current == null ||
             current.isBefore(now.add(kValueSignedUrlRefreshMargin)) ||
             !_same(existing['mediaAssetIds'], media['mediaAssetIds']) ||
@@ -2192,6 +2723,15 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
       _memories.updateMemory(id, {...fields, if (refreshMedia) ...media});
     }
   }
+
+  bool _pendingMedia(String memoryId) => _outbox.entries.any(
+    (entry) =>
+        entry.kind == _editKind &&
+        entry.id != _outbox.active &&
+        entry.args['memoryId'] == memoryId &&
+        entry.args['payload'] is Map &&
+        (entry.args['payload'] as Map)['media'] != null,
+  );
 
   /// Ảnh hiển thị của một asset: bản trong thư viện máy nếu có, không thì
   /// biến thể ảnh lớn nhất đã ký; video dùng ảnh poster của server (MEM-08

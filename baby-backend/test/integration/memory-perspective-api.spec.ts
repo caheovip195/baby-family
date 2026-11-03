@@ -322,6 +322,58 @@ describe('Memory perspectives API (focused module + PostgreSQL)', () => {
     });
     await put(parentB, { body: null, audioAssetId: audio.id }).expect(200);
   });
+  it('BF-20261030-006: attaches ordered photos, replaces the set and rejects unusable assets', async () => {
+    const image = (kind: 'IMAGE' | 'AUDIO' = 'IMAGE', status = 'READY') =>
+      prisma.asset.create({
+        data: {
+          familyId,
+          uploaderUserId: parentB,
+          kind,
+          status: status as never,
+          storageKey: `synthetic/${randomUUID()}`,
+          mime: kind === 'IMAGE' ? 'image/jpeg' : 'audio/aac',
+          declaredSize: BigInt(1),
+        },
+      });
+    const [a, b] = [await image(), await image()];
+    type View = { id: string; assets: { assetId: string }[] };
+    const saved = (
+      (
+        await put(parentB, {
+          body: null,
+          audioAssetId: null,
+          assetIds: [b.id, a.id],
+        }).expect(200)
+      ).body as { data: View }
+    ).data;
+    expect(saved.assets.map((x) => x.assetId)).toEqual([b.id, a.id]);
+    // Không gửi assetIds → giữ bộ cũ; gửi bộ mới → thay cả bộ.
+    const kept = (
+      (await put(parentB, { body: 'Ảnh của bố' }).expect(200)).body as {
+        data: View;
+      }
+    ).data;
+    expect(kept.assets.map((x) => x.assetId)).toEqual([b.id, a.id]);
+    const replaced = (
+      (await put(parentB, { assetIds: [a.id] }).expect(200)).body as {
+        data: View;
+      }
+    ).data;
+    expect(replaced.assets.map((x) => x.assetId)).toEqual([a.id]);
+    expect(
+      await prisma.memoryPerspectiveAsset.count({
+        where: { perspectiveId: replaced.id, deletedAt: null },
+      }),
+    ).toBe(1);
+    const sound = await image('AUDIO');
+    const pending = await image('IMAGE', 'PENDING_UPLOAD');
+    for (const assetIds of [[sound.id], [pending.id], [randomUUID()]])
+      await put(parentB, { assetIds }).expect(422);
+    await put(parentB, {
+      assetIds: Array.from({ length: 7 }, () => randomUUID()),
+    }).expect(400);
+    await put(parentB, { assetIds: [] }).expect(200);
+  });
   it('rejects another Parent private-memory audio and non-memory purpose assets', async () => {
     const audio = await prisma.asset.create({
       data: {

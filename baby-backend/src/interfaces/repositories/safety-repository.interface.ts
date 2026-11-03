@@ -36,6 +36,12 @@ export interface ISafetyRepository {
   /** Active Parent / active Circle member of the family, else null. */
   roleOf(familyId: string, userId: string): Promise<FamilyRoleOf>;
   /** Author of an active comment in the family, null when missing. */
+  /** Người đã yêu cầu lượt AI [invocationId] trong gia đình (null = không có). */
+  aiInvocationRequester(
+    familyId: string,
+    invocationId: string,
+  ): Promise<string | null>;
+
   commentContext(
     familyId: string,
     commentId: string,

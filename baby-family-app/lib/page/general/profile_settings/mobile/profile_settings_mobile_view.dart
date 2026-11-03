@@ -8,8 +8,11 @@ import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/media_image.dart';
+import 'package:baby_family/utils/helper/server_error_message.dart';
 import 'package:baby_family/utils/helper/theme.dart';
+import 'package:baby_family/utils/helper/user_cancelled.dart';
 import 'package:baby_family/utils/router/app_router.dart';
+import 'package:baby_family/utils/widget/app_bottom_sheet.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
 import 'package:baby_family/utils/widget/app_caps_label.dart';
 import 'package:baby_family/utils/widget/app_grouped_list.dart';
@@ -21,11 +24,13 @@ import 'package:baby_family/utils/widget/app_top_bar.dart';
 import 'package:baby_family/utils/widget/base_scaffold.dart';
 import 'package:baby_family/utils/widget/error_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
 
 part '../widgets/profile_avatar.dart';
+part '../widgets/reauth_code_sheet.dart';
 part '../widgets/sign_in_row.dart';
 
 /// SET-02 — Hồ sơ (Pencil `wtfze`). “Lưu thay đổi” lưu rồi quay lại SET-01.
@@ -121,13 +126,12 @@ class ProfileSettingsMobileView extends HookConsumerWidget {
                     kValueUseRemoteSession && method.method == AuthMethod.phone
                     ? l10n.setChangePhone
                     : null,
-                // Liên kết/gỡ Apple/Google cần SDK đăng nhập gốc — bản server
-                // chỉ hiện trạng thái thật, chưa đổi được.
+                // Bản server: Apple/Google xác thực lại rồi liên kết/gỡ thật.
                 onToggle: !kValueUseRemoteSession
                     ? () => controller.toggleLink(method.method)
                     : method.method == AuthMethod.phone
                     ? () => context.router.push(const ChangePhoneRoute())
-                    : () => showComingSoonSnackBar(context),
+                    : () => _changeLink(context, controller, method.method),
               ),
           ],
         ),

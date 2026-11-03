@@ -63,6 +63,54 @@ export const catalogMissionCreateSchema = z
         message: 'Mission age range is reversed',
       });
   });
+/** BF-20261028-003: cột mốc — mỗi bản là một mã mới (nháp → ACTIVE → RETIRED). */
+export const catalogMilestoneCreateSchema = z
+  .object({
+    reason,
+    code: z.string().regex(/^[a-z][a-z0-9_]{0,39}$/),
+    category: z.enum([
+      'TRADITIONAL',
+      'EMOTION',
+      'MOTOR',
+      'LANGUAGE',
+      'FOOD',
+      'BODY',
+      'EXPERIENCE',
+      'FAMILY',
+      'PREGNANCY',
+    ]),
+    icon: z.string().trim().min(1).max(40),
+    titleI18n: i18n,
+    promptI18n: i18n.optional(),
+    isTraditional: z.boolean(),
+    dateRule: z
+      .discriminatedUnion('type', [
+        z
+          .object({
+            type: z.literal('LUNAR_FESTIVAL'),
+            month: z.number().int().min(1).max(12),
+            day: z.number().int().min(1).max(29),
+          })
+          .strict(),
+        z
+          .object({
+            type: z.literal('BIRTH_MONTHS'),
+            months: z.number().int().nonnegative().max(240),
+          })
+          .strict(),
+        z
+          .object({
+            type: z.literal('BIRTH_DAYS'),
+            days: z.number().int().nonnegative().max(7300),
+          })
+          .strict(),
+      ])
+      .nullable(),
+    remindDaysBefore: z.number().int().min(0).max(30).nullable(),
+    sortOrder: z.number().int().nonnegative().max(2147483647),
+    version: z.number().int().positive().max(2147483647),
+  })
+  .strict();
 export const catalogPlanCreateSchema = z
   .object({
     reason,
@@ -103,9 +151,13 @@ export const catalogMissionPublishSchema = z
   .strict();
 export const catalogRetireSchema = z.object({ reason }).strict();
 export type CatalogPublishingKind =
-  'missions' | 'plan-versions' | 'trial-policies';
+  'missions' | 'milestones' | 'plan-versions' | 'trial-policies';
 export type CatalogMissionInput = Omit<
   z.infer<typeof catalogMissionCreateSchema>,
+  'reason'
+>;
+export type CatalogMilestoneInput = Omit<
+  z.infer<typeof catalogMilestoneCreateSchema>,
   'reason'
 >;
 export type CatalogPlanInput = Omit<
@@ -117,4 +169,7 @@ export type CatalogTrialInput = Omit<
   'reason'
 >;
 export type CatalogPublishingInput =
-  CatalogMissionInput | CatalogPlanInput | CatalogTrialInput;
+  | CatalogMissionInput
+  | CatalogMilestoneInput
+  | CatalogPlanInput
+  | CatalogTrialInput;

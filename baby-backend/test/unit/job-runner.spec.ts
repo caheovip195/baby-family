@@ -117,6 +117,40 @@ describe('JobRunnerService', () => {
     });
   });
 
+  it('BF-20261028-001: reports permanent failures with metadata only', async () => {
+    const reporter = { report: jest.fn(), reportJob: jest.fn() };
+    const reporting = new JobRunnerService(runs, config, reporter);
+    runs.claim.mockResolvedValueOnce({ kind: 'claimed', lease: lease(3) });
+    runs.fail.mockResolvedValueOnce('FAILED');
+    await expect(
+      reporting.execute(JOBS.processAsset, request, () =>
+        Promise.reject(new PermanentJobError('CHECKSUM_MISMATCH', 'bad hash')),
+      ),
+    ).rejects.toBeInstanceOf(PermanentJobError);
+    expect(reporter.reportJob).toHaveBeenCalledWith({
+      job: JOBS.processAsset.name,
+      code: 'CHECKSUM_MISMATCH',
+      attempt: 3,
+    });
+    // Transient retry → no alert.
+    runs.claim.mockResolvedValueOnce({ kind: 'claimed', lease: lease(1) });
+    await expect(
+      reporting.execute(JOBS.processAsset, request, () =>
+        Promise.reject(new Error('blip')),
+      ),
+    ).rejects.toThrow('blip');
+    expect(reporter.reportJob).toHaveBeenCalledTimes(1);
+    runs.claim.mockResolvedValueOnce({ kind: 'exhausted' });
+    await expect(
+      reporting.execute(JOBS.processAsset, request, () => Promise.resolve({})),
+    ).rejects.toBeInstanceOf(PermanentJobError);
+    expect(reporter.reportJob).toHaveBeenLastCalledWith({
+      job: JOBS.processAsset.name,
+      code: 'ATTEMPTS_EXHAUSTED',
+      attempt: JOBS.processAsset.maxAttempts,
+    });
+  });
+
   it('fails the attempt when the lease was lost before completion', async () => {
     runs.claim.mockResolvedValueOnce({ kind: 'claimed', lease: lease() });
     runs.succeed.mockResolvedValueOnce(false);

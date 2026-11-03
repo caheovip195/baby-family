@@ -4,6 +4,7 @@ import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/extension/date_time.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/extension/string.dart';
+import 'package:baby_family/utils/helper/app_snack_bar.dart';
 import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:baby_family/utils/helper/memory_text.dart';
 import 'package:baby_family/utils/helper/theme.dart';
@@ -11,9 +12,11 @@ import 'package:baby_family/utils/widget/app_action_top_bar.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
 import 'package:baby_family/utils/widget/base_scaffold.dart';
 import 'package:baby_family/utils/widget/loading_progress.dart';
+import 'package:baby_family/utils/widget/playable_voice_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
 
 part '../widgets/media_tile.dart';
@@ -133,27 +136,102 @@ class MemoryPerspectiveMobileView extends HookConsumerWidget {
                           runSpacing: AppSpacing.itemGap,
                           children: [
                             for (final asset in controller.mediaAssets)
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(
-                                  AppRadius.tile,
-                                ),
-                                child: Image(
-                                  image: mediaImageProvider(asset),
-                                  width: 72,
-                                  height: 72,
-                                  fit: BoxFit.cover,
+                              GestureDetector(
+                                key: ValueKey('perspective-photo-$asset'),
+                                // Chạm ảnh để bỏ khỏi góc nhìn.
+                                onTap: () => controller.removeMedia(asset),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadius.tile,
+                                  ),
+                                  child: isLocalVideo(asset)
+                                      ? Container(
+                                          width: 72,
+                                          height: 72,
+                                          color: AppColors.resolve(
+                                            context,
+                                            kColorTextPrimary2E2A27,
+                                          ),
+                                          child: const Icon(
+                                            LucideIcons.video,
+                                            color: kColorWhiteAlpha80,
+                                          ),
+                                        )
+                                      : Image(
+                                          image: mediaImageProvider(asset),
+                                          width: 72,
+                                          height: 72,
+                                          fit: BoxFit.cover,
+                                        ),
                                 ),
                               ),
+                            if (controller.mediaAssets.length <
+                                MemoryPerspectiveController.maxMedia)
+                              _MediaTile(
+                                key: const ValueKey('perspective-photos'),
+                                icon: LucideIcons.imagePlus,
+                                label: l10n.memoriesPhotos,
+                                onTap: () async {
+                                  // Ảnh/video gốc: client nén khi tải lên;
+                                  // video quá giới hạn của gói bị bỏ.
+                                  final picked = await ImagePicker()
+                                      .pickMultipleMedia();
+                                  final tooLong = await controller.addPicked([
+                                    for (final file in picked) file.path,
+                                  ]);
+                                  if (tooLong != null && context.mounted) {
+                                    showAppSnackBar(
+                                      context,
+                                      l10n.subLimitVideoTitle(tooLong),
+                                    );
+                                  }
+                                },
+                              ),
                             _MediaTile(
-                              icon: LucideIcons.imagePlus,
-                              label: l10n.memoriesPhotos,
-                            ),
-                            _MediaTile(
-                              icon: LucideIcons.mic,
-                              label: l10n.memFilterVoice,
+                              key: const ValueKey('perspective-voice'),
+                              icon: controller.recording
+                                  ? LucideIcons.square
+                                  : controller.hasVoice
+                                  ? LucideIcons.trash2
+                                  : LucideIcons.mic,
+                              label: controller.recording
+                                  ? l10n.memVoiceStop
+                                  : controller.hasVoice
+                                  ? l10n.commonDelete
+                                  : l10n.memFilterVoice,
+                              active: controller.recording,
+                              onTap: controller.toggleVoice,
                             ),
                           ],
                         ),
+                        if (controller.recording) ...[
+                          const SizedBox(height: AppSpacing.s3),
+                          Text(
+                            l10n.memVoiceRecording,
+                            style: AppTypography.adapt(
+                              context,
+                              AppTypography.small,
+                            ),
+                          ),
+                        ] else if (controller.micDenied) ...[
+                          const SizedBox(height: AppSpacing.s3),
+                          Text(
+                            l10n.memVoiceMicDenied,
+                            style: AppTypography.adapt(
+                              context,
+                              AppTypography.small,
+                            ),
+                          ),
+                        ] else if (controller.hasVoice) ...[
+                          const SizedBox(height: AppSpacing.s3),
+                          PlayableVoiceCard(
+                            title: l10n.memFilterVoice,
+                            duration: memoryDuration(
+                              controller.voiceDurationSec ?? 0,
+                            ),
+                            url: controller.voicePath ?? controller.voiceUrl,
+                          ),
+                        ],
                         const SizedBox(height: AppSpacing.s4),
                         Container(
                           padding: const EdgeInsets.symmetric(

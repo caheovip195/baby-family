@@ -208,6 +208,7 @@ export class MemoryLibraryService implements IMemoryLibraryService {
   async download(
     actor: AuthPrincipal,
     id: string,
+    perspectiveId?: string,
   ): Promise<OriginalDownloadResponse> {
     await this.read(actor, id, 'download');
     // Re-read the live grant and links before issuing bearer URLs.
@@ -233,10 +234,20 @@ export class MemoryLibraryService implements IMemoryLibraryService {
         'MEMORY_DOWNLOAD_RATE_LIMITED',
         429,
       );
+    // Góc nhìn: cùng quyền tải của ký ức, asset lấy từ góc nhìn.
+    const media = perspectiveId
+      ? await this.repository.perspectiveMedia(
+          id,
+          perspectiveId,
+          (await this.requireFamily(actor, row.memory.familyId, 'download'))
+            .isParent,
+        )
+      : { assets: row.assets, variants: row.variants };
+    if (!media) throw new NotFoundError('Perspective was not found.');
     const items: OriginalDownloadResponse['items'] = [];
-    for (const [index, asset] of row.assets.entries()) {
+    for (const [index, asset] of media.assets.entries()) {
       // Workers erase non-retained raw uploads after processing; never sign a missing original.
-      const original = row.variants.find(
+      const original = media.variants.find(
         (v) =>
           v.assetId === asset.id &&
           (v.variantCode === 'orig' ||

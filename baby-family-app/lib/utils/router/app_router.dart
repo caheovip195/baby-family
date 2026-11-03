@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/page/circle/circle_child/circle_child_page.dart';
 import 'package:baby_family/page/circle/circle_home/circle_home_page.dart';
@@ -7,6 +9,7 @@ import 'package:baby_family/page/circle/circle_paused/circle_paused_page.dart';
 import 'package:baby_family/page/circle/circle_post/circle_post_page.dart';
 import 'package:baby_family/page/circle/circle_shell/circle_shell_page.dart';
 import 'package:baby_family/page/circle/circle_waiting/circle_waiting_page.dart';
+import 'package:baby_family/page/circle/circle_year_books/circle_year_books_page.dart';
 import 'package:baby_family/page/circle/leave_family/leave_family_page.dart';
 import 'package:baby_family/page/general/about/about_page.dart';
 import 'package:baby_family/page/general/ai_settings/ai_settings_page.dart';
@@ -16,6 +19,8 @@ import 'package:baby_family/page/general/auth_phone/auth_phone_page.dart';
 import 'package:baby_family/page/general/auth_profile/auth_profile_page.dart';
 import 'package:baby_family/page/general/blocked_people/blocked_people_page.dart';
 import 'package:baby_family/page/general/change_phone/change_phone_page.dart';
+import 'package:baby_family/page/general/chat_conversation/chat_conversation_page.dart';
+import 'package:baby_family/page/general/chat_list/chat_list_page.dart';
 import 'package:baby_family/page/general/delete_account/delete_account_page.dart';
 import 'package:baby_family/page/general/display_settings/display_settings_page.dart';
 import 'package:baby_family/page/general/expired/expired_page.dart';
@@ -77,6 +82,7 @@ import 'package:baby_family/page/parent/family_plan/family_plan_page.dart';
 import 'package:baby_family/page/parent/family_settings/family_settings_page.dart';
 import 'package:baby_family/page/parent/family_tree/family_tree_page.dart';
 import 'package:baby_family/page/parent/firsts/firsts_page.dart';
+import 'package:baby_family/page/parent/growth/growth_page.dart';
 import 'package:baby_family/page/parent/home_tab/home_tab_page.dart';
 import 'package:baby_family/page/parent/letter_composer/letter_composer_page.dart';
 import 'package:baby_family/page/parent/main_shell/main_shell_page.dart';
@@ -115,6 +121,8 @@ import 'package:baby_family/page/parent/thanks_wall/thanks_wall_page.dart';
 import 'package:baby_family/page/parent/trash/trash_page.dart';
 import 'package:baby_family/page/parent/upgrade_plan/upgrade_plan_page.dart';
 import 'package:baby_family/page/parent/weekly_recap/weekly_recap_page.dart';
+import 'package:baby_family/page/parent/year_book/year_book_page.dart';
+import 'package:baby_family/page/parent/year_book_preview/year_book_preview_page.dart';
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:flutter/widgets.dart';
 
@@ -323,6 +331,12 @@ class AppRouter extends RootStackRouter {
       page: NotificationsRoute.page,
       path: '/notifications',
     ).route(),
+    // Nhắn tin gia đình (CHAT-01/02, BF-20261101-001) — Bố Mẹ và người thân.
+    AutoRouteCustom(page: ChatListRoute.page, path: '/chats').route(),
+    AutoRouteCustom(
+      page: ChatConversationRoute.page,
+      path: '/chats/:conversationId',
+    ).route(),
 
     // --- Thai kỳ ---
     AutoRouteCustom(
@@ -383,6 +397,21 @@ class AppRouter extends RootStackRouter {
     AutoRouteCustom(
       page: ChildProfileRoute.page,
       path: '/child/:childId',
+    ).route(),
+    AutoRouteCustom(
+      page: GrowthRoute.page,
+      path: '/child/:childId/growth',
+    ).route(),
+    // `?childId=` (không có = sách cả nhà, BF-20261030-002) `&year=`.
+    AutoRouteCustom(page: YearBookRoute.page, path: '/year-book').route(),
+    // BF-20261030-002: xem trước PDF, danh sách sách đã chia sẻ.
+    AutoRouteCustom(
+      page: YearBookPreviewRoute.page,
+      path: '/year-book/preview',
+    ).route(),
+    AutoRouteCustom(
+      page: CircleYearBooksRoute.page,
+      path: '/circle/year-books',
     ).route(),
     AutoRouteCustom(
       page: ChildEditRoute.page,

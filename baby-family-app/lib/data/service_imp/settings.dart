@@ -190,6 +190,15 @@ class SettingsServiceImp extends MockServiceImp implements ISettingsService {
   Future<void> verifyReauth(String code) async {}
 
   @override
+  Future<void> reauthWithSignIn(AuthMethod method) async {}
+
+  @override
+  Future<void> linkSignIn(AuthMethod method) async {}
+
+  @override
+  Future<void> unlinkSignIn(AuthMethod method) async {}
+
+  @override
   Future<void> deleteAccount({bool keepMemories = true}) =>
       sessionRepository.reseed(DemoSeed.fresh);
 

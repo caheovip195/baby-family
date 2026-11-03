@@ -49,7 +49,39 @@ export class MemoryPerspectiveContentRepository implements IMemoryPerspectiveCon
     });
     return row ? new Asset(row) : null;
   }
+  async findMedia(assetIds: string[], familyId: string, actorUserId: string) {
+    if (!assetIds.length) return [];
+    const visible = await this.prisma.$queryRaw<{ id: string }[]>`
+      SELECT a.id::text AS id FROM app.assets a
+      WHERE a.id = ANY(${assetIds}::uuid[]) AND a.family_id = ${familyId}::uuid
+        AND a.deleted_at IS NULL AND a.purpose = 'MEMORY'
+        AND a.private_owner_user_id IS NULL
+        AND (a.uploader_user_id = ${actorUserId}::uuid
+             OR ${parentSharedAssetSql(actorUserId)})`;
+    const ids = visible.map((row) => row.id);
+    const rows = await this.prisma.asset.findMany({
+      where: { id: { in: ids }, familyId, deletedAt: null },
+    });
+    return rows.map((row) => new Asset(row));
+  }
+  async assetIds(perspectiveIds: string[]) {
+    const rows = perspectiveIds.length
+      ? await this.prisma.memoryPerspectiveAsset.findMany({
+          where: { perspectiveId: { in: perspectiveIds }, deletedAt: null },
+          orderBy: [{ perspectiveId: 'asc' }, { sortOrder: 'asc' }],
+          select: { perspectiveId: true, assetId: true },
+        })
+      : [];
+    const map = new Map<string, string[]>();
+    for (const row of rows)
+      map.set(row.perspectiveId, [
+        ...(map.get(row.perspectiveId) ?? []),
+        row.assetId,
+      ]);
+    return map;
+  }
   save(command: SavePerspectiveContent) {
+    const { assetIds, ...fields } = command;
     return this.prisma.$transaction(async (tx) => {
       await this.lock(tx, command.memoryId, command.familyId);
       const row = await tx.memoryPerspective.upsert({
@@ -59,7 +91,7 @@ export class MemoryPerspectiveContentRepository implements IMemoryPerspectiveCon
             authorUserId: command.authorUserId,
           },
         },
-        create: command,
+        create: fields,
         update: {
           body: command.body,
           audioAssetId: command.audioAssetId,
@@ -70,6 +102,31 @@ export class MemoryPerspectiveContentRepository implements IMemoryPerspectiveCon
           version: { increment: 1 },
         },
       });
+      if (assetIds !== undefined) {
+        // Thay cả bộ: bỏ ảnh không còn chọn, khôi phục / thêm ảnh theo thứ tự.
+        const now = new Date();
+        await tx.memoryPerspectiveAsset.updateMany({
+          where: {
+            perspectiveId: row.id,
+            deletedAt: null,
+            assetId: { notIn: assetIds },
+          },
+          data: { deletedAt: now },
+        });
+        for (const [index, assetId] of assetIds.entries())
+          await tx.memoryPerspectiveAsset.upsert({
+            where: {
+              perspectiveId_assetId: { perspectiveId: row.id, assetId },
+            },
+            create: {
+              perspectiveId: row.id,
+              assetId,
+              familyId: command.familyId,
+              sortOrder: index,
+            },
+            update: { sortOrder: index, deletedAt: null },
+          });
+      }
       await this.changed(tx, command.memoryId, command.familyId, row.id);
       return new MemoryPerspective(row);
     });

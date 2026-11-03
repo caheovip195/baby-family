@@ -218,7 +218,10 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
   }
 
   @override
-  Future<List<String>> downloadUrls(String memoryId) async => const [];
+  Future<List<String>> downloadUrls(
+    String memoryId, {
+    String? perspectiveId,
+  }) async => const [];
 
   @override
   Future<void> toggleFavorite(String memoryId) async {
@@ -295,6 +298,9 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
     String memoryId, {
     required String body,
     List<String> mediaAssets = const [],
+    String? voicePath,
+    int? voiceDurationSec,
+    bool removeVoice = false,
   }) async {
     await ready();
     final mine = _repository
@@ -304,14 +310,25 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
     if (mine != null) {
       // BR-071: one perspective per parent — update instead of adding.
       final id = mine['id'] as String;
+      final voice = {
+        if (voicePath != null) ...{
+          'voiceUrl': voicePath,
+          'voiceDurationSec': voiceDurationSec,
+        } else if (removeVoice) ...{
+          'voiceUrl': null,
+          'voiceDurationSec': null,
+        },
+      };
       _repository.updatePerspective(id, {
         'body': body.trim(),
         'mediaAssets': mediaAssets,
+        ...voice,
       });
       return MemoryPerspective.fromJson({
         ...mine,
         'body': body.trim(),
         'mediaAssets': mediaAssets,
+        ...voice,
       });
     }
     return MemoryPerspective.fromJson(
@@ -320,6 +337,8 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
         'authorId': myUserId,
         'body': body.trim(),
         'mediaAssets': mediaAssets,
+        'voiceUrl': ?voicePath,
+        'voiceDurationSec': ?voiceDurationSec,
         'createdAt': now.toIso8601String(),
       }),
     );
@@ -835,6 +854,30 @@ class MemoryServiceImp extends MockServiceImp implements IMemoryService {
     await ready();
     final row = _repository.weeklyRecap();
     return row.isEmpty ? null : WeeklyRecap.fromJson(row);
+  }
+
+  @override
+  Future<WeeklyRecap> shareWeeklyRecap(
+    WeeklyRecap recap, {
+    required bool shared,
+  }) async => recap.copyWith(shared: shared);
+
+  /// Bản mock: tạo một ký ức trên máy từ ảnh nổi bật của tuần.
+  @override
+  Future<String?> saveWeeklyRecapToTimeline(WeeklyRecap recap) async {
+    final saved = recap.memoryId;
+    if (saved != null) {
+      return saved;
+    }
+    final memory = await create(
+      kind: MemoryKind.photo,
+      childIds: const [],
+      title: recap.headline,
+      mediaAssets: recap.heroAssets,
+      visibility: MemoryVisibility.parents,
+      occurredAt: recap.end,
+    );
+    return memory.id;
   }
 
   // ------------------------------------------------------------ batch 3

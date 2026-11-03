@@ -13,6 +13,16 @@ abstract class MemoryPerspective with _$MemoryPerspective {
     @JsonKey(name: 'authorId') required String authorId,
     @JsonKey(name: 'body') @Default('') String body,
     @JsonKey(name: 'mediaAssets') @Default([]) List<String> mediaAssets,
+
+    /// Asset id của server cùng thứ tự [mediaAssets] (để sửa giữ ảnh cũ).
+    @JsonKey(name: 'mediaAssetIds') @Default([]) List<String> mediaAssetIds,
+
+    /// URL phát video cùng thứ tự [mediaAssets] (ảnh: null, BF-20261030-008).
+    @JsonKey(name: 'mediaVideos') @Default([]) List<String?> mediaVideos,
+
+    /// Ghi âm góc nhìn: URL nghe (server) hoặc tệp trên máy (bản mock).
+    @JsonKey(name: 'voiceUrl') String? voiceUrl,
+    @JsonKey(name: 'voiceDurationSec') int? voiceDurationSec,
     @JsonKey(name: 'createdAt') required DateTime createdAt,
     @JsonKey(name: 'hiddenFromRelatives')
     @Default(false)

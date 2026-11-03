@@ -3,16 +3,21 @@ import 'dart:async';
 import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/data/provider/app_setting.dart';
 import 'package:baby_family/data/provider/care.dart';
+import 'package:baby_family/data/provider/chat.dart';
 import 'package:baby_family/data/provider/connectivity.dart';
+import 'package:baby_family/data/provider/growth.dart';
 import 'package:baby_family/data/provider/memory.dart';
 import 'package:baby_family/data/provider/push.dart';
 import 'package:baby_family/data/provider/session.dart';
 import 'package:baby_family/data/provider/us.dart';
+import 'package:baby_family/data/provider/year_book.dart';
 import 'package:baby_family/generated/l10n/app_localizations.dart';
 import 'package:baby_family/page/application_base.dart';
+import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/helper/broadcast_manager.dart';
 import 'package:baby_family/utils/helper/theme.dart';
 import 'package:baby_family/utils/router/app_router.dart';
+import 'package:baby_family/utils/router/deep_link_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -31,7 +36,23 @@ class RootApp extends BaseHookWidget {
           .listen((_) {});
       // ONB-10: đã cho phép thông báo từ trước → gửi lại push token (có thể đổi).
       unawaited(ref.read(pushServiceProvider).syncIfAuthorized());
+      // BF-20261030-005: chạm thông báo đẩy → mở đúng màn theo vai trò.
+      final openedSubscription = ref
+          .read(pushServiceProvider)
+          .openedLinks()
+          .listen(BroadcastManager().addDeepLink);
+      final deepLinkSubscription = BroadcastManager().deepLinkStream.listen(
+        (link) => unawaited(_openDeepLink(ref, link)),
+      );
+      // App đang mở: hệ điều hành không hiện banner → thanh báo + “Xem”.
+      final foregroundSubscription = ref
+          .read(pushServiceProvider)
+          .foregroundMessages()
+          .listen((message) => _showForeground(ref, message));
       return () {
+        openedSubscription.cancel();
+        foregroundSubscription.cancel();
+        deepLinkSubscription.cancel();
         sessionExpiredSubscription.cancel();
         BroadcastManager().close();
       };
@@ -43,8 +64,31 @@ class RootApp extends BaseHookWidget {
       if (state == AppLifecycleState.paused ||
           state == AppLifecycleState.hidden) {
         unawaited(ref.read(sessionServiceProvider).persistOffline());
+        // Nhắn tin (BF-20261101-001): ngắt realtime khi ở nền để server gửi
+        // push cho tin mới.
+        ref.read(chatServiceProvider).pause();
+      } else if (state == AppLifecycleState.resumed) {
+        unawaited(ref.read(chatServiceProvider).resume());
       }
     });
+
+    // Nhắn tin: kết nối realtime khi đã vào app chính với gia đình server;
+    // đăng xuất / đổi gia đình → bỏ trạng thái phiên cũ.
+    void attachChat(SessionState state) => unawaited(
+      ref
+          .read(chatServiceProvider)
+          .attach(
+            active:
+                state == SessionState.active ||
+                state == SessionState.circleActive,
+            parent: state == SessionState.active,
+          ),
+    );
+    useEffect(() {
+      attachChat(ref.read(sessionProvider).state);
+      return null;
+    }, const []);
+    ref.listen(sessionProvider, (previous, next) => attachChat(next.state));
 
     // Offline-first (BF-20261022-001): có mạng lại → gửi các ký ức đang chờ.
     ref.listen(isOfflineProvider, (previous, next) {
@@ -52,6 +96,9 @@ class RootApp extends BaseHookWidget {
         unawaited(ref.read(memoryServiceProvider).syncPending());
         unawaited(ref.read(careServiceProvider).syncPending());
         unawaited(ref.read(usServiceProvider).syncPending());
+        unawaited(ref.read(growthServiceProvider).syncPending());
+        unawaited(ref.read(yearBookServiceProvider).syncPending());
+        unawaited(ref.read(chatServiceProvider).resume());
       }
     });
 
@@ -105,4 +152,51 @@ class RootApp extends BaseHookWidget {
       ),
     );
   }
+}
+
+/// Chờ Splash điều hướng xong (phiên đã sẵn sàng) rồi mở route của deep link;
+/// phiên chưa vào app chính (onboarding, tạm dừng…) thì bỏ qua.
+Future<void> _openDeepLink(WidgetRef ref, String link) async {
+  for (var attempt = 0; attempt < 40; attempt++) {
+    final state = ref.read(sessionServiceProvider).current.state;
+    final ready =
+        appRouter.current.name != SplashRoute.name &&
+        (state == SessionState.active || state == SessionState.circleActive);
+    if (ready) {
+      final path = routeForDeepLink(link, circle: state.isCircle);
+      if (path != null) {
+        await appRouter.pushPath(path);
+      }
+      return;
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 250));
+  }
+}
+
+void _showForeground(
+  WidgetRef ref,
+  ({String title, String body, String? link}) message,
+) {
+  final l10n = lookupAppLocalizations(ref.read(appLanguageProvider).locale);
+  final state = ref.read(sessionServiceProvider).current.state;
+  final link = message.link;
+  final canOpen =
+      link != null && routeForDeepLink(link, circle: state.isCircle) != null;
+  final text = [
+    message.title,
+    message.body,
+  ].where((part) => part.isNotEmpty).join(' · ');
+  scaffoldMessengerKey.currentState
+    ?..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        content: Text(text),
+        action: canOpen
+            ? SnackBarAction(
+                label: l10n.notiOpen,
+                onPressed: () => BroadcastManager().addDeepLink(link),
+              )
+            : null,
+      ),
+    );
 }

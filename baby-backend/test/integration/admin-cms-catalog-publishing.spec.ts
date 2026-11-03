@@ -188,6 +188,9 @@ describe('Admin catalog draft and immutable publication (isolated PostgreSQL mod
       await prisma.missionTemplate.deleteMany({
         where: { code: { in: missionCodes } },
       });
+      await prisma.milestoneTemplate.deleteMany({
+        where: { code: { startsWith: `${prefix}_` } },
+      });
       await prisma.adminUser.deleteMany({
         where: { id: { in: Object.values(admins) } },
       });
@@ -239,6 +242,77 @@ describe('Admin catalog draft and immutable publication (isolated PostgreSQL mod
     });
     expect(events.length).toBeGreaterThanOrEqual(3);
     expect(events.every((event) => event.reasonCode === reason)).toBe(true);
+  });
+
+  it('BF-20261028-003: a versioned milestone draft is hidden until published, then retired softly', async () => {
+    const body = {
+      reason,
+      code: `${prefix}_first_swim`,
+      category: 'EXPERIENCE',
+      icon: 'waves',
+      titleI18n: { vi: 'Lần đầu đi bơi', en: 'First swim' },
+      promptI18n: { vi: 'Bé đi bơi ở đâu?', en: 'Where was the swim?' },
+      isTraditional: false,
+      dateRule: null,
+      remindDaysBefore: null,
+      sortOrder: 900,
+      version: 2,
+    };
+    for (const invalid of [
+      { ...body, code: 'Bad-Code' },
+      { ...body, category: 'OTHER' },
+      { ...body, titleI18n: { vi: 'Thiếu tiếng Anh' } },
+      { ...body, dateRule: { type: 'BIRTH_MONTHS', months: -1 } },
+      { ...body, reason: '' },
+    ])
+      await call('post', '/milestones').send(invalid).expect(400);
+    await call('post', '/milestones', 'OPS').send(body).expect(403);
+    const created = await call('post', '/milestones').send(body).expect(201);
+    expect(data(created)).toMatchObject({
+      code: body.code,
+      status: 'DRAFT',
+      version: 2,
+    });
+    const drafts = await call('get', '/publishing/milestones').expect(200);
+    expect(
+      (drafts.body as { data: { items: { code: string }[] } }).data.items.map(
+        (item) => item.code,
+      ),
+    ).toContain(body.code);
+    const published = await call('post', `/milestones/${body.code}/publish`)
+      .send({ reason })
+      .expect(201);
+    expect(data(published)).toMatchObject({ status: 'PUBLISHED' });
+    expect(
+      (
+        await prisma.milestoneTemplate.findUniqueOrThrow({
+          where: { code: body.code },
+        })
+      ).status,
+    ).toBe('ACTIVE');
+    await call('post', `/milestones/${body.code}/publish`)
+      .send({ reason })
+      .expect(409);
+    await call('post', '/milestones').send(body).expect(409);
+    await call('post', `/milestones/${body.code}/retire`)
+      .send({ reason })
+      .expect(201);
+    const after = await prisma.milestoneTemplate.findUniqueOrThrow({
+      where: { code: body.code },
+    });
+    expect(after).toMatchObject({ status: 'RETIRED', deletedAt: null });
+    expect(after.titleI18n).toEqual(body.titleI18n);
+    const events = await prisma.adminAuditEvent.findMany({
+      where: { adminId: admins.CONTENT, entityId: body.code },
+    });
+    expect(events.map((event) => event.action).sort()).toEqual([
+      'CATALOG_DRAFT_CREATE',
+      'CATALOG_PUBLISH',
+      'CATALOG_RETIRE',
+    ]);
+    await call('post', `/milestones/${prefix}_missing/publish`)
+      .send({ reason })
+      .expect(404);
   });
 
   it('validates mission schema, ranges, bilingual content, hearts and mandatory reason', async () => {
@@ -452,12 +526,10 @@ describe('Admin catalog draft and immutable publication (isolated PostgreSQL mod
         reason,
       })
       .expect(400);
-    for (const kind of ['milestones', 'notification-templates']) {
-      const response = await call('post', `/${kind}`, 'CONTENT')
-        .send({ reason })
-        .expect(422);
-      expect(errorCode(response)).toBe('ADMIN_CATALOG_UNSUPPORTED');
-    }
+    const unsupported = await call('post', '/notification-templates', 'CONTENT')
+      .send({ reason })
+      .expect(422);
+    expect(errorCode(unsupported)).toBe('ADMIN_CATALOG_UNSUPPORTED');
     await call('post', `/missions/${prefix}-missing/publish`)
       .send({ reason })
       .expect(404);

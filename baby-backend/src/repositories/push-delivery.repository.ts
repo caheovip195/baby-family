@@ -575,6 +575,73 @@ export class PushDeliveryRepository implements IPushDeliveryRepository {
       );
     }
     if (!active) return false;
+    if (n.subjectType === 'chat_message') {
+      // Nhắn tin (BF-20261101-001): còn là thành viên và chưa đọc tới tin này.
+      const message = await tx.chatMessage.findFirst({
+        where: { id: n.subjectId ?? '', familyId: n.familyId, deletedAt: null },
+      });
+      const conversation = message
+        ? await tx.chatConversation.findFirst({
+            where: {
+              id: message.conversationId,
+              familyId: n.familyId,
+              deletedAt: null,
+            },
+          })
+        : null;
+      if (!message || !conversation) return false;
+      const read = await tx.chatReadState.findFirst({
+        where: {
+          conversationId: conversation.id,
+          userId: n.recipientUserId,
+          deletedAt: null,
+        },
+      });
+      if ((read?.lastReadSeq ?? 0) >= message.seq) return false;
+      if (conversation.kind === 'COUPLE')
+        return (
+          !!parent &&
+          !!(await tx.coupleSpace.findFirst({
+            where: {
+              id: conversation.coupleSpaceId ?? '',
+              familyId: n.familyId,
+              status: 'ACTIVE',
+              deletedAt: null,
+              disabledAt: null,
+              OR: [
+                { parentAUserId: n.recipientUserId },
+                { parentBUserId: n.recipientUserId },
+              ],
+            },
+          }))
+        );
+      if (parent) return true;
+      const circleEnabled = await tx.familyEntitlement.count({
+        where: {
+          familyId: n.familyId,
+          deletedAt: null,
+          planVersion: {
+            is: {
+              deletedAt: null,
+              features: { path: ['circle.enabled'], equals: true },
+            },
+          },
+        },
+      });
+      return (
+        circleEnabled > 0 &&
+        !!(await tx.circleMember.findFirst({
+          where: {
+            familyId: n.familyId,
+            userId: n.recipientUserId,
+            status: 'ACTIVE',
+            endedAt: null,
+            joinedAt: { lte: now },
+            deletedAt: null,
+          },
+        }))
+      );
+    }
     if (
       n.subjectType === 'memory' &&
       n.subjectId &&

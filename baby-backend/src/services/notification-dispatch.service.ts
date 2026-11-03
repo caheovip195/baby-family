@@ -1,8 +1,10 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 import { NOTIFICATION_POLICY as POLICY } from '../config/notification-policy';
 import type { NotificationCategory } from '../config/notification-policy';
 import { NOTIFICATION_INBOX_REPOSITORY } from '../interfaces/repositories/notification-inbox-repository.interface';
 import type { INotificationInboxRepository } from '../interfaces/repositories/notification-inbox-repository.interface';
+import { REALTIME_REPOSITORY } from '../interfaces/repositories/realtime-repository.interface';
+import type { IRealtimeRepository } from '../interfaces/repositories/realtime-repository.interface';
 import type { INotificationDispatchService } from '../interfaces/services/notification-dispatch-service.interface';
 import type { JobContext } from '../interfaces/services/job-runner-service.interface';
 import type {
@@ -16,8 +18,19 @@ interface EventPolicy {
   category: NotificationCategory;
   sensitive: boolean;
   grouped?: boolean;
-  audience: 'partner' | 'comments' | 'author' | 'target' | 'parents';
+  audience:
+    | 'partner'
+    | 'comments'
+    | 'author'
+    | 'target'
+    | 'parents'
+    | 'circle'
+    | 'members';
+  /** Bỏ hẳn người nhận đang kết nối realtime (chat: đã thấy tin trong app). */
+  skipOnline?: boolean;
   identifiersOnly?: boolean;
+  /** Đích mở khi chạm (mặc định ký ức của sự kiện). */
+  deepLink?: string;
 }
 
 const REVIEW_REQUESTED: EventPolicy = {
@@ -113,6 +126,69 @@ const EVENTS: Record<string, EventPolicy> = {
     sensitive: true,
     audience: 'target',
   },
+  // Cầu nối (BF-20261028-008): lời mời trung tính, không chi tiết.
+  'us.bridge.invited': {
+    template: 'NOTI_BRIDGE_INVITED',
+    category: 'US',
+    sensitive: true,
+    audience: 'target',
+  },
+  // Bàn giao ca (BF-20261028-007): chỉ người nhận ca.
+  'us.handoff.created': {
+    template: 'NOTI_HANDOFF_CREATED',
+    category: 'US',
+    sensitive: true,
+    audience: 'target',
+  },
+  // §7.25.1: người thân rời gia đình → Parent, câu trung tính (không lộ nội
+  // dung có bị gỡ hay không).
+  'circle.left': {
+    template: 'NOTI_CIRCLE_LEFT',
+    category: 'MEMORIES',
+    sensitive: false,
+    audience: 'parents',
+    identifiersOnly: true,
+    deepLink: 'babyfamily://family/circle',
+  },
+  // REC-04 bản cho ông bà (BF-20261030-002/003): người thân được xem sách.
+  'yearbook.shared': {
+    template: 'NOTI_YEARBOOK_SHARED',
+    category: 'MEMORIES',
+    sensitive: false,
+    audience: 'circle',
+    deepLink: 'babyfamily://year-books',
+  },
+  // REC-02 (BF-20261030-004): recap tuần Bố Mẹ chia sẻ cho người thân.
+  'recap.weekly.shared': {
+    template: 'NOTI_WEEKLY_RECAP_SHARED',
+    category: 'MEMORIES',
+    sensitive: false,
+    audience: 'circle',
+    deepLink: 'babyfamily://recaps/weekly',
+  },
+};
+
+/**
+ * Nhắn tin (BF-20261101-001): người nhận là thành viên còn quyền và chưa đọc
+ * tới tin đó; push ngay (không gộp, không tính trần ngày) nhưng vẫn theo giờ
+ * yên tĩnh. Chat riêng Papa & Mama dùng nhóm US và bản xem trước ẩn.
+ */
+const CHAT_EVENTS: Record<'FAMILY' | 'COUPLE', EventPolicy> = {
+  FAMILY: {
+    template: 'NOTI_CHAT_FAMILY',
+    category: 'CHAT',
+    sensitive: false,
+    audience: 'members',
+    identifiersOnly: true,
+    skipOnline: true,
+  },
+  COUPLE: {
+    template: 'NOTI_CHAT_COUPLE',
+    category: 'US',
+    sensitive: true,
+    audience: 'members',
+    skipOnline: true,
+  },
 };
 
 /** Resolves notification business rules; the repository owns atomic fenced persistence. */
@@ -121,6 +197,9 @@ export class NotificationDispatchService implements INotificationDispatchService
   constructor(
     @Inject(NOTIFICATION_INBOX_REPOSITORY)
     private readonly repository: INotificationInboxRepository,
+    @Optional()
+    @Inject(REALTIME_REPOSITORY)
+    private readonly presence?: IRealtimeRepository,
   ) {}
 
   async dispatch(
@@ -131,22 +210,39 @@ export class NotificationDispatchService implements INotificationDispatchService
     const created = await this.repository.consume(
       eventId,
       context.lease,
-      (snapshot) => this.decide(snapshot),
+      async (snapshot) => {
+        const event = this.policy(snapshot);
+        const online =
+          event?.skipOnline && this.presence
+            ? await this.presence.onlineUserIds(
+                snapshot.candidates.map((c) => c.userId),
+              )
+            : new Set<string>();
+        return this.decide(snapshot, online);
+      },
     );
     return { created };
   }
 
+  private policy(snapshot: NotificationDispatchSnapshot) {
+    return snapshot.chatKind
+      ? CHAT_EVENTS[snapshot.chatKind]
+      : EVENTS[snapshot.eventType];
+  }
+
   private decide(
     snapshot: NotificationDispatchSnapshot,
+    online: ReadonlySet<string>,
   ): NotificationDispatchDecision[] {
-    const event = EVENTS[snapshot.eventType];
+    const event = this.policy(snapshot);
     if (!event || snapshot.reactionRemoved) return [];
     const seen = new Set<string>();
     return snapshot.candidates.flatMap((recipient) => {
       if (
         seen.has(recipient.userId) ||
         recipient.userId === snapshot.actorUserId ||
-        !recipient.canView
+        !recipient.canView ||
+        (event.skipOnline && online.has(recipient.userId))
       )
         return [];
       seen.add(recipient.userId);
@@ -180,11 +276,12 @@ export class NotificationDispatchService implements INotificationDispatchService
           params.childNames = recipient.childNames;
       }
       const priority =
-        event.category === 'REQUESTS' &&
-        ['us.request.sent', 'us.request.created'].includes(
-          snapshot.eventType,
-        ) &&
-        snapshot.urgency === 'SOON'
+        snapshot.chatKind ||
+        (event.category === 'REQUESTS' &&
+          ['us.request.sent', 'us.request.created'].includes(
+            snapshot.eventType,
+          ) &&
+          snapshot.urgency === 'SOON')
           ? 'HIGH'
           : 'NORMAL';
       let pushAt: Date | null = new Date(
@@ -207,9 +304,12 @@ export class NotificationDispatchService implements INotificationDispatchService
           sensitive: event.sensitive,
           priority,
           params,
-          deepLink: event.sensitive
-            ? 'babyfamily://us'
-            : `babyfamily://memories/${snapshot.subjectId}`,
+          deepLink: snapshot.chatConversationId
+            ? `babyfamily://chats/${snapshot.chatConversationId}`
+            : event.sensitive
+              ? 'babyfamily://us'
+              : (event.deepLink ??
+                `babyfamily://memories/${snapshot.subjectId}`),
           groupKey: event.grouped
             ? `${event.template}:${snapshot.subjectId}`
             : null,
@@ -226,6 +326,8 @@ export class NotificationDispatchService implements INotificationDispatchService
     switch (audience) {
       case 'parents':
         return recipient.role === 'PARENT';
+      case 'circle':
+        return recipient.role === 'CIRCLE';
       case 'partner':
         return recipient.isPartner;
       case 'comments':
@@ -234,6 +336,8 @@ export class NotificationDispatchService implements INotificationDispatchService
         return recipient.isAuthor;
       case 'target':
         return recipient.isTarget;
+      case 'members':
+        return true;
     }
   }
 

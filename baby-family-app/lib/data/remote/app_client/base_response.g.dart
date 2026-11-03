@@ -293,6 +293,242 @@ Map<String, dynamic> _$PregnancyNameRespondToJson(
   PregnancyNameRespond instance,
 ) => <String, dynamic>{'data': instance.name, 'runtimeType': instance.$type};
 
+CoupleQuestionRespond _$CoupleQuestionRespondFromJson(
+  Map<String, dynamic> json,
+) => CoupleQuestionRespond(
+  question: json['data'] == null
+      ? null
+      : CoupleQuestionRecord.fromJson(json['data'] as Map<String, dynamic>),
+  $type: json['runtimeType'] as String?,
+);
+
+Map<String, dynamic> _$CoupleQuestionRespondToJson(
+  CoupleQuestionRespond instance,
+) => <String, dynamic>{
+  'data': instance.question,
+  'runtimeType': instance.$type,
+};
+
+CoupleWeekRespond _$CoupleWeekRespondFromJson(Map<String, dynamic> json) =>
+    CoupleWeekRespond(
+      week: json['data'] == null
+          ? null
+          : CoupleWeekRecord.fromJson(json['data'] as Map<String, dynamic>),
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$CoupleWeekRespondToJson(CoupleWeekRespond instance) =>
+    <String, dynamic>{'data': instance.week, 'runtimeType': instance.$type};
+
+AiStatusRespond _$AiStatusRespondFromJson(Map<String, dynamic> json) =>
+    AiStatusRespond(
+      status: json['data'] == null
+          ? null
+          : AiStatusRecord.fromJson(json['data'] as Map<String, dynamic>),
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$AiStatusRespondToJson(AiStatusRespond instance) =>
+    <String, dynamic>{'data': instance.status, 'runtimeType': instance.$type};
+
+AiDraftRespond _$AiDraftRespondFromJson(Map<String, dynamic> json) =>
+    AiDraftRespond(
+      draft: json['data'] == null
+          ? null
+          : AiDraftRecord.fromJson(json['data'] as Map<String, dynamic>),
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$AiDraftRespondToJson(AiDraftRespond instance) =>
+    <String, dynamic>{'data': instance.draft, 'runtimeType': instance.$type};
+
+BridgeSessionListRespond _$BridgeSessionListRespondFromJson(
+  Map<String, dynamic> json,
+) => BridgeSessionListRespond(
+  sessions: json['data'] == null
+      ? const <BridgeSessionRecord>[]
+      : bridgeSessionList(json['data']),
+  $type: json['runtimeType'] as String?,
+);
+
+Map<String, dynamic> _$BridgeSessionListRespondToJson(
+  BridgeSessionListRespond instance,
+) => <String, dynamic>{
+  'data': instance.sessions,
+  'runtimeType': instance.$type,
+};
+
+BridgeSessionRespond _$BridgeSessionRespondFromJson(
+  Map<String, dynamic> json,
+) => BridgeSessionRespond(
+  session: json['data'] == null
+      ? null
+      : BridgeSessionRecord.fromJson(json['data'] as Map<String, dynamic>),
+  $type: json['runtimeType'] as String?,
+);
+
+Map<String, dynamic> _$BridgeSessionRespondToJson(
+  BridgeSessionRespond instance,
+) => <String, dynamic>{'data': instance.session, 'runtimeType': instance.$type};
+
+CareHandoffListRespond _$CareHandoffListRespondFromJson(
+  Map<String, dynamic> json,
+) => CareHandoffListRespond(
+  handoffs: json['data'] == null
+      ? const <CareHandoff>[]
+      : careHandoffList(json['data']),
+  $type: json['runtimeType'] as String?,
+);
+
+Map<String, dynamic> _$CareHandoffListRespondToJson(
+  CareHandoffListRespond instance,
+) => <String, dynamic>{
+  'data': instance.handoffs,
+  'runtimeType': instance.$type,
+};
+
+CareHandoffRespond _$CareHandoffRespondFromJson(Map<String, dynamic> json) =>
+    CareHandoffRespond(
+      handoff: json['data'] == null
+          ? null
+          : CareHandoff.fromJson(json['data'] as Map<String, dynamic>),
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$CareHandoffRespondToJson(CareHandoffRespond instance) =>
+    <String, dynamic>{'data': instance.handoff, 'runtimeType': instance.$type};
+
+DayStoryRespond _$DayStoryRespondFromJson(Map<String, dynamic> json) =>
+    DayStoryRespond(
+      story: json['data'] == null
+          ? null
+          : DayStoryRecord.fromJson(json['data'] as Map<String, dynamic>),
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$DayStoryRespondToJson(DayStoryRespond instance) =>
+    <String, dynamic>{'data': instance.story, 'runtimeType': instance.$type};
+
+SavedDayStoryRespond _$SavedDayStoryRespondFromJson(
+  Map<String, dynamic> json,
+) => SavedDayStoryRespond(
+  saved: json['data'] == null
+      ? null
+      : SavedDayStoryRecord.fromJson(json['data'] as Map<String, dynamic>),
+  $type: json['runtimeType'] as String?,
+);
+
+Map<String, dynamic> _$SavedDayStoryRespondToJson(
+  SavedDayStoryRespond instance,
+) => <String, dynamic>{'data': instance.saved, 'runtimeType': instance.$type};
+
+ChatConversationListRespond _$ChatConversationListRespondFromJson(
+  Map<String, dynamic> json,
+) => ChatConversationListRespond(
+  conversations: json['data'] == null
+      ? const <ChatConversation>[]
+      : chatConversationList(json['data']),
+  $type: json['runtimeType'] as String?,
+);
+
+Map<String, dynamic> _$ChatConversationListRespondToJson(
+  ChatConversationListRespond instance,
+) => <String, dynamic>{
+  'data': instance.conversations,
+  'runtimeType': instance.$type,
+};
+
+ChatMessagePageRespond _$ChatMessagePageRespondFromJson(
+  Map<String, dynamic> json,
+) => ChatMessagePageRespond(
+  page: json['data'] == null
+      ? null
+      : ChatMessagePage.fromJson(json['data'] as Map<String, dynamic>),
+  $type: json['runtimeType'] as String?,
+);
+
+Map<String, dynamic> _$ChatMessagePageRespondToJson(
+  ChatMessagePageRespond instance,
+) => <String, dynamic>{'data': instance.page, 'runtimeType': instance.$type};
+
+ChatMessageRespond _$ChatMessageRespondFromJson(Map<String, dynamic> json) =>
+    ChatMessageRespond(
+      message: json['data'] == null
+          ? null
+          : ChatMessage.fromJson(json['data'] as Map<String, dynamic>),
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$ChatMessageRespondToJson(ChatMessageRespond instance) =>
+    <String, dynamic>{'data': instance.message, 'runtimeType': instance.$type};
+
+ChatReadRespond _$ChatReadRespondFromJson(Map<String, dynamic> json) =>
+    ChatReadRespond(
+      result: json['data'] == null
+          ? null
+          : ChatReadResult.fromJson(json['data'] as Map<String, dynamic>),
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$ChatReadRespondToJson(ChatReadRespond instance) =>
+    <String, dynamic>{'data': instance.result, 'runtimeType': instance.$type};
+
+GrowthListRespond _$GrowthListRespondFromJson(Map<String, dynamic> json) =>
+    GrowthListRespond(
+      growth: json['data'] == null
+          ? null
+          : GrowthListRecord.fromJson(json['data'] as Map<String, dynamic>),
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$GrowthListRespondToJson(GrowthListRespond instance) =>
+    <String, dynamic>{'data': instance.growth, 'runtimeType': instance.$type};
+
+GrowthEntryRespond _$GrowthEntryRespondFromJson(Map<String, dynamic> json) =>
+    GrowthEntryRespond(
+      entry: json['data'] == null
+          ? null
+          : GrowthEntry.fromJson(json['data'] as Map<String, dynamic>),
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$GrowthEntryRespondToJson(GrowthEntryRespond instance) =>
+    <String, dynamic>{'data': instance.entry, 'runtimeType': instance.$type};
+
+YearBookRespond _$YearBookRespondFromJson(Map<String, dynamic> json) =>
+    YearBookRespond(
+      book: json['data'] == null
+          ? null
+          : YearBookRecord.fromJson(json['data'] as Map<String, dynamic>),
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$YearBookRespondToJson(YearBookRespond instance) =>
+    <String, dynamic>{'data': instance.book, 'runtimeType': instance.$type};
+
+YearBookListRespond _$YearBookListRespondFromJson(Map<String, dynamic> json) =>
+    YearBookListRespond(
+      books: json['data'] == null
+          ? null
+          : YearBookList.fromJson(json['data'] as Map<String, dynamic>),
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$YearBookListRespondToJson(
+  YearBookListRespond instance,
+) => <String, dynamic>{'data': instance.books, 'runtimeType': instance.$type};
+
+MonthRecapRespond _$MonthRecapRespondFromJson(Map<String, dynamic> json) =>
+    MonthRecapRespond(
+      recap: json['data'] == null
+          ? null
+          : MonthRecapRecord.fromJson(json['data'] as Map<String, dynamic>),
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$MonthRecapRespondToJson(MonthRecapRespond instance) =>
+    <String, dynamic>{'data': instance.recap, 'runtimeType': instance.$type};
+
 CareStatsRespond _$CareStatsRespondFromJson(Map<String, dynamic> json) =>
     CareStatsRespond(
       stats: json['data'] == null
@@ -1029,6 +1265,17 @@ WeeklyRecapRespond _$WeeklyRecapRespondFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$WeeklyRecapRespondToJson(WeeklyRecapRespond instance) =>
     <String, dynamic>{'data': instance.recap, 'runtimeType': instance.$type};
+
+RecapTimelineRespond _$RecapTimelineRespondFromJson(
+  Map<String, dynamic> json,
+) => RecapTimelineRespond(
+  result: json['data'] as Map<String, dynamic>?,
+  $type: json['runtimeType'] as String?,
+);
+
+Map<String, dynamic> _$RecapTimelineRespondToJson(
+  RecapTimelineRespond instance,
+) => <String, dynamic>{'data': instance.result, 'runtimeType': instance.$type};
 
 DisplaySettingsRespond _$DisplaySettingsRespondFromJson(
   Map<String, dynamic> json,

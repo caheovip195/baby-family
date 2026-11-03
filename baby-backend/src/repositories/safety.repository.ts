@@ -41,6 +41,17 @@ export class SafetyRepository implements ISafetyRepository {
     return circle ? 'CIRCLE' : null;
   }
 
+  async aiInvocationRequester(
+    familyId: string,
+    invocationId: string,
+  ): Promise<string | null> {
+    const row = await this.prisma.aiInvocation.findFirst({
+      where: { id: invocationId, familyId, deletedAt: null },
+      select: { requesterUserId: true },
+    });
+    return row?.requesterUserId ?? null;
+  }
+
   async commentContext(
     familyId: string,
     commentId: string,

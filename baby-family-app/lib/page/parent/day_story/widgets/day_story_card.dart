@@ -9,6 +9,7 @@ class _DayStoryCard extends StatelessWidget {
     required this.body,
     required this.aiGenerated,
     required this.manual,
+    this.canRewrite = true,
     required this.onRewrite,
     required this.onManual,
     required this.onChanged,
@@ -18,6 +19,9 @@ class _DayStoryCard extends StatelessWidget {
   final String body;
   final bool aiGenerated;
   final bool manual;
+
+  /// Ẩn “Viết lại” khi không có đoạn văn gợi ý (bản không AI).
+  final bool canRewrite;
   final VoidCallback onRewrite;
   final VoidCallback onManual;
   final ValueChanged<String> onChanged;
@@ -95,9 +99,12 @@ class _DayStoryCard extends StatelessWidget {
                   ),
                 ),
               const Spacer(),
-              link(l10n.recapDayRewrite, kColorPrimary600C2513F, onRewrite),
-              const SizedBox(width: AppSpacing.s3),
-              link(l10n.recapDayManual, kColorTextSecondary6B625B, onManual),
+              if (canRewrite) ...[
+                link(l10n.recapDayRewrite, kColorPrimary600C2513F, onRewrite),
+                const SizedBox(width: AppSpacing.s3),
+              ],
+              if (!manual)
+                link(l10n.recapDayManual, kColorTextSecondary6B625B, onManual),
             ],
           ),
           const SizedBox(height: AppSpacing.itemGap),

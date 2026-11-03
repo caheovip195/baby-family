@@ -1,10 +1,14 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/data/model/us/rewrite_option.dart';
+import 'package:baby_family/data/provider/ai.dart';
 import 'package:baby_family/page/parent/bridge_rewrite/bridge_rewrite_controller.dart';
 import 'package:baby_family/utils/constants/colors.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
+import 'package:baby_family/utils/helper/ai_consent.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
+import 'package:baby_family/utils/helper/server_error_message.dart';
 import 'package:baby_family/utils/helper/theme.dart';
+import 'package:baby_family/utils/router/app_router.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
 import 'package:baby_family/utils/widget/app_text_action.dart';
 import 'package:baby_family/utils/widget/app_top_bar.dart';
@@ -25,12 +29,41 @@ part '../widgets/rewrite_version_card.dart';
 /// thẻ phiên bản (chọn: viền `us-500` + radio `us-700`), ô sửa, “Giữ câu gốc”
 /// / “Dùng câu này”, ghi chú dữ liệu AI.
 class BridgeRewriteMobileView extends HookConsumerWidget {
-  const BridgeRewriteMobileView({super.key});
+  const BridgeRewriteMobileView({this.original, super.key});
+
+  final String? original;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = ref.watch(bridgeRewriteControllerProvider);
     final l10n = context.l10n;
+    // Có câu gốc (bản server): xin ba phiên bản từ AI, hỏi đồng ý lần đầu;
+    // câu không an toàn → màn hỗ trợ (không gửi AI).
+    useEffect(() {
+      final text = original?.trim() ?? '';
+      if (text.isEmpty) {
+        return null;
+      }
+      Future.microtask(() async {
+        try {
+          await runWithAiConsent<void>(
+            context,
+            action: () => controller.loadAi(text),
+            grant: (feature) =>
+                ref.read(aiServiceProvider).grantConsent(feature),
+          );
+        } on RewriteNeedsSafety {
+          if (context.mounted) {
+            await context.router.replace(const SafetySupportRoute());
+          }
+        } on Object catch (error) {
+          if (context.mounted) {
+            showAppSnackBar(context, actionErrorMessage(error));
+          }
+        }
+      });
+      return null;
+    }, [original]);
     final Widget body;
     if (!controller.loaded) {
       body = const Center(child: CircleLoadingProgress());
@@ -133,7 +166,18 @@ class BridgeRewriteMobileView extends HookConsumerWidget {
           ),
           const Spacer(),
           InkWell(
-            onTap: () => showAppSnackBar(context, l10n.commonAiReported),
+            onTap: () async {
+              try {
+                await controller.reportAi();
+                if (context.mounted) {
+                  showAppSnackBar(context, l10n.commonAiReported);
+                }
+              } on Object catch (error) {
+                if (context.mounted) {
+                  showAppSnackBar(context, actionErrorMessage(error));
+                }
+              }
+            },
             borderRadius: BorderRadius.circular(AppRadius.xs),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: AppSpacing.s1),

@@ -3,7 +3,7 @@ FLUTTER := $(FVM) flutter
 DART := $(FVM) dart
 
 .PHONY: setup get clean force runner l10n w format analyze test check \
-	stg-run mock-run local-run pro-run stg-apk pro-apk pro-aab stg-ipa pro-ipa icon
+	stg-run mock-run local-run env-run pro-run stg-apk pro-apk pro-aab stg-ipa pro-ipa icon
 
 ## Cài đúng Flutter của project (.fvmrc) và tải package
 setup:
@@ -58,6 +58,10 @@ mock-run:
 API_URL ?= http://localhost:3000/api
 local-run:
 	$(FLUTTER) run --debug -t lib/main_dev.dart --flavor staging --dart-define=BABY_FAMILY_API_URL=$(API_URL)
+
+# Dùng toàn bộ giá trị trong .env (copy từ .env.example): API URL, Google client id…
+env-run:
+	$(FLUTTER) run --debug -t lib/main_dev.dart --flavor staging --dart-define-from-file=.env
 
 pro-run:
 	$(FLUTTER) run --debug -t lib/main_pro.dart --flavor product

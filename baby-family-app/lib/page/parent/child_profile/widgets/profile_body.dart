@@ -7,12 +7,20 @@ class _ProfileBody extends StatelessWidget {
     required this.profile,
     required this.today,
     required this.onArchive,
+    this.onGrowth,
+    this.onYearBook,
   });
 
   final Child child;
   final ChildProfile profile;
   final DateTime today;
   final VoidCallback onArchive;
+
+  /// CHD-06 (bé đã chào đời).
+  final VoidCallback? onGrowth;
+
+  /// REC-04 Sách của con (bé đã chào đời).
+  final VoidCallback? onYearBook;
 
   @override
   Widget build(BuildContext context) {
@@ -191,6 +199,40 @@ class _ProfileBody extends StatelessWidget {
           ),
         ),
         if (infoRows.isNotEmpty) ...[gap, card(infoRows)],
+        if (onGrowth != null && !child.isPregnancy) ...[
+          gap,
+          card([
+            AppSettingRow(
+              icon: LucideIcons.chartLine,
+              iconSize: 18,
+              iconColor: kColorTextTertiary9C928A,
+              title: l10n.growthEntry,
+              subtitle: l10n.growthEntryHint,
+              trailing: Icon(
+                LucideIcons.chevronRight,
+                size: 18,
+                color: AppColors.resolve(context, kColorTextTertiary9C928A),
+              ),
+              onTap: onGrowth,
+              padding: rowPadding,
+            ),
+            if (onYearBook != null)
+              AppSettingRow(
+                icon: LucideIcons.bookHeart,
+                iconSize: 18,
+                iconColor: kColorTextTertiary9C928A,
+                title: l10n.yearBookEntry,
+                subtitle: l10n.yearBookEntryHint,
+                trailing: Icon(
+                  LucideIcons.chevronRight,
+                  size: 18,
+                  color: AppColors.resolve(context, kColorTextTertiary9C928A),
+                ),
+                onTap: onYearBook,
+                padding: rowPadding,
+              ),
+          ]),
+        ],
         if (story != null) ...[
           gap,
           AppCapsLabel(l10n.childNameStory),

@@ -204,6 +204,46 @@ export class MemoryLibraryRepository implements IMemoryLibraryRepository {
     });
     return row?.familyId ?? null;
   }
+  async perspectiveMedia(
+    memoryId: string,
+    perspectiveId: string,
+    includeHidden: boolean,
+  ) {
+    const row = await this.prisma.memoryPerspective.findFirst({
+      where: {
+        id: perspectiveId,
+        memoryId,
+        deletedAt: null,
+        status: 'ACTIVE',
+        ...(includeHidden ? {} : { hiddenFromCircle: false }),
+      },
+      include: {
+        memoryPerspectiveAssets: {
+          where: {
+            deletedAt: null,
+            asset: {
+              deletedAt: null,
+              purpose: 'MEMORY',
+              privateOwnerUserId: null,
+            },
+          },
+          include: {
+            asset: {
+              include: { assetVariants: { where: { deletedAt: null } } },
+            },
+          },
+          orderBy: { sortOrder: 'asc' },
+        },
+      },
+    });
+    if (!row) return null;
+    return {
+      assets: row.memoryPerspectiveAssets.map((a) => new Asset(a.asset)),
+      variants: row.memoryPerspectiveAssets.flatMap((a) =>
+        a.asset.assetVariants.map((v) => new AssetVariant(v)),
+      ),
+    };
+  }
   async find(
     id: string,
     userId: string,

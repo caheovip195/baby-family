@@ -17,6 +17,8 @@ _WeeklyRecapRecord _$WeeklyRecapRecordFromJson(Map<String, dynamic> json) =>
           : WeeklyRecapContent.fromJson(
               json['content'] as Map<String, dynamic>,
             ),
+      memoryId: json['memoryId'] as String?,
+      canShare: json['canShare'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$WeeklyRecapRecordToJson(_WeeklyRecapRecord instance) =>
@@ -26,6 +28,8 @@ Map<String, dynamic> _$WeeklyRecapRecordToJson(_WeeklyRecapRecord instance) =>
       'periodEnd': instance.periodEnd,
       'visibility': instance.visibility,
       'content': instance.content?.toJson(),
+      'memoryId': instance.memoryId,
+      'canShare': instance.canShare,
     };
 
 _WeeklyRecapContent _$WeeklyRecapContentFromJson(Map<String, dynamic> json) =>

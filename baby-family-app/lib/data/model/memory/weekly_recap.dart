@@ -9,6 +9,8 @@ part 'weekly_recap.g.dart';
 abstract class WeeklyRecap with _$WeeklyRecap {
   @JsonSerializable(explicitToJson: true)
   const factory WeeklyRecap({
+    /// Id recap của server (null = bản mock).
+    @JsonKey(name: 'id') String? id,
     @JsonKey(name: 'start') required DateTime start,
     @JsonKey(name: 'end') required DateTime end,
     @JsonKey(name: 'headline') @Default('') String headline,
@@ -20,6 +22,12 @@ abstract class WeeklyRecap with _$WeeklyRecap {
     @JsonKey(name: 'togetherTitle') String? togetherTitle,
     @JsonKey(name: 'togetherBody') String? togetherBody,
     @JsonKey(name: 'pageCount') @Default(1) int pageCount,
+
+    /// REC-02 (BF-20261030-004): gói cho chia sẻ với người thân / đang chia
+    /// sẻ / ký ức đã lưu vào timeline.
+    @JsonKey(name: 'canShare') @Default(false) bool canShare,
+    @JsonKey(name: 'shared') @Default(false) bool shared,
+    @JsonKey(name: 'memoryId') String? memoryId,
   }) = _WeeklyRecap;
 
   factory WeeklyRecap.fromJson(Map<String, dynamic> json) =>

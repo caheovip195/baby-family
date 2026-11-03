@@ -49,3 +49,10 @@ export class UpdateCircleMemberDto {
   @Type(() => CircleGrantDto)
   grants?: CircleGrantDto[];
 }
+/**
+ * SET-10 / §7.25.1 người thân rời gia đình: nội dung đã đăng giữ lại cho gia
+ * đình (mặc định) hoặc gỡ toàn bộ (BF-20261030-003).
+ */
+export class LeaveCircleDto {
+  @optional() @IsBoolean() removeContent?: boolean;
+}

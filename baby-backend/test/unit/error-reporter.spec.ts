@@ -56,6 +56,41 @@ describe('Error reporter', () => {
       status: 500,
     });
   });
+  it('BF-20261028-001: job failures send allowlisted tags only', async () => {
+    const fetcher = jest
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue(new Response('', { status: 200 }));
+    const reporter = new ErrorReporterService(
+      new ConfigService({
+        ERROR_REPORTING_DSN: 'https://public@example.com/42',
+      }),
+      logger as unknown as PinoLogger,
+    );
+    reporter.reportJob({
+      job: 'media.process-asset',
+      code: 'CHECKSUM_MISMATCH',
+      attempt: 2,
+      familyId: 'private',
+    } as Parameters<typeof reporter.reportJob>[0]);
+    await Promise.resolve();
+    expect(logger.error).toHaveBeenCalledWith(
+      { job: 'media.process-asset', code: 'CHECKSUM_MISMATCH', attempt: 2 },
+      'Job failed',
+    );
+    const options = fetcher.mock.calls[0]?.[1];
+    const body = typeof options?.body === 'string' ? options.body : '';
+    expect(body).not.toContain('private');
+    const event = JSON.parse(body.split('\n')[2] ?? '{}') as Record<
+      string,
+      unknown
+    >;
+    expect(event.message).toBe('Background job failed');
+    expect(event.tags).toEqual({
+      job: 'media.process-asset',
+      code: 'CHECKSUM_MISMATCH',
+      attempt: 2,
+    });
+  });
   it('rejects invalid observability configuration without echoing secrets', () => {
     const base = { DATABASE_URL: 'postgresql://localhost/baby_family_test' };
     expect(() =>

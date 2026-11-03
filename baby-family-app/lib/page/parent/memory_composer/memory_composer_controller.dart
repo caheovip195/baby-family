@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:baby_family/data/dto/result.dart';
+import 'package:baby_family/data/model/ai/ai_result.dart';
 import 'package:baby_family/data/model/child/child.dart';
-import 'package:baby_family/data/model/family/family.dart';
 import 'package:baby_family/data/model/family/member.dart';
-import 'package:baby_family/data/model/family/plan_offer.dart';
 import 'package:baby_family/data/model/memory/memory.dart';
+import 'package:baby_family/data/provider/ai.dart';
 import 'package:baby_family/data/provider/child.dart';
 import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/provider/memory.dart';
@@ -16,6 +16,7 @@ import 'package:baby_family/data/service/voice_recording.dart';
 import 'package:baby_family/page/application_base.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
+import 'package:baby_family/utils/helper/video_screening.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/legacy.dart';
 
@@ -40,6 +41,24 @@ class MemoryComposerController extends BaseNotifier {
   /// Xin quyền thư viện (một lần) để ưu tiên hiển thị bản gốc trong máy.
   Future<void> enableLocalMedia() =>
       ref.read(localMediaServiceProvider).enable();
+
+  /// AI 1.2 (BF-20261028-010): 3 gợi ý chú thích từ vài từ đã gõ.
+  Future<AiDraftRecord> captionSuggestions() =>
+      ref.read(aiServiceProvider).captions(kind: kind.name, hint: caption.text);
+
+  /// Báo cáo một gợi ý chú thích AI (gửi kèm câu đã thấy).
+  Future<void> reportCaption(String invocationId, String text) => ref
+      .read(aiServiceProvider)
+      .report(invocationId: invocationId, text: text);
+
+  /// Gợi ý được chọn → ô chú thích (vẫn sửa được trước khi lưu).
+  void useCaption(String text) {
+    caption.text = text;
+    notifyListeners();
+  }
+
+  Future<void> grantAiConsent(AiFeature feature) =>
+      ref.read(aiServiceProvider).grantConsent(feature);
 
   final caption = TextEditingController();
   final title = TextEditingController();
@@ -326,39 +345,15 @@ class MemoryComposerController extends BaseNotifier {
 
   /// SUB-05: giới hạn độ dài video (phút) của gói đang dùng và gói hiện tại
   /// (gói chưa bán trên Store — dùng thử/hết hạn — theo giới hạn Family).
-  Future<({int maxMinutes, PlanState plan})> videoLimit() async {
-    final results = await Future.wait<Object?>([
-      familyService.currentFamily(),
-      familyService.planOffers(),
-    ]);
-    final plan = (results[0] as Family?)?.plan.state ?? PlanState.family;
-    final offers = results[1]! as List<PlanOffer>;
-    final offer =
-        offers.where((o) => o.code == plan).firstOrNull ??
-        offers.where((o) => o.code == PlanState.family).firstOrNull;
-    return (maxMinutes: offer?.videoMinutes ?? 0, plan: plan);
-  }
+  Future<({int maxMinutes, PlanState plan})> videoLimit() =>
+      planVideoLimit(familyService);
 
   /// MEM-04: ảnh chọn từ photo picker hệ thống (đường dẫn file trên máy).
   /// Video đã chọn dài hơn giới hạn của gói thì bỏ ra; trả số phút (làm tròn
   /// lên) của video dài nhất bị bỏ để hiện SUB-05.
   Future<({List<String> accepted, int? tooLongMinutes})> screenPicked(
     List<String> paths,
-  ) async {
-    final limit = await videoLimit();
-    final accepted = <String>[];
-    int? tooLong;
-    for (final path in paths) {
-      final seconds = await memoryService.videoDurationSec(path);
-      if (seconds != null && seconds > limit.maxMinutes * 60) {
-        final minutes = (seconds / 60).ceil();
-        tooLong = tooLong == null || minutes > tooLong ? minutes : tooLong;
-        continue;
-      }
-      accepted.add(path);
-    }
-    return (accepted: accepted, tooLongMinutes: tooLong);
-  }
+  ) => screenPickedMedia(familyService, memoryService, paths);
 
   void addMedia(List<String> paths) {
     if (paths.isEmpty) {

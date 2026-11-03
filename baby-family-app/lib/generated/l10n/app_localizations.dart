@@ -13384,6 +13384,882 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Bình luận đã tắt cho ký ức này'**
   String get memCommentsOff;
+
+  /// Lỗi LAST_SIGN_IN_METHOD khi gỡ liên kết
+  ///
+  /// In vi, this message translates to:
+  /// **'Cần giữ ít nhất một cách đăng nhập. Bạn liên kết cách khác trước rồi gỡ nhé.'**
+  String get errorLastSignInMethod;
+
+  /// Lỗi IDENTITY_IN_USE / IDENTITY_PROVIDER_ALREADY_LINKED
+  ///
+  /// In vi, this message translates to:
+  /// **'Tài khoản này đã liên kết với một hồ sơ khác hoặc bạn đã liên kết loại này rồi.'**
+  String get errorIdentityInUse;
+
+  /// Lỗi REAUTH_IDENTITY_REQUIRED
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn xác thực lại bằng đúng tài khoản đã liên kết nhé.'**
+  String get errorReauthIdentity;
+
+  /// Tiêu đề sheet nhập mã xác thực lại trước khi liên kết/gỡ phương thức đăng nhập
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác thực lại'**
+  String get setSignInReauthTitle;
+
+  /// Tiêu đề CHD-06
+  ///
+  /// In vi, this message translates to:
+  /// **'Tăng trưởng'**
+  String get growthTitle;
+
+  /// Dòng mở CHD-06 ở hồ sơ bé
+  ///
+  /// In vi, this message translates to:
+  /// **'Tăng trưởng'**
+  String get growthEntry;
+
+  /// Phụ đề dòng mở CHD-06
+  ///
+  /// In vi, this message translates to:
+  /// **'Cân nặng, chiều cao theo ngày'**
+  String get growthEntryHint;
+
+  /// Tab cân nặng
+  ///
+  /// In vi, this message translates to:
+  /// **'Cân nặng'**
+  String get growthWeight;
+
+  /// Tab chiều cao
+  ///
+  /// In vi, this message translates to:
+  /// **'Chiều cao'**
+  String get growthHeight;
+
+  /// Nút thêm lần đo
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm lần đo'**
+  String get growthAdd;
+
+  /// Tiêu đề sheet sửa
+  ///
+  /// In vi, this message translates to:
+  /// **'Sửa lần đo'**
+  String get growthEdit;
+
+  /// Trạng thái rỗng
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có lần đo nào. Thêm cân nặng hoặc chiều cao của lần khám gần nhất nhé.'**
+  String get growthEmpty;
+
+  /// Biểu đồ chưa đủ điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Cần ít nhất 2 lần đo để vẽ biểu đồ.'**
+  String get growthChartHint;
+
+  /// Disclaimer CHD-06
+  ///
+  /// In vi, this message translates to:
+  /// **'Biểu đồ chỉ là số đo của bé, không so với chuẩn và không thay thế tư vấn của bác sĩ.'**
+  String get growthDisclaimer;
+
+  /// Dòng riêng tư
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ Papa và Mama xem được số đo.'**
+  String get growthPrivacy;
+
+  /// Nhãn ngày
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngày đo'**
+  String get growthDate;
+
+  /// Ô nhập cân nặng
+  ///
+  /// In vi, this message translates to:
+  /// **'Cân nặng (kg)'**
+  String get growthWeightLabel;
+
+  /// Ô nhập chiều cao
+  ///
+  /// In vi, this message translates to:
+  /// **'Chiều cao (cm)'**
+  String get growthHeightLabel;
+
+  /// Ô ghi chú
+  ///
+  /// In vi, this message translates to:
+  /// **'Ghi chú'**
+  String get growthNote;
+
+  /// Lỗi nhập
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập cân nặng hoặc chiều cao hợp lệ.'**
+  String get growthNeedValue;
+
+  /// Nhãn lần đo chưa gửi
+  ///
+  /// In vi, this message translates to:
+  /// **'Chờ đồng bộ'**
+  String get growthPending;
+
+  /// Snackbar đã lưu
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lưu lần đo.'**
+  String get growthSaved;
+
+  /// Lỗi GROWTH_DATE_INVALID
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngày đo phải từ ngày sinh tới hôm nay.'**
+  String get errorGrowthDate;
+
+  /// Giá trị cân nặng
+  ///
+  /// In vi, this message translates to:
+  /// **'{value} kg'**
+  String growthKg(String value);
+
+  /// Giá trị chiều cao
+  ///
+  /// In vi, this message translates to:
+  /// **'{value} cm'**
+  String growthCm(String value);
+
+  /// MEM-06: tiến độ tải nền kèm phần trăm theo byte
+  ///
+  /// In vi, this message translates to:
+  /// **'{progress} · {percent}%'**
+  String memUploadProgressPercent(String progress, int percent);
+
+  /// REC-01: tiêu đề mặc định khi chưa lưu câu chuyện
+  ///
+  /// In vi, this message translates to:
+  /// **'Một ngày của {name}'**
+  String recapDayDefaultTitle(String name);
+
+  /// Ô lối vào Bàn giao ca
+  ///
+  /// In vi, this message translates to:
+  /// **'Bàn giao ca'**
+  String get usHandoff;
+
+  /// Tiêu đề sheet bàn giao
+  ///
+  /// In vi, this message translates to:
+  /// **'Bàn giao ca cho {name}'**
+  String usHandoffTitle(String name);
+
+  /// Gợi ý sheet bàn giao
+  ///
+  /// In vi, this message translates to:
+  /// **'Ghi nhanh tình trạng của bé để {name} nắm khi nhận ca.'**
+  String usHandoffHint(String name);
+
+  /// Nhãn chọn bé
+  ///
+  /// In vi, this message translates to:
+  /// **'Bé nào'**
+  String get usHandoffChildren;
+
+  /// Nhãn giờ ăn
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã ăn lúc'**
+  String get usHandoffFed;
+
+  /// Nhãn giờ ngủ
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã ngủ lúc'**
+  String get usHandoffSlept;
+
+  /// Nhãn giờ dậy
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã dậy lúc'**
+  String get usHandoffWoke;
+
+  /// Chưa chọn giờ
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn giờ'**
+  String get usHandoffPickTime;
+
+  /// Nhãn ghi chú
+  ///
+  /// In vi, this message translates to:
+  /// **'Ghi chú'**
+  String get usHandoffNote;
+
+  /// Gợi ý ghi chú
+  ///
+  /// In vi, this message translates to:
+  /// **'Ví dụ: bé hơi quấy, đã thay tã…'**
+  String get usHandoffNoteHint;
+
+  /// Tuỳ chọn gửi kèm lời nhờ
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhờ {name} làm tiếp việc gì đó'**
+  String usHandoffAttachRequest(String name);
+
+  /// Nút gửi
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi bàn giao'**
+  String get usHandoffSend;
+
+  /// Snackbar đã gửi
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi bàn giao cho {name}'**
+  String usHandoffSent(String name);
+
+  /// Lỗi nội dung trống
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn ít nhất một mốc giờ hoặc viết ghi chú.'**
+  String get usHandoffNeedContent;
+
+  /// Tiêu đề thẻ nhận
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} bàn giao ca · {time}'**
+  String usHandoffFrom(String name, String time);
+
+  /// Tiêu đề thẻ đã gửi
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã bàn giao · {time}'**
+  String usHandoffMine(String time);
+
+  /// Dòng giờ ăn
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã ăn lúc {time}'**
+  String usHandoffFedAt(String time);
+
+  /// Dòng giờ ngủ
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã ngủ lúc {time}'**
+  String usHandoffSleptAt(String time);
+
+  /// Dòng giờ dậy
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã dậy lúc {time}'**
+  String usHandoffWokeAt(String time);
+
+  /// Nút đã nhận ca
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã nhận'**
+  String get usHandoffAck;
+
+  /// Trạng thái đã nhận
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} đã nhận ca'**
+  String usHandoffAcked(String name);
+
+  /// Trạng thái chờ nhận
+  ///
+  /// In vi, this message translates to:
+  /// **'Chờ {name} nhận'**
+  String usHandoffWaiting(String name);
+
+  /// Bàn giao chưa gửi
+  ///
+  /// In vi, this message translates to:
+  /// **'Chờ đồng bộ'**
+  String get usHandoffPending;
+
+  /// Ghi chú không phải tracker y tế
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ để nắm nhanh, không phải theo dõi y tế.'**
+  String get usHandoffNotMedical;
+
+  /// Lỗi HANDOFF_TIME_INVALID
+  ///
+  /// In vi, this message translates to:
+  /// **'Mốc giờ phải trong 24 giờ qua.'**
+  String get errorHandoffTime;
+
+  /// Người nhận đã bấm Đã nhận
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã nhận ca'**
+  String get usHandoffAckedByMe;
+
+  /// Tiêu đề hộp đồng ý AI lần đầu
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng gợi ý AI?'**
+  String get aiConsentTitle;
+
+  /// Nội dung hộp đồng ý AI
+  ///
+  /// In vi, this message translates to:
+  /// **'Để gợi ý, Baby Family gửi {data} tới nhà cung cấp AI (OpenRouter). Không gửi ảnh, nhật ký riêng hay nháp riêng. Gợi ý chỉ là bản nháp để bạn sửa hoặc bỏ.'**
+  String aiConsentBody(String data);
+
+  /// Nút đồng ý AI
+  ///
+  /// In vi, this message translates to:
+  /// **'Đồng ý & tiếp tục'**
+  String get aiConsentAccept;
+
+  /// Dữ liệu gửi khi gợi ý chú thích
+  ///
+  /// In vi, this message translates to:
+  /// **'vài từ bạn gõ và loại ký ức'**
+  String get aiDataCaption;
+
+  /// Dữ liệu gửi khi viết câu chuyện ngày
+  ///
+  /// In vi, this message translates to:
+  /// **'chú thích các ký ức bạn chọn trong ngày'**
+  String get aiDataDayStory;
+
+  /// Dữ liệu gửi khi viết lại
+  ///
+  /// In vi, this message translates to:
+  /// **'câu bạn muốn viết lại'**
+  String get aiDataRewrite;
+
+  /// Dữ liệu gửi khi tóm tắt Cầu nối
+  ///
+  /// In vi, this message translates to:
+  /// **'những ý hai bạn đã chọn chia sẻ trong phiên'**
+  String get aiDataBridge;
+
+  /// Tiêu đề sheet gợi ý chú thích
+  ///
+  /// In vi, this message translates to:
+  /// **'Gợi ý chú thích'**
+  String get aiCaptionSheetTitle;
+
+  /// Lỗi AI_UNAVAILABLE / AI_BAD_OUTPUT
+  ///
+  /// In vi, this message translates to:
+  /// **'AI đang tạm nghỉ, bạn thử lại sau nhé.'**
+  String get errorAiUnavailable;
+
+  /// Lỗi AI_NOT_IN_PLAN
+  ///
+  /// In vi, this message translates to:
+  /// **'Gói hiện tại chưa có gợi ý AI.'**
+  String get errorAiNotInPlan;
+
+  /// Lỗi AI_DISABLED
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã tắt AI trong Cài đặt.'**
+  String get errorAiDisabled;
+
+  /// Lỗi AI_QUOTA_EXCEEDED
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã dùng hết lượt AI của tháng này.'**
+  String get errorAiQuota;
+
+  /// Nút tóm tắt Cầu nối bằng AI
+  ///
+  /// In vi, this message translates to:
+  /// **'✨ Tóm tắt giúp hai bạn'**
+  String get usBridgeAiSummary;
+
+  /// Tiêu đề sheet tóm tắt Cầu nối
+  ///
+  /// In vi, this message translates to:
+  /// **'Hai bạn đã chia sẻ'**
+  String get usBridgeAiSummaryTitle;
+
+  /// Dữ liệu gửi khi gợi ý nhiệm vụ
+  ///
+  /// In vi, this message translates to:
+  /// **'nhóm tuổi của bé, danh sách việc gợi ý có sẵn và số việc đã xong theo nhóm 14 ngày qua'**
+  String get aiDataMission;
+
+  /// Nút gợi ý nhiệm vụ AI ở thư viện
+  ///
+  /// In vi, this message translates to:
+  /// **'✨ Gợi ý cho hôm nay'**
+  String get careAiSuggest;
+
+  /// Tiêu đề sheet gợi ý nhiệm vụ AI
+  ///
+  /// In vi, this message translates to:
+  /// **'Gợi ý cho hôm nay'**
+  String get careAiSuggestTitle;
+
+  /// REC-04 mục ở hồ sơ bé
+  ///
+  /// In vi, this message translates to:
+  /// **'Sách của con'**
+  String get yearBookEntry;
+
+  /// REC-04 mô tả mục
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh đẹp nhất theo từng tháng, xuất PDF'**
+  String get yearBookEntryHint;
+
+  /// REC-04 tiêu đề
+  ///
+  /// In vi, this message translates to:
+  /// **'Sách của con'**
+  String get yearBookTitle;
+
+  /// REC-04 tên sách mặc định
+  ///
+  /// In vi, this message translates to:
+  /// **'Năm {year} của {name}'**
+  String yearBookDefaultTitle(String name, String year);
+
+  /// REC-04 phụ đề bìa PDF
+  ///
+  /// In vi, this message translates to:
+  /// **'Những khoảnh khắc nhà mình đã lưu'**
+  String get yearBookPdfSubtitle;
+
+  /// REC-04 tên chương mặc định
+  ///
+  /// In vi, this message translates to:
+  /// **'Tháng {month}'**
+  String yearBookChapter(String month);
+
+  /// REC-04 sửa tên sách
+  ///
+  /// In vi, this message translates to:
+  /// **'Tên sách'**
+  String get yearBookBookName;
+
+  /// REC-04 sửa tên chương
+  ///
+  /// In vi, this message translates to:
+  /// **'Tên chương'**
+  String get yearBookChapterName;
+
+  /// REC-04 sửa chú thích
+  ///
+  /// In vi, this message translates to:
+  /// **'Chú thích'**
+  String get yearBookCaption;
+
+  /// REC-04 hướng dẫn
+  ///
+  /// In vi, this message translates to:
+  /// **'Chạm ảnh để chọn hoặc bỏ, chạm chú thích để sửa.'**
+  String get yearBookHint;
+
+  /// REC-04 trống
+  ///
+  /// In vi, this message translates to:
+  /// **'Năm này chưa có ký ức nào của bé.'**
+  String get yearBookEmpty;
+
+  /// REC-04 số ký ức đã chọn
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} ký ức trong sách'**
+  String yearBookSelected(String count);
+
+  /// REC-04 gói chỉ xem trước
+  ///
+  /// In vi, this message translates to:
+  /// **'Gói hiện tại chỉ xem trước sách. Nâng cấp để xuất PDF.'**
+  String get yearBookPreviewOnly;
+
+  /// REC-04 nút nâng cấp
+  ///
+  /// In vi, this message translates to:
+  /// **'Nâng cấp'**
+  String get yearBookUpgrade;
+
+  /// REC-04 chờ đồng bộ
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lưu trên máy, sẽ đồng bộ khi có mạng.'**
+  String get yearBookPending;
+
+  /// REC-04 nút xuất
+  ///
+  /// In vi, this message translates to:
+  /// **'Xuất PDF'**
+  String get yearBookExport;
+
+  /// REC-04 đang xuất
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang dựng sách…'**
+  String get yearBookExporting;
+
+  /// REC-04 chưa lưu
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có thay đổi chưa lưu.'**
+  String get yearBookUnsaved;
+
+  /// REC-04 chip chọn sách cả nhà
+  ///
+  /// In vi, this message translates to:
+  /// **'Cả nhà'**
+  String get yearBookFamily;
+
+  /// REC-04 tiêu đề sách cả nhà
+  ///
+  /// In vi, this message translates to:
+  /// **'Sách cả nhà'**
+  String get yearBookFamilyTitle;
+
+  /// REC-04 tên mặc định sách cả nhà
+  ///
+  /// In vi, this message translates to:
+  /// **'Năm {year} của nhà mình'**
+  String yearBookFamilyDefaultTitle(String year);
+
+  /// REC-04 sách cả nhà chưa có ký ức
+  ///
+  /// In vi, this message translates to:
+  /// **'Năm này nhà mình chưa có ký ức nào.'**
+  String get yearBookFamilyEmpty;
+
+  /// REC-04 nút / tiêu đề xem trước PDF
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem trước'**
+  String get yearBookPreview;
+
+  /// REC-04 danh sách sách đã chia sẻ (người thân)
+  ///
+  /// In vi, this message translates to:
+  /// **'Sách năm của nhà'**
+  String get yearBookShared;
+
+  /// REC-04 chưa có sách chia sẻ
+  ///
+  /// In vi, this message translates to:
+  /// **'Bố mẹ chưa chia sẻ sách nào.'**
+  String get yearBookSharedEmpty;
+
+  /// REC-04 bản cho ông bà: công tắc
+  ///
+  /// In vi, this message translates to:
+  /// **'Chia sẻ với ông bà, người thân'**
+  String get yearBookShareTitle;
+
+  /// REC-04 bản cho ông bà: mô tả
+  ///
+  /// In vi, this message translates to:
+  /// **'Người thân được xem bé đọc được bản đã lưu, chỉ những ký ức đã chọn.'**
+  String get yearBookShareHint;
+
+  /// REC-04 bản cho ông bà: gói chưa cho phép
+  ///
+  /// In vi, this message translates to:
+  /// **'Gói Family cho phép chia sẻ sách với ông bà, người thân.'**
+  String get yearBookShareLocked;
+
+  /// NOTI_CIRCLE_LEFT (Parent, trung tính)
+  ///
+  /// In vi, this message translates to:
+  /// **'Một người thân đã rời vòng tròn gia đình'**
+  String get notiCircleLeft;
+
+  /// NOTI_YEARBOOK_SHARED (người thân)
+  ///
+  /// In vi, this message translates to:
+  /// **'Bố mẹ vừa chia sẻ một cuốn sách năm với bạn'**
+  String get notiYearBookShared;
+
+  /// REC-02 dừng chia sẻ
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã dừng chia sẻ với người thân'**
+  String get recapUnshared;
+
+  /// REC-02 nút chính khi đã chia sẻ
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã chia sẻ · chạm để dừng'**
+  String get recapSharedStop;
+
+  /// MEM-24 ô ghi âm: dừng ghi
+  ///
+  /// In vi, this message translates to:
+  /// **'Dừng'**
+  String get memVoiceStop;
+
+  /// Thanh báo thông báo đến khi app đang mở: mở màn liên quan
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem'**
+  String get notiOpen;
+
+  /// CHAT-01 tiêu đề / lối vào Tin nhắn
+  ///
+  /// In vi, this message translates to:
+  /// **'Tin nhắn'**
+  String get chatTitle;
+
+  /// CHAT-01 dòng phụ: tên gia đình · số cuộc trò chuyện
+  ///
+  /// In vi, this message translates to:
+  /// **'{familyName} · {count, plural, =1{1 cuộc trò chuyện} other{{count} cuộc trò chuyện}}'**
+  String chatListSubtitle(String familyName, int count);
+
+  /// Tên cuộc trò chuyện cả nhà
+  ///
+  /// In vi, this message translates to:
+  /// **'Cả nhà'**
+  String get chatFamilyTitle;
+
+  /// Tên cuộc trò chuyện riêng Papa & Mama
+  ///
+  /// In vi, this message translates to:
+  /// **'Papa & Mama'**
+  String get chatCoupleTitle;
+
+  /// CHAT-01 nhãn khoá cuộc trò chuyện riêng
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ hai bạn thấy'**
+  String get chatOnlyTwo;
+
+  /// CHAT-01 thành viên: tên Bố Mẹ + số người thân
+  ///
+  /// In vi, this message translates to:
+  /// **'{count, plural, =0{{parents}} other{{parents} + {count} người thân}}'**
+  String chatMembersSummary(String parents, int count);
+
+  /// Xem trước tin cuối của tôi
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn: {text}'**
+  String chatPreviewMine(String text);
+
+  /// Xem trước tin cuối của người khác
+  ///
+  /// In vi, this message translates to:
+  /// **'{name}: {text}'**
+  String chatPreviewOther(String name, String text);
+
+  /// CHAT-01 cuộc trò chuyện chưa có tin
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có tin nhắn'**
+  String get chatNoMessagesYet;
+
+  /// Ngăn cách ngày: hôm nay
+  ///
+  /// In vi, this message translates to:
+  /// **'Hôm nay'**
+  String get chatToday;
+
+  /// Ngăn cách ngày / thời gian: hôm qua
+  ///
+  /// In vi, this message translates to:
+  /// **'Hôm qua'**
+  String get chatYesterday;
+
+  /// CHAT-01 ghi chú cuối danh sách
+  ///
+  /// In vi, this message translates to:
+  /// **'Mỗi gia đình có 2 cuộc trò chuyện: “Cả nhà” cho Papa, Mama và người thân; “Papa & Mama” chỉ dành cho hai bạn.'**
+  String get chatInfoNote;
+
+  /// CHAT-01 không có cuộc trò chuyện
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có cuộc trò chuyện nào'**
+  String get chatListEmptyTitle;
+
+  /// CHAT-01 mô tả trạng thái rỗng
+  ///
+  /// In vi, this message translates to:
+  /// **'Cuộc trò chuyện của nhà mình sẽ hiện ở đây.'**
+  String get chatListEmptyDescription;
+
+  /// CHAT-02 dòng phụ: số thành viên
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} thành viên'**
+  String chatMembersCount(int count);
+
+  /// CHAT-02 nút xem thành viên
+  ///
+  /// In vi, this message translates to:
+  /// **'Thành viên'**
+  String get chatMembersTooltip;
+
+  /// CHAT-03d dòng phụ riêng tư
+  ///
+  /// In vi, this message translates to:
+  /// **'Tin nhắn riêng của hai bạn, người thân không xem được'**
+  String get chatCoupleSubtitle;
+
+  /// CHAT-03d ghi chú cuối hội thoại
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ Papa & Mama thấy cuộc trò chuyện này'**
+  String get chatCoupleNote;
+
+  /// Ô soạn tin cả nhà
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhắn cho cả nhà…'**
+  String get chatComposerHint;
+
+  /// Ô soạn tin riêng (tên gọi bạn đời)
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhắn riêng cho {callName}…'**
+  String chatComposerCoupleHint(String callName);
+
+  /// Nút gửi tin
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi'**
+  String get chatSend;
+
+  /// Tin đang gửi
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang gửi…'**
+  String get chatSending;
+
+  /// Tin chờ có mạng
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang chờ gửi'**
+  String get chatWaiting;
+
+  /// Tin gửi lỗi
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa gửi được · Chạm để gửi lại'**
+  String get chatFailed;
+
+  /// Tin đã gửi, chưa ai xem
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi'**
+  String get chatSent;
+
+  /// Tin đã được xem (Papa & Mama)
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã xem'**
+  String get chatSeen;
+
+  /// Đã xem bởi (tên)
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã xem · {names}'**
+  String chatSeenBy(String names);
+
+  /// Đã xem bởi (tên) + số người nữa
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã xem · {names} +{count}'**
+  String chatSeenByMore(String names, int count);
+
+  /// Một người đang nhập
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} đang nhập…'**
+  String chatTyping(String name);
+
+  /// Nhiều người đang nhập
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} người đang nhập…'**
+  String chatTypingMany(int count);
+
+  /// CHAT-03a băng ngoại tuyến
+  ///
+  /// In vi, this message translates to:
+  /// **'{count, plural, =0{Tin nhắn sẽ tự gửi khi có mạng} other{Tin nhắn sẽ tự gửi khi có mạng · {count} tin đang chờ}}'**
+  String chatOfflineSubtitle(int count);
+
+  /// CHAT-03b tiêu đề
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang kết nối lại…'**
+  String get chatReconnectingTitle;
+
+  /// CHAT-03b dòng phụ
+  ///
+  /// In vi, this message translates to:
+  /// **'Tin nhắn mới sẽ hiện ngay khi kết nối xong'**
+  String get chatReconnectingSubtitle;
+
+  /// CHAT-03c tiêu đề
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có tin nhắn nào'**
+  String get chatEmptyTitle;
+
+  /// CHAT-03c mô tả (cả nhà)
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi lời chào đầu tiên tới cả nhà 👋'**
+  String get chatEmptyDescription;
+
+  /// CHAT-03c mô tả (Papa & Mama)
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi lời nhắn riêng đầu tiên cho nhau ❤️'**
+  String get chatEmptyCoupleDescription;
+
+  /// CHAT-03c gợi ý lời chào
+  ///
+  /// In vi, this message translates to:
+  /// **'Chào cả nhà 👋'**
+  String get chatHelloSuggestion;
+
+  /// Không mở được cuộc trò chuyện
+  ///
+  /// In vi, this message translates to:
+  /// **'Không mở được cuộc trò chuyện này'**
+  String get chatNotFound;
+
+  /// Nhãn trợ năng số tin chưa đọc
+  ///
+  /// In vi, this message translates to:
+  /// **'{count, plural, =0{Không có tin mới} other{{count} tin chưa đọc}}'**
+  String chatUnread(int count);
+
+  /// CHAT-04b nút nhắn riêng ở Papa & Mama
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhắn riêng'**
+  String get chatCoupleEntry;
+
+  /// Tên thay thế khi không rõ người gửi
+  ///
+  /// In vi, this message translates to:
+  /// **'Thành viên'**
+  String get chatSomeone;
+
+  /// Không tải được tin nhắn (đang dùng bản trên máy)
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa tải được tin mới. Đang hiện tin đã lưu.'**
+  String get chatLoadError;
 }
 
 class _AppLocalizationsDelegate

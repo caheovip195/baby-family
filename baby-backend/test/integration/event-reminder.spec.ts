@@ -109,6 +109,9 @@ describe('Event reminders (PostgreSQL, durable jobs)', () => {
   });
 
   async function clear() {
+    await prisma.notificationDelivery.deleteMany({
+      where: { notification: { familyId } },
+    });
     await prisma.notification.deleteMany({ where: { familyId } });
     await prisma.eventReminder.deleteMany({ where: { familyId } });
     await prisma.eventReminderRule.deleteMany({ where: { familyId } });
@@ -266,6 +269,13 @@ describe('Event reminders (PostgreSQL, durable jobs)', () => {
     await dispatch();
     const inbox = await prisma.notification.findMany({ where: { familyId } });
     expect(inbox).toHaveLength(1);
+    // BF-20261030-010: đúng một lượt push cho nhắc, kể cả khi chạy song song.
+    expect(
+      await prisma.notificationDelivery.findMany({
+        where: { notificationId: inbox[0]!.id, channel: 'PUSH' },
+        select: { status: true, targetKey: true },
+      }),
+    ).toEqual([{ status: 'PENDING', targetKey: parent }]);
     expect(inbox[0]).toMatchObject({
       recipientUserId: parent,
       templateCode: 'NOTI_EVENT_REMINDER',

@@ -355,6 +355,34 @@ void main() {
       expect(router.topRoute.name, HomeTabRoute.name);
     });
 
+    testWidgets('BF-20261030-004: REC-02 shares with relatives and saves to '
+        'the timeline', (tester) async {
+      await pumpRoute(tester, const WeeklyRecapRoute());
+      await _tapText(tester, 'Chia sẻ với người thân');
+      expect(find.text('Đã chia sẻ với người thân'), findsOneWidget);
+      expect(find.text('Đã chia sẻ · chạm để dừng'), findsOneWidget);
+      await _tapText(tester, 'Đã chia sẻ · chạm để dừng');
+      expect(find.text('Đã dừng chia sẻ với người thân'), findsOneWidget);
+      await _tapText(tester, 'Lưu vào timeline');
+      expect(find.text('Đã lưu vào timeline'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('BF-20261030-005: relatives open the shared week read-only '
+        'from CIR-06', (tester) async {
+      final router = await pumpRoute(
+        tester,
+        const CircleMeRoute(),
+        seed: DemoSeed.circle,
+      );
+      await tester.scrollUntilVisible(find.text('Tuần của nhà mình'), 200);
+      await _tapText(tester, 'Tuần của nhà mình');
+      expect(router.topRoute.name, WeeklyRecapRoute.name);
+      expect(find.text('Chia sẻ với người thân'), findsNothing);
+      expect(find.text('Lưu vào timeline'), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('HOME-01 “Tuần này của nhà mình” → REC-02 → close', (
       tester,
     ) async {

@@ -2,6 +2,7 @@ import 'package:baby_family/data/model/account/data_export_record.dart';
 import 'package:baby_family/data/model/account/deletion_preview_record.dart';
 import 'package:baby_family/data/model/account/reauth_token_record.dart';
 import 'package:baby_family/data/model/account/session_list.dart';
+import 'package:baby_family/data/model/ai/ai_result.dart';
 import 'package:baby_family/data/model/auth_certificate.dart';
 import 'package:baby_family/data/model/billing/billing_catalog.dart';
 import 'package:baby_family/data/model/billing/family_billing_record.dart';
@@ -20,6 +21,10 @@ import 'package:baby_family/data/model/care/mission_series_record.dart';
 import 'package:baby_family/data/model/care/mission_settings_record.dart';
 import 'package:baby_family/data/model/care/mission_swap_options_record.dart';
 import 'package:baby_family/data/model/care/mission_template_list.dart';
+import 'package:baby_family/data/model/chat/chat_conversation.dart';
+import 'package:baby_family/data/model/chat/chat_message.dart';
+import 'package:baby_family/data/model/chat/chat_message_page.dart';
+import 'package:baby_family/data/model/chat/chat_read_result.dart';
 import 'package:baby_family/data/model/child/child_record.dart';
 import 'package:baby_family/data/model/child/child_stats_record.dart';
 import 'package:baby_family/data/model/circle/circle_invite_issued.dart';
@@ -31,15 +36,18 @@ import 'package:baby_family/data/model/family/family_settings_record.dart';
 import 'package:baby_family/data/model/family/my_family_record.dart';
 import 'package:baby_family/data/model/family/purchase_intent_record.dart';
 import 'package:baby_family/data/model/family/timezone_catalog.dart';
+import 'package:baby_family/data/model/growth/growth_entry.dart';
 import 'package:baby_family/data/model/memory/album_list.dart';
 import 'package:baby_family/data/model/memory/album_record.dart';
 import 'package:baby_family/data/model/memory/comment_record.dart';
+import 'package:baby_family/data/model/memory/day_story_record.dart';
 import 'package:baby_family/data/model/memory/download_url_list.dart';
 import 'package:baby_family/data/model/memory/letter_record.dart';
 import 'package:baby_family/data/model/memory/media_grid_item_record.dart';
 import 'package:baby_family/data/model/memory/memory_prompt_list.dart';
 import 'package:baby_family/data/model/memory/memory_record.dart';
 import 'package:baby_family/data/model/memory/milestone_catalog.dart';
+import 'package:baby_family/data/model/memory/month_recap_record.dart';
 import 'package:baby_family/data/model/memory/monthly_photo_record.dart';
 import 'package:baby_family/data/model/memory/on_this_day_record.dart';
 import 'package:baby_family/data/model/memory/perspective_list.dart';
@@ -81,8 +89,11 @@ import 'package:baby_family/data/model/settings/support_ticket_detail.dart';
 import 'package:baby_family/data/model/settings/support_ticket_list.dart';
 import 'package:baby_family/data/model/us/appreciation_record.dart';
 import 'package:baby_family/data/model/us/appreciation_wall.dart';
+import 'package:baby_family/data/model/us/bridge_session_record.dart';
+import 'package:baby_family/data/model/us/care_handoff.dart';
 import 'package:baby_family/data/model/us/checkin_record.dart';
 import 'package:baby_family/data/model/us/checkin_today.dart';
+import 'package:baby_family/data/model/us/couple_question_record.dart';
 import 'package:baby_family/data/model/us/journal_entry_record.dart';
 import 'package:baby_family/data/model/us/journal_list.dart';
 import 'package:baby_family/data/model/us/request_created.dart';
@@ -90,6 +101,7 @@ import 'package:baby_family/data/model/us/request_list.dart';
 import 'package:baby_family/data/model/us/request_record.dart';
 import 'package:baby_family/data/model/us/us_settings_record.dart';
 import 'package:baby_family/data/model/user.dart';
+import 'package:baby_family/data/model/year_book/year_book.dart';
 import 'package:baby_family/utils/helper/lenient_json.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -216,6 +228,97 @@ sealed class BaseRespond with _$BaseRespond {
   factory BaseRespond.pregnancyNameRespond({
     @JsonKey(name: 'data') PregnancyNameRecord? name,
   }) = PregnancyNameRespond;
+
+  /// Câu hỏi kết nối + US-14 (BF-20261027-002).
+  factory BaseRespond.coupleQuestionRespond({
+    @JsonKey(name: 'data') CoupleQuestionRecord? question,
+  }) = CoupleQuestionRespond;
+
+  factory BaseRespond.coupleWeekRespond({
+    @JsonKey(name: 'data') CoupleWeekRecord? week,
+  }) = CoupleWeekRespond;
+
+  /// AI 1.2 (BF-20261028-010).
+  factory BaseRespond.aiStatusRespond({
+    @JsonKey(name: 'data') AiStatusRecord? status,
+  }) = AiStatusRespond;
+
+  factory BaseRespond.aiDraftRespond({
+    @JsonKey(name: 'data') AiDraftRecord? draft,
+  }) = AiDraftRespond;
+
+  /// Cầu nối (BF-20261028-008).
+  factory BaseRespond.bridgeSessionListRespond({
+    @JsonKey(name: 'data', fromJson: bridgeSessionList)
+    @Default(<BridgeSessionRecord>[])
+    List<BridgeSessionRecord> sessions,
+  }) = BridgeSessionListRespond;
+
+  factory BaseRespond.bridgeSessionRespond({
+    @JsonKey(name: 'data') BridgeSessionRecord? session,
+  }) = BridgeSessionRespond;
+
+  /// Bàn giao ca (BF-20261028-007).
+  factory BaseRespond.careHandoffListRespond({
+    @JsonKey(name: 'data', fromJson: careHandoffList)
+    @Default(<CareHandoff>[])
+    List<CareHandoff> handoffs,
+  }) = CareHandoffListRespond;
+
+  factory BaseRespond.careHandoffRespond({
+    @JsonKey(name: 'data') CareHandoff? handoff,
+  }) = CareHandoffRespond;
+
+  /// REC-01 (BF-20261028-006).
+  factory BaseRespond.dayStoryRespond({
+    @JsonKey(name: 'data') DayStoryRecord? story,
+  }) = DayStoryRespond;
+
+  factory BaseRespond.savedDayStoryRespond({
+    @JsonKey(name: 'data') SavedDayStoryRecord? saved,
+  }) = SavedDayStoryRespond;
+
+  /// Nhắn tin gia đình (BF-20261101-001).
+  factory BaseRespond.chatConversationListRespond({
+    @JsonKey(name: 'data', fromJson: chatConversationList)
+    @Default(<ChatConversation>[])
+    List<ChatConversation> conversations,
+  }) = ChatConversationListRespond;
+
+  factory BaseRespond.chatMessagePageRespond({
+    @JsonKey(name: 'data') ChatMessagePage? page,
+  }) = ChatMessagePageRespond;
+
+  factory BaseRespond.chatMessageRespond({
+    @JsonKey(name: 'data') ChatMessage? message,
+  }) = ChatMessageRespond;
+
+  factory BaseRespond.chatReadRespond({
+    @JsonKey(name: 'data') ChatReadResult? result,
+  }) = ChatReadRespond;
+
+  /// CHD-06 (BF-20261028-004).
+  factory BaseRespond.growthListRespond({
+    @JsonKey(name: 'data') GrowthListRecord? growth,
+  }) = GrowthListRespond;
+
+  factory BaseRespond.growthEntryRespond({
+    @JsonKey(name: 'data') GrowthEntry? entry,
+  }) = GrowthEntryRespond;
+
+  /// REC-04 (BF-20261028-013).
+  factory BaseRespond.yearBookRespond({
+    @JsonKey(name: 'data') YearBookRecord? book,
+  }) = YearBookRespond;
+
+  factory BaseRespond.yearBookListRespond({
+    @JsonKey(name: 'data') YearBookList? books,
+  }) = YearBookListRespond;
+
+  /// REC-03 (BF-20261027-003).
+  factory BaseRespond.monthRecapRespond({
+    @JsonKey(name: 'data') MonthRecapRecord? recap,
+  }) = MonthRecapRespond;
 
   /// CARE-11 (BF-20261027-001).
   factory BaseRespond.careStatsRespond({
@@ -471,6 +574,11 @@ sealed class BaseRespond with _$BaseRespond {
   factory BaseRespond.weeklyRecapRespond({
     @JsonKey(name: 'data') WeeklyRecapRecord? recap,
   }) = WeeklyRecapRespond;
+
+  /// REC-02 lưu vào timeline: `{memoryId}`.
+  factory BaseRespond.recapTimelineRespond({
+    @JsonKey(name: 'data') Map<String, dynamic>? result,
+  }) = RecapTimelineRespond;
 
   factory BaseRespond.displaySettingsRespond({
     @JsonKey(name: 'data') DisplaySettingsRecord? settings,

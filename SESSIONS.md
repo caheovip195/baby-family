@@ -1569,3 +1569,495 @@ Các mục 001–005 được **ghi bù ngày 2026-10-11** từ hội thoại hi
   - Thử trên máy thật.
   - Không commit.
 - Trạng thái: Hoàn thành (còn các phần nêu ở "Còn lại").
+
+## BF-20261027-002 — Câu hỏi kết nối + US-14 Tuần của hai ta (Claude làm cả backend và app; Codex hết quota)
+
+- Ngày làm: 2026-10-27T19:03:11+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiêp tính năng tiếp theo đi ,tự bạn làm đi , codex hết quota rùi"
+- Liên quan: checklist dòng "Câu hỏi kết nối", "US-14 Tuần của hai ta" (1.1); đặc tả 9.8 US-01 khối 3, US-14, phụ lục câu hỏi kết nối.
+- Role: ORCHESTRATOR, BACKEND, MOBILE, TESTER, QUALITY — Claude tự làm toàn bộ (Codex hết quota); tự review, không có reviewer độc lập.
+- Phân tích:
+  - Chọn hai mục Papa & Mama 1.1 đã có UI và model ở app, đặc tả rõ.
+  - **Backend:**
+    - Catalog câu hỏi `src/config/couple-question-catalog.ts` (version 1, 10 câu vi/en; mã câu không đổi sau khi phát hành).
+    - Câu của ngày chọn bằng SHA-256(coupleSpaceId:ngày) theo múi giờ gia đình, nên hai người cùng một câu.
+    - Bảng mới `us.couple_question_answers` (migration DDL `20261027150000`; đủ `created_at` / `updated_at` / `deleted_at` + trigger audit; unique theo người / ngày). Câu trả lời mã hoá AES-256-GCM, khoá HKDF theo couple space, AAD gồm ngày.
+    - `CoupleQuestionController` / `Service` / `Repository` (DI đã đăng ký): `GET question/today`, `PUT question/today/answer` (tạo hoặc sửa trong ngày), `GET week`.
+    - Tuần đếm check-in, lời nhờ được hỗ trợ (TASK DONE + NEED ACKNOWLEDGED — theo ràng buộc DB), lời cảm ơn, nhiệm vụ TOGETHER/COUPLE đã xong; không trả id người. Lời cảm ơn mã hoá nên không trả "lời cảm ơn nổi bật".
+    - Cập nhật 4 unit test đếm số model / service sinh tự động (122→123, 117→118) vì có bảng mới.
+  - **App:** model / client / repository. `UsRemoteServiceImp` gắn câu hỏi server vào `coupleToday` (lỗi / mất mạng thì không hiện, không hỏng màn), `answerQuestion` lên server, `coupleWeek` từ server, đọc qua `OfflineReads`. `CoupleTabController` tải lại sau khi trả lời.
+- Kết quả: checklist tick "Câu hỏi kết nối" và "US-14" → 146/166 (MVP 142/154). `docs/api.md` và `baby-family-app/SESSION.md` đã cập nhật.
+- Bằng chứng:
+  - Backend: spec mới `couple-question-api` 4/4 (câu giống nhau cho hai người, ẩn câu trả lời tới khi cả hai trả lời, sửa trong ngày, dữ liệu mã hoá, validation, Circle / người ngoài 404, đếm tuần + tuần trước / thứ Hai sai / tuần tương lai, nửa đêm theo múi giờ kể cả DST).
+  - Backend `npm run check` EXIT 0 (unit 337, e2e 35) sau khi cập nhật test đếm; `npx eslint --max-warnings=0 src test` EXIT 0; `TEST_SMTP_HOST=127.0.0.1 npm run test:integration` EXIT 0 (76 suite / 659 test). Lần `npm run check` đầu EXIT 1 do 4 test đếm, đã sửa.
+  - Migration chỉ áp lên `baby_family_test`.
+  - App `make check` EXIT 0 (analyze sạch, 881 test).
+  - Chưa chạy trên emulator.
+- Còn lại:
+  - Admin quản lý câu hỏi (ADM-08); câu zh / ja.
+  - "Lời cảm ơn nổi bật" của tuần (cần giải mã theo dịch vụ cảm ơn).
+  - Xem tuần trước trên app (API đã hỗ trợ `weekStart`).
+  - Deploy migration.
+  - Thử máy thật.
+  - Không commit.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Còn lại").
+
+## BF-20261027-003 — REC-03 Tổng kết tháng tuổi (Claude làm cả backend và app)
+
+- Ngày làm: 2026-10-27T19:21:35+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp REC-03 Tháng tuổi (backend + app), tự làm."
+- Liên quan: checklist dòng REC-03 (1.1); đặc tả 9.10 REC-03, 7.10 chương tháng; BF-20261019-008 (ảnh tháng), REC-02 tuần.
+- Role: ORCHESTRATOR, BACKEND, MOBILE, TESTER, QUALITY — Claude tự làm toàn bộ; tự review, không có reviewer độc lập.
+- Phân tích:
+  - App đã có model `MonthRecap` và màn REC-03, nhưng bản server trả `null`.
+  - Ánh xạ theo dữ liệu mẫu: tháng `m` (bé vừa tròn m tháng) = ký ức có `memory_children.age_month = m-1` (`age_month` = số tháng tròn tại ngày ký ức, `ageInMonths`), ảnh tháng `m` và `m-1`.
+  - **Backend:** `MonthRecapController` / `Service` / `Repository` (DI đã đăng ký; không đổi schema, tính khi đọc).
+    - Quyền: `requireContentAccess`, rồi người thân phải được cấp bé đó; dùng cùng lọc quyền xem của feed (`memoryContentScope` + `viewerExclusions`).
+    - Đếm khoảnh khắc / lần đầu (MILESTONE) / giọng nói (VOICE); trả tối đa 5 id ký ức mỗi loại; ảnh tháng READY.
+    - Ranh giới tháng khớp `ageInMonths` (sinh ngày 31 → ngày 1 tháng sau).
+    - Bé chưa tròn tháng đầu → 404 `MONTH_RECAP_NOT_READY`; tháng chưa tròn → 400.
+  - **App:** `MemoryRemoteServiceImp.monthRecap` chọn bé, đọc server qua `OfflineReads` (404 → rỗng); ảnh từ `monthlyPhotos()`; ký ức thiếu thì đọc `GET /memories/:id` và phản chiếu; tính `pageCount`.
+- Kết quả: checklist tick REC-03 → 147/166 (MVP 142/154). `docs/api.md` và `baby-family-app/SESSION.md` đã cập nhật.
+- Bằng chứng:
+  - Spec mới `month-recap-api` 3/3: tháng gần nhất + ảnh tháng, tháng 1 theo `monthIndex`, ACL (người thân chỉ thấy nội dung FAMILY, người thân không được cấp / người ngoài 404), tháng chưa tròn 400, bé không tồn tại 404, ranh giới cuối tháng.
+  - Backend `npm run check` EXIT 0 (unit 337, e2e 35); `npx eslint --max-warnings=0 src test` EXIT 0.
+  - App `make check` EXIT 0 (analyze sạch, 882 test; mới: subject_memory_remote REC-03).
+  - Integration toàn bộ:
+    - Lần 1 EXIT 1: 6 suite / 18 test phụ thuộc Valkey / MinIO / Mailpit / SMTP lỗi (timeout, 1864 giây, đúng lúc máy có thêm container `pagoda-migration-audit` của dự án khác); không có suite nào liên quan thay đổi lần này.
+    - Chạy riêng 6 suite đó đều đạt (36, 11, 14, 9, 6, 6).
+    - Chạy lại toàn bộ EXIT 0 (77 suite / 662 test, 172 giây).
+  - Chưa chạy trên emulator.
+- Còn lại:
+  - "Lưu vào timeline" / chia sẻ recap tháng (REC-02 có, REC-03 chưa có API lưu).
+  - Chọn tháng cũ trên app (API đã hỗ trợ `monthIndex`).
+  - Thử máy thật.
+  - Không commit.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Còn lại").
+
+## BF-20261028-001 — Các mục MVP còn lại: làm phần làm được, liệt kê điều kiện đang vướng
+
+- Ngày làm: 2026-10-28T07:19:03+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu (chuyển từ phiên điều phối): "Làm các tính năng tiếp theo đi" — làm tiếp 12 mục MVP còn lại của checklist; mục vướng điều kiện thì làm phần làm được và liệt kê rõ điều kiện kèm câu hỏi cụ thể; cả backend và app, chạy đủ kiểm tra, ghi nhật ký.
+- Role: ORCHESTRATOR, MOBILE, BACKEND, DEVOPS, TESTER, QUALITY — Claude tự làm toàn bộ; tự review, không có reviewer độc lập.
+- Phân tích (phân loại 12 mục):
+  - Làm được không cần cấu hình ngoài: (7) liên kết/gỡ Apple/Google trong app, (2) thao tác lời nhờ khi offline, (4) worker báo lỗi, (12) privacy manifest + tài liệu pháp lý nháp.
+  - Vướng điều kiện của người dùng/bên ngoài: (1) chạy CI trên GitHub Actions, (3) staging + deploy, (5)(6) Apple/Google sign-in thật, (8) push FCM/APNs máy thật, (9)(10) IAP sandbox, (12) ký số/TestFlight; (11) catalog cột mốc/mẫu thông báo có version cần chốt mô hình version (để đợt sau).
+  - **App — liên kết/gỡ Apple/Google (SET-02):** client `linkAppleIdentity`, `linkGoogleIdentity`, `unlinkIdentity`, `reauthApple`, `reauthGoogle`; `IAccountRemoteRepository.linkIdentity/unlinkIdentity/reauthWithIdentity`; `ISettingsService.reauthWithSignIn/linkSignIn/unlinkSignIn` (mã xác thực lại dùng một lần). `ProfileSettingsController.changeLink`: có số điện thoại → gửi OTP và hỏi mã bằng sheet `_ReauthCodeSheet`; không có → xác thực bằng Apple/Google đã liên kết; xong chỉ đọc lại phương thức đăng nhập. Lỗi `LAST_SIGN_IN_METHOD`, `IDENTITY_IN_USE|IDENTITY_PROVIDER_ALREADY_LINKED`, `REAUTH_IDENTITY_REQUIRED` có chuỗi l10n (4 ARB).
+  - **App — lời nhờ offline:** `UsRemoteServiceImp._act` đổi trạng thái trên máy ngay rồi gửi qua outbox `us.request-action`; bị từ chối → trả các field vừa đổi về bản trước và ném lỗi; mở lại app → hiện lại trạng thái đã chọn. API thao tác lời nhờ chưa có `Idempotency-Key` (ghi rõ giới hạn trong `docs/04_THIET_KE_OFFLINE_FIRST.md`).
+  - **Backend — worker:** `IErrorReporter.reportJob({job, code, attempt})`; `JobRunnerService` (inject `@Optional()`) báo khi job `FAILED` vĩnh viễn hoặc hết lượt; worker module đăng ký `ErrorReporterService`. Không gửi payload/key/familyId.
+  - **iOS/pháp lý:** `ios/Runner/PrivacyInfo.xcprivacy` (không tracking, kê loại dữ liệu, mục đích App Functionality) gắn vào target Runner; `docs/05_PHAP_LY_PHAT_HANH.md` (kê dữ liệu thu thập, quyền dữ liệu đã có, Data safety, đề xuất age rating, câu hỏi cần quyết định) — không phải văn bản pháp lý.
+- Kết quả: không tick thêm mục (các mục vẫn vướng điều kiện ngoài); cập nhật ghi chú checklist dòng offline-first, logging, phương thức đăng nhập, pháp lý; `docs/api.md`, `docs/observability.md`, `docs/04_THIET_KE_OFFLINE_FIRST.md`, `baby-family-app/SESSION.md`.
+- Bằng chứng:
+  - App `make check` EXIT 0 (analyze sạch, 884 test; mới: settings_remote liên kết/gỡ cần xác thực lại, couple_remote thao tác lời nhờ offline → gửi một lần khi có mạng → bị từ chối thì trả về).
+  - Backend unit mới: job-runner (báo lỗi job vĩnh viễn, không báo lỗi tạm thời, hết lượt), error-reporter (tag allowlist) — 12/12 khi chạy riêng.
+  - Backend `npm run check` EXIT 0 (unit 339, e2e 35); `npx eslint --max-warnings=0 src test` EXIT 0; `generate:persistence|services -- --check` EXIT 0; integration toàn bộ EXIT 0 (77 suite / 662 test, 214 giây).
+  - `plutil -lint` đạt cho `PrivacyInfo.xcprivacy` và `project.pbxproj`; chưa build iOS (Flutter 3.44.5 + Xcode 27.1).
+  - Chưa thử máy thật / emulator cho liên kết Apple/Google (cần client id thật).
+- Còn lại / đang vướng: xem câu hỏi trong báo cáo (Apple Team ID & capability, Google client id, sản phẩm Store + tài khoản sandbox, nơi staging, DSN Sentry, khoá FCM/APNs + máy thử, chứng chỉ ký, người duyệt pháp lý, có nâng Flutter cho iOS không, có bật GitHub Actions không). Chưa làm: sửa ký ức / tạo-đổi nhiệm vụ offline, catalog cột mốc/mẫu thông báo có version. Không commit.
+- Trạng thái: Hoàn thành phần làm được (các mục vướng điều kiện nêu ở "Còn lại").
+
+## BF-20261028-002 — Xác nhận kiểm tra backend của BF-20261028-001 và làm tiếp: sửa ký ức khi offline
+
+- Ngày làm: 2026-10-28T07:33:00+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu (chuyển từ phiên điều phối): "Hãy chạy lại các kiểm tra đó (chạy nền và đợi đến khi xong), sửa lỗi nếu có, ghi kết quả vào nhật ký rồi tiếp tục các mục còn lại của yêu cầu \"Làm các tính năng tiếp theo đi\" và báo kết quả."
+- Role: ORCHESTRATOR, MOBILE, TESTER, QUALITY — Claude tự làm và tự review.
+- Phân tích:
+  - Bộ kiểm tra backend của BF-20261028-001 đã chạy xong sau khi lượt trước kết thúc: `npm run check` EXIT 0 (unit 339, e2e 35), eslint EXIT 0, generator check EXIT 0, integration EXIT 0 (77 suite / 662 test); đã ghi vào entry BF-20261028-001. Lượt này không đổi backend nên không chạy lại.
+  - Mục còn làm được không cần cấu hình ngoài: sửa ký ức khi offline. `MemoryRemoteServiceImp.updateMemory` (không đổi ảnh) → `_editOffline`: đổi trên máy, gửi qua outbox `memory.edit`, gộp các bản sửa chưa gửi (giữ version gốc), 412/4xx → đọc lại bản server và ném lỗi; mở lại app hiện lại bản sửa. Sửa thứ tự bỏ entry bị từ chối để `submit` kịp ném lỗi cho màn hình.
+- Kết quả: checklist dòng offline-first và `docs/04_THIET_KE_OFFLINE_FIRST.md` cập nhật; `baby-family-app/SESSION.md` cập nhật.
+- Bằng chứng: app `make check` EXIT 0 (analyze sạch, 885 test; mới: subject_memory_remote sửa offline → gộp → gửi một lần với version gốc; test MEM-09 412 cũ vẫn đạt).
+- Còn lại: đổi ảnh ký ức offline, tạo/đổi nhiệm vụ offline, catalog có version; các mục vướng cấu hình ngoài như BF-20261028-001. Không commit.
+- Trạng thái: Hoàn thành.
+
+## BF-20261028-003 — Làm tiếp các mục còn lại: tạo nhiệm vụ offline, catalog cột mốc có version
+
+- Ngày làm: 2026-10-28T09:20:42+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu (chuyển từ phiên điều phối): "Tiếp tục làm các tính năng còn lại đi" — làm tiếp mục còn lại (ưu tiên MVP), cả backend và app; chạy kiểm tra nền và đợi kết quả trước khi kết thúc lượt; nêu câu hỏi cho mục cần quyết định.
+- Role: ORCHESTRATOR, MOBILE, BACKEND, DATABASE, ADMIN, TESTER, QUALITY — Claude tự làm và tự review.
+- Phân tích:
+  - **App — tạo nhiệm vụ offline:** `CareRemoteServiceImp.createMission` (không lặp) gửi qua outbox `mission.create` (Idempotency-Key theo thao tác); mất mạng → bản tạm hiện trên bảng của đúng ngày (`_applyPending` ghép bản tạm theo ngày/bé). Đổi nhiệm vụ và tạo chuỗi lặp vẫn cần mạng (cần lựa chọn + `optionsToken` từ server).
+  - **App — `OutboxRunner`:** `submit` giữ lỗi bị từ chối cho đúng lệnh đang chờ kể cả khi service bỏ thao tác trong `onState` (trước đó 4xx của hoàn thành nhiệm vụ có thể bị coi là đã gửi). Bỏ cách vá tạm ở `memory_remote` (BF-20261028-002).
+  - **Backend — catalog cột mốc có version:** migration DDL `20261028090000_milestone_template_version` (cột `version` + check > 0); Admin CMS publishing thêm kind `milestones` (quyền CONTENT/SUPER_ADMIN): nháp (mã mới) → publish (ACTIVE) → retire (RETIRED, không xoá) có lý do + audit; schema zod chặt cho mã, nhóm, i18n, `dateRule`. Danh sách admin trả `version`. Chạy lại generator persistence/services.
+  - **Admin:** form Cột mốc trong Catalog (mã, phiên bản, nhóm, icon, tên/gợi ý vi-en, thứ tự, nhắc trước, quy tắc ngày JSON, truyền thống); nhiệm vụ/cột mốc dùng chung luồng theo mã.
+  - **Mẫu thông báo:** chưa làm — khoá chính `(code, locale)` + cờ `enabled`, cần chốt mô hình version (xem câu hỏi trong báo cáo).
+- Kết quả: checklist dòng offline-first và catalog cập nhật (chưa tick vì mẫu thông báo / phần offline còn lại chưa xong); `docs/api.md`, `docs/04_THIET_KE_OFFLINE_FIRST.md`, `baby-family-app/SESSION.md` cập nhật.
+- Bằng chứng:
+  - App `make check` EXIT 0 (analyze sạch, 886 test; mới: care_remote tạo nhiệm vụ offline → hiện trên bảng đúng ngày → tạo một lần, cùng key).
+  - Admin `npm run check` EXIT 0 (typecheck, 16 test, build).
+  - Backend: lần 1 `npm run check` EXIT 1 vì generator services lệch (service cột mốc sinh tự động chưa có `version`); chạy `npm run generate:services` rồi lần 2 `npm run check` EXIT 0 (unit 339, e2e 35), eslint EXIT 0, generator check EXIT 0.
+  - Integration toàn bộ EXIT 0 (663 test; spec mới cột mốc trong `admin-cms-catalog-publishing`, 15/15 khi chạy riêng). Lượt integration chạy trước khi sinh lại service cột mốc (chỉ thêm field `version` vào service sinh tự động, không dùng trong luồng publish).
+  - Migration đã áp lên DB `baby_family_test`.
+- Còn lại: mẫu thông báo có version; đổi ảnh ký ức / đổi nhiệm vụ / chuỗi lặp offline; các mục vướng cấu hình ngoài như BF-20261028-001. Không commit.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Còn lại").
+
+## BF-20261028-004 — Làm các tính năng còn lại (để sau các mục cần cấu hình): CHD-06 Tăng trưởng
+
+- Ngày làm: 2026-10-28T13:13:07+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Những phần đó để sau đi , giờ làm cho t các tính năng còn lại đi"
+- Role: ORCHESTRATOR, BACKEND, DATABASE, MOBILE, TESTER, QUALITY.
+- Phân tích:
+  - Các mục còn lại sau khi gác phần cần cấu hình: CHD-06 Tăng trưởng (1.2), Bàn giao ca, US-08…13 Cầu nối, REC-01, REC-04, AI (1.2). Chọn CHD-06 trước vì độc lập, không cần dịch vụ ngoài. Pencil không chạy được (không kết nối app desktop) nên màn dựng theo Design System sẵn có.
+  - **Backend:** migration DDL `20261028120000_growth_measurements` (bảng `app.growth_measurements`, check giá trị, unique bé + ngày, trigger audit); `GrowthController/Service/Repository` + interface, DI; quyền chỉ Parent (`requireParent`); ngày đo trong [ngày sinh, hôm nay theo múi giờ gia đình]; PUT theo ngày idempotent. Generator persistence/services chạy lại (124/119), cập nhật 4 unit test đếm.
+  - **App:** model `GrowthEntry`/`GrowthListRecord` (lenient), client `getGrowth/putGrowth/deleteGrowth`, `IGrowthRemoteRepository`, `IGrowthService` (mock RAM + remote offline-first: outbox `growth.put/delete`, local DB bảng `growth`, ghép thao tác chờ), sync khi có mạng; màn `GrowthPage` (`/child/:id/growth`): chọn Cân nặng/Chiều cao, biểu đồ đường CustomPaint chỉ dữ liệu của bé, disclaimer, lịch sử, sheet thêm/sửa/xoá; dòng mở ở hồ sơ bé (bé đã sinh). l10n 4 ARB.
+- Kết quả: checklist tick CHD-06; `docs/api.md`, `baby-family-app/SESSION.md` cập nhật.
+- Bằng chứng:
+  - Backend spec mới `growth-api` 3/3 (đè theo ngày, sắp xếp, xoá lặp 204, kiểm tra giá trị/ngày, chỉ Parent); `npm run check` EXIT 0 (unit 339, e2e 35), eslint + generator check EXIT 0.
+  - Integration toàn bộ EXIT 1: 665/666 — `data-export-api` "does not sign expired exports…" (gọi `eraseObjectVersions` 2 lần thay vì 1), không liên quan thay đổi; chạy riêng suite đó 2 lần đều 11/11 → chập chờn, cần theo dõi.
+  - App `make check` EXIT 0 (893 test; mới: growth_remote 4 test gồm offline → mở lại → gửi một lần, từ chối báo lỗi; growth page 3 test widget).
+  - Chưa thử trên máy thật / emulator.
+- Còn lại: Bàn giao ca, US-08…13, REC-01, REC-04, AI; theo dõi suite data-export chập chờn. Không commit.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Còn lại").
+
+## BF-20261028-005 — Đăng bài: resume khi thoát app, hiển thị ngay kèm tiến độ, nén ảnh/video
+
+- Ngày làm: 2026-10-28T13:35:12+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Xem thêm cho tôi phần đăng bài ở app , phải có phần resume bài đăng nếu user đang đăng mà thoát app , ngoài ra xem lại cho t phần nén video ảnh sao cho đẹp nhất dung lượng bé bé thôi. Nếu user đăng bài thì không phải là đăng xong mới hiển thị bài đăng đó mà bài đăng đó phải lưu ở local sau đó hiển thị luôn cho user và hiển thị progress đang upload để user biết được là đang upload ."
+- Role: ORCHESTRATOR, MOBILE, TESTER, QUALITY.
+- Phân tích (hiện trạng): bài đã lưu local + outbox bền, hiện ngay ở tab Ký ức, gửi lại sau khi mở app (BF-20261022-001); nhưng (1) tiến độ chỉ theo số file, Home không có thẻ đang tải; (2) mở lại app thì nén + tải lại toàn bộ file; (3) ảnh chính 4096 px JPEG 90, video 1080p → nặng.
+- Đã làm:
+  - Tiến độ theo byte: `IMediaRepository.uploadBytes(onProgress)` (PUT stream 64 KB + `onSendProgress`, cả multipart), `MediaUploader.upload(onProgress)` gộp file chính + biến thể; `Memory.uploadProgress` (báo mỗi 1%); `UploadingMemoryCard` hiện "Đang tải x/y ảnh · n%"; Home dùng thẻ đang tải cho bài chưa xong (Thử lại / Huỷ).
+  - Resume theo file: asset id của từng file xong lưu vào `args.uploaded` của outbox (`OutboxRunner.patchArgs`); mở lại app → hiện đúng tiến độ, chỉ tải file còn thiếu; sửa `OutboxRunner` để lỗi khi đang gửi không ghi đè bản đã patch. Server từ chối tạo bài (4xx) → xoá danh sách asset đã lưu để lần thử lại tải lại.
+  - Nén: ảnh chính 2560 px / JPEG 85, m1080 / 80, t320 / 72; video 720p 30 fps; giữ nguyên video mp4 đã nhỏ (≤720 cạnh ngắn, ≤4 Mbps) hoặc khi bản nén to hơn gốc; xoá file nén tạm. Vẫn trong giới hạn server (ảnh ≤ 4096, video cạnh ngắn ≤ 1080).
+- Bằng chứng: app `make check` EXIT 0 (analyze sạch, 894 test; mới: subject_memory_remote "a post resumes after a restart from the file it stopped at and reports byte progress" — bài hiện ngay, tiến độ ≥50% sau ảnh 1, mở lại chỉ xin 1 upload intent cho ảnh 2, tạo bài với cả 2 asset). Không đổi backend. Chưa đo dung lượng/ chất lượng thật trên máy (cần thiết bị + ảnh/video mẫu); chưa thử emulator.
+- Còn lại: resume giữa một file lớn (multipart dở) chưa có — file đang dở tải lại từ đầu; tải nền khi app bị hệ điều hành dừng (background upload service) chưa có; nên so dung lượng/chất lượng trên máy thật. Không commit.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Còn lại").
+
+## BF-20261028-006 — Làm tiếp tính năng còn lại: REC-01 Câu chuyện ngày (không AI)
+
+- Ngày làm: 2026-10-28T13:56:53+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Các chỉ số sức khỏe của bé hiện tại chỉ có papa và mama xem được thôi . làm tiếp các phần trên đi"
+- Role: ORCHESTRATOR, BACKEND, DATABASE, MOBILE, TESTER, QUALITY.
+- Phân tích:
+  - Xác nhận quyết định: chỉ số sức khoẻ (CHD-06) chỉ Papa/Mama — đúng với code hiện tại (`requireParent`), không đổi; ghi vào bộ nhớ dự án.
+  - Chọn REC-01 (UI đã có, bản server trả rỗng). Bản không AI: server gom ký ức + ảnh trong ngày, Parent tự viết; đoạn văn AI để mục AI 1.2.
+  - **Backend:** migration DDL `20261028160000_day_stories` (`app.day_stories`, check độ dài/số phần tử, unique bé + ngày, trigger audit); `DayStoryController` + `DayStoryRecapService/Repository` (+ interface, DI); quyền chỉ Parent; kiểm tra ký ức/ảnh thuộc đúng ngày, ảnh bìa trong danh sách, ngày không tương lai. Lần check đầu fail: generator sinh `day-story.*` cho model `DayStory` nhưng file viết tay trùng tên đã ghi đè → đổi tên file viết tay sang `day-story-recap.*`, sinh lại file generated; cập nhật 4 unit test đếm (125/120).
+  - **App:** `DayStoryRecord` (lenient), client `getDayStory/putDayStory`, `IMemoryFeedRepository.dayStory/saveDayStory`; `MemoryRemoteServiceImp.dayStory` ghép ký ức (đọc server nếu thiếu, ảnh URL ký theo asset id), mặc định chọn tất cả, tiêu đề mặc định "Một ngày của <tên bé>"; `saveDayStory` đổi URL → asset id; màn REC-01: không có AI thì vào chế độ tự viết, ẩn "Viết lại". l10n 4 ARB.
+- Kết quả: checklist tick REC-01; `docs/api.md`, `baby-family-app/SESSION.md` cập nhật.
+- Bằng chứng: spec mới `day-story-api` 3/3; backend `npm run check` EXIT 0 (unit 339, e2e 35), eslint + generator check EXIT 0 (lần 2, sau khi sửa trùng tên); integration toàn bộ EXIT 0 (79 suite / 669 test); app `make check` EXIT 0 (895 test; mới: subject_memory_remote REC-01 đọc/lưu/mở lại).
+- Còn lại: đoạn văn AI (mục AI 1.2); hiển thị câu chuyện đã lưu cho người thân (visibility FAMILY) và trên timeline; lưu câu chuyện khi offline (hiện gọi thẳng). Bàn giao ca, US-08…13, REC-04 chưa làm. Không commit.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Còn lại").
+
+## BF-20261028-007 — Làm tiếp tính năng còn lại: Bàn giao ca (handoff)
+
+- Ngày làm: 2026-10-28T13:59:27+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Ok làm tiếp cho t đi,"
+- Role: ORCHESTRATOR, BACKEND, DATABASE, MOBILE, TESTER, QUALITY.
+- Phân tích:
+  - Bàn giao ca (7.13.8): Parent ghi nhanh đã ăn / ngủ / dậy lúc + ghi chú, bạn đời nhận thẻ; cần thì gửi kèm Lời nhờ; không phải tracker y tế. Chưa có thiết kế Pencil → dựng theo Design System sẵn có ở tab Papa & Mama.
+  - **Backend:** migration DDL `20261028190000_care_handoffs` (`us.care_handoffs`, unique người gửi + Idempotency-Key, check nội dung/khác người, trigger audit); `HandoffController/Service/Repository` (+ interface, DI; file viết tay tên `handoff.*` vì generator sinh `care-handoff.*`); chỉ Parent trong couple space; ghi chú mã hoá AES-256-GCM; outbox `us.handoff.created` → route `dispatchNotification`, policy thông báo nhạy cảm tới người nhận, resolve người nhận trong `NotificationInboxRepository`; mẫu `NOTI_HANDOFF_CREATED` vi/en trong seed. Generator chạy lại (126/121), cập nhật unit test đếm + danh sách sự kiện nhạy cảm.
+  - **App:** model `CareHandoff` (lenient list), client `createHandoff/getHandoffs/acknowledgeHandoff`, `ICoupleRemoteRepository`; `IUsService.handoffs/sendHandoff/acknowledgeHandoff` (mock RAM; server qua outbox `us.handoff` với Idempotency-Key, bản chờ hiện đầu danh sách); `CoupleTabController.latestHandoff` (24 giờ), ô "Bàn giao ca", sheet (bé, 3 mốc giờ — giờ sau hiện tại tính là hôm qua, ghi chú, tuỳ chọn mở US-03), thẻ bàn giao + "Đã nhận". l10n 4 ARB, lỗi `HANDOFF_TIME_INVALID`.
+- Kết quả: checklist tick Bàn giao ca; `docs/api.md`, `baby-family-app/SESSION.md` cập nhật.
+- Bằng chứng: spec mới `handoff-api` 3/3 (một lần theo key, ghi chú mã hoá trong DB, outbox 1 sự kiện, nhận/không tự nhận, kiểm tra giờ/bé/lời nhờ/nội dung, chỉ Parent); backend `npm run check` EXIT 0 (unit 340, e2e 35), eslint + generator check EXIT 0; integration toàn bộ EXIT 0 (80 suite / 672 test); app `make check` EXIT 0 (898 test; mới: couple_remote bàn giao offline → gửi một lần cùng key, handoff_test 2 widget).
+- Còn lại: Lời nhờ mở sau khi bàn giao chưa gắn `requestId` vào bàn giao (backend đã hỗ trợ); mẫu thông báo cần chạy seed; chưa thử push thật. Không commit.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Còn lại").
+
+## BF-20261028-008 — Làm tiếp: US-08…13 Cầu nối khi bất đồng + nhánh an toàn (không AI)
+
+- Ngày làm: 2026-10-28T14:41:58+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Ok làm phần tiếp theo cho t đi"
+- Role: ORCHESTRATOR, BACKEND, DATABASE, SECURITY, MOBILE, TESTER, QUALITY.
+- Phân tích:
+  - Đặc tả 7.17 + US-08…13; UI app đã có đủ màn (bridge_start/invite/session/next_step/rewrite, an toàn), bản server trước đó chỉ đọc kho trên máy.
+  - Quyết định riêng tư: nháp riêng (privateNote, ý chưa chọn) **không lên server**; server chỉ nhận ý đã chọn chia sẻ ở bước xem trước; nhánh an toàn US-13 và danh sách đường dây/câu mẫu viết lại vẫn là nội dung tĩnh trên máy (không gọi server, không dấu vết).
+  - **Backend:** migration DDL `20261028220000_bridge_sessions` (`us.bridge_sessions`, `us.bridge_shares`, check trạng thái/thời hạn lưu, unique người mời + Idempotency-Key, trigger audit); `BridgeController/Service/Repository` (+ interface, DI; tên `bridge.*` vì generator sinh `bridge-session.*`, `bridge-share.*`); máy trạng thái INVITED → ACTIVE ⇄ PAUSED → NEXT_STEP → CLOSED / EXPIRED; mã hoá chủ đề/lời nhắn/bước tự nhập; dọn dẹp khi đọc (hết hạn 14 ngày, xoá nội dung quá thời hạn lưu); outbox `us.bridge.invited` + policy/resolve người nhận + mẫu vi/en. Generator 128/123, cập nhật unit test đếm + danh sách sự kiện nhạy cảm.
+  - **App:** `BridgeSessionRecord` (+ share/next step, lenient), client 6 endpoint, `ICoupleRemoteRepository`; `UsRemoteServiceImp`: `bridgeSession` (nháp trên máy, còn lại server; 404 → null), `bridgeSessions`, `sendBridgeInvite` (gửi đúng ý của tôi + thời hạn lưu, Idempotency-Key theo id nháp, xoá nội dung nháp trên máy), join/pause/understood/clarify/next-step/confirm/close; map id người dùng server → trên máy. `BridgeStartController.send` mở phiên mời/tạm dừng khi chưa có phiên đang diễn ra (id server khác id nháp).
+- Kết quả: checklist tick US-08…13; `docs/api.md`, `baby-family-app/SESSION.md` cập nhật.
+- Bằng chứng: spec mới `bridge-api` 4/4 (đủ luồng mời → hai bên chia sẻ → hiểu → nói rõ hơn → bước tiếp → đóng; một lần theo key; dữ liệu mã hoá trong DB; outbox 1 sự kiện; chỉ bạn đời tham gia; thời hạn lưu 0 xoá ngay; 14 ngày → EXPIRED; kiểm tra mã/thời hạn; chỉ Parent); backend `npm run check` EXIT 0 (unit 341, e2e 35), eslint + generator check EXIT 0; integration toàn bộ EXIT 0 (81 suite / 676 test); app `make check` EXIT 0 (899 test; mới: couple_remote nháp không lên server, chỉ ý đã chọn được gửi, map phiên, đủ thao tác; sửa test cũ: bản server chỉ giữ nháp trên máy).
+- Còn lại: viết lại / tóm tắt bằng AI (1.2); một bên xoá tài khoản giữa phiên → đóng phiên (chưa nối vào luồng xoá tài khoản); dọn dẹp nội dung chạy khi đọc — nên thêm job định kỳ; chọn thời hạn lưu trong US-15 nếu cài đặt chưa nối; mẫu thông báo cần seed. Không commit.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Còn lại").
+
+## BF-20261028-009 — Làm tiếp: sửa trùng schema (Cầu nối, Câu hỏi kết nối dùng bảng có sẵn) + dọn dẹp Cầu nối định kỳ
+
+- Ngày làm: 2026-10-28T15:37:55+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Ok làm tiếp đi"
+- Role: ORCHESTRATOR, DATABASE, BACKEND, SECURITY, TESTER, QUALITY.
+- Phân tích:
+  - Định làm job dọn dẹp Cầu nối + đóng phiên khi xoá tài khoản; khi đọc luồng xoá tài khoản phát hiện schema gốc (`20261013150000_family_domain`) **đã có** `us.conflict_sessions/entries/confirmations` (Cầu nối, luồng xoá tài khoản đã xử lý) và `us.connection_answers` (Câu hỏi kết nối). BF-20261027-002 và BF-20261028-008 đã tạo bảng trùng (`us.couple_question_answers`, `us.bridge_sessions`, `us.bridge_shares`) — **đính chính** cho hai entry đó.
+  - Vì chưa commit / chưa phát hành: bỏ hai migration trùng và model Prisma; xoá ba bảng + dòng `_prisma_migrations` tương ứng trên DB `baby_family_test` (chỉ DB test); sinh lại generator (125/120) và cập nhật unit test đếm.
+  - **Câu hỏi kết nối:** `CoupleQuestionRepository` dùng `connectionAnswer` (upsert theo khoá chính couple space + ngày + người, `promptCode`).
+  - **Cầu nối:** `BridgeRepository` viết lại trên `conflictSession/Entry/Confirmation` (API giữ nguyên): `AGREED` ↔ `NEXT_STEP`, `RESOLVED` ↔ `CLOSED`; chủ đề + lời nhắn chung một khối mã hoá trong `shared_points_enc`; `next_step` JSON (phiên bản, mã, giờ, văn bản mã hoá, đồng ý đóng); xác nhận bước qua `conflict_confirmations`; không dùng `topic` (chữ thường) và `draft_enc` (nháp ở lại máy). Gửi lại khi phiên còn mở trả đúng phiên đó (thay 409). Resolve người nhận thông báo theo `conflict_sessions`.
+  - **Job định kỳ:** `JOBS.bridgeHousekeep` (`us.bridge-housekeep`, maintenance, mỗi giờ) → `BridgeMaintenanceService.housekeep` → `IBridgeRepository.housekeep(null, now)` cho mọi gia đình; đăng ký ở worker module.
+  - **Xoá tài khoản giữa phiên:** luồng có sẵn đã xoá mềm phiên do người đó mở và xoá ý của họ; couple space chuyển `UNLINKED` nên người còn lại không truy cập phiên nữa (không cần đổi).
+- Kết quả: `docs/api.md`, checklist cập nhật; app không đổi (API giữ nguyên).
+- Bằng chứng: backend `npm run check` EXIT 0 (unit 342 — mới `bridge-maintenance`; e2e 35) ở lần 2 (lần 1 fail vì định dạng Prettier của `bridge.repository.ts`), eslint + generator check EXIT 0; integration toàn bộ EXIT 0 (81 suite / 677 test; `bridge-api` 5/5 gồm job dọn dẹp toàn cục sau thời hạn lưu, `couple-question-api` 4/4 trên `connection_answers`); app `make check` EXIT 0 (899 test).
+- Còn lại: mẫu thông báo cần seed; các mục AI (1.2) và REC-04 (2.0) chờ quyết định. Không commit.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Còn lại").
+
+## BF-20261028-010 — AI 1.2 qua OpenRouter (gợi ý chú thích, câu chuyện ngày, viết lại nhẹ nhàng, tóm tắt Cầu nối)
+
+- Ngày làm: 2026-10-28T15:57:50+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Về AI ,backend hiện tại dùng openrouter đi , model là \"openrouter/free\" , api key là <đã ẩn — không ghi secret vào nhật ký>"
+- Role: ORCHESTRATOR, BACKEND, SECURITY, MOBILE, TESTER, QUALITY.
+- Phân tích:
+  - Bảo mật: API key được dán vào chat → không ghi vào repo / nhật ký / `.env` (quy tắc dự án); backend đọc qua env `AI_API_KEY`; khuyến nghị người dùng xoay key.
+  - Schema gốc đã có `ops.ai_invocations`, `ops.ai_usage_reservations`, `app.ai_usage_monthly`, `app.user_consents`, cài đặt AI ở `user_settings`, gói có `ai.enabled` + `aiPerMonth` → dùng lại, **không thêm migration**.
+  - **Backend:** env `AI_BASE_URL/AI_API_KEY/AI_MODEL/AI_TIMEOUT_MS` (+ `.env.example` không có giá trị bí mật); `AiProviderService` (OpenAI-compatible fetch, lỗi → 503, không log nội dung); `AiRepository` (quyền gói/cài đặt, đồng ý, giữ chỗ hạn mức bằng advisory lock, kết thúc lượt gọi chỉ metadata); `AiService` + `AiController` 6 endpoint; prompt + quy tắc + từ khoá an toàn ở `config/ai-policy.ts`; day story dùng `IDayStoryRecapService`, tóm tắt dùng `IBridgeService` (chỉ ý đã chia sẻ).
+  - **App:** `AiStatusRecord`/`AiDraftRecord`, client, `IAiRemoteRepository`, `IAiService` (mock + server; 428 → `AiConsentRequired`), enum `AiFeature`; `runWithAiConsent` + `AiConsentDialog` (giải thích dữ liệu gửi đi); MEM-04 nút “✨ Gợi ý chú thích” → sheet 3 gợi ý; US-09 nhận câu gốc từ US-08 (`BridgeRewriteRoute(original)`), câu không an toàn → màn hỗ trợ US-13; REC-01 “Viết lại” gọi AI với ký ức đang tick; SET-05 hiện lượt còn lại / tổng. l10n 4 ARB, mã lỗi AI.
+  - Gọi thật OpenRouter 2 lần với nội dung giả lập (không dữ liệu người dùng): HTTP 200; lần 1 model `cohere/north-mini-code:free` trả tiếng Anh, có 236 token suy nghĩ → sửa prompt bắt buộc tiếng Việt và tăng `maxOutputTokens` 600 → 1500; lần 2 model `poolside/laguna-xs-2.1:free` trả đúng JSON tiếng Việt. Chất lượng thay đổi theo model router chọn.
+- Kết quả: `compose.yaml` truyền `AI_BASE_URL/AI_API_KEY/AI_MODEL/AI_TIMEOUT_MS` vào service `api` (`docker compose config` hợp lệ); người dùng tự thêm `AI_API_KEY` vào `baby-backend/.env` rồi khởi động lại api. Checklist dòng AI 1.2 cập nhật (BE/App 🟡); `docs/api.md`, `docs/05_PHAP_LY_PHAT_HANH.md` (OpenRouter là bên xử lý dữ liệu) cập nhật.
+- Bằng chứng: backend `npm run check` EXIT 0 (unit 345 — mới `ai-provider` 3; e2e 35), eslint + generator check EXIT 0 (lần trước đó fail 1 lỗi lint trong test, đã sửa); integration: lần 1 EXIT 1 (51 suite lỗi ECONNREFUSED 5433 do các container Docker khởi động lại giữa lúc chạy, không do code), lần 2 EXIT 1 (1 test calendar 500 ngay sau khi DB khởi động lại; chạy riêng 10/10), lần 3 EXIT 0 (82 suite / 683 test; mới `ai-api` 6/6 với nhà cung cấp giả); app `make check` EXIT 0 (900 test; mới `ai_remote_test`; sửa 2 test dùng `const BridgeRewriteRoute()`).
+- Còn lại: gợi ý nhiệm vụ AI; tóm tắt Cầu nối chưa có chỗ trên UI (API sẵn); báo cáo nội dung AI mới là snackbar (cần luồng báo cáo thật theo Google Play); cân nhắc chọn model cố định thay `openrouter/free` để ổn định chất lượng; chưa thử trên máy thật. Không commit.
+- Trạng thái: Hoàn thành phần chính (còn các phần nêu ở "Còn lại").
+
+## BF-20261028-011 — Làm tiếp AI: báo cáo nội dung AI thật + màn tóm tắt Cầu nối
+
+- Ngày làm: 2026-10-28T22:58:23+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Tiếp tục làm cho t đi"
+- Role: ORCHESTRATOR, BACKEND, MOBILE, SECURITY, TESTER, QUALITY.
+- Phân tích:
+  - Google Play yêu cầu báo cáo nội dung AI thật; schema gốc đã có `report_target AI_OUTPUT` và `report_reason AI_CONTENT` → dùng lại luồng báo cáo/kiểm duyệt (RPT-01, moderation case), không thêm bảng.
+  - **Backend:** `SAFETY_POLICY.reportTargets` thêm `AI_OUTPUT`; `SafetyService.targetOwner` kiểm lượt AI thuộc gia đình và do chính người báo cáo yêu cầu (`ISafetyRepository.aiInvocationRequester`); kết quả AI (`captions/day-story/rewrite/bridge-summary`) trả `invocationId`; Admin CMS xem nội dung `AI_OUTPUT` = ghi chú người báo cáo + tính năng/model.
+  - **App:** `AiDraftRecord.invocationId`; `IAiService` trả `AiDraftRecord` + `report(invocationId, text)` (gửi `/v1/reports`); “Báo cáo nội dung AI” ở US-09, REC-01, sheet gợi ý chú thích gửi báo cáo thật (bản mẫu không có lượt AI → chỉ thông báo); US-11 thêm “✨ Tóm tắt giúp hai bạn” → hỏi đồng ý lần đầu → sheet tóm tắt có nhãn AI + báo cáo. l10n 4 ARB.
+- Kết quả: checklist dòng AI 1.2 cập nhật; `docs/api.md` thêm mục báo cáo AI.
+- Bằng chứng: backend `npm run check` EXIT 0 (unit 345, e2e 35), eslint + generator check EXIT 0; `ai-api` 7/7 (mới: chỉ người yêu cầu báo cáo được, report lưu đúng đích/lý do/ghi chú) + `search-safety-api` 6/6; integration toàn bộ EXIT 1: 682/684 — `mission-catalog-90-days` (lặp mẫu trong mô phỏng 90 ngày) và `outbox-consumers` (timeout kết nối pool) lỗi khi chạy cả bộ; chạy riêng hai suite 13/13 đạt → chập chờn, không liên quan thay đổi (cần theo dõi suite catalog 90 ngày); app `make check` EXIT 0 (902 test; mới `ai_draft_test` 2 widget, cập nhật `ai_remote_test`).
+- Còn lại: gợi ý nhiệm vụ AI; điều tra độ ổn định `mission-catalog-90-days` khi chạy cả bộ. Không commit.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Còn lại").
+
+## BF-20261028-012 — Làm tiếp AI: gợi ý nhiệm vụ (chỉ chọn trong catalog thật)
+
+- Ngày làm: 2026-10-28T23:19:30+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp đii"
+- Role: ORCHESTRATOR, BACKEND, MOBILE, TESTER, QUALITY.
+- Phân tích:
+  - Đặc tả 7.18 “Gợi ý nhiệm vụ”: đầu vào nhóm tuổi, nhóm ưa thích, lịch sử 14 ngày (tổng hợp), đầu ra 3–5 việc, cho đổi/tắt nhóm. Để không bịa: AI chỉ chọn số thứ tự trong danh sách mẫu thật.
+  - **Backend:** `AI_FEATURES` + prompt `missionSuggest`; `AiService.missionSuggestions` lấy ứng viên qua `IMissionBoardService.templates` (cùng bộ lọc tuổi/giai đoạn), trừ `excludeCategories`, thống kê nhóm 14 ngày qua `IAiRepository.recentMissionCategories` (groupBy theo nhóm), kiểm lại số thứ tự (bỏ không hợp lệ / trùng); endpoint `POST …/ai/mission-suggestions`. Gọi thật 3 lần với danh sách giả lập: 1 lần model trả nội dung rỗng (`dots-3-note-preview:free`), 1 lần đúng JSON chọn hợp lý (`nemotron-3-ultra`), 1 lần router chọn model kiểm duyệt trả “User Safety: safe” → thêm thử lại tối đa 2 lần trong cùng lượt hạn mức (`AI_POLICY.attempts`).
+  - **App:** `AiMissionPick` + `AiDraftRecord.missions` (lenient), `IAiService.missionSuggestions`, enum `AiFeature.missionSuggest`, l10n dữ liệu gửi đi; CARE-04 nút “✨ Gợi ý cho hôm nay” → hỏi đồng ý lần đầu → sheet gợi ý (nhãn AI, lý do, Hearts, báo cáo) → chọn trả `templateId` về CARE-03; bản mock chọn vài mẫu trên máy.
+- Kết quả: checklist tick dòng AI 1.2 (BE ✅; UI dựng theo Design System vì không có frame); `docs/api.md` cập nhật.
+- Bằng chứng: `ai-api` 8/8 (mới: chỉ chọn trong catalog, bỏ số sai/trùng; thử lại: hai lần hỏng → 502 không trừ lượt, lần đầu rỗng lần sau đúng → trừ 1 lượt); backend `npm run check` EXIT 0 (unit 345, e2e 35), eslint + generator EXIT 0; integration toàn bộ: lần 1 (trước khi thêm thử lại) EXIT 0 82/685; lần 2 EXIT 1 684/685 — `couple-request-api` “validates due dates…” lỗi cả khi chạy riêng vì test tạo hạn “hôm nay” +30 phút lúc 23:37 → sang ngày mới (test phụ thuộc giờ có sẵn, không liên quan thay đổi); app `make check` EXIT 0 (903 test; mới: CARE-04 widget, `ai_remote_test` gợi ý nhiệm vụ).
+- Còn lại: sửa test `couple-request-api` phụ thuộc giờ (dùng đồng hồ cố định hoặc hạn trong ngày); cân nhắc model cố định thay `openrouter/free` (tỉ lệ trả lời hỏng cao). Không commit.
+- Trạng thái: Hoàn thành (còn các phần nêu ở "Còn lại").
+
+## BF-20261028-013 — REC-04 Sách của con (Year Story + PDF)
+
+- Ngày làm: 2026-10-28T23:49:19+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Để test đó sau, làm REC-04 Sách của con tiếp đi."
+- Role: ORCHESTRATOR (phạm vi, thứ tự), BACKEND (API + lưu), MOBILE (màn hình, PDF, offline), TESTER (integration/widget/unit), QUALITY (diff, kiến trúc, bằng chứng).
+- Phân tích: đặc tả REC-04 "chọn bé/cả nhà, năm; chương tự đề xuất; chọn/bỏ ảnh; sửa chú thích; xem trước PDF; xuất"; ma trận gói TRIAL xem trước, HOUSE/FAMILY xuất. Dùng lại bảng có sẵn `app.recaps` (scope CHILD, period YEAR) thay vì tạo bảng mới; PDF dựng trên máy để server không giữ file và không tốn băng thông. Gói chưa khai báo cờ `yearbook.export` (bản gói v1 bất biến) → chỉ giai đoạn `PAID` được xuất; gói mới khai cờ thì cờ quyết định.
+- Kết quả:
+  - Backend: `GET/PUT /children/:childId/year-book/:year` (`year-book.controller/service/repository`, `config/year-book-policy.ts`, DTO, model). Chương theo tháng, tự chọn ≤ 4 ký ức có ảnh/chương ưu tiên cột mốc, quyền xem như feed, bỏ `LETTER`, URL ảnh ~1080px ký theo lô; lưu/ghi đè có kiểm tra ký ức/ảnh/tháng; chỉ Parent. Không migration.
+  - App: model `YearBookRecord` (đọc lỏng), API client, repository, `IYearBookService` mock + remote offline-first (outbox `yearbook.put`, cache local DB, đồng bộ khi có mạng), `YearBookPage` `/child/:childId/year-book` từ CHD-01; chọn năm, chọn/bỏ ký ức và ảnh, sửa chú thích/tên sách/tên chương, lưu; xuất PDF (`pdf` 3.12.0, font BeVietnamPro, isolate riêng) rồi chia sẻ; gói xem trước hiện ghi chú + Nâng cấp. l10n 18 khoá × 4 ngôn ngữ.
+  - Docs: `baby-backend/docs/api.md`, checklist REC-04 ✅ và đếm lại tổng 153/166.
+- Bằng chứng: backend prettier + eslint sạch, generator check 125/120 khớp, `npm run check` qua (e2e 35/35), integration 83 suite / 688 test qua (gồm `year-book-api.spec.ts` 3 test); app `make check` (analyze sạch) 912 test qua.
+- Còn lại: sách "cả nhà" và bản cho ông bà (FAMILY) chưa làm; chưa có xem trước PDF trong app (màn chỉnh sửa là bản xem trước); chưa có frame Pencil; test `couple-request-api` phụ thuộc giờ để sau theo yêu cầu (lần chạy này qua). Chưa commit.
+- Trạng thái: Hoàn thành (ghi lúc 2026-10-29T00:12:33+07:00).
+
+## BF-20261029-001 — Offline-first: đổi ảnh ký ức khi mất mạng (bỏ qua CMS)
+
+- Ngày làm: 2026-10-29T06:35:14+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Ok làm tiếp theo và bỏ qua cms đi để tính sau"
+- Role: ORCHESTRATOR (chọn mục: phần offline-first còn thiếu không cần cấu hình ngoài, bỏ CMS theo yêu cầu), MOBILE (outbox đổi ảnh), TESTER (unit test service), QUALITY (diff, bằng chứng).
+- Phân tích: các mục chưa xong còn lại phần lớn cần cấu hình/thiết bị thật (Apple/Google, IAP, FCM, staging, ký số, pháp lý) hoặc là CMS (tạm bỏ). Offline-first còn "đổi ảnh ký ức" trước đây bắt buộc có mạng vì tải ảnh trước khi `PATCH`. Backend đã nhận `addAssetIds/removeAssetIds/coverAssetId` nên chỉ đổi app: lưu thứ tự ảnh mới (asset có sẵn hoặc file trên máy) trong outbox, tải lúc gửi.
+- Kết quả:
+  - App `memory_remote.dart`: mọi lần sửa ký ức server (kể cả đổi ảnh) qua outbox `memory.edit`. Ảnh mới sao vào thư mục của thao tác (`keepFiles`), hiện ngay trên máy (video của ảnh cũ giữ đúng thứ tự, file mới null), chỉ tải lên khi gửi; asset đã tải lưu `args.uploaded` để gửi tiếp không tải lại; gộp với bản sửa chữ/ảnh trước (sao file trước khi bỏ bản cũ, giữ version và bộ ảnh server gốc). Server từ chối → bỏ file, hiện lại ảnh server, đọc lại; từ chối asset → lần sau tải lại từ đầu. Đồng bộ không ghi đè ảnh trên máy khi còn bản đổi ảnh chưa gửi.
+  - Test: 2 test mới trong `test/data/subject_memory_remote_test.dart` (offline → gộp → tải khi gửi → PATCH lỗi mạng gửi tiếp không tải lại; 412 → bỏ file, ảnh server).
+  - Docs: checklist dòng offline-first, `docs/04_THIET_KE_OFFLINE_FIRST.md`.
+- Bằng chứng: `fvm flutter analyze` file sửa sạch; `make check` (format, codegen, analyze, test) qua, 914 test. Backend không đổi nên không chạy lại bộ backend.
+- Còn lại: offline cho đổi nhiệm vụ và tạo chuỗi lặp; chưa thử trên máy thật; CMS tạm bỏ theo yêu cầu. Chưa commit.
+- Trạng thái: Hoàn thành (ghi lúc 2026-10-29T06:39:13+07:00).
+
+## BF-20261029-002 — Offline-first: đổi nhiệm vụ và tạo chuỗi lặp khi mất mạng
+
+- Ngày làm: 2026-10-29T07:58:44+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp offline cho đổi nhiệm vụ và tạo chuỗi lặp đi"
+- Role: ORCHESTRATOR, BACKEND (Idempotency-Key), MOBILE (outbox), TESTER, QUALITY.
+- Phân tích: hai thao tác trước đây gọi thẳng server. Tạo chuỗi không có Idempotency-Key nên gửi lại sau khi mất phản hồi sẽ tạo trùng; đổi nhiệm vụ dùng `optionsToken` một lần nên gửi lại sẽ bị 422 dù lần đầu đã đổi. Dùng lại `OfflineCommandService` (header tuỳ chọn, replay trả kết quả lần đầu) cho cả hai; replay đổi nhiệm vụ kiểm quyền theo gia đình của nhiệm vụ kể cả khi nhiệm vụ cũ đã bị gỡ.
+- Kết quả:
+  - Backend: `POST /missions/:id/swap` và `POST /families/:fid/mission-series` nhận `Idempotency-Key` tuỳ chọn (`offlineCommand`); `IMissionBoardService.authorizeReplay`, `familyIdForMission(id, includeRemoved)`. Không migration. Integration `mission-board-api.spec.ts` thêm kiểm tra replay đổi (không tốn lượt) và replay tạo chuỗi (một chuỗi).
+  - App: `createSeries` + `swap` có key; `CareRemoteServiceImp` outbox `mission.series` (bản tạm trên bảng các ngày từ ngày bắt đầu, đúng thứ) và `mission.swap` (lựa chọn + token lưu local DB `careSwapOptions`, mất mạng vẫn mở CARE-05 và đổi; bảng ẩn nhiệm vụ cũ, hiện bản tạm mẫu mới, trừ lượt đổi). 2 test mới trong `test/data/care_remote_test.dart`.
+  - Docs: `baby-backend/docs/api.md`, `docs/04_THIET_KE_OFFLINE_FIRST.md`, checklist dòng offline-first.
+- Bằng chứng: backend prettier/eslint sạch, generator 125/120 khớp, `npm run check` qua (unit 345, e2e 35/35), integration 83 suite / 688 test qua; app `make check` qua 916 test.
+- Còn lại: bản tạm (nhiệm vụ đổi/chuỗi chờ gửi) chưa hoàn thành được tới khi gửi xong; token đổi hết hạn khi offline lâu → server từ chối, nhiệm vụ cũ quay lại không có thông báo riêng; chưa thử máy thật. Chưa commit.
+- Trạng thái: Hoàn thành (ghi lúc 2026-10-29T08:12:34+07:00).
+
+## BF-20261030-001 — REC-04 Sách cả nhà
+
+- Ngày làm: 2026-10-30T12:44:35+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp cho t đi"
+- Role: ORCHESTRATOR (chọn mục: phần REC-04 còn thiếu không cần cấu hình ngoài), BACKEND, MOBILE, TESTER, QUALITY.
+- Phân tích: đặc tả REC-04 "chọn bé/cả nhà"; trước chỉ có sách theo bé. Tổng quát đối tượng sách (`YearBookSubject` CHILD/FAMILY) thay vì nhân bản code; dùng lại `app.recaps` với scope FAMILY, `child_id` NULL. Unique của recaps không chặn trùng khi `child_id` NULL → khoá advisory trong transaction lưu.
+- Kết quả:
+  - Backend: `GET/PUT /families/:familyId/year-book/:year` (`FamilyYearBookController`), `IYearBookService.getFamily/saveFamily`, repository `family()` + truy vấn ký ức theo đối tượng (cả nhà = mọi ký ức của gia đình, mỗi ký ức một lần), `YearBookDto` thêm `scope`, `familyId`, `childId` nullable. Không migration. Integration `year-book-api.spec.ts` thêm 1 test (khoảnh khắc chung chỉ ở sách cả nhà, lưu tách sách bé, lưu đồng thời vẫn một bản, chỉ Parent, năm ngoài mốc 400).
+  - App: `YearBookRecord.childId` nullable + `isFamily`; client/repository endpoint gia đình; service `book(null, year)` = cả nhà (khoá cache/outbox riêng, outbox ghi `familyId`, bản chờ cũ vẫn gửi được); màn REC-04 có chip "bé / Cả nhà", năm từ bé lớn nhất, tiêu đề/tên mặc định/trống riêng; l10n 4 khoá × 4 ngôn ngữ. Test: 1 test service + 1 widget test.
+  - Docs: `baby-backend/docs/api.md`, checklist REC-04.
+- Bằng chứng: backend eslint sạch, `npm run check` qua (generator 125/120, unit 345, e2e 35/35); integration toàn bộ 688/689 — 1 lỗi ở `media-api.spec.ts` (multipart MinIO, không liên quan), chạy lại riêng spec đó 2 lần đều 20/20; `year-book-api.spec.ts` 4/4. App `make check` qua 918 test.
+- Còn lại: bản cho ông bà (FAMILY), xem trước PDF trong app; test media multipart chập chờn cần theo dõi. Chưa commit.
+- Trạng thái: Hoàn thành (ghi lúc 2026-10-30T12:58:43+07:00).
+
+## BF-20261030-002 — REC-04 bản cho ông bà (gói Family) + xem trước PDF trong app
+
+- Ngày làm: 2026-10-30T13:34:50+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm nốt 2 task này đi: Bản sách cho ông bà (gói Family); Xem trước PDF ngay trong app."
+- Role: ORCHESTRATOR, BACKEND, MOBILE, SECURITY (quyền người thân), TESTER, QUALITY.
+- Phân tích: ma trận gói ghi Year Story ở Family là "✅ + bản cho ông bà". Hiểu là Parent chia sẻ sách đã lưu cho Family Circle đọc (chỉ đọc), không phải bản sách riêng. Quyền chia sẻ là cờ catalog `yearbook.circleShare`, bản gói chưa khai báo thì theo `circle.enabled`; người thân đọc theo quyền xem hiện có (`requireContentAccess` + grant theo bé + quy tắc feed). Xem trước PDF: dựng PDF trên máy như khi xuất, hiện trang bằng `printing` (cùng tác giả `pdf`), mọi gói xem được, xuất theo gói.
+- Kết quả:
+  - Backend: `SaveYearBookDto.sharedWithCircle`, `content.shared` + `recaps.visibility`; 402 `PLAN_REQUIRED_FAMILY` khi gói không cho; `GET` sách bé / cả nhà cho người thân: chỉ bản đã chia sẻ, `readOnly`, chỉ ký ức đã chọn họ được xem, chưa chia sẻ / không có quyền bé → 404; `GET /families/:id/year-books`. Repository `plan()` (cờ xuất + chia sẻ + Circle), `viewer()`, `savedList()`. Không migration. Integration thêm 1 test (riêng tư → 404, chia sẻ → đọc đúng ký ức, người thân không sửa, sách cả nhà lọc theo quyền, danh sách, tắt chia sẻ, gói không Circle → 402).
+  - App: `printing` 5.14.3; `YearBookPreviewPage` (route `/year-book/preview`, `PdfPreview`, “Xuất PDF” theo gói hoặc ghi chú + Nâng cấp); `YearBookController.buildPdf/setShared/readOnly`; màn REC-04: thẻ “Chia sẻ với ông bà, người thân” (hoặc khoá + Nâng cấp), nút “Xem trước”, chế độ chỉ đọc cho người thân; `CircleYearBooksPage` `/circle/year-books` từ CIR-06 “Sách năm của nhà”; route sách đổi thành `/year-book?childId=&year=` (null = cả nhà). Model `YearBookSummary/List`, API danh sách, service `books()` (mất mạng dùng bản đọc gần nhất). l10n 6 khoá × 4 ngôn ngữ. Test: 1 test service + 6 widget test mới/sửa.
+  - Docs: `baby-backend/docs/api.md`, checklist REC-04.
+- Bằng chứng: backend eslint sạch, `npm run check` qua (generator 125/120, unit 345, e2e 35/35), integration 83 suite / 690 test qua; app `make check` qua 924 test.
+- Còn lại: chưa thử `PdfPreview` trên máy thật (iOS chưa build được trên máy này); người thân chưa nhận thông báo khi có sách mới được chia sẻ. Chưa commit.
+- Trạng thái: Hoàn thành (ghi lúc 2026-10-30T13:51:31+07:00).
+
+## BF-20261030-003 — Làm tiếp: rời gia đình gỡ nội dung, thông báo rời gia đình / sách chia sẻ, xác thực lại Apple/Google khi xoá tài khoản
+
+- Ngày làm: 2026-10-30T14:40:27+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Tìm xem và làm các task tiếp theo đi"
+- Role: ORCHESTRATOR (quét checklist), BACKEND, MOBILE, SECURITY, TESTER, QUALITY.
+- Phân tích: quét ghi chú "chưa" trong các mục đã tick. Đã làm ở vòng sau nên chỉ cập nhật ghi chú: gợi ý người từ server, số liệu tuần cây gia đình, xem/nhắn ticket hỗ trợ, push nhắc sự kiện (qua hộp thư), reauth Apple/Google ở server. Còn thiếu thật và làm được bằng code: §7.25.1 người thân rời gia đình chọn gỡ toàn bộ nội dung + Parent nhận thông báo trung tính; app xoá tài khoản vẫn dùng nút Apple mock; người thân chưa được báo khi có sách năm chia sẻ (việc tiếp của BF-20261030-002). Các mục chưa tick còn lại cần cấu hình/quyết định của người dùng; CMS để sau theo yêu cầu.
+- Kết quả:
+  - Backend: `POST /families/:fid/circle/leave {removeContent?}` (`LeaveCircleDto`): ký ức của người rời vào thùng rác của gia đình (status TRASHED, hạn khôi phục theo `MEMORY_POLICY.trashRetentionMs`, giảm `memory_count`, outbox `memory.trashed`), bình luận + trả lời bị gỡ, đếm lại `comment_count`; outbox `circle.left` → `NOTI_CIRCLE_LEFT` (chỉ Parent, chỉ định danh, không lộ lựa chọn). `yearbook.shared` phát khi sách lần đầu chuyển sang chia sẻ → `NOTI_YEARBOOK_SHARED` cho người thân được xem (audience mới `circle`, deep link theo policy). Thêm 4 mẫu vi/en vào seed (chỉ thêm). Không migration.
+  - App: `leaveCircle` gửi `removeContent`; hộp thư hiển thị 2 mẫu mới (Parent → `/family`, người thân → `/circle/year-books`); xoá tài khoản: nút Apple/Google theo phương thức đã liên kết gọi `reauthWithSignIn` thật, huỷ hộp thoại im lặng; l10n 2 khoá × 4 ngôn ngữ.
+  - Test: integration `family-circle-api.spec.ts` (+1: giữ mặc định, gỡ toàn bộ, 400 khi sai kiểu, outbox không lộ lựa chọn), `year-book-api.spec.ts` (outbox chia sẻ một lần); unit `notification-dispatch.spec.ts` (+2); app settings (+1, sửa 1), notification (sửa), session (sửa).
+  - Docs: `baby-backend/docs/api.md`, checklist (cập nhật 5 ghi chú cũ + 3 mục mới).
+- Bằng chứng: backend prettier (src/test/docs/seeds) + eslint sạch, `npm run check` qua (generator, unit 347, e2e 35/35), integration 83 suite / 691 test qua; app `make check` (analyze sạch) qua 925 test.
+- Còn lại: cần chạy seed mẫu thông báo để có `NOTI_CIRCLE_LEFT` / `NOTI_YEARBOOK_SHARED` trong DB; gỡ nội dung chưa gỡ cảm xúc (reaction) của người rời; REC-02 lưu/chia sẻ recap tuần và ghi âm góc nhìn MEM-24 chưa làm; chưa thử máy thật. Chưa commit.
+- Trạng thái: Hoàn thành (ghi lúc 2026-10-30T14:54:07+07:00).
+
+## BF-20261030-004 — Làm tiếp: REC-02 chia sẻ / lưu / tải ảnh recap tuần, ghi âm góc nhìn MEM-24, gỡ cảm xúc khi người thân rời
+
+- Ngày làm: 2026-10-30T15:18:27+07:00 (Asia/Ho_Chi_Minh). Đính chính: lúc tạo entry ghi nhầm mã BF-20261031-001; đã sửa thành BF-20261030-004 ở mọi chỗ (cùng ngày 30/10).
+- Yêu cầu: "Làm các task tiếp theo đie"
+- Role: ORCHESTRATOR, BACKEND, MOBILE, SECURITY, TESTER, QUALITY.
+- Phân tích: REC-02 trên app có 3 nút nhưng chỉ hiện thông báo giả. Đặc tả: chia sẻ với người thân (gói Family), lưu vào timeline, tải ảnh tổng kết. Server đã cho người thân đọc recap có visibility FAMILY → chia sẻ = đổi visibility (gate gói như sách năm) + thông báo; lưu = tạo một ký ức gắn `recaps.memory_id`; tải ảnh dựng trên máy. MEM-24: server đã nhận `audioAssetId` nhưng không trả URL nghe, app không có ghi âm → bổ sung ký URL + luồng ghi trên app. Gỡ toàn bộ khi rời gia đình bổ sung cảm xúc (việc còn lại của BF-20261030-003).
+- Kết quả:
+  - Backend: `PUT /families/:fid/recaps/weekly/:id/share`, `POST …/timeline` (`WeeklyRecapService.share/saveToTimeline`, repository `find/sharePlan/share/saveToTimeline` có khoá dòng; tiêu đề theo locale trong `WEEKLY_RECAP_POLICY.timelineTitle`); list/latest thêm `memoryId`, `canShare`. Outbox `recap.weekly.shared` → `NOTI_WEEKLY_RECAP_SHARED` (người thân). Góc nhìn trả `audioUrl/audioUrlExpiresAt/audioDurationSec` (MEDIA_SERVICE tuỳ chọn). Rời gia đình “gỡ toàn bộ” gỡ cả reaction + đếm lại `reaction_count`. 2 mẫu thông báo vi/en vào seed. Không migration.
+  - App: `WeeklyRecap.id/canShare/shared/memoryId`; `IMemoryService.shareWeeklyRecap/saveWeeklyRecapToTimeline`; REC-02: nút chính bật/tắt chia sẻ (gói chưa có Circle → SUB-01), lưu vào timeline, tải ảnh tổng kết (RepaintBoundary → PNG → bảng chia sẻ); `RecapActions.shared`. MEM-24: ô mic ghi/dừng/xoá (dùng `IVoiceRecordingService`), nghe lại, lưu tải audio rồi gửi `audioAssetId` (hoặc null để bỏ); MEM-07 khối góc nhìn có ghi âm phát được; `PlayableVoiceCard` phát được tệp trên máy. l10n 3 khoá × 4 ngôn ngữ.
+  - Test: integration `weekly-recap-api.spec.ts` (+1: chia sẻ/bỏ, 400, người thân không đổi được, outbox một lần, lưu timeline một lần, người thân không lưu được); unit dispatch (+1); app data `memory_library_remote_test` (perspective audio, recap share/save), widget MEM-24 ghi âm + REC-02 chia sẻ/lưu.
+  - Docs: `baby-backend/docs/api.md` (mục REC-02/MEM-24 mới), checklist REC-02, MEM-24, rời gia đình.
+- Bằng chứng: backend prettier (src/test/docs/seeds) + eslint sạch, `npm run check` qua (unit 348, e2e 35/35), integration 83 suite / 692 test qua (gồm weekly-recap 7/7); app `make check` qua 927 test.
+- Còn lại: chạy seed mẫu thông báo (`NOTI_CIRCLE_LEFT`, `NOTI_YEARBOOK_SHARED`, `NOTI_WEEKLY_RECAP_SHARED`); app người thân chưa có màn mở recap tuần từ thông báo (deep link mới chỉ là đích server); góc nhìn chưa thêm ảnh/video; tải ảnh tổng kết chưa thử máy thật. Chưa commit.
+- Trạng thái: Hoàn thành (ghi lúc 2026-10-30T15:32:07+07:00).
+
+## BF-20261030-005 — Mở thông báo đẩy đúng màn + recap tuần cho người thân
+
+- Ngày làm: 2026-10-30T16:03:51+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp" (màn mở recap tuần cho ông bà từ thông báo).
+- Role: ORCHESTRATOR, MOBILE, SECURITY (route theo vai trò), TESTER, QUALITY.
+- Phân tích: server đã gửi `data.deepLink` trong FCM nhưng app không xử lý chạm thông báo (không có `onMessageOpenedApp` / `getInitialMessage`), và giao diện người thân không có hộp thư hay màn recap tuần. Giải pháp: đọc deep link khi chạm (cả lúc app tắt), đổi sang route theo vai trò, mở sau khi Splash điều hướng xong; recap tuần dùng lại màn REC-02 ở chế độ chỉ đọc khi phiên là người thân, thêm lối vào CIR-06. Backend không đổi.
+- Kết quả:
+  - App: `IPushTokenRepository.initialLink/onOpenedLink` (FCM, Firebase chưa khởi tạo → rỗng), `IPushService.openedLinks()`; `routeForDeepLink(link, circle:)` (`utils/router/deep_link_route.dart`: chỉ nhận `babyfamily://`, người thân không được map vào màn Papa & Mama / gia đình); `app.dart` nghe link → `BroadcastManager.deepLinkStream` → chờ phiên `active`/`circleActive` rồi `pushPath`. REC-02 `readOnly` khi phiên là người thân (ẩn chia sẻ/lưu/tải), đọc tên bé/thành viên không bắt buộc; CIR-06 thêm dòng “Tuần của nhà mình”.
+  - Test: `test/utils/deep_link_route_test.dart` (2), push remote (+1), widget người thân mở recap chỉ đọc từ CIR-06 (+1).
+  - Docs: checklist dòng push + REC-02.
+- Bằng chứng: `fvm flutter analyze` sạch; `make check` qua 931 test. Backend không đổi nên không chạy lại.
+- Còn lại: chưa thử chạm thông báo thật trên máy (cần cấu hình FCM/APNs); thông báo đến khi app đang mở (foreground) chưa hiện banner trong app. Chưa commit.
+- Trạng thái: Hoàn thành (ghi lúc 2026-10-30T16:07:11+07:00).
+
+## BF-20261030-006 — Làm tiếp: ảnh/video trong góc nhìn MEM-24, banner thông báo khi app đang mở
+
+- Ngày làm: 2026-10-30T16:08:31+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp"
+- Role: ORCHESTRATOR, BACKEND, MOBILE, SECURITY, TESTER, QUALITY.
+- Phân tích: MEM-24 đặc tả "thêm ảnh/video/ghi âm"; ghi âm xong ở BF-20261030-004, ảnh chưa có — bảng `app.memory_perspective_assets` đã tồn tại nhưng API chưa dùng. Thông báo đến khi app đang mở chưa hiển thị (FCM không tự hiện banner ở foreground).
+- Kết quả:
+  - Backend: `PutPerspectiveContentDto.assetIds` (≤ 6, `MEMORY_POLICY.perspectiveMaxAssets`), kiểm tra ảnh/video cùng gia đình + quyền dùng (cùng luật audio) + trạng thái, 422 `PERSPECTIVE_MEDIA_INVALID`; repository `findMedia/assetIds`, lưu thay cả bộ theo thứ tự (khôi phục dòng cũ); response `assets` ký URL (ảnh ~1080 / poster, video `v1080`); góc nhìn chỉ có ảnh hợp lệ. Không migration.
+  - App: `PerspectiveRecord.assets`, `MemoryPerspective.mediaAssetIds`; lưu góc nhìn tải ảnh mới, giữ asset id ảnh cũ; MEM-24 ô “Ảnh” chọn nhiều ảnh (tối đa 6), chạm ảnh để bỏ. Push: `onForeground` / `IPushService.foregroundMessages()` → thanh báo kèm “Xem” mở deep link theo vai trò; l10n `notiOpen` × 4.
+  - Test: integration `memory-perspective-api.spec.ts` (+1: thứ tự, giữ bộ, thay bộ, asset sai/đang tải/ngoài gia đình 422, quá 6 → 400); app push (+1), library remote (ảnh góc nhìn).
+  - Docs: `baby-backend/docs/api.md`, checklist MEM-24 + push.
+- Bằng chứng: backend prettier + eslint sạch, `npm run check` qua (unit 348, e2e 35/35), integration 83 suite / 693 test qua; app `make check` qua 932 test.
+- Còn lại: góc nhìn chưa chọn video (chỉ ảnh, video cần sàng giới hạn độ dài theo gói như MEM-05); thanh báo chưa thử với FCM thật. Chưa commit.
+- Trạng thái: Hoàn thành (ghi lúc 2026-10-30T16:20:19+07:00).
+
+## BF-20261030-007 — Làm tiếp: video trong góc nhìn MEM-24, sửa test lời nhờ phụ thuộc giờ
+
+- Ngày làm: 2026-10-30T16:33:35+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp"
+- Role: ORCHESTRATOR, BACKEND (test), MOBILE, TESTER, QUALITY.
+- Phân tích: server đã nhận video cho góc nhìn (BF-20261030-006); app chỉ chọn ảnh. Video phải theo giới hạn độ dài của gói như MEM-04 — logic sàng đang nằm trong controller trình soạn nên tách ra dùng chung thay vì chép. Test `couple-request-api` “validates due dates…” tạo hạn “hôm nay” = bây giờ + 30 phút nên hỏng khi chạy sau 23:30 giờ gia đình (việc đã hoãn ở BF-20261028-012/013).
+- Kết quả:
+  - App: `utils/helper/video_screening.dart` (`planVideoLimit`, `screenPickedMedia`) dùng cho MEM-04 (controller trình soạn gọi lại, hành vi không đổi) và MEM-24 (`MemoryPerspectiveController.addPicked`: `pickMultipleMedia`, bỏ video quá giới hạn và báo số phút, ô video trên máy hiển thị biểu tượng). Test `test/utils/video_screening_test.dart`.
+  - Backend test: hạn TODAY_AT trong test tính theo nửa đêm giờ gia đình (UTC+7), không vượt sang ngày mới; `couple-request-api.spec.ts` 36/36.
+  - Docs: checklist MEM-24.
+- Bằng chứng: backend prettier + eslint sạch, `npm run check` qua (unit 348, e2e 35/35), integration 83 suite / 693 test qua; app `make check` qua 933 test.
+- Còn lại: phát video góc nhìn ở MEM-07 hiện chỉ có ảnh poster (chưa phát trong khối góc nhìn); chưa thử máy thật. Chưa commit.
+- Trạng thái: Hoàn thành (ghi lúc 2026-10-30T16:41:59+07:00).
+
+## BF-20261030-008 — Làm tiếp: xem ảnh / phát video của góc nhìn MEM-24
+
+- Ngày làm: 2026-10-30T16:50:03+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp"
+- Role: ORCHESTRATOR, MOBILE, TESTER, QUALITY.
+- Phân tích: sau BF-20261030-006/007 ảnh/video của góc nhìn chỉ hiện ô nhỏ ở MEM-07, video không phát được. Dùng lại trình xem toàn màn hình MEM-08 (đã có phát video) với tham số góc nhìn thay vì làm trình xem mới. Backend đã trả `videoUrl` từ BF-20261030-006, không cần đổi.
+- Kết quả:
+  - App: `MemoryPerspective.mediaVideos`; `PhotoViewerPage` `?perspective=` → controller (khoá family là record `memoryId` + `perspectiveId`) hiển thị ảnh/video + lời kể của góc nhìn, “Tải về” lấy ảnh đang xem; khối góc nhìn ở MEM-07: chạm ảnh/video mở MEM-08, video có biểu tượng phát.
+  - Test: `test/page/perspective_viewer_test.dart` (ảnh/video/lời kể của góc nhìn, phát video, tải đúng ảnh).
+  - Docs: checklist MEM-24.
+- Bằng chứng: `fvm flutter analyze` sạch; `make check` qua 934 test. Backend không đổi nên không chạy lại.
+- Còn lại: “Tải về” ở góc nhìn dùng bản ~1080px (server chưa có link bản gốc cho asset góc nhìn); chưa thử máy thật. Chưa commit.
+- Trạng thái: Hoàn thành (ghi lúc 2026-10-30T16:52:49+07:00).
+
+## BF-20261030-009 — Làm tiếp: tải bản gốc ảnh/video của góc nhìn MEM-24
+
+- Ngày làm: 2026-10-30T17:00:05+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp"
+- Role: ORCHESTRATOR, BACKEND, MOBILE, SECURITY (quyền tải), TESTER, QUALITY.
+- Phân tích: BF-20261030-008 để “Tải về” ở góc nhìn dùng bản ~1080px vì server chỉ ký bản gốc cho asset của ký ức. Mở rộng endpoint tải hiện có thay vì endpoint mới để giữ nguyên quyền tải (`canDownload`, `allowDownload` của người thân), giới hạn tần suất và audit.
+- Kết quả:
+  - Backend: `POST /memories/:id/download-urls?perspectiveId=` (`DownloadUrlsQueryDto`); `IMemoryLibraryRepository.perspectiveMedia` (asset MEMORY không riêng tư của góc nhìn, người thân không thấy góc nhìn ẩn); service dùng chung vòng ký bản gốc. Không migration. Integration `memory-library-api.spec.ts` +1 (ký đúng bản gốc, góc nhìn ẩn với người thân 404, id lạ 404, sai định dạng 400).
+  - App: `getDownloadUrls(…, perspectiveId)` → repository → `IMemoryService.downloadUrls(memoryId, perspectiveId:)`; MEM-08 chế độ góc nhìn lấy bản gốc, bản mock/chưa có bản gốc thì dùng ảnh đang xem. Test library remote (+1 kiểm tra).
+  - Docs: `baby-backend/docs/api.md`, checklist MEM-24.
+- Bằng chứng: backend prettier + eslint sạch, `npm run check` qua (unit 348, e2e 35/35); integration toàn bộ 693/694 — 1 lỗi quá thời gian ở `mission-catalog-90-days.spec.ts` khi máy bận (spec chạy 950 giây cùng lúc app check), chạy lại riêng 9/9 trong 35 giây; `memory-library-api.spec.ts` 6/6. App `make check` qua 934 test.
+- Còn lại: chưa thử máy thật. Chưa commit.
+- Trạng thái: Hoàn thành (ghi lúc 2026-10-30T18:54:18+07:00).
+
+## BF-20261030-010 — Làm tiếp: nhắc sự kiện CAL-02 gửi thông báo đẩy
+
+- Ngày làm: 2026-10-30T19:58:30+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: "Làm tiếp"
+- Role: ORCHESTRATOR, BACKEND, MOBILE, TESTER, QUALITY.
+- Phân tích: quét lại checklist, ghi chú còn lại duy nhất làm được bằng code là CAL-02 “push chưa”. Kiểm tra code: job nhắc sự kiện chỉ ghi dòng hộp thư `NOTI_EVENT_REMINDER`, không tạo `notification_deliveries` PUSH (khác luồng thông báo chung và nhắc gói), nên nhắc không bao giờ được đẩy. Huy hiệu cố ý chỉ trong app; nhắc gói đã có push nhưng app chưa mở đúng màn.
+- Kết quả:
+  - Backend: `event-reminder-schedule.repository.ts` tạo một lượt PUSH PENDING (gửi ngay, không tính trần thông báo thường, idempotent khi chạy lại/song song) cùng transaction với dòng hộp thư. Integration `event-reminder.spec.ts` kiểm tra đúng một lượt push khi chạy song song.
+  - App: `routeForDeepLink` thêm `calendar/…` → Lịch, `families/{id}/billing` → SUB-03 (chỉ Bố Mẹ); test cập nhật.
+  - Docs: `baby-backend/docs/api.md`, checklist CAL-02.
+- Bằng chứng: backend prettier + eslint sạch, `npm run check` qua (unit 348, e2e 35/35), integration 83 suite / 694 test qua; app `make check` qua 934 test.
+- Còn lại: chưa thử push thật (cần FCM/APNs). Các mục chưa tick còn lại đều cần cấu hình/quyết định của người dùng hoặc là CMS (để sau). Chưa commit.
+- Trạng thái: Hoàn thành (ghi lúc 2026-10-30T20:06:49+07:00).
+
+<a id="bf-20261030-011"></a>
+## BF-20261030-011 — Liệt kê tính năng còn lại chưa làm
+
+- Ngày làm: 2026-10-30T20:25:24+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: “Liệt kê các tính năng còn lại chưa làm ra đi.”
+- Liên quan: BF-20261030-010.
+- Role: Chủ trì ORCHESTRATOR/PM (đọc checklist); không sửa code.
+- Trạng thái: Hoàn thành.
+- Phân tích: Đọc `docs/03_CHECKLIST_TINH_NANG.md` (153/166 xong, 13 dòng mở).
+- Kết quả: 13 dòng mở: CI chạy trên GitHub Actions; offline-first toàn app (chưa thử iOS); staging + deploy; monitoring production (Sentry/alert); đăng nhập Apple; đăng nhập Google; quản lý phương thức đăng nhập; push FCM/APNs thật; Paywall IAP; nâng cấp House → Family; catalog mẫu thông báo có version; build ký số + TestFlight/Internal testing; văn bản pháp lý + `LEGAL_*_URL`. Phần lớn chờ cấu hình/tài khoản/quyết định của người dùng.
+- Kiểm chứng: Đọc checklist (grep `[ ]`); không chạy test.
+- Còn lại: Người dùng cung cấp tài khoản Store/Apple/Google/Firebase, hạ tầng staging, quyết định pháp lý.
+- Product history: [BF-20261030-011](PRODUCT_ANALYTICS_HISTORY.md#bf-20261030-011).
+
+<a id="bf-20261030-012"></a>
+## BF-20261030-012 — Đưa đủ biến môi trường vào .env từng folder
+
+- Ngày làm: 2026-10-30 (Asia/Ho_Chi_Minh); hoàn thành khoảng 2026-10-30T21:00:00+07:00.
+- Yêu cầu: “Cho tôi tất cả các biến môi trường vào file .env từng folder tương ứng đi để tôi cài đặt môi trường.”
+- Liên quan: BF-20261030-011.
+- Role: Chủ trì DEVOPS; SECURITY_PRIVACY (secret), BACKEND/MOBILE (đối chiếu biến code đọc); QUALITY tự review (agent chính).
+- Trạng thái: Hoàn thành.
+- Phân tích: Đối chiếu biến code thực sự đọc (`environment.ts` 71 biến + IAP/admin qua `process.env`; admin `ADMIN_API_URL`; app 6 `fromEnvironment`). Backend `.env` thiếu 51 khoá; compose chỉ truyền ~30 biến nên couple/support/admin/IAP/FCM/Apple/Google/metrics/pháp lý không vào container (worker thiếu FCM/SMTP). DB dev không có dữ liệu mã hoá nên sinh khoá mới an toàn.
+- Kết quả: `baby-backend/.env.example` đủ mọi biến (thêm OTP country codes, MAIL_HOST, worker/ffmpeg, ghi chú admin:create); mới `baby-admin/.env.example`, `baby-family-app/.env.example` (+ `.env` local) và target `make env-run` (`--dart-define-from-file=.env`). `baby-backend/.env` local thêm 51 khoá: 6 khoá bí mật local sinh ngẫu nhiên (couple, support, IAP payload, admin TOTP/token, metrics), còn lại giá trị mặc định hoặc để trống chờ tài khoản thật (Apple/Google/IAP/FCM/pháp lý/AI). `compose.yaml` dùng anchor `x-app-env` chung cho api + worker, truyền đủ biến. `baby-database/.env`, `baby-storage/.env` đã đủ, không đổi.
+- Kiểm chứng: `validateEnvironment` của dist mới qua cho `.env` host, env compose của api (71 biến) và worker (51 biến); `docker compose config -q` OK; recreate api/worker healthy, `/health/ready` up; container có các khoá mới; `flutter run --help` xác nhận `--dart-define-from-file` nhận `.env`; `.env` của admin/app bị git ignore. Bản `.env` cũ backend lưu tạm ở scratchpad.
+- Còn lại: Người dùng điền giá trị thật: Apple/Google client id, IAP (bundle id, package, cert, webhook token), FCM service account, SUPPORT_*, LEGAL_*_URL, AI_API_KEY, ERROR_REPORTING_DSN, GOOGLE_* trong app; chưa commit.
+- Product history: [BF-20261030-012](PRODUCT_ANALYTICS_HISTORY.md#bf-20261030-012).
+
+<a id="bf-20261101-001"></a>
+## BF-20261101-001 — Nhắn tin (chat) realtime qua WebSocket: Pencil → backend → app
+
+- Ngày làm: 2026-11-01T19:18:00+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Thêm tính năng nhắn tin dùng WebSocket theo thứ tự: (1) vẽ các màn chat vào `desgin/appdesgin.pen` qua Pencil MCP theo Design System; (2) backend NestJS: bảng Prisma + migration chỉ DDL, REST lịch sử phân trang + gửi tin có Idempotency-Key, gateway WebSocket xác thực access token ES256, phân quyền theo family, phát realtime qua Valkey (nhiều instance), outbox → push FCM khi người nhận không online; (3) app Flutter offline-first (outbox, tự kết nối lại), l10n vi/en/ja/zh. Xong khi Pencil có frame mới, `npm run check` + `npm run test:integration` đạt, `make check` đạt, chạy thật hai tài khoản nhắn qua lại realtime. (Giao từ session điều phối.)
+- Liên quan: Không (nối tiếp hạ tầng BF-20261030-012).
+- Role: Chủ trì ORCHESTRATOR + ARCHITECT; BA/PRODUCT (chốt phạm vi cuộc trò chuyện), DESIGN (Pencil), BACKEND, DBA, INTEGRATION, SECURITY_PRIVACY, MOBILE, TESTER, QUALITY. Sub-agent độc lập: DESIGN (Pencil) và MOBILE (Flutter); BACKEND/DBA/INTEGRATION/SECURITY_PRIVACY/TESTER do agent chính; QUALITY là agent chính tự review và chạy lại kiểm tra của sub-agent.
+- Trạng thái: Hoàn thành (ghi chú giới hạn ở “Còn lại”).
+- Phân tích: Đặc tả nghiệp vụ không có mục chat; kỹ thuật §12 quy định Socket.IO, xác thực `auth.token`, fan-out theo room `user:{id}`, socket chỉ gửi tín hiệu nhỏ, không bao giờ gửi nội dung Papa & Mama qua socket, scale bằng Redis adapter. Chọn: hai loại cuộc trò chuyện mỗi gia đình — FAMILY (hai Parent + người thân đang có quyền xem gia đình) và COUPLE (riêng hai Parent trong couple space, nội dung mã hoá như các tính năng Papa & Mama khác).
+- Kết quả:
+  - Thiết kế: 8 frame mới trong `desgin/appdesgin.pen` (section “25 · Tin nhắn”): CHAT-01 danh sách, CHAT-02 hội thoại, CHAT-03a–d (ngoại tuyến, đang kết nối lại, rỗng, Papa & Mama), CHAT-04/04b lối vào ở Trang chủ và US-01 — sub-agent DESIGN vẽ qua Pencil MCP, dùng component/biến Design System sẵn có.
+  - Backend: migration DDL `20261101090000_chat` (`app.chat_conversations`, `app.chat_messages`, `app.chat_read_states`, đủ cột audit + trigger), `ChatController` → `IChatService`/`ChatService` → `IChatRepository`/`ChatRepository`; `RealtimeGateway` (Socket.IO, `auth.token` ES256, `auth.refresh`/`auth.expired`, room `user:{id}`), `RedisIoAdapter` (Valkey, nhiều instance), `IRealtimeRepository` (emit + presence Valkey), `IRealtimeService`. Tin COUPLE mã hoá AES-256-GCM theo couple space. Outbox `chat.message.created` → `notify.resolve-and-dispatch`: bỏ người đang online, đã đọc; push ngay, không gộp, không tính trần ngày, theo giờ yên tĩnh; thông báo chat không vào hộp thư; push worker kiểm lại quyền. Mẫu `NOTI_CHAT_FAMILY` (nhóm `CHAT` mới) / `NOTI_CHAT_COUPLE` (US, sensitive). Tài liệu `baby-backend/docs/api.md`.
+  - App (sub-agent MOBILE, agent chính review + chạy): Socket.IO client, local DB + outbox, CHAT-01/02/03, lối vào Trang chủ/CIR-01/US-01, deep link, l10n 4 ngôn ngữ, nhóm thông báo SET-03.
+  - Sửa môi trường để chạy được: Dockerfile runtime giữ optional deps (API dùng `sharp` cho ảnh hồ sơ, image cũ bị crash khi build lại — lỗi có sẵn); `Podfile` nâng deployment target pods ≥ 15.0 cho Xcode 27; `compose.yaml` bỏ một dòng trống để qua Prettier.
+- Kiểm chứng:
+  - `npm run check` EXIT 0 (unit 349, e2e 35, compiled/generator/migrations pass). `npm run test:integration` 82/84 suite, 696/698 test: `chat-api.spec.ts` 4/4 (REST, mã hoá, Socket.IO thật); `preference-settings-api` lỗi do nhóm `CHAT` mới → sửa expectation, chạy lại 5/5; `admin-cms-moderation` lỗi do DB test tồn 144 case từ các lần chạy trước vượt `limit=100` (module không bị sửa, chạy riêng vẫn lỗi) — chưa xử lý.
+  - Docker local (api/worker build lại, migrate + seed mẫu thông báo): smoke OTP thật → tín hiệu `chat.message` tới B sau ~40 ms; B offline → `NOTI_CHAT_FAMILY` HIGH PENDING; A online → 0 thông báo; hai instance API (:3000 + :3001) qua Valkey → nhận sau ~26 ms.
+  - App: `make check` EXIT 0 (946 test). Chạy thật iPhone Air (Mama) + iPhone 17 Pro (Bố): nhắn qua lại hai chiều realtime, “đang nhập…”, “đã xem” cập nhật tức thì, huy hiệu chưa đọc ở Trang chủ.
+  - Dữ liệu dev: gia hạn trial gia đình test trên DB dev local (+7 ngày, hết hạn từ 22/10) và onboarding tạo thêm 2 thai kỳ test “Bean”.
+- Còn lại: Chưa thử push FCM thật (chưa cấu hình FCM) và chưa thử app ở nền nhận push; chưa thử tắt mạng trên simulator (offline queue mới có unit test). Chưa có ảnh/tệp, sửa/xoá tin, màn thành viên, chat 1–1 với người thân; phiên bị thu hồi vẫn giữ socket tới khi token hết hạn (≤15 phút). Test `admin-cms-moderation` cần dọn DB test. `flutter build ios --simulator` lỗi `lipo` với Xcode 27 (dùng `flutter run`). Chưa commit.
+- Product history: [BF-20261101-001](PRODUCT_ANALYTICS_HISTORY.md#bf-20261101-001).

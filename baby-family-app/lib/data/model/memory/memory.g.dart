@@ -75,6 +75,7 @@ _Memory _$MemoryFromJson(Map<String, dynamic> json) => _Memory(
       const [],
   uploadDone: (json['uploadDone'] as num?)?.toInt(),
   uploadTotal: (json['uploadTotal'] as num?)?.toInt(),
+  uploadProgress: (json['uploadProgress'] as num?)?.toDouble(),
   uploadFailed: json['uploadFailed'] as bool? ?? false,
   uploadWaiting: json['uploadWaiting'] as bool? ?? false,
 );
@@ -120,6 +121,7 @@ Map<String, dynamic> _$MemoryToJson(_Memory instance) => <String, dynamic>{
   'mediaVideos': instance.mediaVideos,
   'uploadDone': instance.uploadDone,
   'uploadTotal': instance.uploadTotal,
+  'uploadProgress': instance.uploadProgress,
   'uploadFailed': instance.uploadFailed,
   'uploadWaiting': instance.uploadWaiting,
 };

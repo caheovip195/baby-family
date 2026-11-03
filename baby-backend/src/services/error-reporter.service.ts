@@ -5,6 +5,7 @@ import { PinoLogger } from 'nestjs-pino';
 import type {
   ErrorReport,
   IErrorReporter,
+  JobErrorReport,
 } from '../interfaces/services/error-reporter.interface';
 
 @Injectable()
@@ -22,6 +23,20 @@ export class ErrorReporterService implements IErrorReporter {
       status: event.status,
     };
     this.logger.error(safe, 'Request failed');
+    this.send('HTTP request failed', safe);
+  }
+
+  reportJob(event: JobErrorReport): void {
+    const safe = {
+      job: String(event.job).slice(0, 100),
+      code: String(event.code).slice(0, 100),
+      attempt: Number(event.attempt),
+    };
+    this.logger.error(safe, 'Job failed');
+    this.send('Background job failed', safe);
+  }
+
+  private send(message: string, tags: Record<string, unknown>): void {
     const configured = this.config.get<string>('ERROR_REPORTING_DSN');
     if (!configured) return;
     const dsn = new URL(configured);
@@ -37,8 +52,8 @@ export class ErrorReporterService implements IErrorReporter {
         timestamp: Date.now() / 1000,
         platform: 'node',
         level: 'error',
-        message: 'HTTP request failed',
-        tags: safe,
+        message,
+        tags,
       }),
     ].join('\n');
     // Best effort, bounded timeout, no retry or response-body logging on the request path.

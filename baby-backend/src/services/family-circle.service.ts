@@ -139,8 +139,8 @@ export class FamilyCircleService implements IFamilyCircleService {
     }
     await this.repository.updateMember(actor.userId, id, input);
   }
-  leave(actor: AuthPrincipal, fid: string) {
-    return this.repository.leave(actor.userId, fid);
+  leave(actor: AuthPrincipal, fid: string, removeContent = false) {
+    return this.repository.leave(actor.userId, fid, removeContent);
   }
   async overview(actor: AuthPrincipal, fid: string) {
     await this.access.requireParent(actor, fid, 'read');

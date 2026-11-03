@@ -38,7 +38,12 @@ export interface IFamilyCircleService {
     id: string,
     input: UpdateCircleMemberDto | 'PAUSED' | 'ACTIVE' | 'REMOVED',
   ): Promise<void>;
-  leave(actor: AuthPrincipal, fid: string): Promise<void>;
+  /** [removeContent]: gỡ toàn bộ ký ức / bình luận đã đăng (§7.25.1). */
+  leave(
+    actor: AuthPrincipal,
+    fid: string,
+    removeContent?: boolean,
+  ): Promise<void>;
   overview(
     actor: AuthPrincipal,
     fid: string,

@@ -47,7 +47,7 @@ describe('Internal service generation', () => {
           ['tools/application/generate-services.mjs', ...args],
           { cwd: fixture, encoding: 'utf8', stdio: 'pipe' },
         );
-      expect(run()).toContain('Generated 117');
+      expect(run()).toContain('Generated 123');
       expect(await readFile(manual, 'utf8')).toBe(
         '// Hand-written authenticated user workflow.\n',
       );
@@ -63,9 +63,9 @@ describe('Internal service generation', () => {
       expect(() => run('--check', '--force')).toThrow(
         'Generated file was customized',
       );
-      expect(run('--force')).toContain('Generated 117');
+      expect(run('--force')).toContain('Generated 123');
       expect(await readFile(target, 'utf8')).toBe(original);
-      expect(run('--check')).toContain('Verified 117');
+      expect(run('--check')).toContain('Verified 123');
       await writeFile(target, '// Hand-written application logic.\n');
       expect(() => run('--force')).toThrow(
         'Refusing to overwrite hand-written',

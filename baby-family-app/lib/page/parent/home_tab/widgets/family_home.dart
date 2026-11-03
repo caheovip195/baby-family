@@ -139,6 +139,20 @@ class _FamilyHome extends StatelessWidget {
 
   Widget _memoryCard(BuildContext context, Memory memory) {
     final l10n = context.l10n;
+    // Bài vừa đăng: hiện ngay từ máy kèm tiến độ tải (BF-20261028-005).
+    if (memory.uploadTotal case final total?) {
+      return UploadingMemoryCard(
+        caption: memory.title ?? memory.body ?? '',
+        photo: memory.mediaAssets.firstOrNull,
+        done: memory.uploadDone ?? 0,
+        total: total,
+        progress: memory.uploadProgress,
+        failed: memory.uploadFailed,
+        waiting: memory.uploadWaiting,
+        onRetry: () => controller.retryUpload(memory.id),
+        onCancel: () => controller.cancelUpload(memory.id),
+      );
+    }
     final names = memory.childIds
         .map((id) => controller.childById(id)?.name)
         .nonNulls

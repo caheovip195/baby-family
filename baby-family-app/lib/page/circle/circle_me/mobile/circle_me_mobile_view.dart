@@ -249,6 +249,17 @@ class CircleMeMobileView extends HookConsumerWidget {
                   onTap: switchFamily,
                 ),
                 _MeLinkRow(
+                  icon: LucideIcons.calendarHeart,
+                  title: l10n.recapWeekTitle,
+                  onTap: () => context.router.push(const WeeklyRecapRoute()),
+                ),
+                _MeLinkRow(
+                  icon: LucideIcons.bookHeart,
+                  title: l10n.yearBookShared,
+                  onTap: () =>
+                      context.router.push(const CircleYearBooksRoute()),
+                ),
+                _MeLinkRow(
                   icon: LucideIcons.lifeBuoy,
                   title: l10n.settingsHelp,
                   onTap: () => context.router.push(const HelpRoute()),

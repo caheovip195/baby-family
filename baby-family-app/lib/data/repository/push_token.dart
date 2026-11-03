@@ -14,4 +14,14 @@ abstract class IPushTokenRepository extends IBaseRepository {
 
   /// Token đổi (cài lại app, FCM xoay token).
   Stream<String> get onTokenRefresh;
+
+  /// `deepLink` của thông báo người dùng vừa chạm: lúc app đang tắt
+  /// ([initialLink]) hoặc đang chạy nền ([onOpenedLink]) (BF-20261030-005).
+  Future<String?> initialLink();
+
+  Stream<String> get onOpenedLink;
+
+  /// Thông báo đến khi app đang mở (hệ điều hành không hiện banner): tiêu đề,
+  /// nội dung (đã ẩn với loại nhạy cảm từ server) và deep link.
+  Stream<({String title, String body, String? link})> get onForeground;
 }

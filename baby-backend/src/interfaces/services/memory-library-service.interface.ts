@@ -25,5 +25,10 @@ export interface IMemoryLibraryService {
     familyId: string,
     query: LibraryQueryDto,
   ): Promise<MemoryFeedResponseDto>;
-  download(actor: AuthPrincipal, id: string): Promise<OriginalDownloadResponse>;
+  /** [perspectiveId]: bản gốc ảnh/video của góc nhìn (BF-20261030-009). */
+  download(
+    actor: AuthPrincipal,
+    id: string,
+    perspectiveId?: string,
+  ): Promise<OriginalDownloadResponse>;
 }

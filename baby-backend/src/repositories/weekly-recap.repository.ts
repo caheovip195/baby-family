@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../database/prisma.service';
 import { cloneDatabaseJson } from '../common/database.types';
+import { NotFoundError } from '../common/errors/domain.error';
 import { WEEKLY_RECAP_POLICY } from '../config/weekly-recap-policy';
 import type { IWeeklyRecapRepository } from '../interfaces/repositories/weekly-recap-repository.interface';
 import type { JobContext } from '../interfaces/services/job-runner-service.interface';
@@ -168,6 +169,174 @@ export class WeeklyRecapRepository implements IWeeklyRecapRepository {
       if (!stillOwned.length) throw new Error('Weekly recap lease expired.');
     });
   }
+  private toRecap(row: Prisma.RecapGetPayload<object>) {
+    return new Recap({
+      ...row,
+      content: cloneDatabaseJson(row.content),
+      contentParentsOnly:
+        row.contentParentsOnly === null
+          ? null
+          : cloneDatabaseJson(row.contentParentsOnly),
+    });
+  }
+
+  private weekKey(familyId: string, recapId: string) {
+    return {
+      id: recapId,
+      familyId,
+      scope: 'FAMILY',
+      childId: null,
+      period: 'WEEK',
+      deletedAt: null,
+    };
+  }
+
+  async find(familyId: string, recapId: string) {
+    const row = await this.prisma.recap.findFirst({
+      where: this.weekKey(familyId, recapId),
+    });
+    return row ? this.toRecap(row) : null;
+  }
+
+  async sharePlan(familyId: string) {
+    const entitlement = await this.prisma.familyEntitlement.findFirst({
+      where: { familyId, deletedAt: null },
+      include: { planVersion: true },
+    });
+    const features = entitlement?.planVersion?.features;
+    const map =
+      features && typeof features === 'object' && !Array.isArray(features)
+        ? (features as Record<string, unknown>)
+        : {};
+    const share = map[WEEKLY_RECAP_POLICY.circleShareFeature];
+    return {
+      share: typeof share === 'boolean' ? share : null,
+      circle: map['circle.enabled'] === true,
+    };
+  }
+
+  async share(
+    familyId: string,
+    recapId: string,
+    shared: boolean,
+    actorUserId: string,
+  ) {
+    await this.prisma.$transaction(async (tx) => {
+      const [row] = await tx.$queryRaw<{ visibility: string }[]>`
+        SELECT visibility::text AS visibility FROM app.recaps
+        WHERE id = ${recapId}::uuid AND family_id = ${familyId}::uuid
+          AND scope = 'FAMILY' AND period = 'WEEK' AND deleted_at IS NULL
+        FOR UPDATE`;
+      if (!row) throw new NotFoundError('Weekly recap was not found.');
+      const visibility = shared ? 'FAMILY' : 'PARENTS';
+      if (row.visibility === visibility) return;
+      await tx.recap.update({
+        where: { id: recapId },
+        data: { visibility },
+      });
+      if (shared)
+        await tx.outboxEvent.create({
+          data: {
+            eventType: 'recap.weekly.shared',
+            familyId,
+            aggregateId: recapId,
+            payload: { recapId, familyId, actorUserId },
+          },
+        });
+    });
+  }
+
+  async saveToTimeline(
+    familyId: string,
+    recapId: string,
+    input: {
+      authorUserId: string;
+      titles: Record<string, string>;
+      occurredAt: Date;
+      localDate: Date;
+      maxPhotos: number;
+    },
+  ) {
+    return this.prisma.$transaction(async (tx) => {
+      const [row] = await tx.$queryRaw<
+        { memory_id: string | null; content: unknown }[]
+      >`
+        SELECT memory_id::text AS memory_id, content FROM app.recaps
+        WHERE id = ${recapId}::uuid AND family_id = ${familyId}::uuid
+          AND scope = 'FAMILY' AND period = 'WEEK' AND deleted_at IS NULL
+        FOR UPDATE`;
+      if (!row) throw new NotFoundError('Weekly recap was not found.');
+      if (row.memory_id) {
+        const existing = await tx.memory.findFirst({
+          where: { id: row.memory_id, familyId, deletedAt: null },
+          select: { id: true },
+        });
+        if (existing) return existing.id;
+      }
+      const top = (
+        (row.content as { topMemories?: { id?: unknown }[] } | null)
+          ?.topMemories ?? []
+      )
+        .map((item) => item.id)
+        .filter((id): id is string => typeof id === 'string');
+      const firsts = top.length
+        ? await tx.$queryRaw<{ asset_id: string; memory_id: string }[]>`
+            SELECT DISTINCT ON (ma.memory_id) ma.asset_id::text AS asset_id,
+              ma.memory_id::text AS memory_id
+            FROM app.memory_assets ma
+            JOIN app.assets a ON a.id = ma.asset_id AND a.family_id = ma.family_id
+            WHERE ma.family_id = ${familyId}::uuid
+              AND ma.memory_id = ANY(${top}::uuid[]) AND ma.deleted_at IS NULL
+              AND a.deleted_at IS NULL AND a.status = 'READY' AND a.kind = 'IMAGE'
+            ORDER BY ma.memory_id, ma.sort_order`
+        : [];
+      // Giữ thứ tự nổi bật của recap.
+      const assets = [...firsts].sort(
+        (a, b) => top.indexOf(a.memory_id) - top.indexOf(b.memory_id),
+      );
+      const user = await tx.user.findFirst({
+        where: { id: input.authorUserId },
+        select: { locale: true },
+      });
+      const title =
+        input.titles[user?.locale ?? 'vi'] ?? input.titles.vi ?? null;
+      const memory = await tx.memory.create({
+        data: {
+          familyId,
+          kind: 'MOMENT',
+          title,
+          authorUserId: input.authorUserId,
+          authorRole: 'PARENT',
+          occurredAt: input.occurredAt,
+          occurredLocalDate: input.localDate,
+          visibility: 'PARENTS',
+          familyMoment: true,
+          status: 'PUBLISHED',
+          publishedAt: new Date(),
+        },
+      });
+      const picked = assets.slice(0, input.maxPhotos);
+      if (picked.length)
+        await tx.memoryAsset.createMany({
+          data: picked.map((asset, index) => ({
+            memoryId: memory.id,
+            assetId: asset.asset_id,
+            familyId,
+            sortOrder: index,
+          })),
+        });
+      await tx.$executeRaw`
+        UPDATE billing.family_usage
+        SET memory_count = memory_count + 1, version = version + 1
+        WHERE family_id = ${familyId}::uuid`;
+      await tx.recap.update({
+        where: { id: recapId },
+        data: { memoryId: memory.id },
+      });
+      return memory.id;
+    });
+  }
+
   async list(
     familyId: string,
     circle: boolean,

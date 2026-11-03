@@ -50,6 +50,13 @@ abstract class ICareRemoteRepository extends IBaseRepository {
     JsonMap body = const {},
   ]);
 
+  /// CARE-05 đổi nhiệm vụ qua outbox: gửi lại cùng key trả kết quả lần đầu.
+  Future<MissionResultRecord?> swap(
+    String missionId,
+    String idempotencyKey,
+    JsonMap body,
+  );
+
   Future<MissionSwapOptionsRecord?> swapOptions(String missionId);
 
   /// Hearts của chính người gọi (không có tham số người dùng — BR-018).
@@ -93,7 +100,11 @@ abstract class ICareRemoteRepository extends IBaseRepository {
   );
 
   /// Nhiệm vụ lặp lại tự thêm.
-  Future<MissionSeriesRecord?> createSeries(String familyId, JsonMap body);
+  Future<MissionSeriesRecord?> createSeries(
+    String familyId,
+    String idempotencyKey,
+    JsonMap body,
+  );
 
   /// CARE-03: chuỗi lặp lại (của tôi + Cùng nhau).
   Future<List<MissionSeriesRecord>> missionSeries(String familyId);

@@ -8597,4 +8597,525 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get memCommentsOff => '此回忆已关闭评论';
+
+  @override
+  String get errorLastSignInMethod => '至少需要保留一种登录方式。请先关联其他方式再解除。';
+
+  @override
+  String get errorIdentityInUse => '该账号已关联到其他资料，或你已关联过此类型。';
+
+  @override
+  String get errorReauthIdentity => '请使用已关联的账号重新验证。';
+
+  @override
+  String get setSignInReauthTitle => '重新验证';
+
+  @override
+  String get growthTitle => '成长';
+
+  @override
+  String get growthEntry => '成长记录';
+
+  @override
+  String get growthEntryHint => '按日期记录体重和身高';
+
+  @override
+  String get growthWeight => '体重';
+
+  @override
+  String get growthHeight => '身高';
+
+  @override
+  String get growthAdd => '添加测量';
+
+  @override
+  String get growthEdit => '编辑测量';
+
+  @override
+  String get growthEmpty => '还没有测量记录。添加最近一次体检的体重或身高吧。';
+
+  @override
+  String get growthChartHint => '至少需要 2 次测量才能绘制图表。';
+
+  @override
+  String get growthDisclaimer => '图表只显示宝宝自己的测量值，不与任何标准比较，也不能替代医生的建议。';
+
+  @override
+  String get growthPrivacy => '只有爸爸妈妈能看到测量值。';
+
+  @override
+  String get growthDate => '测量日期';
+
+  @override
+  String get growthWeightLabel => '体重 (kg)';
+
+  @override
+  String get growthHeightLabel => '身高 (cm)';
+
+  @override
+  String get growthNote => '备注';
+
+  @override
+  String get growthNeedValue => '请输入有效的体重或身高。';
+
+  @override
+  String get growthPending => '等待同步';
+
+  @override
+  String get growthSaved => '测量已保存。';
+
+  @override
+  String get errorGrowthDate => '测量日期须在出生日到今天之间。';
+
+  @override
+  String growthKg(String value) {
+    return '$value kg';
+  }
+
+  @override
+  String growthCm(String value) {
+    return '$value cm';
+  }
+
+  @override
+  String memUploadProgressPercent(String progress, int percent) {
+    return '$progress · $percent%';
+  }
+
+  @override
+  String recapDayDefaultTitle(String name) {
+    return '$name的一天';
+  }
+
+  @override
+  String get usHandoff => '交接班';
+
+  @override
+  String usHandoffTitle(String name) {
+    return '交接给$name';
+  }
+
+  @override
+  String usHandoffHint(String name) {
+    return '简单记下宝宝的情况，让$name接班时心里有数。';
+  }
+
+  @override
+  String get usHandoffChildren => '哪个宝宝';
+
+  @override
+  String get usHandoffFed => '喂食时间';
+
+  @override
+  String get usHandoffSlept => '入睡时间';
+
+  @override
+  String get usHandoffWoke => '醒来时间';
+
+  @override
+  String get usHandoffPickTime => '选择时间';
+
+  @override
+  String get usHandoffNote => '备注';
+
+  @override
+  String get usHandoffNoteHint => '例如：有点闹，已换尿布…';
+
+  @override
+  String usHandoffAttachRequest(String name) {
+    return '请$name接着做件事';
+  }
+
+  @override
+  String get usHandoffSend => '发送交接';
+
+  @override
+  String usHandoffSent(String name) {
+    return '已向$name发送交接';
+  }
+
+  @override
+  String get usHandoffNeedContent => '请至少选择一个时间或填写备注。';
+
+  @override
+  String usHandoffFrom(String name, String time) {
+    return '$name的交接 · $time';
+  }
+
+  @override
+  String usHandoffMine(String time) {
+    return '你的交接 · $time';
+  }
+
+  @override
+  String usHandoffFedAt(String time) {
+    return '$time 喂食';
+  }
+
+  @override
+  String usHandoffSleptAt(String time) {
+    return '$time 入睡';
+  }
+
+  @override
+  String usHandoffWokeAt(String time) {
+    return '$time 醒来';
+  }
+
+  @override
+  String get usHandoffAck => '收到';
+
+  @override
+  String usHandoffAcked(String name) {
+    return '$name已接班';
+  }
+
+  @override
+  String usHandoffWaiting(String name) {
+    return '等待$name确认';
+  }
+
+  @override
+  String get usHandoffPending => '等待同步';
+
+  @override
+  String get usHandoffNotMedical => '仅用于快速交接，不是医疗记录。';
+
+  @override
+  String get errorHandoffTime => '时间须在过去 24 小时内。';
+
+  @override
+  String get usHandoffAckedByMe => '你已接班';
+
+  @override
+  String get aiConsentTitle => '使用 AI 建议？';
+
+  @override
+  String aiConsentBody(String data) {
+    return '为了提供建议，Baby Family 会将 $data 发送给 AI 服务商（OpenRouter）。不会发送照片、私人日记或私人草稿。建议只是草稿，你可以修改或丢弃。';
+  }
+
+  @override
+  String get aiConsentAccept => '同意并继续';
+
+  @override
+  String get aiDataCaption => '你输入的几个字和回忆类型';
+
+  @override
+  String get aiDataDayStory => '你选中的当天回忆的说明';
+
+  @override
+  String get aiDataRewrite => '你想改写的句子';
+
+  @override
+  String get aiDataBridge => '你们在本次对话中选择分享的内容';
+
+  @override
+  String get aiCaptionSheetTitle => '说明建议';
+
+  @override
+  String get errorAiUnavailable => 'AI 暂时不可用，请稍后再试。';
+
+  @override
+  String get errorAiNotInPlan => '当前套餐不含 AI 建议。';
+
+  @override
+  String get errorAiDisabled => '你已在设置中关闭 AI。';
+
+  @override
+  String get errorAiQuota => '本月 AI 次数已用完。';
+
+  @override
+  String get usBridgeAiSummary => '✨ 帮你们总结';
+
+  @override
+  String get usBridgeAiSummaryTitle => '你们分享的内容';
+
+  @override
+  String get aiDataMission => '宝宝的年龄段、内置任务列表以及过去 14 天各类别完成数';
+
+  @override
+  String get careAiSuggest => '✨ 今日推荐';
+
+  @override
+  String get careAiSuggestTitle => '今日推荐';
+
+  @override
+  String get yearBookEntry => '成长相册';
+
+  @override
+  String get yearBookEntryHint => '按月精选照片，导出 PDF';
+
+  @override
+  String get yearBookTitle => '成长相册';
+
+  @override
+  String yearBookDefaultTitle(String name, String year) {
+    return '$name的$year年';
+  }
+
+  @override
+  String get yearBookPdfSubtitle => '我们家珍藏的瞬间';
+
+  @override
+  String yearBookChapter(String month) {
+    return '$month月';
+  }
+
+  @override
+  String get yearBookBookName => '相册名称';
+
+  @override
+  String get yearBookChapterName => '章节标题';
+
+  @override
+  String get yearBookCaption => '说明';
+
+  @override
+  String get yearBookHint => '点击照片选择或取消，点击说明进行编辑。';
+
+  @override
+  String get yearBookEmpty => '这一年还没有宝宝的回忆。';
+
+  @override
+  String yearBookSelected(String count) {
+    return '相册中有 $count 条回忆';
+  }
+
+  @override
+  String get yearBookPreviewOnly => '当前套餐仅可预览。升级后可导出 PDF。';
+
+  @override
+  String get yearBookUpgrade => '升级';
+
+  @override
+  String get yearBookPending => '已保存在本机，联网后同步。';
+
+  @override
+  String get yearBookExport => '导出 PDF';
+
+  @override
+  String get yearBookExporting => '正在生成相册…';
+
+  @override
+  String get yearBookUnsaved => '有未保存的更改。';
+
+  @override
+  String get yearBookFamily => '全家';
+
+  @override
+  String get yearBookFamilyTitle => '全家之书';
+
+  @override
+  String yearBookFamilyDefaultTitle(String year) {
+    return '我们家的$year年';
+  }
+
+  @override
+  String get yearBookFamilyEmpty => '今年还没有家庭回忆。';
+
+  @override
+  String get yearBookPreview => '预览';
+
+  @override
+  String get yearBookShared => '家庭年度之书';
+
+  @override
+  String get yearBookSharedEmpty => '还没有分享的书。';
+
+  @override
+  String get yearBookShareTitle => '与祖父母、亲人分享';
+
+  @override
+  String get yearBookShareHint => '能查看宝宝的亲人可以阅读已保存的书，仅限已选的回忆。';
+
+  @override
+  String get yearBookShareLocked => 'Family 套餐可与祖父母、亲人分享这本书。';
+
+  @override
+  String get notiCircleLeft => '一位亲人已离开家庭圈';
+
+  @override
+  String get notiYearBookShared => '爸爸妈妈刚与你分享了一本年度之书';
+
+  @override
+  String get recapUnshared => '已停止与亲人分享';
+
+  @override
+  String get recapSharedStop => '已分享 · 点按停止';
+
+  @override
+  String get memVoiceStop => '停止';
+
+  @override
+  String get notiOpen => '查看';
+
+  @override
+  String get chatTitle => '消息';
+
+  @override
+  String chatListSubtitle(String familyName, int count) {
+    return '$familyName · $count个对话';
+  }
+
+  @override
+  String get chatFamilyTitle => '全家';
+
+  @override
+  String get chatCoupleTitle => 'Papa & Mama';
+
+  @override
+  String get chatOnlyTwo => '仅你们两人可见';
+
+  @override
+  String chatMembersSummary(String parents, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$parents + $count位亲人',
+      zero: '$parents',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String chatPreviewMine(String text) {
+    return '你：$text';
+  }
+
+  @override
+  String chatPreviewOther(String name, String text) {
+    return '$name：$text';
+  }
+
+  @override
+  String get chatNoMessagesYet => '还没有消息';
+
+  @override
+  String get chatToday => '今天';
+
+  @override
+  String get chatYesterday => '昨天';
+
+  @override
+  String get chatInfoNote =>
+      '每个家庭有2个对话：“全家”供Papa、Mama和亲人使用；“Papa & Mama”只属于你们两人。';
+
+  @override
+  String get chatListEmptyTitle => '还没有对话';
+
+  @override
+  String get chatListEmptyDescription => '家庭对话会显示在这里。';
+
+  @override
+  String chatMembersCount(int count) {
+    return '$count位成员';
+  }
+
+  @override
+  String get chatMembersTooltip => '成员';
+
+  @override
+  String get chatCoupleSubtitle => '你们两人的私信，亲人看不到';
+
+  @override
+  String get chatCoupleNote => '只有Papa & Mama能看到这个对话';
+
+  @override
+  String get chatComposerHint => '给全家发消息…';
+
+  @override
+  String chatComposerCoupleHint(String callName) {
+    return '私信给$callName…';
+  }
+
+  @override
+  String get chatSend => '发送';
+
+  @override
+  String get chatSending => '发送中…';
+
+  @override
+  String get chatWaiting => '等待发送';
+
+  @override
+  String get chatFailed => '未发送 · 点按重试';
+
+  @override
+  String get chatSent => '已发送';
+
+  @override
+  String get chatSeen => '已读';
+
+  @override
+  String chatSeenBy(String names) {
+    return '已读 · $names';
+  }
+
+  @override
+  String chatSeenByMore(String names, int count) {
+    return '已读 · $names +$count';
+  }
+
+  @override
+  String chatTyping(String name) {
+    return '$name正在输入…';
+  }
+
+  @override
+  String chatTypingMany(int count) {
+    return '$count人正在输入…';
+  }
+
+  @override
+  String chatOfflineSubtitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '联网后会自动发送 · $count条等待中',
+      zero: '联网后会自动发送',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatReconnectingTitle => '正在重新连接…';
+
+  @override
+  String get chatReconnectingSubtitle => '连接恢复后新消息会立即显示';
+
+  @override
+  String get chatEmptyTitle => '还没有消息';
+
+  @override
+  String get chatEmptyDescription => '向全家发送第一句问候 👋';
+
+  @override
+  String get chatEmptyCoupleDescription => '给彼此发第一条私信 ❤️';
+
+  @override
+  String get chatHelloSuggestion => '大家好 👋';
+
+  @override
+  String get chatNotFound => '无法打开此对话';
+
+  @override
+  String chatUnread(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count条未读',
+      zero: '没有新消息',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatCoupleEntry => '私聊';
+
+  @override
+  String get chatSomeone => '成员';
+
+  @override
+  String get chatLoadError => '无法加载新消息，正在显示已保存的消息。';
 }

@@ -20,7 +20,10 @@ import {
 import { AccessTokenGuard } from '../common/auth/access-token.guard';
 import type { AuthPrincipal } from '../common/auth/auth-principal';
 import { CurrentActor } from '../common/auth/current-actor.decorator';
-import { LibraryQueryDto } from '../dto/memory-library/library-query.dto';
+import {
+  DownloadUrlsQueryDto,
+  LibraryQueryDto,
+} from '../dto/memory-library/library-query.dto';
 import { MEMORY_LIBRARY_SERVICE } from '../interfaces/services/memory-library-service.interface';
 import type { IMemoryLibraryService } from '../interfaces/services/memory-library-service.interface';
 @UseGuards(AccessTokenGuard)
@@ -84,7 +87,8 @@ export class MemoryLibraryController {
   download(
     @CurrentActor() actor: AuthPrincipal,
     @Param('id', new ParseUUIDPipe()) id: string,
+    @Query() query: DownloadUrlsQueryDto,
   ) {
-    return this.service.download(actor, id);
+    return this.service.download(actor, id, query.perspectiveId);
   }
 }

@@ -2,7 +2,8 @@ part of '../mobile/home_tab_mobile_view.dart';
 
 /// App bar HOME-01/03 (Pencil `B9BCrF`): đệm 4/20/8/20; avatar gia đình 40
 /// (nền chuyển `primary-100` → `accent-100`, icon `house-heart` 20), bộ chọn
-/// bé ở giữa, chuông 24 + chấm `primary-500` 9 khi có thông báo chưa đọc.
+/// bé ở giữa, Tin nhắn (CHAT-04) + chuông 24 + chấm `primary-500` 9 khi có
+/// thông báo chưa đọc.
 /// Giữ avatar gia đình → FAM-08 “Chuyển gia đình”.
 class _HomeAppBar extends StatelessWidget {
   const _HomeAppBar({required this.controller});
@@ -87,6 +88,12 @@ class _HomeAppBar extends StatelessWidget {
               ),
             ),
           ),
+          // CHAT-04 (Pencil `ABBlh`): Tin nhắn cạnh chuông.
+          if (controller.chatAvailable)
+            ChatEntryButton(
+              unread: controller.chatUnread,
+              onTap: () => context.router.push(const ChatListRoute()),
+            ),
           Semantics(
             button: true,
             label: l10n.commonNotifications,

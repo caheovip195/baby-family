@@ -278,6 +278,114 @@ sealed class AppClient {
     @Path('nameId') String nameId,
   );
 
+  /// Câu hỏi kết nối hôm nay (chỉ Papa & Mama).
+  @GET(Api.coupleQuestionToday)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<CoupleQuestionRespond> getCoupleQuestion(
+    @Path('familyId') String familyId,
+  );
+
+  /// Tạo hoặc sửa câu trả lời của tôi cho câu hôm nay.
+  @PUT(Api.coupleQuestionAnswer)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<CoupleQuestionRespond> answerCoupleQuestion(
+    @Path('familyId') String familyId,
+    @Body() Map<String, dynamic> body,
+  );
+
+  /// US-14: `weekStart` = thứ Hai (YYYY-MM-DD), mặc định tuần này.
+  @GET(Api.coupleWeek)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<CoupleWeekRespond> getCoupleWeek(
+    @Path('familyId') String familyId, {
+    @Query('weekStart') String? weekStart,
+  });
+
+  /// REC-01: ký ức trong ngày + câu chuyện đã lưu ([date] mặc định hôm nay).
+  @GET(Api.childDayStory)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<DayStoryRespond> getDayStory(
+    @Path('childId') String childId, {
+    @Query('date') String? date,
+  });
+
+  /// Lưu câu chuyện của ngày (đè): `{title, body?, memoryIds, assetIds,
+  /// coverAssetId?, visibility}`.
+  @PUT(Api.childDayStoryDay)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<SavedDayStoryRespond> putDayStory(
+    @Path('childId') String childId,
+    @Path('date') String date,
+    @Body() Map<String, dynamic> body,
+  );
+
+  /// CHD-06: cân nặng / chiều cao của bé (chỉ Parent).
+  @GET(Api.childGrowth)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<GrowthListRespond> getGrowth(@Path('childId') String childId);
+
+  /// Mỗi ngày một lần đo; ghi lại thì đè (`{weightGrams?, heightMm?, note?}`).
+  @PUT(Api.childGrowthDay)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<GrowthEntryRespond> putGrowth(
+    @Path('childId') String childId,
+    @Path('date') String date,
+    @Body() Map<String, dynamic> body,
+  );
+
+  @DELETE(Api.childGrowthDay)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<void> deleteGrowth(
+    @Path('childId') String childId,
+    @Path('date') String date,
+  );
+
+  /// REC-04 Sách của con: chương theo tháng + lựa chọn đã lưu (chỉ Parent).
+  @GET(Api.childYearBook)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<YearBookRespond> getYearBook(
+    @Path('childId') String childId,
+    @Path('year') int year,
+  );
+
+  /// Lưu tên sách, chương, ký ức/ảnh đã chọn và chú thích (ghi đè cả bản).
+  @PUT(Api.childYearBook)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<YearBookRespond> putYearBook(
+    @Path('childId') String childId,
+    @Path('year') int year,
+    @Body() Map<String, dynamic> body,
+  );
+
+  /// REC-04 sách đã lưu (người thân: bản đã chia sẻ, BF-20261030-002).
+  @GET(Api.familyYearBooks)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<YearBookListRespond> getYearBooks(@Path('familyId') String familyId);
+
+  /// REC-04 Sách cả nhà (BF-20261030-001): mọi ký ức của gia đình.
+  @GET(Api.familyYearBook)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<YearBookRespond> getFamilyYearBook(
+    @Path('familyId') String familyId,
+    @Path('year') int year,
+  );
+
+  @PUT(Api.familyYearBook)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<YearBookRespond> putFamilyYearBook(
+    @Path('familyId') String familyId,
+    @Path('year') int year,
+    @Body() Map<String, dynamic> body,
+  );
+
+  /// REC-03: tháng tuổi vừa tròn ([monthIndex] mặc định tháng gần nhất).
+  @GET(Api.childMonthRecap)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<MonthRecapRespond> getMonthRecap(
+    @Path('childId') String childId, {
+    @Query('monthIndex') int? monthIndex,
+  });
+
   /// CARE-11: `weekStart` = thứ Hai (YYYY-MM-DD); `childId` lọc theo bé.
   @GET(Api.familyCareStats)
   @Extra({RequestOptionsExtra.requiresAuth: true})
@@ -533,6 +641,134 @@ sealed class AppClient {
     @Body() Map<String, dynamic> body,
   );
 
+  /// AI 1.2: hạn mức tháng + tính năng đã đồng ý.
+  @GET(Api.aiStatus)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<AiStatusRespond> getAiStatus(@Path('familyId') String familyId);
+
+  /// Đồng ý gửi dữ liệu cho nhà cung cấp AI (`{feature}`).
+  @POST(Api.aiConsents)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<AiStatusRespond> grantAiConsent(
+    @Path('familyId') String familyId,
+    @Body() Map<String, dynamic> body,
+  );
+
+  /// [action] `captions|day-story|rewrite|bridge-summary`.
+  @POST(Api.aiAction)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<AiDraftRespond> aiDraft(
+    @Path('familyId') String familyId,
+    @Path('action') String action,
+    @Body() Map<String, dynamic> body,
+  );
+
+  /// Cầu nối: gửi lời mời / góp ý của mình vào phiên bạn đời đã mời
+  /// (`{feelings, needs, topic?, message?, retentionDays?}`).
+  @POST(Api.coupleBridges)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<BridgeSessionRespond> createBridge(
+    @Path('familyId') String familyId,
+    @Header('Idempotency-Key') String idempotencyKey,
+    @Body() Map<String, dynamic> body,
+  );
+
+  @GET(Api.coupleBridges)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<BridgeSessionListRespond> getBridges(
+    @Path('familyId') String familyId,
+  );
+
+  @GET(Api.coupleBridge)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<BridgeSessionRespond> getBridge(
+    @Path('familyId') String familyId,
+    @Path('sessionId') String sessionId,
+  );
+
+  /// [action] `join|pause|understood|confirm|close|clarify` (`clarify`:
+  /// `{message}`).
+  @POST(Api.coupleBridgeAction)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<BridgeSessionRespond> bridgeAction(
+    @Path('familyId') String familyId,
+    @Path('sessionId') String sessionId,
+    @Path('action') String action,
+    @Body() Map<String, dynamic> body,
+  );
+
+  /// `{code, text?, at?}`.
+  @PUT(Api.coupleBridgeNextStep)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<BridgeSessionRespond> bridgeNextStep(
+    @Path('familyId') String familyId,
+    @Path('sessionId') String sessionId,
+    @Body() Map<String, dynamic> body,
+  );
+
+  /// Bàn giao ca: `{childIds?, fedAt?, sleptAt?, wokeAt?, note?, requestId?}`.
+  @POST(Api.coupleHandoffs)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<CareHandoffRespond> createHandoff(
+    @Path('familyId') String familyId,
+    @Header('Idempotency-Key') String idempotencyKey,
+    @Body() Map<String, dynamic> body,
+  );
+
+  @GET(Api.coupleHandoffs)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<CareHandoffListRespond> getHandoffs(
+    @Path('familyId') String familyId, {
+    @Query('limit') int? limit,
+  });
+
+  @POST(Api.coupleHandoffAck)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<CareHandoffRespond> acknowledgeHandoff(
+    @Path('familyId') String familyId,
+    @Path('handoffId') String handoffId,
+  );
+
+  // ========================================================================
+  // NHẮN TIN GIA ĐÌNH (CHAT-01…04, BF-20261101-001)
+  // ========================================================================
+
+  @GET(Api.familyChats)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<ChatConversationListRespond> getChats(
+    @Path('familyId') String familyId,
+  );
+
+  /// `afterSeq` = tin mới hơn (đồng bộ), `beforeSeq` = tin cũ hơn; tăng dần.
+  @GET(Api.familyChatMessages)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<ChatMessagePageRespond> getChatMessages(
+    @Path('familyId') String familyId,
+    @Path('conversationId') String conversationId, {
+    @Query('beforeSeq') int? beforeSeq,
+    @Query('afterSeq') int? afterSeq,
+    @Query('limit') int? limit,
+  });
+
+  /// `{body}`; cùng `Idempotency-Key` → cùng tin (gửi lại an toàn).
+  @POST(Api.familyChatMessages)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<ChatMessageRespond> sendChatMessage(
+    @Path('familyId') String familyId,
+    @Path('conversationId') String conversationId,
+    @Header('Idempotency-Key') String idempotencyKey,
+    @Body() Map<String, dynamic> body,
+  );
+
+  /// `{seq}`.
+  @POST(Api.familyChatRead)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<ChatReadRespond> markChatRead(
+    @Path('familyId') String familyId,
+    @Path('conversationId') String conversationId,
+    @Body() Map<String, dynamic> body,
+  );
+
   /// US-03: gửi lời nhờ (giữ nguyên `Idempotency-Key` khi thử lại).
   @POST(Api.coupleRequests)
   @Extra({RequestOptionsExtra.requiresAuth: true})
@@ -640,6 +876,23 @@ sealed class AppClient {
     @Path('familyId') String familyId,
   );
 
+  /// REC-02 chia sẻ với người thân `{shared}` (gói Family, BF-20261030-004).
+  @PUT(Api.weeklyRecapShare)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<WeeklyRecapRespond> shareWeeklyRecap(
+    @Path('familyId') String familyId,
+    @Path('recapId') String recapId,
+    @Body() Map<String, dynamic> body,
+  );
+
+  /// REC-02 lưu vào timeline (một ký ức mỗi recap).
+  @POST(Api.weeklyRecapTimeline)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<RecapTimelineRespond> saveWeeklyRecapToTimeline(
+    @Path('familyId') String familyId,
+    @Path('recapId') String recapId,
+  );
+
   /// HOME-01 “Tuần này”.
   @GET(Api.homeWeekStats)
   @Extra({RequestOptionsExtra.requiresAuth: true})
@@ -669,6 +922,15 @@ sealed class AppClient {
   @POST(Api.authReauthVerify)
   @Extra({RequestOptionsExtra.requiresAuth: true})
   Future<ReauthTokenRespond> verifyReauthOtp(@Body() Map<String, dynamic> body);
+
+  /// Xác thực lại bằng Apple / Google đã liên kết → `{reauthToken, expiresAt}`.
+  @POST(Api.authReauthApple)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<ReauthTokenRespond> reauthApple(@Body() Map<String, dynamic> body);
+
+  @POST(Api.authReauthGoogle)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<ReauthTokenRespond> reauthGoogle(@Body() Map<String, dynamic> body);
 
   /// SET-09: tác động và lựa chọn cho gia đình khi xoá tài khoản.
   @GET(Api.meDeletionPreview)
@@ -897,8 +1159,11 @@ sealed class AppClient {
   @POST(Api.memoryDownloadUrls)
   @Extra({RequestOptionsExtra.requiresAuth: true})
   Future<DownloadUrlListRespond> getDownloadUrls(
-    @Path('memoryId') String memoryId,
-  );
+    @Path('memoryId') String memoryId, {
+
+    /// Bản gốc ảnh/video của góc nhìn MEM-24 (BF-20261030-009).
+    @Query('perspectiveId') String? perspectiveId,
+  });
 
   /// MEM-24: góc nhìn của Parent còn lại.
   @GET(Api.memoryPerspectives)
@@ -951,11 +1216,13 @@ sealed class AppClient {
     @Body() Map<String, dynamic> body,
   );
 
-  /// Nhiệm vụ lặp lại tự thêm (mục 7.13.6).
+  /// Nhiệm vụ lặp lại tự thêm (mục 7.13.6); key giữ nguyên khi outbox gửi
+  /// lại (BF-20261029-002).
   @POST(Api.familyMissionSeries)
   @Extra({RequestOptionsExtra.requiresAuth: true})
   Future<MissionSeriesRespond> createMissionSeries(
     @Path('familyId') String familyId,
+    @Header('Idempotency-Key') String idempotencyKey,
     @Body() Map<String, dynamic> body,
   );
 
@@ -1100,6 +1367,24 @@ sealed class AppClient {
   @Extra({RequestOptionsExtra.requiresAuth: true})
   Future<SignInMethodListRespond> getSignInMethods();
 
+  /// Liên kết Apple (`{identityToken, nonce?, reauthToken}`) → 204.
+  @POST(Api.meIdentityApple)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<void> linkAppleIdentity(@Body() Map<String, dynamic> body);
+
+  /// Liên kết Google (`{idToken, reauthToken}`) → 204.
+  @POST(Api.meIdentityGoogle)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<void> linkGoogleIdentity(@Body() Map<String, dynamic> body);
+
+  /// Gỡ liên kết [provider] = `apple` | `google` (`{reauthToken}`) → 204.
+  @DELETE(Api.meIdentity)
+  @Extra({RequestOptionsExtra.requiresAuth: true})
+  Future<void> unlinkIdentity(
+    @Path('provider') String provider,
+    @Body() Map<String, dynamic> body,
+  );
+
   /// SET-11/12: câu hỏi thường gặp, liên hệ, đường dẫn pháp lý (công khai).
   @GET(Api.supportHelpCenter)
   Future<HelpCenterRespond> getHelpCenter(@Query('locale') String locale);
@@ -1204,10 +1489,14 @@ sealed class AppClient {
   @Extra({RequestOptionsExtra.requiresAuth: true})
   Future<MyCircleListRespond> getMyCircles();
 
-  /// SET-10: người thân tự rời gia đình.
+  /// SET-10: người thân tự rời gia đình; `{removeContent}` gỡ toàn bộ nội
+  /// dung đã đăng (BF-20261030-003).
   @POST(Api.familyCircleLeave)
   @Extra({RequestOptionsExtra.requiresAuth: true})
-  Future<void> leaveCircle(@Path('familyId') String familyId);
+  Future<void> leaveCircle(
+    @Path('familyId') String familyId,
+    @Body() Map<String, dynamic> body,
+  );
 
   /// FAM-03: mời người thân (quan hệ, tên gọi, quyền theo từng bé).
   @POST(Api.familyCircleInvites)

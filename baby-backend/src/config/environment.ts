@@ -106,6 +106,12 @@ const environmentSchema = z.object({
         .filter(Boolean),
     )
     .pipe(z.array(z.url())),
+  // AI 1.2 (BF-20261028-010): nhà cung cấp tương thích OpenAI (mặc định
+  // OpenRouter). Thiếu key → các API AI trả 503 AI_UNAVAILABLE.
+  AI_BASE_URL: z.url().default('https://openrouter.ai/api/v1'),
+  AI_API_KEY: optional(z.string().min(20).max(512)),
+  AI_MODEL: z.string().min(1).max(100).default('openrouter/free'),
+  AI_TIMEOUT_MS: z.coerce.number().int().min(1000).max(120000).default(30000),
   LOG_FORMAT: z.enum(['json', 'pretty']).default('json'),
   METRICS_TOKEN: optional(z.string().min(32).max(512)),
   ERROR_REPORTING_DSN: optional(

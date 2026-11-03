@@ -97,7 +97,8 @@ abstract class IMemoryService extends IBaseService {
   Future<void> toggleFavorite(String memoryId);
 
   /// MEM-08 “Tải về”: link bản gốc ngắn hạn của ký ức (bản mock: rỗng).
-  Future<List<String>> downloadUrls(String memoryId);
+  /// [perspectiveId]: ảnh/video của góc nhìn MEM-24 (BF-20261030-009).
+  Future<List<String>> downloadUrls(String memoryId, {String? perspectiveId});
 
   /// Thả cảm xúc (emoji) — mỗi người 1 cảm xúc/ký ức (đặc tả 7.12): chọn cảm
   /// xúc khác thì đổi, chạm lại cảm xúc đang chọn (`myReaction`) thì bỏ.
@@ -119,6 +120,12 @@ abstract class IMemoryService extends IBaseService {
     String memoryId, {
     required String body,
     List<String> mediaAssets = const [],
+
+    /// MEM-24 ghi âm mới (tệp trên máy, BF-20261030-004); [removeVoice] bỏ
+    /// ghi âm đang có.
+    String? voicePath,
+    int? voiceDurationSec,
+    bool removeVoice = false,
   });
 
   /// MEM-20: ảnh tháng chính của bé, theo tháng.
@@ -222,6 +229,15 @@ abstract class IMemoryService extends IBaseService {
 
   /// REC-02: tổng kết tuần này.
   Future<WeeklyRecap?> weeklyRecap();
+
+  /// REC-02 chia sẻ / bỏ chia sẻ với người thân (BF-20261030-004).
+  Future<WeeklyRecap> shareWeeklyRecap(
+    WeeklyRecap recap, {
+    required bool shared,
+  });
+
+  /// REC-02 lưu vào timeline: id ký ức (gọi lại trả ký ức đã lưu).
+  Future<String?> saveWeeklyRecapToTimeline(WeeklyRecap recap);
 
   /// Ngày đầu tuần của bản tổng kết tuần mới nhất có trên dòng thời gian (thẻ
   /// recap, mở [weeklyRecap]); null khi chưa có. Đọc sau [timeline].

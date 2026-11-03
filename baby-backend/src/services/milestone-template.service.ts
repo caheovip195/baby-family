@@ -62,6 +62,7 @@ export class MilestoneTemplateService implements IMilestoneTemplateService {
       'remindDaysBefore',
       'sortOrder',
       'status',
+      'version',
     ]);
     const model = await this.repository.update(scope, key, input);
     if (!model) throw new NotFoundError('MilestoneTemplate was not found.');

@@ -76,6 +76,51 @@ class ProfileSettingsController extends BaseNotifier {
 
   List<SignInMethod> get methods => profile?.signInMethods ?? const [];
 
+  /// Bản server: xác thực lại rồi liên kết / gỡ Apple, Google. Có số điện
+  /// thoại → gửi OTP và hỏi mã qua [askOtp] (null = người dùng huỷ); không
+  /// có → xác thực bằng Apple/Google đã liên kết. Trả true khi đã đổi.
+  Future<bool> changeLink(
+    AuthMethod method, {
+    required Future<String?> Function() askOtp,
+  }) async {
+    final linked = {
+      for (final item in methods)
+        if (item.linked) item.method,
+    };
+    final unlinking = linked.contains(method);
+    var done = false;
+    await whileLoading(() async {
+      if (linked.contains(AuthMethod.phone)) {
+        await settingsService.requestReauthOtp();
+        final code = await askOtp();
+        if (code == null || code.isEmpty) {
+          return;
+        }
+        await settingsService.verifyReauth(code);
+      } else {
+        // Gỡ: xác thực bằng chính tài khoản đó; liên kết: bằng cách đang có.
+        final via = unlinking
+            ? method
+            : linked.firstWhere((m) => m != AuthMethod.phone);
+        await settingsService.reauthWithSignIn(via);
+      }
+      if (unlinking) {
+        await settingsService.unlinkSignIn(method);
+      } else {
+        await settingsService.linkSignIn(method);
+      }
+      done = true;
+    });
+    if (done) {
+      // Chỉ đọc lại phương thức đăng nhập, giữ tên/ảnh đang sửa.
+      final fresh = await settingsService.profileSettings();
+      if (!isDisposed) {
+        _edit((p) => p.copyWith(signInMethods: fresh.signInMethods));
+      }
+    }
+    return done;
+  }
+
   Future<void> save() async {
     final current = profile;
     if (current == null) {

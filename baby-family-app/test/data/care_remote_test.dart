@@ -58,6 +58,8 @@ class _FakeCare implements ICareRemoteRepository {
   final createdEvents = <JsonMap>[];
   final moments = <(String, String, JsonMap)>[];
   final series = <JsonMap>[];
+  final seriesKeys = <String>[];
+  final swapKeys = <String>[];
   final settingsCalls = <String>[];
   MissionSettingsRecord settings = const MissionSettingsRecord(
     boardLevel: 'MEDIUM',
@@ -119,8 +121,13 @@ class _FakeCare implements ICareRemoteRepository {
   @override
   Future<MissionSeriesRecord?> createSeries(
     String familyId,
+    String idempotencyKey,
     JsonMap body,
   ) async {
+    seriesKeys.add(idempotencyKey);
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/series'));
+    }
     series.add(body);
     return const MissionSeriesRecord(id: 'ser-1');
   }
@@ -167,6 +174,7 @@ class _FakeCare implements ICareRemoteRepository {
 
   /// Mất mạng (không có response) cho bảng và hoàn thành.
   bool offline = false;
+  final createKeys = <String>[];
 
   final statsCalls = <String>[];
 
@@ -243,6 +251,10 @@ class _FakeCare implements ICareRemoteRepository {
     String idempotencyKey,
     JsonMap body,
   ) async {
+    createKeys.add(idempotencyKey);
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/missions'));
+    }
     created.add(body);
     return MissionResultRecord(mission: record('m-new'));
   }
@@ -265,6 +277,20 @@ class _FakeCare implements ICareRemoteRepository {
       mission: record(missionId, status: 'DONE'),
       myHeartsAwarded: 3,
     );
+  }
+
+  @override
+  Future<MissionResultRecord?> swap(
+    String missionId,
+    String idempotencyKey,
+    JsonMap body,
+  ) async {
+    swapKeys.add(idempotencyKey);
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/swap'));
+    }
+    actions.add('swap:$missionId:${body['optionsToken'] ?? ''}');
+    return null;
   }
 
   @override
@@ -371,12 +397,16 @@ class _FakeCare implements ICareRemoteRepository {
   }
 
   @override
-  Future<MissionSwapOptionsRecord?> swapOptions(String missionId) async =>
-      const MissionSwapOptionsRecord(
-        options: [MissionTemplateRecord(id: 't2', title: 'Đi dạo', hearts: 2)],
-        optionsToken: 'token-1',
-        swapsLeft: 2,
-      );
+  Future<MissionSwapOptionsRecord?> swapOptions(String missionId) async {
+    if (offline) {
+      throw DioException(requestOptions: RequestOptions(path: '/swap-options'));
+    }
+    return const MissionSwapOptionsRecord(
+      options: [MissionTemplateRecord(id: 't2', title: 'Đi dạo', hearts: 2)],
+      optionsToken: 'token-1',
+      swapsLeft: 2,
+    );
+  }
 }
 
 /// Chỉ dùng phần cảm ơn của API Papa & Mama (💛 trên việc bạn đời).
@@ -631,6 +661,33 @@ void main() {
     await online.undoCompletion('m-mine');
     expect(outbox.entries, isEmpty);
     expect(remote.actions, isEmpty);
+  });
+
+  test('BF-20261028-003: a mission created offline shows on the board and is '
+      'created once when back online', () async {
+    final outbox = FakeOutbox();
+    final day = DateTime(2026, 10, 10);
+    final care = service()..outbox = outbox;
+    await care.board(date: day);
+    await care.board(date: DateTime(2026, 10, 11));
+
+    remote.offline = true;
+    final draft = await care.createMission(title: 'Gấp đồ', date: day);
+    expect(draft.title, 'Gấp đồ');
+    expect(outbox.entries.single.kind, 'mission.create');
+    final board = await care.board(date: day);
+    expect(board.mine.map((m) => m.title), contains('Gấp đồ'));
+    // Ngày khác không hiện bản tạm.
+    final other = await care.board(date: DateTime(2026, 10, 11));
+    expect(other.mine.map((m) => m.title), isNot(contains('Gấp đồ')));
+
+    remote.offline = false;
+    await care.syncPending();
+    await care.board(date: day);
+    expect(outbox.entries, isEmpty);
+    expect(remote.created.single['title'], 'Gấp đồ');
+    // Lần thử offline và lần gửi lại dùng cùng Idempotency-Key.
+    expect(remote.createKeys.toSet(), hasLength(1));
   });
 
   test(
@@ -929,6 +986,76 @@ void main() {
       ]);
     },
   );
+
+  test('BF-20261029-002: a swap offline uses the saved options and token, '
+      'shows the new mission and is sent once with the same key', () async {
+    final outbox = FakeOutbox();
+    final db = FakeLocalDb();
+    final day = DateTime(2026, 10, 10);
+    final care = service()
+      ..outbox = outbox
+      ..localDb = db;
+    await care.board(date: day);
+    await care.swapOptions('m-mine');
+    expect(db.table('srv-family', 'careSwapOptions'), hasLength(1));
+
+    // Mở lại app khi mất mạng: lựa chọn đã lưu, vẫn đổi được.
+    remote.offline = true;
+    final offlineCare = service()
+      ..outbox = outbox
+      ..localDb = db;
+    await offlineCare.board(date: day);
+    final options = await offlineCare.swapOptions('m-mine');
+    expect(options.options.single.title, 'Đi dạo');
+    await offlineCare.swapMission('m-mine', 't2');
+    expect(outbox.entries.single.kind, 'mission.swap');
+    final board = await offlineCare.board(date: day);
+    expect(board.mine.map((m) => m.title), ['Đi dạo']);
+    expect(board.mine.single.templateId, 't2');
+    expect(board.swapsLeft, 1);
+
+    remote.offline = false;
+    await offlineCare.syncPending();
+    await offlineCare.board(date: day);
+    expect(outbox.entries, isEmpty);
+    expect(remote.actions, ['swap:m-mine:token-1']);
+    expect(remote.swapKeys.toSet(), hasLength(1));
+  });
+
+  test('BF-20261029-002: a repeating mission created offline shows on its '
+      'days and becomes one series when back online', () async {
+    final outbox = FakeOutbox();
+    final care = service()..outbox = outbox;
+    // 2026-10-10 là thứ Bảy, 2026-10-11 Chủ nhật, 2026-10-12 thứ Hai.
+    for (final date in [10, 11, 12, 9]) {
+      await care.board(date: DateTime(2026, 10, date));
+    }
+
+    remote.offline = true;
+    final draft = await care.createMission(
+      title: 'Đọc truyện',
+      date: DateTime(2026, 10, 10),
+      repeat: MissionRepeat.weekends,
+    );
+    expect(draft.title, 'Đọc truyện');
+    expect(draft.repeat, MissionRepeat.weekends);
+    expect(outbox.entries.single.kind, 'mission.series');
+    Future<List<String>> titles(int date) async => [
+      for (final m in (await care.board(date: DateTime(2026, 10, date))).mine)
+        m.title,
+    ];
+    expect(await titles(10), contains('Đọc truyện'));
+    expect(await titles(11), contains('Đọc truyện'));
+    expect(await titles(12), isNot(contains('Đọc truyện')));
+    expect(await titles(9), isNot(contains('Đọc truyện')));
+
+    remote.offline = false;
+    await care.syncPending();
+    await care.board(date: DateTime(2026, 10, 10));
+    expect(outbox.entries, isEmpty);
+    expect(remote.series.single['days'], ['SA', 'SU']);
+    expect(remote.seriesKeys.toSet(), hasLength(1));
+  });
 
   test('a repeating custom mission becomes a series on the server', () async {
     final care = service();

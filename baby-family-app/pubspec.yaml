@@ -70,6 +70,11 @@ dependencies:
   rxdart: 0.28.0
   uuid: 4.5.3
   logger: 2.7.0
+  # BF-20261101-001: nhắn tin gia đình realtime (Socket.IO v4, chỉ websocket).
+  socket_io_client: 3.1.6
+  # REC-04 Sách của con: dựng PDF trên máy (thuần Dart).
+  pdf: 3.12.0
+  printing: 5.14.3
 
 dev_dependencies:
   flutter_test:

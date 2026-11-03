@@ -244,12 +244,19 @@ class MemoryLibraryRemoteServiceImp extends MemoryRemoteServiceImp {
   }
 
   @override
-  Future<List<String>> downloadUrls(String memoryId) async {
+  Future<List<String>> downloadUrls(
+    String memoryId, {
+    String? perspectiveId,
+  }) async {
     if (_serverFamilyId == null || !_isServerMemory(memoryId)) {
-      return super.downloadUrls(memoryId);
+      return super.downloadUrls(memoryId, perspectiveId: perspectiveId);
     }
     return [
-      for (final item in await _library.downloadUrls(memoryId)) ?item.url,
+      for (final item in await _library.downloadUrls(
+        memoryId,
+        perspectiveId: perspectiveId,
+      ))
+        ?item.url,
     ];
   }
 
@@ -279,15 +286,47 @@ class MemoryLibraryRemoteServiceImp extends MemoryRemoteServiceImp {
     String memoryId, {
     required String body,
     List<String> mediaAssets = const [],
+    String? voicePath,
+    int? voiceDurationSec,
+    bool removeVoice = false,
   }) async {
     if (_serverFamilyId == null || !_isServerMemory(memoryId)) {
       return super.savePerspective(
         memoryId,
         body: body,
         mediaAssets: mediaAssets,
+        voicePath: voicePath,
+        voiceDurationSec: voiceDurationSec,
+        removeVoice: removeVoice,
       );
     }
-    final record = await _library.putPerspective(memoryId, body.trim());
+    // MEM-24 ghi âm (BF-20261030-004): tải audio trước (chờ server đo thời
+    // lượng), rồi gắn `audioAssetId`; không gửi trường = giữ ghi âm cũ.
+    final audioAssetId = voicePath == null
+        ? null
+        : await uploadAsset(voicePath);
+    // BF-20261030-006: ảnh đã có giữ asset id, ảnh mới trên máy tải lên.
+    final mine = (await perspectives(
+      memoryId,
+    )).where((view) => view.authorId == myUserId).firstOrNull;
+    final idOf = {
+      if (mine != null)
+        for (var i = 0; i < mine.mediaAssets.length; i++)
+          if (i < mine.mediaAssetIds.length)
+            mine.mediaAssets[i]: mine.mediaAssetIds[i],
+    };
+    final assetIds = [
+      for (final source in mediaAssets)
+        idOf[source] ?? await uploadAsset(source),
+    ];
+    final record = await _library.putPerspective(memoryId, {
+      'body': body.trim(),
+      'assetIds': assetIds,
+      if (audioAssetId != null)
+        'audioAssetId': audioAssetId
+      else if (removeVoice)
+        'audioAssetId': null,
+    });
     final perspective = record == null ? null : _toPerspective(record);
     if (perspective == null) {
       throw StateError('Perspective was not saved');
@@ -307,6 +346,17 @@ class MemoryLibraryRemoteServiceImp extends MemoryRemoteServiceImp {
       memoryId: memoryId,
       authorId: _localUserId(record.authorUserId) ?? '',
       body: record.body ?? '',
+      voiceUrl: record.audioUrl,
+      voiceDurationSec: record.audioDurationSec,
+      mediaAssets: [for (final asset in record.assets) ?asset.url],
+      mediaAssetIds: [
+        for (final asset in record.assets)
+          if (asset.url != null) asset.assetId,
+      ],
+      mediaVideos: [
+        for (final asset in record.assets)
+          if (asset.url != null) asset.videoUrl,
+      ],
       createdAt: (record.createdAt ?? now).toLocal(),
       hiddenFromRelatives: record.hiddenFromCircle,
     );
@@ -615,6 +665,10 @@ class MemoryLibraryRemoteServiceImp extends MemoryRemoteServiceImp {
     final moments = stats?.memoryCount ?? 0;
     final firsts = stats?.milestoneCount ?? 0;
     return WeeklyRecap(
+      id: record.id,
+      canShare: record.canShare,
+      shared: record.visibility == 'FAMILY',
+      memoryId: record.memoryId,
       start: start,
       end: end,
       headline: currentL10n().recapWeekHeadline(moments, firsts),
@@ -626,6 +680,43 @@ class MemoryLibraryRemoteServiceImp extends MemoryRemoteServiceImp {
       ].take(kValueRecapHeroMax).toList(),
       highlights: highlights,
     );
+  }
+
+  @override
+  Future<WeeklyRecap> shareWeeklyRecap(
+    WeeklyRecap recap, {
+    required bool shared,
+  }) async {
+    final serverFamilyId = _serverFamilyId;
+    final id = recap.id;
+    if (serverFamilyId == null || id == null) {
+      return super.shareWeeklyRecap(recap, shared: shared);
+    }
+    final record = await _library.shareWeeklyRecap(
+      serverFamilyId,
+      id,
+      shared: shared,
+    );
+    return recap.copyWith(shared: (record?.visibility ?? '') == 'FAMILY');
+  }
+
+  @override
+  Future<String?> saveWeeklyRecapToTimeline(WeeklyRecap recap) async {
+    final serverFamilyId = _serverFamilyId;
+    final id = recap.id;
+    if (serverFamilyId == null || id == null) {
+      return super.saveWeeklyRecapToTimeline(recap);
+    }
+    final memoryId = await _library.saveWeeklyRecapToTimeline(
+      serverFamilyId,
+      id,
+    );
+    if (memoryId != null) {
+      // Ký ức mới hiện trên timeline ngay (đọc bản server vào kho).
+      await refreshMemory(memoryId);
+      _store.touch();
+    }
+    return memoryId;
   }
 
   // ------------------------------------------------------------ MEM-20/21

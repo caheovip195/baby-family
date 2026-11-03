@@ -20,6 +20,7 @@ part '../widgets/quiet_time_range.dart';
 /// Icon Lucide theo tên kebab của nhóm thông báo (fixture `icon`).
 const _channelIcons = <String, IconData>{
   'images': LucideIcons.images,
+  'message-circle': LucideIcons.messageCircle,
   'list-checks': LucideIcons.listChecks,
   'hand-heart': LucideIcons.handHeart,
   'heart': LucideIcons.heart,

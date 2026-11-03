@@ -119,11 +119,11 @@ export class MissionBoardRepository implements IMissionBoardRepository {
     if (parents.length > 1) fail('FAMILY_SCOPE_REQUIRED');
     return parents[0]?.familyId ?? null;
   }
-  async familyIdForMission(id: string) {
+  async familyIdForMission(id: string, includeRemoved = false) {
     return (
       (
         await this.prisma.mission.findFirst({
-          where: { id, deletedAt: null },
+          where: { id, ...(includeRemoved ? {} : { deletedAt: null }) },
           select: { familyId: true },
         })
       )?.familyId ?? null

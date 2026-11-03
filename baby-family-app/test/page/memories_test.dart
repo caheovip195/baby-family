@@ -1,7 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/data/provider/child.dart';
+import 'package:baby_family/data/provider/memory.dart';
+import 'package:baby_family/data/service/voice_recording.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/router/app_router.dart';
+import 'package:baby_family/utils/widget/playable_voice_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/misc.dart' show Override;
@@ -262,6 +265,30 @@ void main() {
       expect(find.text('Anh nhớ hôm đó.'), findsOneWidget);
     });
 
+    testWidgets('BF-20261030-004: MEM-24 records a voice perspective', (
+      tester,
+    ) async {
+      final router = await pumpRoute(
+        tester,
+        MemoryDetailRoute(memoryId: 'm-keepsake-bracelet'),
+        actor: 'papa',
+        overrides: [
+          voiceRecordingServiceProvider.overrideWithValue(_FakeRecorder()),
+        ],
+      );
+      await _tapText(tester, 'Thêm góc nhìn của bạn');
+      await tester.tap(find.byKey(const ValueKey('perspective-voice')));
+      await tester.pumpAndSettle();
+      expect(find.text('Đang ghi… chạm để dừng'), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('perspective-voice')));
+      await tester.pumpAndSettle();
+      expect(find.byType(PlayableVoiceCard), findsOneWidget);
+      await _tapText(tester, 'Lưu góc nhìn · Cả hai cùng kể');
+      expect(router.topRoute.name, MemoryDetailRoute.name);
+      expect(find.text('Papa kể'), findsWidgets);
+      expect(find.byType(PlayableVoiceCard), findsOneWidget);
+    });
+
     testWidgets('MEM-21 shutter → MEM-05 monthly photo → back to MEM-20', (
       tester,
     ) async {
@@ -301,4 +328,17 @@ void main() {
       expect(router.topRoute.name, HomeTabRoute.name);
     });
   });
+}
+
+/// Ghi âm giả: luôn có quyền micro, trả tệp 4 giây.
+class _FakeRecorder implements IVoiceRecordingService {
+  @override
+  Future<bool> start() async => true;
+
+  @override
+  Future<({String path, int durationSec})?> stop() async =>
+      (path: '/tmp/perspective.m4a', durationSec: 4);
+
+  @override
+  Future<void> cancel() async {}
 }

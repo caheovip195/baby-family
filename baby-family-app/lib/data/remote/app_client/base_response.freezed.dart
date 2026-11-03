@@ -99,6 +99,82 @@ BaseRespond _$BaseRespondFromJson(
           return PregnancyNameRespond.fromJson(
             json
           );
+                case 'coupleQuestionRespond':
+          return CoupleQuestionRespond.fromJson(
+            json
+          );
+                case 'coupleWeekRespond':
+          return CoupleWeekRespond.fromJson(
+            json
+          );
+                case 'aiStatusRespond':
+          return AiStatusRespond.fromJson(
+            json
+          );
+                case 'aiDraftRespond':
+          return AiDraftRespond.fromJson(
+            json
+          );
+                case 'bridgeSessionListRespond':
+          return BridgeSessionListRespond.fromJson(
+            json
+          );
+                case 'bridgeSessionRespond':
+          return BridgeSessionRespond.fromJson(
+            json
+          );
+                case 'careHandoffListRespond':
+          return CareHandoffListRespond.fromJson(
+            json
+          );
+                case 'careHandoffRespond':
+          return CareHandoffRespond.fromJson(
+            json
+          );
+                case 'dayStoryRespond':
+          return DayStoryRespond.fromJson(
+            json
+          );
+                case 'savedDayStoryRespond':
+          return SavedDayStoryRespond.fromJson(
+            json
+          );
+                case 'chatConversationListRespond':
+          return ChatConversationListRespond.fromJson(
+            json
+          );
+                case 'chatMessagePageRespond':
+          return ChatMessagePageRespond.fromJson(
+            json
+          );
+                case 'chatMessageRespond':
+          return ChatMessageRespond.fromJson(
+            json
+          );
+                case 'chatReadRespond':
+          return ChatReadRespond.fromJson(
+            json
+          );
+                case 'growthListRespond':
+          return GrowthListRespond.fromJson(
+            json
+          );
+                case 'growthEntryRespond':
+          return GrowthEntryRespond.fromJson(
+            json
+          );
+                case 'yearBookRespond':
+          return YearBookRespond.fromJson(
+            json
+          );
+                case 'yearBookListRespond':
+          return YearBookListRespond.fromJson(
+            json
+          );
+                case 'monthRecapRespond':
+          return MonthRecapRespond.fromJson(
+            json
+          );
                 case 'careStatsRespond':
           return CareStatsRespond.fromJson(
             json
@@ -335,6 +411,10 @@ BaseRespond _$BaseRespondFromJson(
           return WeeklyRecapRespond.fromJson(
             json
           );
+                case 'recapTimelineRespond':
+          return RecapTimelineRespond.fromJson(
+            json
+          );
                 case 'displaySettingsRespond':
           return DisplaySettingsRespond.fromJson(
             json
@@ -457,7 +537,7 @@ extension BaseRespondPatterns on BaseRespond {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( AuthCertificateRespond value)?  authCertificateRespond,TResult Function( UserRespond value)?  userRespond,TResult Function( OtpDispatchRespond value)?  otpDispatchRespond,TResult Function( MeProfileRespond value)?  meProfileRespond,TResult Function( FamilyBootstrapRespond value)?  familyBootstrapRespond,TResult Function( PartnerInviteIssuedRespond value)?  partnerInviteIssuedRespond,TResult Function( PartnerInviteStatusRespond value)?  partnerInviteStatusRespond,TResult Function( InviteResolutionRespond value)?  inviteResolutionRespond,TResult Function( InviteDecisionRespond value)?  inviteDecisionRespond,TResult Function( ChildRecordRespond value)?  childRecordRespond,TResult Function( PregnancyRecordRespond value)?  pregnancyRecordRespond,TResult Function( UploadIntentRespond value)?  uploadIntentRespond,TResult Function( UploadStatusRespond value)?  uploadStatusRespond,TResult Function( MemoryRecordRespond value)?  memoryRecordRespond,TResult Function( TimelineRespond value)?  timelineRespond,TResult Function( MediaGridRespond value)?  mediaGridRespond,TResult Function( CommentRecordRespond value)?  commentRecordRespond,TResult Function( CommentListRespond value)?  commentListRespond,TResult Function( ReactionStateRespond value)?  reactionStateRespond,TResult Function( PregnancyNamesRespond value)?  pregnancyNamesRespond,TResult Function( PregnancyNameRespond value)?  pregnancyNameRespond,TResult Function( CareStatsRespond value)?  careStatsRespond,TResult Function( MemoryFeedRespond value)?  memoryFeedRespond,TResult Function( NotificationPageRespond value)?  notificationPageRespond,TResult Function( NotificationCountRespond value)?  notificationCountRespond,TResult Function( HeartsMeRespond value)?  heartsMeRespond,TResult Function( FamilyTreeRespond value)?  familyTreeRespond,TResult Function( BadgeListRespond value)?  badgeListRespond,TResult Function( MissionHistoryRespond value)?  missionHistoryRespond,TResult Function( MissionBoardRespond value)?  missionBoardRespond,TResult Function( MissionRecordRespond value)?  missionRecordRespond,TResult Function( MissionResultRespond value)?  missionResultRespond,TResult Function( MissionTemplateListRespond value)?  missionTemplateListRespond,TResult Function( MissionSwapOptionsRespond value)?  missionSwapOptionsRespond,TResult Function( AppreciationRecordRespond value)?  appreciationRecordRespond,TResult Function( AppreciationWallRespond value)?  appreciationWallRespond,TResult Function( JournalEntryRespond value)?  journalEntryRespond,TResult Function( JournalListRespond value)?  journalListRespond,TResult Function( CheckinRecordRespond value)?  checkinRecordRespond,TResult Function( CheckinTodayRespond value)?  checkinTodayRespond,TResult Function( RequestCreatedRespond value)?  requestCreatedRespond,TResult Function( RequestRecordRespond value)?  requestRecordRespond,TResult Function( RequestListRespond value)?  requestListRespond,TResult Function( ReauthTokenRespond value)?  reauthTokenRespond,TResult Function( DeletionPreviewRespond value)?  deletionPreviewRespond,TResult Function( DataExportRespond value)?  dataExportRespond,TResult Function( CalendarRespond value)?  calendarRespond,TResult Function( CalendarEventRespond value)?  calendarEventRespond,TResult Function( SessionListRespond value)?  sessionListRespond,TResult Function( FamilySettingsRespond value)?  familySettingsRespond,TResult Function( JourneyRespond value)?  journeyRespond,TResult Function( PrepGroupsRespond value)?  prepGroupsRespond,TResult Function( PrepItemRespond value)?  prepItemRespond,TResult Function( BirthResultRespond value)?  birthResultRespond,TResult Function( ChildStatsRespond value)?  childStatsRespond,TResult Function( AlbumListRespond value)?  albumListRespond,TResult Function( AlbumRecordRespond value)?  albumRecordRespond,TResult Function( PerspectiveListRespond value)?  perspectiveListRespond,TResult Function( PerspectiveRecordRespond value)?  perspectiveRecordRespond,TResult Function( MemoryPromptListRespond value)?  memoryPromptListRespond,TResult Function( DownloadUrlListRespond value)?  downloadUrlListRespond,TResult Function( MilestoneCatalogRespond value)?  milestoneCatalogRespond,TResult Function( LetterListRespond value)?  letterListRespond,TResult Function( MissionSettingsRespond value)?  missionSettingsRespond,TResult Function( MissionSeriesRespond value)?  missionSeriesRespond,TResult Function( CircleMemberListRespond value)?  circleMemberListRespond,TResult Function( CircleInviteListRespond value)?  circleInviteListRespond,TResult Function( CircleInviteIssuedRespond value)?  circleInviteIssuedRespond,TResult Function( UsSettingsRespond value)?  usSettingsRespond,TResult Function( MyCircleListRespond value)?  myCircleListRespond,TResult Function( BillingCatalogRespond value)?  billingCatalogRespond,TResult Function( PurchaseIntentRespond value)?  purchaseIntentRespond,TResult Function( FamilyBillingRespond value)?  familyBillingRespond,TResult Function( NotificationSettingsRespond value)?  notificationSettingsRespond,TResult Function( AiSettingsRespond value)?  aiSettingsRespond,TResult Function( OnThisDayRespond value)?  onThisDayRespond,TResult Function( ReportRespond value)?  reportRespond,TResult Function( BlockedUserListRespond value)?  blockedUserListRespond,TResult Function( WeekStatsRespond value)?  weekStatsRespond,TResult Function( WeeklyRecapRespond value)?  weeklyRecapRespond,TResult Function( DisplaySettingsRespond value)?  displaySettingsRespond,TResult Function( FamilyDeletionRespond value)?  familyDeletionRespond,TResult Function( PrivacyOverviewRespond value)?  privacyOverviewRespond,TResult Function( MonthlyPhotoListRespond value)?  monthlyPhotoListRespond,TResult Function( MonthlyPhotoRespond value)?  monthlyPhotoRespond,TResult Function( TodayStoryRespond value)?  todayStoryRespond,TResult Function( FamilyRecordRespond value)?  familyRecordRespond,TResult Function( MissionSeriesListRespond value)?  missionSeriesListRespond,TResult Function( SupportCategoriesRespond value)?  supportCategoriesRespond,TResult Function( SupportTicketRespond value)?  supportTicketRespond,TResult Function( HelpCenterRespond value)?  helpCenterRespond,TResult Function( SupportTicketDetailRespond value)?  supportTicketDetailRespond,TResult Function( SupportTicketListRespond value)?  supportTicketListRespond,TResult Function( SignInMethodListRespond value)?  signInMethodListRespond,TResult Function( MyFamilyListRespond value)?  myFamilyListRespond,TResult Function( TimezoneCatalogRespond value)?  timezoneCatalogRespond,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( AuthCertificateRespond value)?  authCertificateRespond,TResult Function( UserRespond value)?  userRespond,TResult Function( OtpDispatchRespond value)?  otpDispatchRespond,TResult Function( MeProfileRespond value)?  meProfileRespond,TResult Function( FamilyBootstrapRespond value)?  familyBootstrapRespond,TResult Function( PartnerInviteIssuedRespond value)?  partnerInviteIssuedRespond,TResult Function( PartnerInviteStatusRespond value)?  partnerInviteStatusRespond,TResult Function( InviteResolutionRespond value)?  inviteResolutionRespond,TResult Function( InviteDecisionRespond value)?  inviteDecisionRespond,TResult Function( ChildRecordRespond value)?  childRecordRespond,TResult Function( PregnancyRecordRespond value)?  pregnancyRecordRespond,TResult Function( UploadIntentRespond value)?  uploadIntentRespond,TResult Function( UploadStatusRespond value)?  uploadStatusRespond,TResult Function( MemoryRecordRespond value)?  memoryRecordRespond,TResult Function( TimelineRespond value)?  timelineRespond,TResult Function( MediaGridRespond value)?  mediaGridRespond,TResult Function( CommentRecordRespond value)?  commentRecordRespond,TResult Function( CommentListRespond value)?  commentListRespond,TResult Function( ReactionStateRespond value)?  reactionStateRespond,TResult Function( PregnancyNamesRespond value)?  pregnancyNamesRespond,TResult Function( PregnancyNameRespond value)?  pregnancyNameRespond,TResult Function( CoupleQuestionRespond value)?  coupleQuestionRespond,TResult Function( CoupleWeekRespond value)?  coupleWeekRespond,TResult Function( AiStatusRespond value)?  aiStatusRespond,TResult Function( AiDraftRespond value)?  aiDraftRespond,TResult Function( BridgeSessionListRespond value)?  bridgeSessionListRespond,TResult Function( BridgeSessionRespond value)?  bridgeSessionRespond,TResult Function( CareHandoffListRespond value)?  careHandoffListRespond,TResult Function( CareHandoffRespond value)?  careHandoffRespond,TResult Function( DayStoryRespond value)?  dayStoryRespond,TResult Function( SavedDayStoryRespond value)?  savedDayStoryRespond,TResult Function( ChatConversationListRespond value)?  chatConversationListRespond,TResult Function( ChatMessagePageRespond value)?  chatMessagePageRespond,TResult Function( ChatMessageRespond value)?  chatMessageRespond,TResult Function( ChatReadRespond value)?  chatReadRespond,TResult Function( GrowthListRespond value)?  growthListRespond,TResult Function( GrowthEntryRespond value)?  growthEntryRespond,TResult Function( YearBookRespond value)?  yearBookRespond,TResult Function( YearBookListRespond value)?  yearBookListRespond,TResult Function( MonthRecapRespond value)?  monthRecapRespond,TResult Function( CareStatsRespond value)?  careStatsRespond,TResult Function( MemoryFeedRespond value)?  memoryFeedRespond,TResult Function( NotificationPageRespond value)?  notificationPageRespond,TResult Function( NotificationCountRespond value)?  notificationCountRespond,TResult Function( HeartsMeRespond value)?  heartsMeRespond,TResult Function( FamilyTreeRespond value)?  familyTreeRespond,TResult Function( BadgeListRespond value)?  badgeListRespond,TResult Function( MissionHistoryRespond value)?  missionHistoryRespond,TResult Function( MissionBoardRespond value)?  missionBoardRespond,TResult Function( MissionRecordRespond value)?  missionRecordRespond,TResult Function( MissionResultRespond value)?  missionResultRespond,TResult Function( MissionTemplateListRespond value)?  missionTemplateListRespond,TResult Function( MissionSwapOptionsRespond value)?  missionSwapOptionsRespond,TResult Function( AppreciationRecordRespond value)?  appreciationRecordRespond,TResult Function( AppreciationWallRespond value)?  appreciationWallRespond,TResult Function( JournalEntryRespond value)?  journalEntryRespond,TResult Function( JournalListRespond value)?  journalListRespond,TResult Function( CheckinRecordRespond value)?  checkinRecordRespond,TResult Function( CheckinTodayRespond value)?  checkinTodayRespond,TResult Function( RequestCreatedRespond value)?  requestCreatedRespond,TResult Function( RequestRecordRespond value)?  requestRecordRespond,TResult Function( RequestListRespond value)?  requestListRespond,TResult Function( ReauthTokenRespond value)?  reauthTokenRespond,TResult Function( DeletionPreviewRespond value)?  deletionPreviewRespond,TResult Function( DataExportRespond value)?  dataExportRespond,TResult Function( CalendarRespond value)?  calendarRespond,TResult Function( CalendarEventRespond value)?  calendarEventRespond,TResult Function( SessionListRespond value)?  sessionListRespond,TResult Function( FamilySettingsRespond value)?  familySettingsRespond,TResult Function( JourneyRespond value)?  journeyRespond,TResult Function( PrepGroupsRespond value)?  prepGroupsRespond,TResult Function( PrepItemRespond value)?  prepItemRespond,TResult Function( BirthResultRespond value)?  birthResultRespond,TResult Function( ChildStatsRespond value)?  childStatsRespond,TResult Function( AlbumListRespond value)?  albumListRespond,TResult Function( AlbumRecordRespond value)?  albumRecordRespond,TResult Function( PerspectiveListRespond value)?  perspectiveListRespond,TResult Function( PerspectiveRecordRespond value)?  perspectiveRecordRespond,TResult Function( MemoryPromptListRespond value)?  memoryPromptListRespond,TResult Function( DownloadUrlListRespond value)?  downloadUrlListRespond,TResult Function( MilestoneCatalogRespond value)?  milestoneCatalogRespond,TResult Function( LetterListRespond value)?  letterListRespond,TResult Function( MissionSettingsRespond value)?  missionSettingsRespond,TResult Function( MissionSeriesRespond value)?  missionSeriesRespond,TResult Function( CircleMemberListRespond value)?  circleMemberListRespond,TResult Function( CircleInviteListRespond value)?  circleInviteListRespond,TResult Function( CircleInviteIssuedRespond value)?  circleInviteIssuedRespond,TResult Function( UsSettingsRespond value)?  usSettingsRespond,TResult Function( MyCircleListRespond value)?  myCircleListRespond,TResult Function( BillingCatalogRespond value)?  billingCatalogRespond,TResult Function( PurchaseIntentRespond value)?  purchaseIntentRespond,TResult Function( FamilyBillingRespond value)?  familyBillingRespond,TResult Function( NotificationSettingsRespond value)?  notificationSettingsRespond,TResult Function( AiSettingsRespond value)?  aiSettingsRespond,TResult Function( OnThisDayRespond value)?  onThisDayRespond,TResult Function( ReportRespond value)?  reportRespond,TResult Function( BlockedUserListRespond value)?  blockedUserListRespond,TResult Function( WeekStatsRespond value)?  weekStatsRespond,TResult Function( WeeklyRecapRespond value)?  weeklyRecapRespond,TResult Function( RecapTimelineRespond value)?  recapTimelineRespond,TResult Function( DisplaySettingsRespond value)?  displaySettingsRespond,TResult Function( FamilyDeletionRespond value)?  familyDeletionRespond,TResult Function( PrivacyOverviewRespond value)?  privacyOverviewRespond,TResult Function( MonthlyPhotoListRespond value)?  monthlyPhotoListRespond,TResult Function( MonthlyPhotoRespond value)?  monthlyPhotoRespond,TResult Function( TodayStoryRespond value)?  todayStoryRespond,TResult Function( FamilyRecordRespond value)?  familyRecordRespond,TResult Function( MissionSeriesListRespond value)?  missionSeriesListRespond,TResult Function( SupportCategoriesRespond value)?  supportCategoriesRespond,TResult Function( SupportTicketRespond value)?  supportTicketRespond,TResult Function( HelpCenterRespond value)?  helpCenterRespond,TResult Function( SupportTicketDetailRespond value)?  supportTicketDetailRespond,TResult Function( SupportTicketListRespond value)?  supportTicketListRespond,TResult Function( SignInMethodListRespond value)?  signInMethodListRespond,TResult Function( MyFamilyListRespond value)?  myFamilyListRespond,TResult Function( TimezoneCatalogRespond value)?  timezoneCatalogRespond,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case AuthCertificateRespond() when authCertificateRespond != null:
@@ -481,7 +561,26 @@ return commentRecordRespond(_that);case CommentListRespond() when commentListRes
 return commentListRespond(_that);case ReactionStateRespond() when reactionStateRespond != null:
 return reactionStateRespond(_that);case PregnancyNamesRespond() when pregnancyNamesRespond != null:
 return pregnancyNamesRespond(_that);case PregnancyNameRespond() when pregnancyNameRespond != null:
-return pregnancyNameRespond(_that);case CareStatsRespond() when careStatsRespond != null:
+return pregnancyNameRespond(_that);case CoupleQuestionRespond() when coupleQuestionRespond != null:
+return coupleQuestionRespond(_that);case CoupleWeekRespond() when coupleWeekRespond != null:
+return coupleWeekRespond(_that);case AiStatusRespond() when aiStatusRespond != null:
+return aiStatusRespond(_that);case AiDraftRespond() when aiDraftRespond != null:
+return aiDraftRespond(_that);case BridgeSessionListRespond() when bridgeSessionListRespond != null:
+return bridgeSessionListRespond(_that);case BridgeSessionRespond() when bridgeSessionRespond != null:
+return bridgeSessionRespond(_that);case CareHandoffListRespond() when careHandoffListRespond != null:
+return careHandoffListRespond(_that);case CareHandoffRespond() when careHandoffRespond != null:
+return careHandoffRespond(_that);case DayStoryRespond() when dayStoryRespond != null:
+return dayStoryRespond(_that);case SavedDayStoryRespond() when savedDayStoryRespond != null:
+return savedDayStoryRespond(_that);case ChatConversationListRespond() when chatConversationListRespond != null:
+return chatConversationListRespond(_that);case ChatMessagePageRespond() when chatMessagePageRespond != null:
+return chatMessagePageRespond(_that);case ChatMessageRespond() when chatMessageRespond != null:
+return chatMessageRespond(_that);case ChatReadRespond() when chatReadRespond != null:
+return chatReadRespond(_that);case GrowthListRespond() when growthListRespond != null:
+return growthListRespond(_that);case GrowthEntryRespond() when growthEntryRespond != null:
+return growthEntryRespond(_that);case YearBookRespond() when yearBookRespond != null:
+return yearBookRespond(_that);case YearBookListRespond() when yearBookListRespond != null:
+return yearBookListRespond(_that);case MonthRecapRespond() when monthRecapRespond != null:
+return monthRecapRespond(_that);case CareStatsRespond() when careStatsRespond != null:
 return careStatsRespond(_that);case MemoryFeedRespond() when memoryFeedRespond != null:
 return memoryFeedRespond(_that);case NotificationPageRespond() when notificationPageRespond != null:
 return notificationPageRespond(_that);case NotificationCountRespond() when notificationCountRespond != null:
@@ -540,7 +639,8 @@ return onThisDayRespond(_that);case ReportRespond() when reportRespond != null:
 return reportRespond(_that);case BlockedUserListRespond() when blockedUserListRespond != null:
 return blockedUserListRespond(_that);case WeekStatsRespond() when weekStatsRespond != null:
 return weekStatsRespond(_that);case WeeklyRecapRespond() when weeklyRecapRespond != null:
-return weeklyRecapRespond(_that);case DisplaySettingsRespond() when displaySettingsRespond != null:
+return weeklyRecapRespond(_that);case RecapTimelineRespond() when recapTimelineRespond != null:
+return recapTimelineRespond(_that);case DisplaySettingsRespond() when displaySettingsRespond != null:
 return displaySettingsRespond(_that);case FamilyDeletionRespond() when familyDeletionRespond != null:
 return familyDeletionRespond(_that);case PrivacyOverviewRespond() when privacyOverviewRespond != null:
 return privacyOverviewRespond(_that);case MonthlyPhotoListRespond() when monthlyPhotoListRespond != null:
@@ -574,7 +674,7 @@ return timezoneCatalogRespond(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( AuthCertificateRespond value)  authCertificateRespond,required TResult Function( UserRespond value)  userRespond,required TResult Function( OtpDispatchRespond value)  otpDispatchRespond,required TResult Function( MeProfileRespond value)  meProfileRespond,required TResult Function( FamilyBootstrapRespond value)  familyBootstrapRespond,required TResult Function( PartnerInviteIssuedRespond value)  partnerInviteIssuedRespond,required TResult Function( PartnerInviteStatusRespond value)  partnerInviteStatusRespond,required TResult Function( InviteResolutionRespond value)  inviteResolutionRespond,required TResult Function( InviteDecisionRespond value)  inviteDecisionRespond,required TResult Function( ChildRecordRespond value)  childRecordRespond,required TResult Function( PregnancyRecordRespond value)  pregnancyRecordRespond,required TResult Function( UploadIntentRespond value)  uploadIntentRespond,required TResult Function( UploadStatusRespond value)  uploadStatusRespond,required TResult Function( MemoryRecordRespond value)  memoryRecordRespond,required TResult Function( TimelineRespond value)  timelineRespond,required TResult Function( MediaGridRespond value)  mediaGridRespond,required TResult Function( CommentRecordRespond value)  commentRecordRespond,required TResult Function( CommentListRespond value)  commentListRespond,required TResult Function( ReactionStateRespond value)  reactionStateRespond,required TResult Function( PregnancyNamesRespond value)  pregnancyNamesRespond,required TResult Function( PregnancyNameRespond value)  pregnancyNameRespond,required TResult Function( CareStatsRespond value)  careStatsRespond,required TResult Function( MemoryFeedRespond value)  memoryFeedRespond,required TResult Function( NotificationPageRespond value)  notificationPageRespond,required TResult Function( NotificationCountRespond value)  notificationCountRespond,required TResult Function( HeartsMeRespond value)  heartsMeRespond,required TResult Function( FamilyTreeRespond value)  familyTreeRespond,required TResult Function( BadgeListRespond value)  badgeListRespond,required TResult Function( MissionHistoryRespond value)  missionHistoryRespond,required TResult Function( MissionBoardRespond value)  missionBoardRespond,required TResult Function( MissionRecordRespond value)  missionRecordRespond,required TResult Function( MissionResultRespond value)  missionResultRespond,required TResult Function( MissionTemplateListRespond value)  missionTemplateListRespond,required TResult Function( MissionSwapOptionsRespond value)  missionSwapOptionsRespond,required TResult Function( AppreciationRecordRespond value)  appreciationRecordRespond,required TResult Function( AppreciationWallRespond value)  appreciationWallRespond,required TResult Function( JournalEntryRespond value)  journalEntryRespond,required TResult Function( JournalListRespond value)  journalListRespond,required TResult Function( CheckinRecordRespond value)  checkinRecordRespond,required TResult Function( CheckinTodayRespond value)  checkinTodayRespond,required TResult Function( RequestCreatedRespond value)  requestCreatedRespond,required TResult Function( RequestRecordRespond value)  requestRecordRespond,required TResult Function( RequestListRespond value)  requestListRespond,required TResult Function( ReauthTokenRespond value)  reauthTokenRespond,required TResult Function( DeletionPreviewRespond value)  deletionPreviewRespond,required TResult Function( DataExportRespond value)  dataExportRespond,required TResult Function( CalendarRespond value)  calendarRespond,required TResult Function( CalendarEventRespond value)  calendarEventRespond,required TResult Function( SessionListRespond value)  sessionListRespond,required TResult Function( FamilySettingsRespond value)  familySettingsRespond,required TResult Function( JourneyRespond value)  journeyRespond,required TResult Function( PrepGroupsRespond value)  prepGroupsRespond,required TResult Function( PrepItemRespond value)  prepItemRespond,required TResult Function( BirthResultRespond value)  birthResultRespond,required TResult Function( ChildStatsRespond value)  childStatsRespond,required TResult Function( AlbumListRespond value)  albumListRespond,required TResult Function( AlbumRecordRespond value)  albumRecordRespond,required TResult Function( PerspectiveListRespond value)  perspectiveListRespond,required TResult Function( PerspectiveRecordRespond value)  perspectiveRecordRespond,required TResult Function( MemoryPromptListRespond value)  memoryPromptListRespond,required TResult Function( DownloadUrlListRespond value)  downloadUrlListRespond,required TResult Function( MilestoneCatalogRespond value)  milestoneCatalogRespond,required TResult Function( LetterListRespond value)  letterListRespond,required TResult Function( MissionSettingsRespond value)  missionSettingsRespond,required TResult Function( MissionSeriesRespond value)  missionSeriesRespond,required TResult Function( CircleMemberListRespond value)  circleMemberListRespond,required TResult Function( CircleInviteListRespond value)  circleInviteListRespond,required TResult Function( CircleInviteIssuedRespond value)  circleInviteIssuedRespond,required TResult Function( UsSettingsRespond value)  usSettingsRespond,required TResult Function( MyCircleListRespond value)  myCircleListRespond,required TResult Function( BillingCatalogRespond value)  billingCatalogRespond,required TResult Function( PurchaseIntentRespond value)  purchaseIntentRespond,required TResult Function( FamilyBillingRespond value)  familyBillingRespond,required TResult Function( NotificationSettingsRespond value)  notificationSettingsRespond,required TResult Function( AiSettingsRespond value)  aiSettingsRespond,required TResult Function( OnThisDayRespond value)  onThisDayRespond,required TResult Function( ReportRespond value)  reportRespond,required TResult Function( BlockedUserListRespond value)  blockedUserListRespond,required TResult Function( WeekStatsRespond value)  weekStatsRespond,required TResult Function( WeeklyRecapRespond value)  weeklyRecapRespond,required TResult Function( DisplaySettingsRespond value)  displaySettingsRespond,required TResult Function( FamilyDeletionRespond value)  familyDeletionRespond,required TResult Function( PrivacyOverviewRespond value)  privacyOverviewRespond,required TResult Function( MonthlyPhotoListRespond value)  monthlyPhotoListRespond,required TResult Function( MonthlyPhotoRespond value)  monthlyPhotoRespond,required TResult Function( TodayStoryRespond value)  todayStoryRespond,required TResult Function( FamilyRecordRespond value)  familyRecordRespond,required TResult Function( MissionSeriesListRespond value)  missionSeriesListRespond,required TResult Function( SupportCategoriesRespond value)  supportCategoriesRespond,required TResult Function( SupportTicketRespond value)  supportTicketRespond,required TResult Function( HelpCenterRespond value)  helpCenterRespond,required TResult Function( SupportTicketDetailRespond value)  supportTicketDetailRespond,required TResult Function( SupportTicketListRespond value)  supportTicketListRespond,required TResult Function( SignInMethodListRespond value)  signInMethodListRespond,required TResult Function( MyFamilyListRespond value)  myFamilyListRespond,required TResult Function( TimezoneCatalogRespond value)  timezoneCatalogRespond,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( AuthCertificateRespond value)  authCertificateRespond,required TResult Function( UserRespond value)  userRespond,required TResult Function( OtpDispatchRespond value)  otpDispatchRespond,required TResult Function( MeProfileRespond value)  meProfileRespond,required TResult Function( FamilyBootstrapRespond value)  familyBootstrapRespond,required TResult Function( PartnerInviteIssuedRespond value)  partnerInviteIssuedRespond,required TResult Function( PartnerInviteStatusRespond value)  partnerInviteStatusRespond,required TResult Function( InviteResolutionRespond value)  inviteResolutionRespond,required TResult Function( InviteDecisionRespond value)  inviteDecisionRespond,required TResult Function( ChildRecordRespond value)  childRecordRespond,required TResult Function( PregnancyRecordRespond value)  pregnancyRecordRespond,required TResult Function( UploadIntentRespond value)  uploadIntentRespond,required TResult Function( UploadStatusRespond value)  uploadStatusRespond,required TResult Function( MemoryRecordRespond value)  memoryRecordRespond,required TResult Function( TimelineRespond value)  timelineRespond,required TResult Function( MediaGridRespond value)  mediaGridRespond,required TResult Function( CommentRecordRespond value)  commentRecordRespond,required TResult Function( CommentListRespond value)  commentListRespond,required TResult Function( ReactionStateRespond value)  reactionStateRespond,required TResult Function( PregnancyNamesRespond value)  pregnancyNamesRespond,required TResult Function( PregnancyNameRespond value)  pregnancyNameRespond,required TResult Function( CoupleQuestionRespond value)  coupleQuestionRespond,required TResult Function( CoupleWeekRespond value)  coupleWeekRespond,required TResult Function( AiStatusRespond value)  aiStatusRespond,required TResult Function( AiDraftRespond value)  aiDraftRespond,required TResult Function( BridgeSessionListRespond value)  bridgeSessionListRespond,required TResult Function( BridgeSessionRespond value)  bridgeSessionRespond,required TResult Function( CareHandoffListRespond value)  careHandoffListRespond,required TResult Function( CareHandoffRespond value)  careHandoffRespond,required TResult Function( DayStoryRespond value)  dayStoryRespond,required TResult Function( SavedDayStoryRespond value)  savedDayStoryRespond,required TResult Function( ChatConversationListRespond value)  chatConversationListRespond,required TResult Function( ChatMessagePageRespond value)  chatMessagePageRespond,required TResult Function( ChatMessageRespond value)  chatMessageRespond,required TResult Function( ChatReadRespond value)  chatReadRespond,required TResult Function( GrowthListRespond value)  growthListRespond,required TResult Function( GrowthEntryRespond value)  growthEntryRespond,required TResult Function( YearBookRespond value)  yearBookRespond,required TResult Function( YearBookListRespond value)  yearBookListRespond,required TResult Function( MonthRecapRespond value)  monthRecapRespond,required TResult Function( CareStatsRespond value)  careStatsRespond,required TResult Function( MemoryFeedRespond value)  memoryFeedRespond,required TResult Function( NotificationPageRespond value)  notificationPageRespond,required TResult Function( NotificationCountRespond value)  notificationCountRespond,required TResult Function( HeartsMeRespond value)  heartsMeRespond,required TResult Function( FamilyTreeRespond value)  familyTreeRespond,required TResult Function( BadgeListRespond value)  badgeListRespond,required TResult Function( MissionHistoryRespond value)  missionHistoryRespond,required TResult Function( MissionBoardRespond value)  missionBoardRespond,required TResult Function( MissionRecordRespond value)  missionRecordRespond,required TResult Function( MissionResultRespond value)  missionResultRespond,required TResult Function( MissionTemplateListRespond value)  missionTemplateListRespond,required TResult Function( MissionSwapOptionsRespond value)  missionSwapOptionsRespond,required TResult Function( AppreciationRecordRespond value)  appreciationRecordRespond,required TResult Function( AppreciationWallRespond value)  appreciationWallRespond,required TResult Function( JournalEntryRespond value)  journalEntryRespond,required TResult Function( JournalListRespond value)  journalListRespond,required TResult Function( CheckinRecordRespond value)  checkinRecordRespond,required TResult Function( CheckinTodayRespond value)  checkinTodayRespond,required TResult Function( RequestCreatedRespond value)  requestCreatedRespond,required TResult Function( RequestRecordRespond value)  requestRecordRespond,required TResult Function( RequestListRespond value)  requestListRespond,required TResult Function( ReauthTokenRespond value)  reauthTokenRespond,required TResult Function( DeletionPreviewRespond value)  deletionPreviewRespond,required TResult Function( DataExportRespond value)  dataExportRespond,required TResult Function( CalendarRespond value)  calendarRespond,required TResult Function( CalendarEventRespond value)  calendarEventRespond,required TResult Function( SessionListRespond value)  sessionListRespond,required TResult Function( FamilySettingsRespond value)  familySettingsRespond,required TResult Function( JourneyRespond value)  journeyRespond,required TResult Function( PrepGroupsRespond value)  prepGroupsRespond,required TResult Function( PrepItemRespond value)  prepItemRespond,required TResult Function( BirthResultRespond value)  birthResultRespond,required TResult Function( ChildStatsRespond value)  childStatsRespond,required TResult Function( AlbumListRespond value)  albumListRespond,required TResult Function( AlbumRecordRespond value)  albumRecordRespond,required TResult Function( PerspectiveListRespond value)  perspectiveListRespond,required TResult Function( PerspectiveRecordRespond value)  perspectiveRecordRespond,required TResult Function( MemoryPromptListRespond value)  memoryPromptListRespond,required TResult Function( DownloadUrlListRespond value)  downloadUrlListRespond,required TResult Function( MilestoneCatalogRespond value)  milestoneCatalogRespond,required TResult Function( LetterListRespond value)  letterListRespond,required TResult Function( MissionSettingsRespond value)  missionSettingsRespond,required TResult Function( MissionSeriesRespond value)  missionSeriesRespond,required TResult Function( CircleMemberListRespond value)  circleMemberListRespond,required TResult Function( CircleInviteListRespond value)  circleInviteListRespond,required TResult Function( CircleInviteIssuedRespond value)  circleInviteIssuedRespond,required TResult Function( UsSettingsRespond value)  usSettingsRespond,required TResult Function( MyCircleListRespond value)  myCircleListRespond,required TResult Function( BillingCatalogRespond value)  billingCatalogRespond,required TResult Function( PurchaseIntentRespond value)  purchaseIntentRespond,required TResult Function( FamilyBillingRespond value)  familyBillingRespond,required TResult Function( NotificationSettingsRespond value)  notificationSettingsRespond,required TResult Function( AiSettingsRespond value)  aiSettingsRespond,required TResult Function( OnThisDayRespond value)  onThisDayRespond,required TResult Function( ReportRespond value)  reportRespond,required TResult Function( BlockedUserListRespond value)  blockedUserListRespond,required TResult Function( WeekStatsRespond value)  weekStatsRespond,required TResult Function( WeeklyRecapRespond value)  weeklyRecapRespond,required TResult Function( RecapTimelineRespond value)  recapTimelineRespond,required TResult Function( DisplaySettingsRespond value)  displaySettingsRespond,required TResult Function( FamilyDeletionRespond value)  familyDeletionRespond,required TResult Function( PrivacyOverviewRespond value)  privacyOverviewRespond,required TResult Function( MonthlyPhotoListRespond value)  monthlyPhotoListRespond,required TResult Function( MonthlyPhotoRespond value)  monthlyPhotoRespond,required TResult Function( TodayStoryRespond value)  todayStoryRespond,required TResult Function( FamilyRecordRespond value)  familyRecordRespond,required TResult Function( MissionSeriesListRespond value)  missionSeriesListRespond,required TResult Function( SupportCategoriesRespond value)  supportCategoriesRespond,required TResult Function( SupportTicketRespond value)  supportTicketRespond,required TResult Function( HelpCenterRespond value)  helpCenterRespond,required TResult Function( SupportTicketDetailRespond value)  supportTicketDetailRespond,required TResult Function( SupportTicketListRespond value)  supportTicketListRespond,required TResult Function( SignInMethodListRespond value)  signInMethodListRespond,required TResult Function( MyFamilyListRespond value)  myFamilyListRespond,required TResult Function( TimezoneCatalogRespond value)  timezoneCatalogRespond,}){
 final _that = this;
 switch (_that) {
 case AuthCertificateRespond():
@@ -598,7 +698,26 @@ return commentRecordRespond(_that);case CommentListRespond():
 return commentListRespond(_that);case ReactionStateRespond():
 return reactionStateRespond(_that);case PregnancyNamesRespond():
 return pregnancyNamesRespond(_that);case PregnancyNameRespond():
-return pregnancyNameRespond(_that);case CareStatsRespond():
+return pregnancyNameRespond(_that);case CoupleQuestionRespond():
+return coupleQuestionRespond(_that);case CoupleWeekRespond():
+return coupleWeekRespond(_that);case AiStatusRespond():
+return aiStatusRespond(_that);case AiDraftRespond():
+return aiDraftRespond(_that);case BridgeSessionListRespond():
+return bridgeSessionListRespond(_that);case BridgeSessionRespond():
+return bridgeSessionRespond(_that);case CareHandoffListRespond():
+return careHandoffListRespond(_that);case CareHandoffRespond():
+return careHandoffRespond(_that);case DayStoryRespond():
+return dayStoryRespond(_that);case SavedDayStoryRespond():
+return savedDayStoryRespond(_that);case ChatConversationListRespond():
+return chatConversationListRespond(_that);case ChatMessagePageRespond():
+return chatMessagePageRespond(_that);case ChatMessageRespond():
+return chatMessageRespond(_that);case ChatReadRespond():
+return chatReadRespond(_that);case GrowthListRespond():
+return growthListRespond(_that);case GrowthEntryRespond():
+return growthEntryRespond(_that);case YearBookRespond():
+return yearBookRespond(_that);case YearBookListRespond():
+return yearBookListRespond(_that);case MonthRecapRespond():
+return monthRecapRespond(_that);case CareStatsRespond():
 return careStatsRespond(_that);case MemoryFeedRespond():
 return memoryFeedRespond(_that);case NotificationPageRespond():
 return notificationPageRespond(_that);case NotificationCountRespond():
@@ -657,7 +776,8 @@ return onThisDayRespond(_that);case ReportRespond():
 return reportRespond(_that);case BlockedUserListRespond():
 return blockedUserListRespond(_that);case WeekStatsRespond():
 return weekStatsRespond(_that);case WeeklyRecapRespond():
-return weeklyRecapRespond(_that);case DisplaySettingsRespond():
+return weeklyRecapRespond(_that);case RecapTimelineRespond():
+return recapTimelineRespond(_that);case DisplaySettingsRespond():
 return displaySettingsRespond(_that);case FamilyDeletionRespond():
 return familyDeletionRespond(_that);case PrivacyOverviewRespond():
 return privacyOverviewRespond(_that);case MonthlyPhotoListRespond():
@@ -687,7 +807,7 @@ return timezoneCatalogRespond(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( AuthCertificateRespond value)?  authCertificateRespond,TResult? Function( UserRespond value)?  userRespond,TResult? Function( OtpDispatchRespond value)?  otpDispatchRespond,TResult? Function( MeProfileRespond value)?  meProfileRespond,TResult? Function( FamilyBootstrapRespond value)?  familyBootstrapRespond,TResult? Function( PartnerInviteIssuedRespond value)?  partnerInviteIssuedRespond,TResult? Function( PartnerInviteStatusRespond value)?  partnerInviteStatusRespond,TResult? Function( InviteResolutionRespond value)?  inviteResolutionRespond,TResult? Function( InviteDecisionRespond value)?  inviteDecisionRespond,TResult? Function( ChildRecordRespond value)?  childRecordRespond,TResult? Function( PregnancyRecordRespond value)?  pregnancyRecordRespond,TResult? Function( UploadIntentRespond value)?  uploadIntentRespond,TResult? Function( UploadStatusRespond value)?  uploadStatusRespond,TResult? Function( MemoryRecordRespond value)?  memoryRecordRespond,TResult? Function( TimelineRespond value)?  timelineRespond,TResult? Function( MediaGridRespond value)?  mediaGridRespond,TResult? Function( CommentRecordRespond value)?  commentRecordRespond,TResult? Function( CommentListRespond value)?  commentListRespond,TResult? Function( ReactionStateRespond value)?  reactionStateRespond,TResult? Function( PregnancyNamesRespond value)?  pregnancyNamesRespond,TResult? Function( PregnancyNameRespond value)?  pregnancyNameRespond,TResult? Function( CareStatsRespond value)?  careStatsRespond,TResult? Function( MemoryFeedRespond value)?  memoryFeedRespond,TResult? Function( NotificationPageRespond value)?  notificationPageRespond,TResult? Function( NotificationCountRespond value)?  notificationCountRespond,TResult? Function( HeartsMeRespond value)?  heartsMeRespond,TResult? Function( FamilyTreeRespond value)?  familyTreeRespond,TResult? Function( BadgeListRespond value)?  badgeListRespond,TResult? Function( MissionHistoryRespond value)?  missionHistoryRespond,TResult? Function( MissionBoardRespond value)?  missionBoardRespond,TResult? Function( MissionRecordRespond value)?  missionRecordRespond,TResult? Function( MissionResultRespond value)?  missionResultRespond,TResult? Function( MissionTemplateListRespond value)?  missionTemplateListRespond,TResult? Function( MissionSwapOptionsRespond value)?  missionSwapOptionsRespond,TResult? Function( AppreciationRecordRespond value)?  appreciationRecordRespond,TResult? Function( AppreciationWallRespond value)?  appreciationWallRespond,TResult? Function( JournalEntryRespond value)?  journalEntryRespond,TResult? Function( JournalListRespond value)?  journalListRespond,TResult? Function( CheckinRecordRespond value)?  checkinRecordRespond,TResult? Function( CheckinTodayRespond value)?  checkinTodayRespond,TResult? Function( RequestCreatedRespond value)?  requestCreatedRespond,TResult? Function( RequestRecordRespond value)?  requestRecordRespond,TResult? Function( RequestListRespond value)?  requestListRespond,TResult? Function( ReauthTokenRespond value)?  reauthTokenRespond,TResult? Function( DeletionPreviewRespond value)?  deletionPreviewRespond,TResult? Function( DataExportRespond value)?  dataExportRespond,TResult? Function( CalendarRespond value)?  calendarRespond,TResult? Function( CalendarEventRespond value)?  calendarEventRespond,TResult? Function( SessionListRespond value)?  sessionListRespond,TResult? Function( FamilySettingsRespond value)?  familySettingsRespond,TResult? Function( JourneyRespond value)?  journeyRespond,TResult? Function( PrepGroupsRespond value)?  prepGroupsRespond,TResult? Function( PrepItemRespond value)?  prepItemRespond,TResult? Function( BirthResultRespond value)?  birthResultRespond,TResult? Function( ChildStatsRespond value)?  childStatsRespond,TResult? Function( AlbumListRespond value)?  albumListRespond,TResult? Function( AlbumRecordRespond value)?  albumRecordRespond,TResult? Function( PerspectiveListRespond value)?  perspectiveListRespond,TResult? Function( PerspectiveRecordRespond value)?  perspectiveRecordRespond,TResult? Function( MemoryPromptListRespond value)?  memoryPromptListRespond,TResult? Function( DownloadUrlListRespond value)?  downloadUrlListRespond,TResult? Function( MilestoneCatalogRespond value)?  milestoneCatalogRespond,TResult? Function( LetterListRespond value)?  letterListRespond,TResult? Function( MissionSettingsRespond value)?  missionSettingsRespond,TResult? Function( MissionSeriesRespond value)?  missionSeriesRespond,TResult? Function( CircleMemberListRespond value)?  circleMemberListRespond,TResult? Function( CircleInviteListRespond value)?  circleInviteListRespond,TResult? Function( CircleInviteIssuedRespond value)?  circleInviteIssuedRespond,TResult? Function( UsSettingsRespond value)?  usSettingsRespond,TResult? Function( MyCircleListRespond value)?  myCircleListRespond,TResult? Function( BillingCatalogRespond value)?  billingCatalogRespond,TResult? Function( PurchaseIntentRespond value)?  purchaseIntentRespond,TResult? Function( FamilyBillingRespond value)?  familyBillingRespond,TResult? Function( NotificationSettingsRespond value)?  notificationSettingsRespond,TResult? Function( AiSettingsRespond value)?  aiSettingsRespond,TResult? Function( OnThisDayRespond value)?  onThisDayRespond,TResult? Function( ReportRespond value)?  reportRespond,TResult? Function( BlockedUserListRespond value)?  blockedUserListRespond,TResult? Function( WeekStatsRespond value)?  weekStatsRespond,TResult? Function( WeeklyRecapRespond value)?  weeklyRecapRespond,TResult? Function( DisplaySettingsRespond value)?  displaySettingsRespond,TResult? Function( FamilyDeletionRespond value)?  familyDeletionRespond,TResult? Function( PrivacyOverviewRespond value)?  privacyOverviewRespond,TResult? Function( MonthlyPhotoListRespond value)?  monthlyPhotoListRespond,TResult? Function( MonthlyPhotoRespond value)?  monthlyPhotoRespond,TResult? Function( TodayStoryRespond value)?  todayStoryRespond,TResult? Function( FamilyRecordRespond value)?  familyRecordRespond,TResult? Function( MissionSeriesListRespond value)?  missionSeriesListRespond,TResult? Function( SupportCategoriesRespond value)?  supportCategoriesRespond,TResult? Function( SupportTicketRespond value)?  supportTicketRespond,TResult? Function( HelpCenterRespond value)?  helpCenterRespond,TResult? Function( SupportTicketDetailRespond value)?  supportTicketDetailRespond,TResult? Function( SupportTicketListRespond value)?  supportTicketListRespond,TResult? Function( SignInMethodListRespond value)?  signInMethodListRespond,TResult? Function( MyFamilyListRespond value)?  myFamilyListRespond,TResult? Function( TimezoneCatalogRespond value)?  timezoneCatalogRespond,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( AuthCertificateRespond value)?  authCertificateRespond,TResult? Function( UserRespond value)?  userRespond,TResult? Function( OtpDispatchRespond value)?  otpDispatchRespond,TResult? Function( MeProfileRespond value)?  meProfileRespond,TResult? Function( FamilyBootstrapRespond value)?  familyBootstrapRespond,TResult? Function( PartnerInviteIssuedRespond value)?  partnerInviteIssuedRespond,TResult? Function( PartnerInviteStatusRespond value)?  partnerInviteStatusRespond,TResult? Function( InviteResolutionRespond value)?  inviteResolutionRespond,TResult? Function( InviteDecisionRespond value)?  inviteDecisionRespond,TResult? Function( ChildRecordRespond value)?  childRecordRespond,TResult? Function( PregnancyRecordRespond value)?  pregnancyRecordRespond,TResult? Function( UploadIntentRespond value)?  uploadIntentRespond,TResult? Function( UploadStatusRespond value)?  uploadStatusRespond,TResult? Function( MemoryRecordRespond value)?  memoryRecordRespond,TResult? Function( TimelineRespond value)?  timelineRespond,TResult? Function( MediaGridRespond value)?  mediaGridRespond,TResult? Function( CommentRecordRespond value)?  commentRecordRespond,TResult? Function( CommentListRespond value)?  commentListRespond,TResult? Function( ReactionStateRespond value)?  reactionStateRespond,TResult? Function( PregnancyNamesRespond value)?  pregnancyNamesRespond,TResult? Function( PregnancyNameRespond value)?  pregnancyNameRespond,TResult? Function( CoupleQuestionRespond value)?  coupleQuestionRespond,TResult? Function( CoupleWeekRespond value)?  coupleWeekRespond,TResult? Function( AiStatusRespond value)?  aiStatusRespond,TResult? Function( AiDraftRespond value)?  aiDraftRespond,TResult? Function( BridgeSessionListRespond value)?  bridgeSessionListRespond,TResult? Function( BridgeSessionRespond value)?  bridgeSessionRespond,TResult? Function( CareHandoffListRespond value)?  careHandoffListRespond,TResult? Function( CareHandoffRespond value)?  careHandoffRespond,TResult? Function( DayStoryRespond value)?  dayStoryRespond,TResult? Function( SavedDayStoryRespond value)?  savedDayStoryRespond,TResult? Function( ChatConversationListRespond value)?  chatConversationListRespond,TResult? Function( ChatMessagePageRespond value)?  chatMessagePageRespond,TResult? Function( ChatMessageRespond value)?  chatMessageRespond,TResult? Function( ChatReadRespond value)?  chatReadRespond,TResult? Function( GrowthListRespond value)?  growthListRespond,TResult? Function( GrowthEntryRespond value)?  growthEntryRespond,TResult? Function( YearBookRespond value)?  yearBookRespond,TResult? Function( YearBookListRespond value)?  yearBookListRespond,TResult? Function( MonthRecapRespond value)?  monthRecapRespond,TResult? Function( CareStatsRespond value)?  careStatsRespond,TResult? Function( MemoryFeedRespond value)?  memoryFeedRespond,TResult? Function( NotificationPageRespond value)?  notificationPageRespond,TResult? Function( NotificationCountRespond value)?  notificationCountRespond,TResult? Function( HeartsMeRespond value)?  heartsMeRespond,TResult? Function( FamilyTreeRespond value)?  familyTreeRespond,TResult? Function( BadgeListRespond value)?  badgeListRespond,TResult? Function( MissionHistoryRespond value)?  missionHistoryRespond,TResult? Function( MissionBoardRespond value)?  missionBoardRespond,TResult? Function( MissionRecordRespond value)?  missionRecordRespond,TResult? Function( MissionResultRespond value)?  missionResultRespond,TResult? Function( MissionTemplateListRespond value)?  missionTemplateListRespond,TResult? Function( MissionSwapOptionsRespond value)?  missionSwapOptionsRespond,TResult? Function( AppreciationRecordRespond value)?  appreciationRecordRespond,TResult? Function( AppreciationWallRespond value)?  appreciationWallRespond,TResult? Function( JournalEntryRespond value)?  journalEntryRespond,TResult? Function( JournalListRespond value)?  journalListRespond,TResult? Function( CheckinRecordRespond value)?  checkinRecordRespond,TResult? Function( CheckinTodayRespond value)?  checkinTodayRespond,TResult? Function( RequestCreatedRespond value)?  requestCreatedRespond,TResult? Function( RequestRecordRespond value)?  requestRecordRespond,TResult? Function( RequestListRespond value)?  requestListRespond,TResult? Function( ReauthTokenRespond value)?  reauthTokenRespond,TResult? Function( DeletionPreviewRespond value)?  deletionPreviewRespond,TResult? Function( DataExportRespond value)?  dataExportRespond,TResult? Function( CalendarRespond value)?  calendarRespond,TResult? Function( CalendarEventRespond value)?  calendarEventRespond,TResult? Function( SessionListRespond value)?  sessionListRespond,TResult? Function( FamilySettingsRespond value)?  familySettingsRespond,TResult? Function( JourneyRespond value)?  journeyRespond,TResult? Function( PrepGroupsRespond value)?  prepGroupsRespond,TResult? Function( PrepItemRespond value)?  prepItemRespond,TResult? Function( BirthResultRespond value)?  birthResultRespond,TResult? Function( ChildStatsRespond value)?  childStatsRespond,TResult? Function( AlbumListRespond value)?  albumListRespond,TResult? Function( AlbumRecordRespond value)?  albumRecordRespond,TResult? Function( PerspectiveListRespond value)?  perspectiveListRespond,TResult? Function( PerspectiveRecordRespond value)?  perspectiveRecordRespond,TResult? Function( MemoryPromptListRespond value)?  memoryPromptListRespond,TResult? Function( DownloadUrlListRespond value)?  downloadUrlListRespond,TResult? Function( MilestoneCatalogRespond value)?  milestoneCatalogRespond,TResult? Function( LetterListRespond value)?  letterListRespond,TResult? Function( MissionSettingsRespond value)?  missionSettingsRespond,TResult? Function( MissionSeriesRespond value)?  missionSeriesRespond,TResult? Function( CircleMemberListRespond value)?  circleMemberListRespond,TResult? Function( CircleInviteListRespond value)?  circleInviteListRespond,TResult? Function( CircleInviteIssuedRespond value)?  circleInviteIssuedRespond,TResult? Function( UsSettingsRespond value)?  usSettingsRespond,TResult? Function( MyCircleListRespond value)?  myCircleListRespond,TResult? Function( BillingCatalogRespond value)?  billingCatalogRespond,TResult? Function( PurchaseIntentRespond value)?  purchaseIntentRespond,TResult? Function( FamilyBillingRespond value)?  familyBillingRespond,TResult? Function( NotificationSettingsRespond value)?  notificationSettingsRespond,TResult? Function( AiSettingsRespond value)?  aiSettingsRespond,TResult? Function( OnThisDayRespond value)?  onThisDayRespond,TResult? Function( ReportRespond value)?  reportRespond,TResult? Function( BlockedUserListRespond value)?  blockedUserListRespond,TResult? Function( WeekStatsRespond value)?  weekStatsRespond,TResult? Function( WeeklyRecapRespond value)?  weeklyRecapRespond,TResult? Function( RecapTimelineRespond value)?  recapTimelineRespond,TResult? Function( DisplaySettingsRespond value)?  displaySettingsRespond,TResult? Function( FamilyDeletionRespond value)?  familyDeletionRespond,TResult? Function( PrivacyOverviewRespond value)?  privacyOverviewRespond,TResult? Function( MonthlyPhotoListRespond value)?  monthlyPhotoListRespond,TResult? Function( MonthlyPhotoRespond value)?  monthlyPhotoRespond,TResult? Function( TodayStoryRespond value)?  todayStoryRespond,TResult? Function( FamilyRecordRespond value)?  familyRecordRespond,TResult? Function( MissionSeriesListRespond value)?  missionSeriesListRespond,TResult? Function( SupportCategoriesRespond value)?  supportCategoriesRespond,TResult? Function( SupportTicketRespond value)?  supportTicketRespond,TResult? Function( HelpCenterRespond value)?  helpCenterRespond,TResult? Function( SupportTicketDetailRespond value)?  supportTicketDetailRespond,TResult? Function( SupportTicketListRespond value)?  supportTicketListRespond,TResult? Function( SignInMethodListRespond value)?  signInMethodListRespond,TResult? Function( MyFamilyListRespond value)?  myFamilyListRespond,TResult? Function( TimezoneCatalogRespond value)?  timezoneCatalogRespond,}){
 final _that = this;
 switch (_that) {
 case AuthCertificateRespond() when authCertificateRespond != null:
@@ -711,7 +831,26 @@ return commentRecordRespond(_that);case CommentListRespond() when commentListRes
 return commentListRespond(_that);case ReactionStateRespond() when reactionStateRespond != null:
 return reactionStateRespond(_that);case PregnancyNamesRespond() when pregnancyNamesRespond != null:
 return pregnancyNamesRespond(_that);case PregnancyNameRespond() when pregnancyNameRespond != null:
-return pregnancyNameRespond(_that);case CareStatsRespond() when careStatsRespond != null:
+return pregnancyNameRespond(_that);case CoupleQuestionRespond() when coupleQuestionRespond != null:
+return coupleQuestionRespond(_that);case CoupleWeekRespond() when coupleWeekRespond != null:
+return coupleWeekRespond(_that);case AiStatusRespond() when aiStatusRespond != null:
+return aiStatusRespond(_that);case AiDraftRespond() when aiDraftRespond != null:
+return aiDraftRespond(_that);case BridgeSessionListRespond() when bridgeSessionListRespond != null:
+return bridgeSessionListRespond(_that);case BridgeSessionRespond() when bridgeSessionRespond != null:
+return bridgeSessionRespond(_that);case CareHandoffListRespond() when careHandoffListRespond != null:
+return careHandoffListRespond(_that);case CareHandoffRespond() when careHandoffRespond != null:
+return careHandoffRespond(_that);case DayStoryRespond() when dayStoryRespond != null:
+return dayStoryRespond(_that);case SavedDayStoryRespond() when savedDayStoryRespond != null:
+return savedDayStoryRespond(_that);case ChatConversationListRespond() when chatConversationListRespond != null:
+return chatConversationListRespond(_that);case ChatMessagePageRespond() when chatMessagePageRespond != null:
+return chatMessagePageRespond(_that);case ChatMessageRespond() when chatMessageRespond != null:
+return chatMessageRespond(_that);case ChatReadRespond() when chatReadRespond != null:
+return chatReadRespond(_that);case GrowthListRespond() when growthListRespond != null:
+return growthListRespond(_that);case GrowthEntryRespond() when growthEntryRespond != null:
+return growthEntryRespond(_that);case YearBookRespond() when yearBookRespond != null:
+return yearBookRespond(_that);case YearBookListRespond() when yearBookListRespond != null:
+return yearBookListRespond(_that);case MonthRecapRespond() when monthRecapRespond != null:
+return monthRecapRespond(_that);case CareStatsRespond() when careStatsRespond != null:
 return careStatsRespond(_that);case MemoryFeedRespond() when memoryFeedRespond != null:
 return memoryFeedRespond(_that);case NotificationPageRespond() when notificationPageRespond != null:
 return notificationPageRespond(_that);case NotificationCountRespond() when notificationCountRespond != null:
@@ -770,7 +909,8 @@ return onThisDayRespond(_that);case ReportRespond() when reportRespond != null:
 return reportRespond(_that);case BlockedUserListRespond() when blockedUserListRespond != null:
 return blockedUserListRespond(_that);case WeekStatsRespond() when weekStatsRespond != null:
 return weekStatsRespond(_that);case WeeklyRecapRespond() when weeklyRecapRespond != null:
-return weeklyRecapRespond(_that);case DisplaySettingsRespond() when displaySettingsRespond != null:
+return weeklyRecapRespond(_that);case RecapTimelineRespond() when recapTimelineRespond != null:
+return recapTimelineRespond(_that);case DisplaySettingsRespond() when displaySettingsRespond != null:
 return displaySettingsRespond(_that);case FamilyDeletionRespond() when familyDeletionRespond != null:
 return familyDeletionRespond(_that);case PrivacyOverviewRespond() when privacyOverviewRespond != null:
 return privacyOverviewRespond(_that);case MonthlyPhotoListRespond() when monthlyPhotoListRespond != null:
@@ -803,7 +943,7 @@ return timezoneCatalogRespond(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function(@JsonKey(name: 'data')  AuthCertificate? auth)?  authCertificateRespond,TResult Function(@JsonKey(name: 'data')  User? user)?  userRespond,TResult Function(@JsonKey(name: 'data')  OtpDispatch? dispatch)?  otpDispatchRespond,TResult Function(@JsonKey(name: 'data')  MeProfile? profile)?  meProfileRespond,TResult Function(@JsonKey(name: 'data')  FamilyBootstrap? bootstrap)?  familyBootstrapRespond,TResult Function(@JsonKey(name: 'data')  PartnerInviteIssued? invite)?  partnerInviteIssuedRespond,TResult Function(@JsonKey(name: 'data')  PartnerInviteStatus? invite)?  partnerInviteStatusRespond,TResult Function(@JsonKey(name: 'data')  InviteResolution? invite)?  inviteResolutionRespond,TResult Function(@JsonKey(name: 'data')  InviteDecision? decision)?  inviteDecisionRespond,TResult Function(@JsonKey(name: 'data')  ChildRecord? child)?  childRecordRespond,TResult Function(@JsonKey(name: 'data')  PregnancyRecord? pregnancy)?  pregnancyRecordRespond,TResult Function(@JsonKey(name: 'data')  UploadIntent? intent)?  uploadIntentRespond,TResult Function(@JsonKey(name: 'data')  UploadStatus? upload)?  uploadStatusRespond,TResult Function(@JsonKey(name: 'data')  MemoryRecord? memory)?  memoryRecordRespond,TResult Function(@JsonKey(name: 'data')  List<TimelineItemRecord> items, @JsonKey(name: 'nextCursor')  String? nextCursor)?  timelineRespond,TResult Function(@JsonKey(name: 'data')  List<MediaGridItemRecord> items, @JsonKey(name: 'nextCursor')  String? nextCursor)?  mediaGridRespond,TResult Function(@JsonKey(name: 'data')  CommentRecord? comment)?  commentRecordRespond,TResult Function(@JsonKey(name: 'data')  List<CommentRecord> comments)?  commentListRespond,TResult Function(@JsonKey(name: 'data')  ReactionState? reaction)?  reactionStateRespond,TResult Function(@JsonKey(name: 'data')  PregnancyNameList? list)?  pregnancyNamesRespond,TResult Function(@JsonKey(name: 'data')  PregnancyNameRecord? name)?  pregnancyNameRespond,TResult Function(@JsonKey(name: 'data')  CareStats? stats)?  careStatsRespond,TResult Function(@JsonKey(name: 'data', fromJson: _memoryRecords)  List<MemoryRecord> memories, @JsonKey(name: 'nextCursor')  String? nextCursor)?  memoryFeedRespond,TResult Function(@JsonKey(name: 'data')  NotificationPage? page)?  notificationPageRespond,TResult Function(@JsonKey(name: 'data')  NotificationCount? count)?  notificationCountRespond,TResult Function(@JsonKey(name: 'data')  HeartsMeRecord? hearts)?  heartsMeRespond,TResult Function(@JsonKey(name: 'data')  FamilyTreeRecord? tree)?  familyTreeRespond,TResult Function(@JsonKey(name: 'data')  BadgeList? list)?  badgeListRespond,TResult Function(@JsonKey(name: 'data')  MissionHistoryPage? page)?  missionHistoryRespond,TResult Function(@JsonKey(name: 'data')  MissionBoardRecord? board)?  missionBoardRespond,TResult Function(@JsonKey(name: 'data')  MissionRecord? mission)?  missionRecordRespond,TResult Function(@JsonKey(name: 'data')  MissionResultRecord? result)?  missionResultRespond,TResult Function(@JsonKey(name: 'data')  MissionTemplateList? list)?  missionTemplateListRespond,TResult Function(@JsonKey(name: 'data')  MissionSwapOptionsRecord? options)?  missionSwapOptionsRespond,TResult Function(@JsonKey(name: 'data')  AppreciationRecord? appreciation)?  appreciationRecordRespond,TResult Function(@JsonKey(name: 'data')  AppreciationWall? wall)?  appreciationWallRespond,TResult Function(@JsonKey(name: 'data')  JournalEntryRecord? entry)?  journalEntryRespond,TResult Function(@JsonKey(name: 'data')  JournalList? page)?  journalListRespond,TResult Function(@JsonKey(name: 'data')  CheckinRecord? checkin)?  checkinRecordRespond,TResult Function(@JsonKey(name: 'data')  CheckinToday? today)?  checkinTodayRespond,TResult Function(@JsonKey(name: 'data')  RequestCreated? created)?  requestCreatedRespond,TResult Function(@JsonKey(name: 'data')  RequestRecord? request)?  requestRecordRespond,TResult Function(@JsonKey(name: 'data')  RequestList? page)?  requestListRespond,TResult Function(@JsonKey(name: 'data')  ReauthTokenRecord? token)?  reauthTokenRespond,TResult Function(@JsonKey(name: 'data')  DeletionPreviewRecord? preview)?  deletionPreviewRespond,TResult Function(@JsonKey(name: 'data')  DataExportRecord? export)?  dataExportRespond,TResult Function(@JsonKey(name: 'data')  CalendarRecord? calendar)?  calendarRespond,TResult Function(@JsonKey(name: 'data')  CalendarEventRecord? event)?  calendarEventRespond,TResult Function(@JsonKey(name: 'data')  SessionList? list)?  sessionListRespond,TResult Function(@JsonKey(name: 'data')  FamilySettingsRecord? settings)?  familySettingsRespond,TResult Function(@JsonKey(name: 'data')  JourneyRecord? journey)?  journeyRespond,TResult Function(@JsonKey(name: 'data')  List<PrepGroupRecord>? groups)?  prepGroupsRespond,TResult Function(@JsonKey(name: 'data')  PrepItemRecord? item)?  prepItemRespond,TResult Function(@JsonKey(name: 'data')  BirthResultRecord? result)?  birthResultRespond,TResult Function(@JsonKey(name: 'data')  ChildStatsRecord? stats)?  childStatsRespond,TResult Function(@JsonKey(name: 'data')  AlbumList? list)?  albumListRespond,TResult Function(@JsonKey(name: 'data')  AlbumRecord? album)?  albumRecordRespond,TResult Function(@JsonKey(name: 'data')  PerspectiveList? list)?  perspectiveListRespond,TResult Function(@JsonKey(name: 'data')  PerspectiveRecord? perspective)?  perspectiveRecordRespond,TResult Function(@JsonKey(name: 'data')  MemoryPromptList? list)?  memoryPromptListRespond,TResult Function(@JsonKey(name: 'data')  DownloadUrlList? list)?  downloadUrlListRespond,TResult Function(@JsonKey(name: 'data')  MilestoneCatalog? catalog)?  milestoneCatalogRespond,TResult Function(@JsonKey(name: 'data')  List<LetterRecord> letters)?  letterListRespond,TResult Function(@JsonKey(name: 'data')  MissionSettingsRecord? settings)?  missionSettingsRespond,TResult Function(@JsonKey(name: 'data')  MissionSeriesRecord? series)?  missionSeriesRespond,TResult Function(@JsonKey(name: 'data')  CircleMemberList? list)?  circleMemberListRespond,TResult Function(@JsonKey(name: 'data')  CircleInviteList? list)?  circleInviteListRespond,TResult Function(@JsonKey(name: 'data')  CircleInviteIssued? invite)?  circleInviteIssuedRespond,TResult Function(@JsonKey(name: 'data')  UsSettingsRecord? settings)?  usSettingsRespond,TResult Function(@JsonKey(name: 'data')  MyCircleList? list)?  myCircleListRespond,TResult Function(@JsonKey(name: 'data')  BillingCatalog? catalog)?  billingCatalogRespond,TResult Function(@JsonKey(name: 'data')  PurchaseIntentRecord? intent)?  purchaseIntentRespond,TResult Function(@JsonKey(name: 'data')  FamilyBillingRecord? billing)?  familyBillingRespond,TResult Function(@JsonKey(name: 'data')  NotificationSettingsRecord? settings)?  notificationSettingsRespond,TResult Function(@JsonKey(name: 'data')  AiSettingsRecord? settings)?  aiSettingsRespond,TResult Function(@JsonKey(name: 'data')  OnThisDayRecord? record)?  onThisDayRespond,TResult Function(@JsonKey(name: 'data')  ReportRecord? report)?  reportRespond,TResult Function(@JsonKey(name: 'data')  BlockedUserList? list)?  blockedUserListRespond,TResult Function(@JsonKey(name: 'data')  WeekStatsRecord? stats)?  weekStatsRespond,TResult Function(@JsonKey(name: 'data')  WeeklyRecapRecord? recap)?  weeklyRecapRespond,TResult Function(@JsonKey(name: 'data')  DisplaySettingsRecord? settings)?  displaySettingsRespond,TResult Function(@JsonKey(name: 'data')  FamilyDeletionRecord? deletion)?  familyDeletionRespond,TResult Function(@JsonKey(name: 'data')  PrivacyOverviewRecord? overview)?  privacyOverviewRespond,TResult Function(@JsonKey(name: 'data')  List<MonthlyPhotoRecord> photos)?  monthlyPhotoListRespond,TResult Function(@JsonKey(name: 'data')  MonthlyPhotoRecord? photo)?  monthlyPhotoRespond,TResult Function(@JsonKey(name: 'data')  TodayStoryRecord? story)?  todayStoryRespond,TResult Function(@JsonKey(name: 'data')  FamilyRecord? family)?  familyRecordRespond,TResult Function(@JsonKey(name: 'data')  MissionSeriesList? list)?  missionSeriesListRespond,TResult Function(@JsonKey(name: 'data')  SupportCategoryCatalog? catalog)?  supportCategoriesRespond,TResult Function(@JsonKey(name: 'data')  SupportTicket? ticket)?  supportTicketRespond,TResult Function(@JsonKey(name: 'data')  HelpCenterRecord? helpCenter)?  helpCenterRespond,TResult Function(@JsonKey(name: 'data')  SupportTicketDetail? ticket)?  supportTicketDetailRespond,TResult Function(@JsonKey(name: 'data')  SupportTicketList? list)?  supportTicketListRespond,TResult Function(@JsonKey(name: 'data')  List<SignInMethodRecord> methods)?  signInMethodListRespond,TResult Function(@JsonKey(name: 'data')  MyFamilyList? list)?  myFamilyListRespond,TResult Function(@JsonKey(name: 'data')  TimezoneCatalog? catalog)?  timezoneCatalogRespond,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function(@JsonKey(name: 'data')  AuthCertificate? auth)?  authCertificateRespond,TResult Function(@JsonKey(name: 'data')  User? user)?  userRespond,TResult Function(@JsonKey(name: 'data')  OtpDispatch? dispatch)?  otpDispatchRespond,TResult Function(@JsonKey(name: 'data')  MeProfile? profile)?  meProfileRespond,TResult Function(@JsonKey(name: 'data')  FamilyBootstrap? bootstrap)?  familyBootstrapRespond,TResult Function(@JsonKey(name: 'data')  PartnerInviteIssued? invite)?  partnerInviteIssuedRespond,TResult Function(@JsonKey(name: 'data')  PartnerInviteStatus? invite)?  partnerInviteStatusRespond,TResult Function(@JsonKey(name: 'data')  InviteResolution? invite)?  inviteResolutionRespond,TResult Function(@JsonKey(name: 'data')  InviteDecision? decision)?  inviteDecisionRespond,TResult Function(@JsonKey(name: 'data')  ChildRecord? child)?  childRecordRespond,TResult Function(@JsonKey(name: 'data')  PregnancyRecord? pregnancy)?  pregnancyRecordRespond,TResult Function(@JsonKey(name: 'data')  UploadIntent? intent)?  uploadIntentRespond,TResult Function(@JsonKey(name: 'data')  UploadStatus? upload)?  uploadStatusRespond,TResult Function(@JsonKey(name: 'data')  MemoryRecord? memory)?  memoryRecordRespond,TResult Function(@JsonKey(name: 'data')  List<TimelineItemRecord> items, @JsonKey(name: 'nextCursor')  String? nextCursor)?  timelineRespond,TResult Function(@JsonKey(name: 'data')  List<MediaGridItemRecord> items, @JsonKey(name: 'nextCursor')  String? nextCursor)?  mediaGridRespond,TResult Function(@JsonKey(name: 'data')  CommentRecord? comment)?  commentRecordRespond,TResult Function(@JsonKey(name: 'data')  List<CommentRecord> comments)?  commentListRespond,TResult Function(@JsonKey(name: 'data')  ReactionState? reaction)?  reactionStateRespond,TResult Function(@JsonKey(name: 'data')  PregnancyNameList? list)?  pregnancyNamesRespond,TResult Function(@JsonKey(name: 'data')  PregnancyNameRecord? name)?  pregnancyNameRespond,TResult Function(@JsonKey(name: 'data')  CoupleQuestionRecord? question)?  coupleQuestionRespond,TResult Function(@JsonKey(name: 'data')  CoupleWeekRecord? week)?  coupleWeekRespond,TResult Function(@JsonKey(name: 'data')  AiStatusRecord? status)?  aiStatusRespond,TResult Function(@JsonKey(name: 'data')  AiDraftRecord? draft)?  aiDraftRespond,TResult Function(@JsonKey(name: 'data', fromJson: bridgeSessionList)  List<BridgeSessionRecord> sessions)?  bridgeSessionListRespond,TResult Function(@JsonKey(name: 'data')  BridgeSessionRecord? session)?  bridgeSessionRespond,TResult Function(@JsonKey(name: 'data', fromJson: careHandoffList)  List<CareHandoff> handoffs)?  careHandoffListRespond,TResult Function(@JsonKey(name: 'data')  CareHandoff? handoff)?  careHandoffRespond,TResult Function(@JsonKey(name: 'data')  DayStoryRecord? story)?  dayStoryRespond,TResult Function(@JsonKey(name: 'data')  SavedDayStoryRecord? saved)?  savedDayStoryRespond,TResult Function(@JsonKey(name: 'data', fromJson: chatConversationList)  List<ChatConversation> conversations)?  chatConversationListRespond,TResult Function(@JsonKey(name: 'data')  ChatMessagePage? page)?  chatMessagePageRespond,TResult Function(@JsonKey(name: 'data')  ChatMessage? message)?  chatMessageRespond,TResult Function(@JsonKey(name: 'data')  ChatReadResult? result)?  chatReadRespond,TResult Function(@JsonKey(name: 'data')  GrowthListRecord? growth)?  growthListRespond,TResult Function(@JsonKey(name: 'data')  GrowthEntry? entry)?  growthEntryRespond,TResult Function(@JsonKey(name: 'data')  YearBookRecord? book)?  yearBookRespond,TResult Function(@JsonKey(name: 'data')  YearBookList? books)?  yearBookListRespond,TResult Function(@JsonKey(name: 'data')  MonthRecapRecord? recap)?  monthRecapRespond,TResult Function(@JsonKey(name: 'data')  CareStats? stats)?  careStatsRespond,TResult Function(@JsonKey(name: 'data', fromJson: _memoryRecords)  List<MemoryRecord> memories, @JsonKey(name: 'nextCursor')  String? nextCursor)?  memoryFeedRespond,TResult Function(@JsonKey(name: 'data')  NotificationPage? page)?  notificationPageRespond,TResult Function(@JsonKey(name: 'data')  NotificationCount? count)?  notificationCountRespond,TResult Function(@JsonKey(name: 'data')  HeartsMeRecord? hearts)?  heartsMeRespond,TResult Function(@JsonKey(name: 'data')  FamilyTreeRecord? tree)?  familyTreeRespond,TResult Function(@JsonKey(name: 'data')  BadgeList? list)?  badgeListRespond,TResult Function(@JsonKey(name: 'data')  MissionHistoryPage? page)?  missionHistoryRespond,TResult Function(@JsonKey(name: 'data')  MissionBoardRecord? board)?  missionBoardRespond,TResult Function(@JsonKey(name: 'data')  MissionRecord? mission)?  missionRecordRespond,TResult Function(@JsonKey(name: 'data')  MissionResultRecord? result)?  missionResultRespond,TResult Function(@JsonKey(name: 'data')  MissionTemplateList? list)?  missionTemplateListRespond,TResult Function(@JsonKey(name: 'data')  MissionSwapOptionsRecord? options)?  missionSwapOptionsRespond,TResult Function(@JsonKey(name: 'data')  AppreciationRecord? appreciation)?  appreciationRecordRespond,TResult Function(@JsonKey(name: 'data')  AppreciationWall? wall)?  appreciationWallRespond,TResult Function(@JsonKey(name: 'data')  JournalEntryRecord? entry)?  journalEntryRespond,TResult Function(@JsonKey(name: 'data')  JournalList? page)?  journalListRespond,TResult Function(@JsonKey(name: 'data')  CheckinRecord? checkin)?  checkinRecordRespond,TResult Function(@JsonKey(name: 'data')  CheckinToday? today)?  checkinTodayRespond,TResult Function(@JsonKey(name: 'data')  RequestCreated? created)?  requestCreatedRespond,TResult Function(@JsonKey(name: 'data')  RequestRecord? request)?  requestRecordRespond,TResult Function(@JsonKey(name: 'data')  RequestList? page)?  requestListRespond,TResult Function(@JsonKey(name: 'data')  ReauthTokenRecord? token)?  reauthTokenRespond,TResult Function(@JsonKey(name: 'data')  DeletionPreviewRecord? preview)?  deletionPreviewRespond,TResult Function(@JsonKey(name: 'data')  DataExportRecord? export)?  dataExportRespond,TResult Function(@JsonKey(name: 'data')  CalendarRecord? calendar)?  calendarRespond,TResult Function(@JsonKey(name: 'data')  CalendarEventRecord? event)?  calendarEventRespond,TResult Function(@JsonKey(name: 'data')  SessionList? list)?  sessionListRespond,TResult Function(@JsonKey(name: 'data')  FamilySettingsRecord? settings)?  familySettingsRespond,TResult Function(@JsonKey(name: 'data')  JourneyRecord? journey)?  journeyRespond,TResult Function(@JsonKey(name: 'data')  List<PrepGroupRecord>? groups)?  prepGroupsRespond,TResult Function(@JsonKey(name: 'data')  PrepItemRecord? item)?  prepItemRespond,TResult Function(@JsonKey(name: 'data')  BirthResultRecord? result)?  birthResultRespond,TResult Function(@JsonKey(name: 'data')  ChildStatsRecord? stats)?  childStatsRespond,TResult Function(@JsonKey(name: 'data')  AlbumList? list)?  albumListRespond,TResult Function(@JsonKey(name: 'data')  AlbumRecord? album)?  albumRecordRespond,TResult Function(@JsonKey(name: 'data')  PerspectiveList? list)?  perspectiveListRespond,TResult Function(@JsonKey(name: 'data')  PerspectiveRecord? perspective)?  perspectiveRecordRespond,TResult Function(@JsonKey(name: 'data')  MemoryPromptList? list)?  memoryPromptListRespond,TResult Function(@JsonKey(name: 'data')  DownloadUrlList? list)?  downloadUrlListRespond,TResult Function(@JsonKey(name: 'data')  MilestoneCatalog? catalog)?  milestoneCatalogRespond,TResult Function(@JsonKey(name: 'data')  List<LetterRecord> letters)?  letterListRespond,TResult Function(@JsonKey(name: 'data')  MissionSettingsRecord? settings)?  missionSettingsRespond,TResult Function(@JsonKey(name: 'data')  MissionSeriesRecord? series)?  missionSeriesRespond,TResult Function(@JsonKey(name: 'data')  CircleMemberList? list)?  circleMemberListRespond,TResult Function(@JsonKey(name: 'data')  CircleInviteList? list)?  circleInviteListRespond,TResult Function(@JsonKey(name: 'data')  CircleInviteIssued? invite)?  circleInviteIssuedRespond,TResult Function(@JsonKey(name: 'data')  UsSettingsRecord? settings)?  usSettingsRespond,TResult Function(@JsonKey(name: 'data')  MyCircleList? list)?  myCircleListRespond,TResult Function(@JsonKey(name: 'data')  BillingCatalog? catalog)?  billingCatalogRespond,TResult Function(@JsonKey(name: 'data')  PurchaseIntentRecord? intent)?  purchaseIntentRespond,TResult Function(@JsonKey(name: 'data')  FamilyBillingRecord? billing)?  familyBillingRespond,TResult Function(@JsonKey(name: 'data')  NotificationSettingsRecord? settings)?  notificationSettingsRespond,TResult Function(@JsonKey(name: 'data')  AiSettingsRecord? settings)?  aiSettingsRespond,TResult Function(@JsonKey(name: 'data')  OnThisDayRecord? record)?  onThisDayRespond,TResult Function(@JsonKey(name: 'data')  ReportRecord? report)?  reportRespond,TResult Function(@JsonKey(name: 'data')  BlockedUserList? list)?  blockedUserListRespond,TResult Function(@JsonKey(name: 'data')  WeekStatsRecord? stats)?  weekStatsRespond,TResult Function(@JsonKey(name: 'data')  WeeklyRecapRecord? recap)?  weeklyRecapRespond,TResult Function(@JsonKey(name: 'data')  Map<String, dynamic>? result)?  recapTimelineRespond,TResult Function(@JsonKey(name: 'data')  DisplaySettingsRecord? settings)?  displaySettingsRespond,TResult Function(@JsonKey(name: 'data')  FamilyDeletionRecord? deletion)?  familyDeletionRespond,TResult Function(@JsonKey(name: 'data')  PrivacyOverviewRecord? overview)?  privacyOverviewRespond,TResult Function(@JsonKey(name: 'data')  List<MonthlyPhotoRecord> photos)?  monthlyPhotoListRespond,TResult Function(@JsonKey(name: 'data')  MonthlyPhotoRecord? photo)?  monthlyPhotoRespond,TResult Function(@JsonKey(name: 'data')  TodayStoryRecord? story)?  todayStoryRespond,TResult Function(@JsonKey(name: 'data')  FamilyRecord? family)?  familyRecordRespond,TResult Function(@JsonKey(name: 'data')  MissionSeriesList? list)?  missionSeriesListRespond,TResult Function(@JsonKey(name: 'data')  SupportCategoryCatalog? catalog)?  supportCategoriesRespond,TResult Function(@JsonKey(name: 'data')  SupportTicket? ticket)?  supportTicketRespond,TResult Function(@JsonKey(name: 'data')  HelpCenterRecord? helpCenter)?  helpCenterRespond,TResult Function(@JsonKey(name: 'data')  SupportTicketDetail? ticket)?  supportTicketDetailRespond,TResult Function(@JsonKey(name: 'data')  SupportTicketList? list)?  supportTicketListRespond,TResult Function(@JsonKey(name: 'data')  List<SignInMethodRecord> methods)?  signInMethodListRespond,TResult Function(@JsonKey(name: 'data')  MyFamilyList? list)?  myFamilyListRespond,TResult Function(@JsonKey(name: 'data')  TimezoneCatalog? catalog)?  timezoneCatalogRespond,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case AuthCertificateRespond() when authCertificateRespond != null:
 return authCertificateRespond(_that.auth);case UserRespond() when userRespond != null:
@@ -826,7 +966,26 @@ return commentRecordRespond(_that.comment);case CommentListRespond() when commen
 return commentListRespond(_that.comments);case ReactionStateRespond() when reactionStateRespond != null:
 return reactionStateRespond(_that.reaction);case PregnancyNamesRespond() when pregnancyNamesRespond != null:
 return pregnancyNamesRespond(_that.list);case PregnancyNameRespond() when pregnancyNameRespond != null:
-return pregnancyNameRespond(_that.name);case CareStatsRespond() when careStatsRespond != null:
+return pregnancyNameRespond(_that.name);case CoupleQuestionRespond() when coupleQuestionRespond != null:
+return coupleQuestionRespond(_that.question);case CoupleWeekRespond() when coupleWeekRespond != null:
+return coupleWeekRespond(_that.week);case AiStatusRespond() when aiStatusRespond != null:
+return aiStatusRespond(_that.status);case AiDraftRespond() when aiDraftRespond != null:
+return aiDraftRespond(_that.draft);case BridgeSessionListRespond() when bridgeSessionListRespond != null:
+return bridgeSessionListRespond(_that.sessions);case BridgeSessionRespond() when bridgeSessionRespond != null:
+return bridgeSessionRespond(_that.session);case CareHandoffListRespond() when careHandoffListRespond != null:
+return careHandoffListRespond(_that.handoffs);case CareHandoffRespond() when careHandoffRespond != null:
+return careHandoffRespond(_that.handoff);case DayStoryRespond() when dayStoryRespond != null:
+return dayStoryRespond(_that.story);case SavedDayStoryRespond() when savedDayStoryRespond != null:
+return savedDayStoryRespond(_that.saved);case ChatConversationListRespond() when chatConversationListRespond != null:
+return chatConversationListRespond(_that.conversations);case ChatMessagePageRespond() when chatMessagePageRespond != null:
+return chatMessagePageRespond(_that.page);case ChatMessageRespond() when chatMessageRespond != null:
+return chatMessageRespond(_that.message);case ChatReadRespond() when chatReadRespond != null:
+return chatReadRespond(_that.result);case GrowthListRespond() when growthListRespond != null:
+return growthListRespond(_that.growth);case GrowthEntryRespond() when growthEntryRespond != null:
+return growthEntryRespond(_that.entry);case YearBookRespond() when yearBookRespond != null:
+return yearBookRespond(_that.book);case YearBookListRespond() when yearBookListRespond != null:
+return yearBookListRespond(_that.books);case MonthRecapRespond() when monthRecapRespond != null:
+return monthRecapRespond(_that.recap);case CareStatsRespond() when careStatsRespond != null:
 return careStatsRespond(_that.stats);case MemoryFeedRespond() when memoryFeedRespond != null:
 return memoryFeedRespond(_that.memories,_that.nextCursor);case NotificationPageRespond() when notificationPageRespond != null:
 return notificationPageRespond(_that.page);case NotificationCountRespond() when notificationCountRespond != null:
@@ -885,7 +1044,8 @@ return onThisDayRespond(_that.record);case ReportRespond() when reportRespond !=
 return reportRespond(_that.report);case BlockedUserListRespond() when blockedUserListRespond != null:
 return blockedUserListRespond(_that.list);case WeekStatsRespond() when weekStatsRespond != null:
 return weekStatsRespond(_that.stats);case WeeklyRecapRespond() when weeklyRecapRespond != null:
-return weeklyRecapRespond(_that.recap);case DisplaySettingsRespond() when displaySettingsRespond != null:
+return weeklyRecapRespond(_that.recap);case RecapTimelineRespond() when recapTimelineRespond != null:
+return recapTimelineRespond(_that.result);case DisplaySettingsRespond() when displaySettingsRespond != null:
 return displaySettingsRespond(_that.settings);case FamilyDeletionRespond() when familyDeletionRespond != null:
 return familyDeletionRespond(_that.deletion);case PrivacyOverviewRespond() when privacyOverviewRespond != null:
 return privacyOverviewRespond(_that.overview);case MonthlyPhotoListRespond() when monthlyPhotoListRespond != null:
@@ -919,7 +1079,7 @@ return timezoneCatalogRespond(_that.catalog);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function(@JsonKey(name: 'data')  AuthCertificate? auth)  authCertificateRespond,required TResult Function(@JsonKey(name: 'data')  User? user)  userRespond,required TResult Function(@JsonKey(name: 'data')  OtpDispatch? dispatch)  otpDispatchRespond,required TResult Function(@JsonKey(name: 'data')  MeProfile? profile)  meProfileRespond,required TResult Function(@JsonKey(name: 'data')  FamilyBootstrap? bootstrap)  familyBootstrapRespond,required TResult Function(@JsonKey(name: 'data')  PartnerInviteIssued? invite)  partnerInviteIssuedRespond,required TResult Function(@JsonKey(name: 'data')  PartnerInviteStatus? invite)  partnerInviteStatusRespond,required TResult Function(@JsonKey(name: 'data')  InviteResolution? invite)  inviteResolutionRespond,required TResult Function(@JsonKey(name: 'data')  InviteDecision? decision)  inviteDecisionRespond,required TResult Function(@JsonKey(name: 'data')  ChildRecord? child)  childRecordRespond,required TResult Function(@JsonKey(name: 'data')  PregnancyRecord? pregnancy)  pregnancyRecordRespond,required TResult Function(@JsonKey(name: 'data')  UploadIntent? intent)  uploadIntentRespond,required TResult Function(@JsonKey(name: 'data')  UploadStatus? upload)  uploadStatusRespond,required TResult Function(@JsonKey(name: 'data')  MemoryRecord? memory)  memoryRecordRespond,required TResult Function(@JsonKey(name: 'data')  List<TimelineItemRecord> items, @JsonKey(name: 'nextCursor')  String? nextCursor)  timelineRespond,required TResult Function(@JsonKey(name: 'data')  List<MediaGridItemRecord> items, @JsonKey(name: 'nextCursor')  String? nextCursor)  mediaGridRespond,required TResult Function(@JsonKey(name: 'data')  CommentRecord? comment)  commentRecordRespond,required TResult Function(@JsonKey(name: 'data')  List<CommentRecord> comments)  commentListRespond,required TResult Function(@JsonKey(name: 'data')  ReactionState? reaction)  reactionStateRespond,required TResult Function(@JsonKey(name: 'data')  PregnancyNameList? list)  pregnancyNamesRespond,required TResult Function(@JsonKey(name: 'data')  PregnancyNameRecord? name)  pregnancyNameRespond,required TResult Function(@JsonKey(name: 'data')  CareStats? stats)  careStatsRespond,required TResult Function(@JsonKey(name: 'data', fromJson: _memoryRecords)  List<MemoryRecord> memories, @JsonKey(name: 'nextCursor')  String? nextCursor)  memoryFeedRespond,required TResult Function(@JsonKey(name: 'data')  NotificationPage? page)  notificationPageRespond,required TResult Function(@JsonKey(name: 'data')  NotificationCount? count)  notificationCountRespond,required TResult Function(@JsonKey(name: 'data')  HeartsMeRecord? hearts)  heartsMeRespond,required TResult Function(@JsonKey(name: 'data')  FamilyTreeRecord? tree)  familyTreeRespond,required TResult Function(@JsonKey(name: 'data')  BadgeList? list)  badgeListRespond,required TResult Function(@JsonKey(name: 'data')  MissionHistoryPage? page)  missionHistoryRespond,required TResult Function(@JsonKey(name: 'data')  MissionBoardRecord? board)  missionBoardRespond,required TResult Function(@JsonKey(name: 'data')  MissionRecord? mission)  missionRecordRespond,required TResult Function(@JsonKey(name: 'data')  MissionResultRecord? result)  missionResultRespond,required TResult Function(@JsonKey(name: 'data')  MissionTemplateList? list)  missionTemplateListRespond,required TResult Function(@JsonKey(name: 'data')  MissionSwapOptionsRecord? options)  missionSwapOptionsRespond,required TResult Function(@JsonKey(name: 'data')  AppreciationRecord? appreciation)  appreciationRecordRespond,required TResult Function(@JsonKey(name: 'data')  AppreciationWall? wall)  appreciationWallRespond,required TResult Function(@JsonKey(name: 'data')  JournalEntryRecord? entry)  journalEntryRespond,required TResult Function(@JsonKey(name: 'data')  JournalList? page)  journalListRespond,required TResult Function(@JsonKey(name: 'data')  CheckinRecord? checkin)  checkinRecordRespond,required TResult Function(@JsonKey(name: 'data')  CheckinToday? today)  checkinTodayRespond,required TResult Function(@JsonKey(name: 'data')  RequestCreated? created)  requestCreatedRespond,required TResult Function(@JsonKey(name: 'data')  RequestRecord? request)  requestRecordRespond,required TResult Function(@JsonKey(name: 'data')  RequestList? page)  requestListRespond,required TResult Function(@JsonKey(name: 'data')  ReauthTokenRecord? token)  reauthTokenRespond,required TResult Function(@JsonKey(name: 'data')  DeletionPreviewRecord? preview)  deletionPreviewRespond,required TResult Function(@JsonKey(name: 'data')  DataExportRecord? export)  dataExportRespond,required TResult Function(@JsonKey(name: 'data')  CalendarRecord? calendar)  calendarRespond,required TResult Function(@JsonKey(name: 'data')  CalendarEventRecord? event)  calendarEventRespond,required TResult Function(@JsonKey(name: 'data')  SessionList? list)  sessionListRespond,required TResult Function(@JsonKey(name: 'data')  FamilySettingsRecord? settings)  familySettingsRespond,required TResult Function(@JsonKey(name: 'data')  JourneyRecord? journey)  journeyRespond,required TResult Function(@JsonKey(name: 'data')  List<PrepGroupRecord>? groups)  prepGroupsRespond,required TResult Function(@JsonKey(name: 'data')  PrepItemRecord? item)  prepItemRespond,required TResult Function(@JsonKey(name: 'data')  BirthResultRecord? result)  birthResultRespond,required TResult Function(@JsonKey(name: 'data')  ChildStatsRecord? stats)  childStatsRespond,required TResult Function(@JsonKey(name: 'data')  AlbumList? list)  albumListRespond,required TResult Function(@JsonKey(name: 'data')  AlbumRecord? album)  albumRecordRespond,required TResult Function(@JsonKey(name: 'data')  PerspectiveList? list)  perspectiveListRespond,required TResult Function(@JsonKey(name: 'data')  PerspectiveRecord? perspective)  perspectiveRecordRespond,required TResult Function(@JsonKey(name: 'data')  MemoryPromptList? list)  memoryPromptListRespond,required TResult Function(@JsonKey(name: 'data')  DownloadUrlList? list)  downloadUrlListRespond,required TResult Function(@JsonKey(name: 'data')  MilestoneCatalog? catalog)  milestoneCatalogRespond,required TResult Function(@JsonKey(name: 'data')  List<LetterRecord> letters)  letterListRespond,required TResult Function(@JsonKey(name: 'data')  MissionSettingsRecord? settings)  missionSettingsRespond,required TResult Function(@JsonKey(name: 'data')  MissionSeriesRecord? series)  missionSeriesRespond,required TResult Function(@JsonKey(name: 'data')  CircleMemberList? list)  circleMemberListRespond,required TResult Function(@JsonKey(name: 'data')  CircleInviteList? list)  circleInviteListRespond,required TResult Function(@JsonKey(name: 'data')  CircleInviteIssued? invite)  circleInviteIssuedRespond,required TResult Function(@JsonKey(name: 'data')  UsSettingsRecord? settings)  usSettingsRespond,required TResult Function(@JsonKey(name: 'data')  MyCircleList? list)  myCircleListRespond,required TResult Function(@JsonKey(name: 'data')  BillingCatalog? catalog)  billingCatalogRespond,required TResult Function(@JsonKey(name: 'data')  PurchaseIntentRecord? intent)  purchaseIntentRespond,required TResult Function(@JsonKey(name: 'data')  FamilyBillingRecord? billing)  familyBillingRespond,required TResult Function(@JsonKey(name: 'data')  NotificationSettingsRecord? settings)  notificationSettingsRespond,required TResult Function(@JsonKey(name: 'data')  AiSettingsRecord? settings)  aiSettingsRespond,required TResult Function(@JsonKey(name: 'data')  OnThisDayRecord? record)  onThisDayRespond,required TResult Function(@JsonKey(name: 'data')  ReportRecord? report)  reportRespond,required TResult Function(@JsonKey(name: 'data')  BlockedUserList? list)  blockedUserListRespond,required TResult Function(@JsonKey(name: 'data')  WeekStatsRecord? stats)  weekStatsRespond,required TResult Function(@JsonKey(name: 'data')  WeeklyRecapRecord? recap)  weeklyRecapRespond,required TResult Function(@JsonKey(name: 'data')  DisplaySettingsRecord? settings)  displaySettingsRespond,required TResult Function(@JsonKey(name: 'data')  FamilyDeletionRecord? deletion)  familyDeletionRespond,required TResult Function(@JsonKey(name: 'data')  PrivacyOverviewRecord? overview)  privacyOverviewRespond,required TResult Function(@JsonKey(name: 'data')  List<MonthlyPhotoRecord> photos)  monthlyPhotoListRespond,required TResult Function(@JsonKey(name: 'data')  MonthlyPhotoRecord? photo)  monthlyPhotoRespond,required TResult Function(@JsonKey(name: 'data')  TodayStoryRecord? story)  todayStoryRespond,required TResult Function(@JsonKey(name: 'data')  FamilyRecord? family)  familyRecordRespond,required TResult Function(@JsonKey(name: 'data')  MissionSeriesList? list)  missionSeriesListRespond,required TResult Function(@JsonKey(name: 'data')  SupportCategoryCatalog? catalog)  supportCategoriesRespond,required TResult Function(@JsonKey(name: 'data')  SupportTicket? ticket)  supportTicketRespond,required TResult Function(@JsonKey(name: 'data')  HelpCenterRecord? helpCenter)  helpCenterRespond,required TResult Function(@JsonKey(name: 'data')  SupportTicketDetail? ticket)  supportTicketDetailRespond,required TResult Function(@JsonKey(name: 'data')  SupportTicketList? list)  supportTicketListRespond,required TResult Function(@JsonKey(name: 'data')  List<SignInMethodRecord> methods)  signInMethodListRespond,required TResult Function(@JsonKey(name: 'data')  MyFamilyList? list)  myFamilyListRespond,required TResult Function(@JsonKey(name: 'data')  TimezoneCatalog? catalog)  timezoneCatalogRespond,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function(@JsonKey(name: 'data')  AuthCertificate? auth)  authCertificateRespond,required TResult Function(@JsonKey(name: 'data')  User? user)  userRespond,required TResult Function(@JsonKey(name: 'data')  OtpDispatch? dispatch)  otpDispatchRespond,required TResult Function(@JsonKey(name: 'data')  MeProfile? profile)  meProfileRespond,required TResult Function(@JsonKey(name: 'data')  FamilyBootstrap? bootstrap)  familyBootstrapRespond,required TResult Function(@JsonKey(name: 'data')  PartnerInviteIssued? invite)  partnerInviteIssuedRespond,required TResult Function(@JsonKey(name: 'data')  PartnerInviteStatus? invite)  partnerInviteStatusRespond,required TResult Function(@JsonKey(name: 'data')  InviteResolution? invite)  inviteResolutionRespond,required TResult Function(@JsonKey(name: 'data')  InviteDecision? decision)  inviteDecisionRespond,required TResult Function(@JsonKey(name: 'data')  ChildRecord? child)  childRecordRespond,required TResult Function(@JsonKey(name: 'data')  PregnancyRecord? pregnancy)  pregnancyRecordRespond,required TResult Function(@JsonKey(name: 'data')  UploadIntent? intent)  uploadIntentRespond,required TResult Function(@JsonKey(name: 'data')  UploadStatus? upload)  uploadStatusRespond,required TResult Function(@JsonKey(name: 'data')  MemoryRecord? memory)  memoryRecordRespond,required TResult Function(@JsonKey(name: 'data')  List<TimelineItemRecord> items, @JsonKey(name: 'nextCursor')  String? nextCursor)  timelineRespond,required TResult Function(@JsonKey(name: 'data')  List<MediaGridItemRecord> items, @JsonKey(name: 'nextCursor')  String? nextCursor)  mediaGridRespond,required TResult Function(@JsonKey(name: 'data')  CommentRecord? comment)  commentRecordRespond,required TResult Function(@JsonKey(name: 'data')  List<CommentRecord> comments)  commentListRespond,required TResult Function(@JsonKey(name: 'data')  ReactionState? reaction)  reactionStateRespond,required TResult Function(@JsonKey(name: 'data')  PregnancyNameList? list)  pregnancyNamesRespond,required TResult Function(@JsonKey(name: 'data')  PregnancyNameRecord? name)  pregnancyNameRespond,required TResult Function(@JsonKey(name: 'data')  CoupleQuestionRecord? question)  coupleQuestionRespond,required TResult Function(@JsonKey(name: 'data')  CoupleWeekRecord? week)  coupleWeekRespond,required TResult Function(@JsonKey(name: 'data')  AiStatusRecord? status)  aiStatusRespond,required TResult Function(@JsonKey(name: 'data')  AiDraftRecord? draft)  aiDraftRespond,required TResult Function(@JsonKey(name: 'data', fromJson: bridgeSessionList)  List<BridgeSessionRecord> sessions)  bridgeSessionListRespond,required TResult Function(@JsonKey(name: 'data')  BridgeSessionRecord? session)  bridgeSessionRespond,required TResult Function(@JsonKey(name: 'data', fromJson: careHandoffList)  List<CareHandoff> handoffs)  careHandoffListRespond,required TResult Function(@JsonKey(name: 'data')  CareHandoff? handoff)  careHandoffRespond,required TResult Function(@JsonKey(name: 'data')  DayStoryRecord? story)  dayStoryRespond,required TResult Function(@JsonKey(name: 'data')  SavedDayStoryRecord? saved)  savedDayStoryRespond,required TResult Function(@JsonKey(name: 'data', fromJson: chatConversationList)  List<ChatConversation> conversations)  chatConversationListRespond,required TResult Function(@JsonKey(name: 'data')  ChatMessagePage? page)  chatMessagePageRespond,required TResult Function(@JsonKey(name: 'data')  ChatMessage? message)  chatMessageRespond,required TResult Function(@JsonKey(name: 'data')  ChatReadResult? result)  chatReadRespond,required TResult Function(@JsonKey(name: 'data')  GrowthListRecord? growth)  growthListRespond,required TResult Function(@JsonKey(name: 'data')  GrowthEntry? entry)  growthEntryRespond,required TResult Function(@JsonKey(name: 'data')  YearBookRecord? book)  yearBookRespond,required TResult Function(@JsonKey(name: 'data')  YearBookList? books)  yearBookListRespond,required TResult Function(@JsonKey(name: 'data')  MonthRecapRecord? recap)  monthRecapRespond,required TResult Function(@JsonKey(name: 'data')  CareStats? stats)  careStatsRespond,required TResult Function(@JsonKey(name: 'data', fromJson: _memoryRecords)  List<MemoryRecord> memories, @JsonKey(name: 'nextCursor')  String? nextCursor)  memoryFeedRespond,required TResult Function(@JsonKey(name: 'data')  NotificationPage? page)  notificationPageRespond,required TResult Function(@JsonKey(name: 'data')  NotificationCount? count)  notificationCountRespond,required TResult Function(@JsonKey(name: 'data')  HeartsMeRecord? hearts)  heartsMeRespond,required TResult Function(@JsonKey(name: 'data')  FamilyTreeRecord? tree)  familyTreeRespond,required TResult Function(@JsonKey(name: 'data')  BadgeList? list)  badgeListRespond,required TResult Function(@JsonKey(name: 'data')  MissionHistoryPage? page)  missionHistoryRespond,required TResult Function(@JsonKey(name: 'data')  MissionBoardRecord? board)  missionBoardRespond,required TResult Function(@JsonKey(name: 'data')  MissionRecord? mission)  missionRecordRespond,required TResult Function(@JsonKey(name: 'data')  MissionResultRecord? result)  missionResultRespond,required TResult Function(@JsonKey(name: 'data')  MissionTemplateList? list)  missionTemplateListRespond,required TResult Function(@JsonKey(name: 'data')  MissionSwapOptionsRecord? options)  missionSwapOptionsRespond,required TResult Function(@JsonKey(name: 'data')  AppreciationRecord? appreciation)  appreciationRecordRespond,required TResult Function(@JsonKey(name: 'data')  AppreciationWall? wall)  appreciationWallRespond,required TResult Function(@JsonKey(name: 'data')  JournalEntryRecord? entry)  journalEntryRespond,required TResult Function(@JsonKey(name: 'data')  JournalList? page)  journalListRespond,required TResult Function(@JsonKey(name: 'data')  CheckinRecord? checkin)  checkinRecordRespond,required TResult Function(@JsonKey(name: 'data')  CheckinToday? today)  checkinTodayRespond,required TResult Function(@JsonKey(name: 'data')  RequestCreated? created)  requestCreatedRespond,required TResult Function(@JsonKey(name: 'data')  RequestRecord? request)  requestRecordRespond,required TResult Function(@JsonKey(name: 'data')  RequestList? page)  requestListRespond,required TResult Function(@JsonKey(name: 'data')  ReauthTokenRecord? token)  reauthTokenRespond,required TResult Function(@JsonKey(name: 'data')  DeletionPreviewRecord? preview)  deletionPreviewRespond,required TResult Function(@JsonKey(name: 'data')  DataExportRecord? export)  dataExportRespond,required TResult Function(@JsonKey(name: 'data')  CalendarRecord? calendar)  calendarRespond,required TResult Function(@JsonKey(name: 'data')  CalendarEventRecord? event)  calendarEventRespond,required TResult Function(@JsonKey(name: 'data')  SessionList? list)  sessionListRespond,required TResult Function(@JsonKey(name: 'data')  FamilySettingsRecord? settings)  familySettingsRespond,required TResult Function(@JsonKey(name: 'data')  JourneyRecord? journey)  journeyRespond,required TResult Function(@JsonKey(name: 'data')  List<PrepGroupRecord>? groups)  prepGroupsRespond,required TResult Function(@JsonKey(name: 'data')  PrepItemRecord? item)  prepItemRespond,required TResult Function(@JsonKey(name: 'data')  BirthResultRecord? result)  birthResultRespond,required TResult Function(@JsonKey(name: 'data')  ChildStatsRecord? stats)  childStatsRespond,required TResult Function(@JsonKey(name: 'data')  AlbumList? list)  albumListRespond,required TResult Function(@JsonKey(name: 'data')  AlbumRecord? album)  albumRecordRespond,required TResult Function(@JsonKey(name: 'data')  PerspectiveList? list)  perspectiveListRespond,required TResult Function(@JsonKey(name: 'data')  PerspectiveRecord? perspective)  perspectiveRecordRespond,required TResult Function(@JsonKey(name: 'data')  MemoryPromptList? list)  memoryPromptListRespond,required TResult Function(@JsonKey(name: 'data')  DownloadUrlList? list)  downloadUrlListRespond,required TResult Function(@JsonKey(name: 'data')  MilestoneCatalog? catalog)  milestoneCatalogRespond,required TResult Function(@JsonKey(name: 'data')  List<LetterRecord> letters)  letterListRespond,required TResult Function(@JsonKey(name: 'data')  MissionSettingsRecord? settings)  missionSettingsRespond,required TResult Function(@JsonKey(name: 'data')  MissionSeriesRecord? series)  missionSeriesRespond,required TResult Function(@JsonKey(name: 'data')  CircleMemberList? list)  circleMemberListRespond,required TResult Function(@JsonKey(name: 'data')  CircleInviteList? list)  circleInviteListRespond,required TResult Function(@JsonKey(name: 'data')  CircleInviteIssued? invite)  circleInviteIssuedRespond,required TResult Function(@JsonKey(name: 'data')  UsSettingsRecord? settings)  usSettingsRespond,required TResult Function(@JsonKey(name: 'data')  MyCircleList? list)  myCircleListRespond,required TResult Function(@JsonKey(name: 'data')  BillingCatalog? catalog)  billingCatalogRespond,required TResult Function(@JsonKey(name: 'data')  PurchaseIntentRecord? intent)  purchaseIntentRespond,required TResult Function(@JsonKey(name: 'data')  FamilyBillingRecord? billing)  familyBillingRespond,required TResult Function(@JsonKey(name: 'data')  NotificationSettingsRecord? settings)  notificationSettingsRespond,required TResult Function(@JsonKey(name: 'data')  AiSettingsRecord? settings)  aiSettingsRespond,required TResult Function(@JsonKey(name: 'data')  OnThisDayRecord? record)  onThisDayRespond,required TResult Function(@JsonKey(name: 'data')  ReportRecord? report)  reportRespond,required TResult Function(@JsonKey(name: 'data')  BlockedUserList? list)  blockedUserListRespond,required TResult Function(@JsonKey(name: 'data')  WeekStatsRecord? stats)  weekStatsRespond,required TResult Function(@JsonKey(name: 'data')  WeeklyRecapRecord? recap)  weeklyRecapRespond,required TResult Function(@JsonKey(name: 'data')  Map<String, dynamic>? result)  recapTimelineRespond,required TResult Function(@JsonKey(name: 'data')  DisplaySettingsRecord? settings)  displaySettingsRespond,required TResult Function(@JsonKey(name: 'data')  FamilyDeletionRecord? deletion)  familyDeletionRespond,required TResult Function(@JsonKey(name: 'data')  PrivacyOverviewRecord? overview)  privacyOverviewRespond,required TResult Function(@JsonKey(name: 'data')  List<MonthlyPhotoRecord> photos)  monthlyPhotoListRespond,required TResult Function(@JsonKey(name: 'data')  MonthlyPhotoRecord? photo)  monthlyPhotoRespond,required TResult Function(@JsonKey(name: 'data')  TodayStoryRecord? story)  todayStoryRespond,required TResult Function(@JsonKey(name: 'data')  FamilyRecord? family)  familyRecordRespond,required TResult Function(@JsonKey(name: 'data')  MissionSeriesList? list)  missionSeriesListRespond,required TResult Function(@JsonKey(name: 'data')  SupportCategoryCatalog? catalog)  supportCategoriesRespond,required TResult Function(@JsonKey(name: 'data')  SupportTicket? ticket)  supportTicketRespond,required TResult Function(@JsonKey(name: 'data')  HelpCenterRecord? helpCenter)  helpCenterRespond,required TResult Function(@JsonKey(name: 'data')  SupportTicketDetail? ticket)  supportTicketDetailRespond,required TResult Function(@JsonKey(name: 'data')  SupportTicketList? list)  supportTicketListRespond,required TResult Function(@JsonKey(name: 'data')  List<SignInMethodRecord> methods)  signInMethodListRespond,required TResult Function(@JsonKey(name: 'data')  MyFamilyList? list)  myFamilyListRespond,required TResult Function(@JsonKey(name: 'data')  TimezoneCatalog? catalog)  timezoneCatalogRespond,}) {final _that = this;
 switch (_that) {
 case AuthCertificateRespond():
 return authCertificateRespond(_that.auth);case UserRespond():
@@ -942,7 +1102,26 @@ return commentRecordRespond(_that.comment);case CommentListRespond():
 return commentListRespond(_that.comments);case ReactionStateRespond():
 return reactionStateRespond(_that.reaction);case PregnancyNamesRespond():
 return pregnancyNamesRespond(_that.list);case PregnancyNameRespond():
-return pregnancyNameRespond(_that.name);case CareStatsRespond():
+return pregnancyNameRespond(_that.name);case CoupleQuestionRespond():
+return coupleQuestionRespond(_that.question);case CoupleWeekRespond():
+return coupleWeekRespond(_that.week);case AiStatusRespond():
+return aiStatusRespond(_that.status);case AiDraftRespond():
+return aiDraftRespond(_that.draft);case BridgeSessionListRespond():
+return bridgeSessionListRespond(_that.sessions);case BridgeSessionRespond():
+return bridgeSessionRespond(_that.session);case CareHandoffListRespond():
+return careHandoffListRespond(_that.handoffs);case CareHandoffRespond():
+return careHandoffRespond(_that.handoff);case DayStoryRespond():
+return dayStoryRespond(_that.story);case SavedDayStoryRespond():
+return savedDayStoryRespond(_that.saved);case ChatConversationListRespond():
+return chatConversationListRespond(_that.conversations);case ChatMessagePageRespond():
+return chatMessagePageRespond(_that.page);case ChatMessageRespond():
+return chatMessageRespond(_that.message);case ChatReadRespond():
+return chatReadRespond(_that.result);case GrowthListRespond():
+return growthListRespond(_that.growth);case GrowthEntryRespond():
+return growthEntryRespond(_that.entry);case YearBookRespond():
+return yearBookRespond(_that.book);case YearBookListRespond():
+return yearBookListRespond(_that.books);case MonthRecapRespond():
+return monthRecapRespond(_that.recap);case CareStatsRespond():
 return careStatsRespond(_that.stats);case MemoryFeedRespond():
 return memoryFeedRespond(_that.memories,_that.nextCursor);case NotificationPageRespond():
 return notificationPageRespond(_that.page);case NotificationCountRespond():
@@ -1001,7 +1180,8 @@ return onThisDayRespond(_that.record);case ReportRespond():
 return reportRespond(_that.report);case BlockedUserListRespond():
 return blockedUserListRespond(_that.list);case WeekStatsRespond():
 return weekStatsRespond(_that.stats);case WeeklyRecapRespond():
-return weeklyRecapRespond(_that.recap);case DisplaySettingsRespond():
+return weeklyRecapRespond(_that.recap);case RecapTimelineRespond():
+return recapTimelineRespond(_that.result);case DisplaySettingsRespond():
 return displaySettingsRespond(_that.settings);case FamilyDeletionRespond():
 return familyDeletionRespond(_that.deletion);case PrivacyOverviewRespond():
 return privacyOverviewRespond(_that.overview);case MonthlyPhotoListRespond():
@@ -1031,7 +1211,7 @@ return timezoneCatalogRespond(_that.catalog);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function(@JsonKey(name: 'data')  AuthCertificate? auth)?  authCertificateRespond,TResult? Function(@JsonKey(name: 'data')  User? user)?  userRespond,TResult? Function(@JsonKey(name: 'data')  OtpDispatch? dispatch)?  otpDispatchRespond,TResult? Function(@JsonKey(name: 'data')  MeProfile? profile)?  meProfileRespond,TResult? Function(@JsonKey(name: 'data')  FamilyBootstrap? bootstrap)?  familyBootstrapRespond,TResult? Function(@JsonKey(name: 'data')  PartnerInviteIssued? invite)?  partnerInviteIssuedRespond,TResult? Function(@JsonKey(name: 'data')  PartnerInviteStatus? invite)?  partnerInviteStatusRespond,TResult? Function(@JsonKey(name: 'data')  InviteResolution? invite)?  inviteResolutionRespond,TResult? Function(@JsonKey(name: 'data')  InviteDecision? decision)?  inviteDecisionRespond,TResult? Function(@JsonKey(name: 'data')  ChildRecord? child)?  childRecordRespond,TResult? Function(@JsonKey(name: 'data')  PregnancyRecord? pregnancy)?  pregnancyRecordRespond,TResult? Function(@JsonKey(name: 'data')  UploadIntent? intent)?  uploadIntentRespond,TResult? Function(@JsonKey(name: 'data')  UploadStatus? upload)?  uploadStatusRespond,TResult? Function(@JsonKey(name: 'data')  MemoryRecord? memory)?  memoryRecordRespond,TResult? Function(@JsonKey(name: 'data')  List<TimelineItemRecord> items, @JsonKey(name: 'nextCursor')  String? nextCursor)?  timelineRespond,TResult? Function(@JsonKey(name: 'data')  List<MediaGridItemRecord> items, @JsonKey(name: 'nextCursor')  String? nextCursor)?  mediaGridRespond,TResult? Function(@JsonKey(name: 'data')  CommentRecord? comment)?  commentRecordRespond,TResult? Function(@JsonKey(name: 'data')  List<CommentRecord> comments)?  commentListRespond,TResult? Function(@JsonKey(name: 'data')  ReactionState? reaction)?  reactionStateRespond,TResult? Function(@JsonKey(name: 'data')  PregnancyNameList? list)?  pregnancyNamesRespond,TResult? Function(@JsonKey(name: 'data')  PregnancyNameRecord? name)?  pregnancyNameRespond,TResult? Function(@JsonKey(name: 'data')  CareStats? stats)?  careStatsRespond,TResult? Function(@JsonKey(name: 'data', fromJson: _memoryRecords)  List<MemoryRecord> memories, @JsonKey(name: 'nextCursor')  String? nextCursor)?  memoryFeedRespond,TResult? Function(@JsonKey(name: 'data')  NotificationPage? page)?  notificationPageRespond,TResult? Function(@JsonKey(name: 'data')  NotificationCount? count)?  notificationCountRespond,TResult? Function(@JsonKey(name: 'data')  HeartsMeRecord? hearts)?  heartsMeRespond,TResult? Function(@JsonKey(name: 'data')  FamilyTreeRecord? tree)?  familyTreeRespond,TResult? Function(@JsonKey(name: 'data')  BadgeList? list)?  badgeListRespond,TResult? Function(@JsonKey(name: 'data')  MissionHistoryPage? page)?  missionHistoryRespond,TResult? Function(@JsonKey(name: 'data')  MissionBoardRecord? board)?  missionBoardRespond,TResult? Function(@JsonKey(name: 'data')  MissionRecord? mission)?  missionRecordRespond,TResult? Function(@JsonKey(name: 'data')  MissionResultRecord? result)?  missionResultRespond,TResult? Function(@JsonKey(name: 'data')  MissionTemplateList? list)?  missionTemplateListRespond,TResult? Function(@JsonKey(name: 'data')  MissionSwapOptionsRecord? options)?  missionSwapOptionsRespond,TResult? Function(@JsonKey(name: 'data')  AppreciationRecord? appreciation)?  appreciationRecordRespond,TResult? Function(@JsonKey(name: 'data')  AppreciationWall? wall)?  appreciationWallRespond,TResult? Function(@JsonKey(name: 'data')  JournalEntryRecord? entry)?  journalEntryRespond,TResult? Function(@JsonKey(name: 'data')  JournalList? page)?  journalListRespond,TResult? Function(@JsonKey(name: 'data')  CheckinRecord? checkin)?  checkinRecordRespond,TResult? Function(@JsonKey(name: 'data')  CheckinToday? today)?  checkinTodayRespond,TResult? Function(@JsonKey(name: 'data')  RequestCreated? created)?  requestCreatedRespond,TResult? Function(@JsonKey(name: 'data')  RequestRecord? request)?  requestRecordRespond,TResult? Function(@JsonKey(name: 'data')  RequestList? page)?  requestListRespond,TResult? Function(@JsonKey(name: 'data')  ReauthTokenRecord? token)?  reauthTokenRespond,TResult? Function(@JsonKey(name: 'data')  DeletionPreviewRecord? preview)?  deletionPreviewRespond,TResult? Function(@JsonKey(name: 'data')  DataExportRecord? export)?  dataExportRespond,TResult? Function(@JsonKey(name: 'data')  CalendarRecord? calendar)?  calendarRespond,TResult? Function(@JsonKey(name: 'data')  CalendarEventRecord? event)?  calendarEventRespond,TResult? Function(@JsonKey(name: 'data')  SessionList? list)?  sessionListRespond,TResult? Function(@JsonKey(name: 'data')  FamilySettingsRecord? settings)?  familySettingsRespond,TResult? Function(@JsonKey(name: 'data')  JourneyRecord? journey)?  journeyRespond,TResult? Function(@JsonKey(name: 'data')  List<PrepGroupRecord>? groups)?  prepGroupsRespond,TResult? Function(@JsonKey(name: 'data')  PrepItemRecord? item)?  prepItemRespond,TResult? Function(@JsonKey(name: 'data')  BirthResultRecord? result)?  birthResultRespond,TResult? Function(@JsonKey(name: 'data')  ChildStatsRecord? stats)?  childStatsRespond,TResult? Function(@JsonKey(name: 'data')  AlbumList? list)?  albumListRespond,TResult? Function(@JsonKey(name: 'data')  AlbumRecord? album)?  albumRecordRespond,TResult? Function(@JsonKey(name: 'data')  PerspectiveList? list)?  perspectiveListRespond,TResult? Function(@JsonKey(name: 'data')  PerspectiveRecord? perspective)?  perspectiveRecordRespond,TResult? Function(@JsonKey(name: 'data')  MemoryPromptList? list)?  memoryPromptListRespond,TResult? Function(@JsonKey(name: 'data')  DownloadUrlList? list)?  downloadUrlListRespond,TResult? Function(@JsonKey(name: 'data')  MilestoneCatalog? catalog)?  milestoneCatalogRespond,TResult? Function(@JsonKey(name: 'data')  List<LetterRecord> letters)?  letterListRespond,TResult? Function(@JsonKey(name: 'data')  MissionSettingsRecord? settings)?  missionSettingsRespond,TResult? Function(@JsonKey(name: 'data')  MissionSeriesRecord? series)?  missionSeriesRespond,TResult? Function(@JsonKey(name: 'data')  CircleMemberList? list)?  circleMemberListRespond,TResult? Function(@JsonKey(name: 'data')  CircleInviteList? list)?  circleInviteListRespond,TResult? Function(@JsonKey(name: 'data')  CircleInviteIssued? invite)?  circleInviteIssuedRespond,TResult? Function(@JsonKey(name: 'data')  UsSettingsRecord? settings)?  usSettingsRespond,TResult? Function(@JsonKey(name: 'data')  MyCircleList? list)?  myCircleListRespond,TResult? Function(@JsonKey(name: 'data')  BillingCatalog? catalog)?  billingCatalogRespond,TResult? Function(@JsonKey(name: 'data')  PurchaseIntentRecord? intent)?  purchaseIntentRespond,TResult? Function(@JsonKey(name: 'data')  FamilyBillingRecord? billing)?  familyBillingRespond,TResult? Function(@JsonKey(name: 'data')  NotificationSettingsRecord? settings)?  notificationSettingsRespond,TResult? Function(@JsonKey(name: 'data')  AiSettingsRecord? settings)?  aiSettingsRespond,TResult? Function(@JsonKey(name: 'data')  OnThisDayRecord? record)?  onThisDayRespond,TResult? Function(@JsonKey(name: 'data')  ReportRecord? report)?  reportRespond,TResult? Function(@JsonKey(name: 'data')  BlockedUserList? list)?  blockedUserListRespond,TResult? Function(@JsonKey(name: 'data')  WeekStatsRecord? stats)?  weekStatsRespond,TResult? Function(@JsonKey(name: 'data')  WeeklyRecapRecord? recap)?  weeklyRecapRespond,TResult? Function(@JsonKey(name: 'data')  DisplaySettingsRecord? settings)?  displaySettingsRespond,TResult? Function(@JsonKey(name: 'data')  FamilyDeletionRecord? deletion)?  familyDeletionRespond,TResult? Function(@JsonKey(name: 'data')  PrivacyOverviewRecord? overview)?  privacyOverviewRespond,TResult? Function(@JsonKey(name: 'data')  List<MonthlyPhotoRecord> photos)?  monthlyPhotoListRespond,TResult? Function(@JsonKey(name: 'data')  MonthlyPhotoRecord? photo)?  monthlyPhotoRespond,TResult? Function(@JsonKey(name: 'data')  TodayStoryRecord? story)?  todayStoryRespond,TResult? Function(@JsonKey(name: 'data')  FamilyRecord? family)?  familyRecordRespond,TResult? Function(@JsonKey(name: 'data')  MissionSeriesList? list)?  missionSeriesListRespond,TResult? Function(@JsonKey(name: 'data')  SupportCategoryCatalog? catalog)?  supportCategoriesRespond,TResult? Function(@JsonKey(name: 'data')  SupportTicket? ticket)?  supportTicketRespond,TResult? Function(@JsonKey(name: 'data')  HelpCenterRecord? helpCenter)?  helpCenterRespond,TResult? Function(@JsonKey(name: 'data')  SupportTicketDetail? ticket)?  supportTicketDetailRespond,TResult? Function(@JsonKey(name: 'data')  SupportTicketList? list)?  supportTicketListRespond,TResult? Function(@JsonKey(name: 'data')  List<SignInMethodRecord> methods)?  signInMethodListRespond,TResult? Function(@JsonKey(name: 'data')  MyFamilyList? list)?  myFamilyListRespond,TResult? Function(@JsonKey(name: 'data')  TimezoneCatalog? catalog)?  timezoneCatalogRespond,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function(@JsonKey(name: 'data')  AuthCertificate? auth)?  authCertificateRespond,TResult? Function(@JsonKey(name: 'data')  User? user)?  userRespond,TResult? Function(@JsonKey(name: 'data')  OtpDispatch? dispatch)?  otpDispatchRespond,TResult? Function(@JsonKey(name: 'data')  MeProfile? profile)?  meProfileRespond,TResult? Function(@JsonKey(name: 'data')  FamilyBootstrap? bootstrap)?  familyBootstrapRespond,TResult? Function(@JsonKey(name: 'data')  PartnerInviteIssued? invite)?  partnerInviteIssuedRespond,TResult? Function(@JsonKey(name: 'data')  PartnerInviteStatus? invite)?  partnerInviteStatusRespond,TResult? Function(@JsonKey(name: 'data')  InviteResolution? invite)?  inviteResolutionRespond,TResult? Function(@JsonKey(name: 'data')  InviteDecision? decision)?  inviteDecisionRespond,TResult? Function(@JsonKey(name: 'data')  ChildRecord? child)?  childRecordRespond,TResult? Function(@JsonKey(name: 'data')  PregnancyRecord? pregnancy)?  pregnancyRecordRespond,TResult? Function(@JsonKey(name: 'data')  UploadIntent? intent)?  uploadIntentRespond,TResult? Function(@JsonKey(name: 'data')  UploadStatus? upload)?  uploadStatusRespond,TResult? Function(@JsonKey(name: 'data')  MemoryRecord? memory)?  memoryRecordRespond,TResult? Function(@JsonKey(name: 'data')  List<TimelineItemRecord> items, @JsonKey(name: 'nextCursor')  String? nextCursor)?  timelineRespond,TResult? Function(@JsonKey(name: 'data')  List<MediaGridItemRecord> items, @JsonKey(name: 'nextCursor')  String? nextCursor)?  mediaGridRespond,TResult? Function(@JsonKey(name: 'data')  CommentRecord? comment)?  commentRecordRespond,TResult? Function(@JsonKey(name: 'data')  List<CommentRecord> comments)?  commentListRespond,TResult? Function(@JsonKey(name: 'data')  ReactionState? reaction)?  reactionStateRespond,TResult? Function(@JsonKey(name: 'data')  PregnancyNameList? list)?  pregnancyNamesRespond,TResult? Function(@JsonKey(name: 'data')  PregnancyNameRecord? name)?  pregnancyNameRespond,TResult? Function(@JsonKey(name: 'data')  CoupleQuestionRecord? question)?  coupleQuestionRespond,TResult? Function(@JsonKey(name: 'data')  CoupleWeekRecord? week)?  coupleWeekRespond,TResult? Function(@JsonKey(name: 'data')  AiStatusRecord? status)?  aiStatusRespond,TResult? Function(@JsonKey(name: 'data')  AiDraftRecord? draft)?  aiDraftRespond,TResult? Function(@JsonKey(name: 'data', fromJson: bridgeSessionList)  List<BridgeSessionRecord> sessions)?  bridgeSessionListRespond,TResult? Function(@JsonKey(name: 'data')  BridgeSessionRecord? session)?  bridgeSessionRespond,TResult? Function(@JsonKey(name: 'data', fromJson: careHandoffList)  List<CareHandoff> handoffs)?  careHandoffListRespond,TResult? Function(@JsonKey(name: 'data')  CareHandoff? handoff)?  careHandoffRespond,TResult? Function(@JsonKey(name: 'data')  DayStoryRecord? story)?  dayStoryRespond,TResult? Function(@JsonKey(name: 'data')  SavedDayStoryRecord? saved)?  savedDayStoryRespond,TResult? Function(@JsonKey(name: 'data', fromJson: chatConversationList)  List<ChatConversation> conversations)?  chatConversationListRespond,TResult? Function(@JsonKey(name: 'data')  ChatMessagePage? page)?  chatMessagePageRespond,TResult? Function(@JsonKey(name: 'data')  ChatMessage? message)?  chatMessageRespond,TResult? Function(@JsonKey(name: 'data')  ChatReadResult? result)?  chatReadRespond,TResult? Function(@JsonKey(name: 'data')  GrowthListRecord? growth)?  growthListRespond,TResult? Function(@JsonKey(name: 'data')  GrowthEntry? entry)?  growthEntryRespond,TResult? Function(@JsonKey(name: 'data')  YearBookRecord? book)?  yearBookRespond,TResult? Function(@JsonKey(name: 'data')  YearBookList? books)?  yearBookListRespond,TResult? Function(@JsonKey(name: 'data')  MonthRecapRecord? recap)?  monthRecapRespond,TResult? Function(@JsonKey(name: 'data')  CareStats? stats)?  careStatsRespond,TResult? Function(@JsonKey(name: 'data', fromJson: _memoryRecords)  List<MemoryRecord> memories, @JsonKey(name: 'nextCursor')  String? nextCursor)?  memoryFeedRespond,TResult? Function(@JsonKey(name: 'data')  NotificationPage? page)?  notificationPageRespond,TResult? Function(@JsonKey(name: 'data')  NotificationCount? count)?  notificationCountRespond,TResult? Function(@JsonKey(name: 'data')  HeartsMeRecord? hearts)?  heartsMeRespond,TResult? Function(@JsonKey(name: 'data')  FamilyTreeRecord? tree)?  familyTreeRespond,TResult? Function(@JsonKey(name: 'data')  BadgeList? list)?  badgeListRespond,TResult? Function(@JsonKey(name: 'data')  MissionHistoryPage? page)?  missionHistoryRespond,TResult? Function(@JsonKey(name: 'data')  MissionBoardRecord? board)?  missionBoardRespond,TResult? Function(@JsonKey(name: 'data')  MissionRecord? mission)?  missionRecordRespond,TResult? Function(@JsonKey(name: 'data')  MissionResultRecord? result)?  missionResultRespond,TResult? Function(@JsonKey(name: 'data')  MissionTemplateList? list)?  missionTemplateListRespond,TResult? Function(@JsonKey(name: 'data')  MissionSwapOptionsRecord? options)?  missionSwapOptionsRespond,TResult? Function(@JsonKey(name: 'data')  AppreciationRecord? appreciation)?  appreciationRecordRespond,TResult? Function(@JsonKey(name: 'data')  AppreciationWall? wall)?  appreciationWallRespond,TResult? Function(@JsonKey(name: 'data')  JournalEntryRecord? entry)?  journalEntryRespond,TResult? Function(@JsonKey(name: 'data')  JournalList? page)?  journalListRespond,TResult? Function(@JsonKey(name: 'data')  CheckinRecord? checkin)?  checkinRecordRespond,TResult? Function(@JsonKey(name: 'data')  CheckinToday? today)?  checkinTodayRespond,TResult? Function(@JsonKey(name: 'data')  RequestCreated? created)?  requestCreatedRespond,TResult? Function(@JsonKey(name: 'data')  RequestRecord? request)?  requestRecordRespond,TResult? Function(@JsonKey(name: 'data')  RequestList? page)?  requestListRespond,TResult? Function(@JsonKey(name: 'data')  ReauthTokenRecord? token)?  reauthTokenRespond,TResult? Function(@JsonKey(name: 'data')  DeletionPreviewRecord? preview)?  deletionPreviewRespond,TResult? Function(@JsonKey(name: 'data')  DataExportRecord? export)?  dataExportRespond,TResult? Function(@JsonKey(name: 'data')  CalendarRecord? calendar)?  calendarRespond,TResult? Function(@JsonKey(name: 'data')  CalendarEventRecord? event)?  calendarEventRespond,TResult? Function(@JsonKey(name: 'data')  SessionList? list)?  sessionListRespond,TResult? Function(@JsonKey(name: 'data')  FamilySettingsRecord? settings)?  familySettingsRespond,TResult? Function(@JsonKey(name: 'data')  JourneyRecord? journey)?  journeyRespond,TResult? Function(@JsonKey(name: 'data')  List<PrepGroupRecord>? groups)?  prepGroupsRespond,TResult? Function(@JsonKey(name: 'data')  PrepItemRecord? item)?  prepItemRespond,TResult? Function(@JsonKey(name: 'data')  BirthResultRecord? result)?  birthResultRespond,TResult? Function(@JsonKey(name: 'data')  ChildStatsRecord? stats)?  childStatsRespond,TResult? Function(@JsonKey(name: 'data')  AlbumList? list)?  albumListRespond,TResult? Function(@JsonKey(name: 'data')  AlbumRecord? album)?  albumRecordRespond,TResult? Function(@JsonKey(name: 'data')  PerspectiveList? list)?  perspectiveListRespond,TResult? Function(@JsonKey(name: 'data')  PerspectiveRecord? perspective)?  perspectiveRecordRespond,TResult? Function(@JsonKey(name: 'data')  MemoryPromptList? list)?  memoryPromptListRespond,TResult? Function(@JsonKey(name: 'data')  DownloadUrlList? list)?  downloadUrlListRespond,TResult? Function(@JsonKey(name: 'data')  MilestoneCatalog? catalog)?  milestoneCatalogRespond,TResult? Function(@JsonKey(name: 'data')  List<LetterRecord> letters)?  letterListRespond,TResult? Function(@JsonKey(name: 'data')  MissionSettingsRecord? settings)?  missionSettingsRespond,TResult? Function(@JsonKey(name: 'data')  MissionSeriesRecord? series)?  missionSeriesRespond,TResult? Function(@JsonKey(name: 'data')  CircleMemberList? list)?  circleMemberListRespond,TResult? Function(@JsonKey(name: 'data')  CircleInviteList? list)?  circleInviteListRespond,TResult? Function(@JsonKey(name: 'data')  CircleInviteIssued? invite)?  circleInviteIssuedRespond,TResult? Function(@JsonKey(name: 'data')  UsSettingsRecord? settings)?  usSettingsRespond,TResult? Function(@JsonKey(name: 'data')  MyCircleList? list)?  myCircleListRespond,TResult? Function(@JsonKey(name: 'data')  BillingCatalog? catalog)?  billingCatalogRespond,TResult? Function(@JsonKey(name: 'data')  PurchaseIntentRecord? intent)?  purchaseIntentRespond,TResult? Function(@JsonKey(name: 'data')  FamilyBillingRecord? billing)?  familyBillingRespond,TResult? Function(@JsonKey(name: 'data')  NotificationSettingsRecord? settings)?  notificationSettingsRespond,TResult? Function(@JsonKey(name: 'data')  AiSettingsRecord? settings)?  aiSettingsRespond,TResult? Function(@JsonKey(name: 'data')  OnThisDayRecord? record)?  onThisDayRespond,TResult? Function(@JsonKey(name: 'data')  ReportRecord? report)?  reportRespond,TResult? Function(@JsonKey(name: 'data')  BlockedUserList? list)?  blockedUserListRespond,TResult? Function(@JsonKey(name: 'data')  WeekStatsRecord? stats)?  weekStatsRespond,TResult? Function(@JsonKey(name: 'data')  WeeklyRecapRecord? recap)?  weeklyRecapRespond,TResult? Function(@JsonKey(name: 'data')  Map<String, dynamic>? result)?  recapTimelineRespond,TResult? Function(@JsonKey(name: 'data')  DisplaySettingsRecord? settings)?  displaySettingsRespond,TResult? Function(@JsonKey(name: 'data')  FamilyDeletionRecord? deletion)?  familyDeletionRespond,TResult? Function(@JsonKey(name: 'data')  PrivacyOverviewRecord? overview)?  privacyOverviewRespond,TResult? Function(@JsonKey(name: 'data')  List<MonthlyPhotoRecord> photos)?  monthlyPhotoListRespond,TResult? Function(@JsonKey(name: 'data')  MonthlyPhotoRecord? photo)?  monthlyPhotoRespond,TResult? Function(@JsonKey(name: 'data')  TodayStoryRecord? story)?  todayStoryRespond,TResult? Function(@JsonKey(name: 'data')  FamilyRecord? family)?  familyRecordRespond,TResult? Function(@JsonKey(name: 'data')  MissionSeriesList? list)?  missionSeriesListRespond,TResult? Function(@JsonKey(name: 'data')  SupportCategoryCatalog? catalog)?  supportCategoriesRespond,TResult? Function(@JsonKey(name: 'data')  SupportTicket? ticket)?  supportTicketRespond,TResult? Function(@JsonKey(name: 'data')  HelpCenterRecord? helpCenter)?  helpCenterRespond,TResult? Function(@JsonKey(name: 'data')  SupportTicketDetail? ticket)?  supportTicketDetailRespond,TResult? Function(@JsonKey(name: 'data')  SupportTicketList? list)?  supportTicketListRespond,TResult? Function(@JsonKey(name: 'data')  List<SignInMethodRecord> methods)?  signInMethodListRespond,TResult? Function(@JsonKey(name: 'data')  MyFamilyList? list)?  myFamilyListRespond,TResult? Function(@JsonKey(name: 'data')  TimezoneCatalog? catalog)?  timezoneCatalogRespond,}) {final _that = this;
 switch (_that) {
 case AuthCertificateRespond() when authCertificateRespond != null:
 return authCertificateRespond(_that.auth);case UserRespond() when userRespond != null:
@@ -1054,7 +1234,26 @@ return commentRecordRespond(_that.comment);case CommentListRespond() when commen
 return commentListRespond(_that.comments);case ReactionStateRespond() when reactionStateRespond != null:
 return reactionStateRespond(_that.reaction);case PregnancyNamesRespond() when pregnancyNamesRespond != null:
 return pregnancyNamesRespond(_that.list);case PregnancyNameRespond() when pregnancyNameRespond != null:
-return pregnancyNameRespond(_that.name);case CareStatsRespond() when careStatsRespond != null:
+return pregnancyNameRespond(_that.name);case CoupleQuestionRespond() when coupleQuestionRespond != null:
+return coupleQuestionRespond(_that.question);case CoupleWeekRespond() when coupleWeekRespond != null:
+return coupleWeekRespond(_that.week);case AiStatusRespond() when aiStatusRespond != null:
+return aiStatusRespond(_that.status);case AiDraftRespond() when aiDraftRespond != null:
+return aiDraftRespond(_that.draft);case BridgeSessionListRespond() when bridgeSessionListRespond != null:
+return bridgeSessionListRespond(_that.sessions);case BridgeSessionRespond() when bridgeSessionRespond != null:
+return bridgeSessionRespond(_that.session);case CareHandoffListRespond() when careHandoffListRespond != null:
+return careHandoffListRespond(_that.handoffs);case CareHandoffRespond() when careHandoffRespond != null:
+return careHandoffRespond(_that.handoff);case DayStoryRespond() when dayStoryRespond != null:
+return dayStoryRespond(_that.story);case SavedDayStoryRespond() when savedDayStoryRespond != null:
+return savedDayStoryRespond(_that.saved);case ChatConversationListRespond() when chatConversationListRespond != null:
+return chatConversationListRespond(_that.conversations);case ChatMessagePageRespond() when chatMessagePageRespond != null:
+return chatMessagePageRespond(_that.page);case ChatMessageRespond() when chatMessageRespond != null:
+return chatMessageRespond(_that.message);case ChatReadRespond() when chatReadRespond != null:
+return chatReadRespond(_that.result);case GrowthListRespond() when growthListRespond != null:
+return growthListRespond(_that.growth);case GrowthEntryRespond() when growthEntryRespond != null:
+return growthEntryRespond(_that.entry);case YearBookRespond() when yearBookRespond != null:
+return yearBookRespond(_that.book);case YearBookListRespond() when yearBookListRespond != null:
+return yearBookListRespond(_that.books);case MonthRecapRespond() when monthRecapRespond != null:
+return monthRecapRespond(_that.recap);case CareStatsRespond() when careStatsRespond != null:
 return careStatsRespond(_that.stats);case MemoryFeedRespond() when memoryFeedRespond != null:
 return memoryFeedRespond(_that.memories,_that.nextCursor);case NotificationPageRespond() when notificationPageRespond != null:
 return notificationPageRespond(_that.page);case NotificationCountRespond() when notificationCountRespond != null:
@@ -1113,7 +1312,8 @@ return onThisDayRespond(_that.record);case ReportRespond() when reportRespond !=
 return reportRespond(_that.report);case BlockedUserListRespond() when blockedUserListRespond != null:
 return blockedUserListRespond(_that.list);case WeekStatsRespond() when weekStatsRespond != null:
 return weekStatsRespond(_that.stats);case WeeklyRecapRespond() when weeklyRecapRespond != null:
-return weeklyRecapRespond(_that.recap);case DisplaySettingsRespond() when displaySettingsRespond != null:
+return weeklyRecapRespond(_that.recap);case RecapTimelineRespond() when recapTimelineRespond != null:
+return recapTimelineRespond(_that.result);case DisplaySettingsRespond() when displaySettingsRespond != null:
 return displaySettingsRespond(_that.settings);case FamilyDeletionRespond() when familyDeletionRespond != null:
 return familyDeletionRespond(_that.deletion);case PrivacyOverviewRespond() when privacyOverviewRespond != null:
 return privacyOverviewRespond(_that.overview);case MonthlyPhotoListRespond() when monthlyPhotoListRespond != null:
@@ -2904,6 +3104,1603 @@ $PregnancyNameRecordCopyWith<$Res>? get name {
 
   return $PregnancyNameRecordCopyWith<$Res>(_self.name!, (value) {
     return _then(_self.copyWith(name: value));
+  });
+}
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class CoupleQuestionRespond extends BaseRespond {
+   CoupleQuestionRespond({@JsonKey(name: 'data') this.question, final  String? $type}): $type = $type ?? 'coupleQuestionRespond',super._();
+  factory CoupleQuestionRespond.fromJson(Map<String, dynamic> json) => _$CoupleQuestionRespondFromJson(json);
+
+@JsonKey(name: 'data') final  CoupleQuestionRecord? question;
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CoupleQuestionRespondCopyWith<CoupleQuestionRespond> get copyWith => _$CoupleQuestionRespondCopyWithImpl<CoupleQuestionRespond>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$CoupleQuestionRespondToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CoupleQuestionRespond&&(identical(other.question, question) || other.question == question));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,question);
+
+@override
+String toString() {
+  return 'BaseRespond.coupleQuestionRespond(question: $question)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $CoupleQuestionRespondCopyWith<$Res> implements $BaseRespondCopyWith<$Res> {
+  factory $CoupleQuestionRespondCopyWith(CoupleQuestionRespond value, $Res Function(CoupleQuestionRespond) _then) = _$CoupleQuestionRespondCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'data') CoupleQuestionRecord? question
+});
+
+
+$CoupleQuestionRecordCopyWith<$Res>? get question;
+
+}
+/// @nodoc
+class _$CoupleQuestionRespondCopyWithImpl<$Res>
+    implements $CoupleQuestionRespondCopyWith<$Res> {
+  _$CoupleQuestionRespondCopyWithImpl(this._self, this._then);
+
+  final CoupleQuestionRespond _self;
+  final $Res Function(CoupleQuestionRespond) _then;
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? question = freezed,}) {
+  return _then(CoupleQuestionRespond(
+question: freezed == question ? _self.question : question // ignore: cast_nullable_to_non_nullable
+as CoupleQuestionRecord?,
+  ));
+}
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CoupleQuestionRecordCopyWith<$Res>? get question {
+    if (_self.question == null) {
+    return null;
+  }
+
+  return $CoupleQuestionRecordCopyWith<$Res>(_self.question!, (value) {
+    return _then(_self.copyWith(question: value));
+  });
+}
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class CoupleWeekRespond extends BaseRespond {
+   CoupleWeekRespond({@JsonKey(name: 'data') this.week, final  String? $type}): $type = $type ?? 'coupleWeekRespond',super._();
+  factory CoupleWeekRespond.fromJson(Map<String, dynamic> json) => _$CoupleWeekRespondFromJson(json);
+
+@JsonKey(name: 'data') final  CoupleWeekRecord? week;
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CoupleWeekRespondCopyWith<CoupleWeekRespond> get copyWith => _$CoupleWeekRespondCopyWithImpl<CoupleWeekRespond>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$CoupleWeekRespondToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CoupleWeekRespond&&(identical(other.week, week) || other.week == week));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,week);
+
+@override
+String toString() {
+  return 'BaseRespond.coupleWeekRespond(week: $week)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $CoupleWeekRespondCopyWith<$Res> implements $BaseRespondCopyWith<$Res> {
+  factory $CoupleWeekRespondCopyWith(CoupleWeekRespond value, $Res Function(CoupleWeekRespond) _then) = _$CoupleWeekRespondCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'data') CoupleWeekRecord? week
+});
+
+
+$CoupleWeekRecordCopyWith<$Res>? get week;
+
+}
+/// @nodoc
+class _$CoupleWeekRespondCopyWithImpl<$Res>
+    implements $CoupleWeekRespondCopyWith<$Res> {
+  _$CoupleWeekRespondCopyWithImpl(this._self, this._then);
+
+  final CoupleWeekRespond _self;
+  final $Res Function(CoupleWeekRespond) _then;
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? week = freezed,}) {
+  return _then(CoupleWeekRespond(
+week: freezed == week ? _self.week : week // ignore: cast_nullable_to_non_nullable
+as CoupleWeekRecord?,
+  ));
+}
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CoupleWeekRecordCopyWith<$Res>? get week {
+    if (_self.week == null) {
+    return null;
+  }
+
+  return $CoupleWeekRecordCopyWith<$Res>(_self.week!, (value) {
+    return _then(_self.copyWith(week: value));
+  });
+}
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class AiStatusRespond extends BaseRespond {
+   AiStatusRespond({@JsonKey(name: 'data') this.status, final  String? $type}): $type = $type ?? 'aiStatusRespond',super._();
+  factory AiStatusRespond.fromJson(Map<String, dynamic> json) => _$AiStatusRespondFromJson(json);
+
+@JsonKey(name: 'data') final  AiStatusRecord? status;
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$AiStatusRespondCopyWith<AiStatusRespond> get copyWith => _$AiStatusRespondCopyWithImpl<AiStatusRespond>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$AiStatusRespondToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AiStatusRespond&&(identical(other.status, status) || other.status == status));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,status);
+
+@override
+String toString() {
+  return 'BaseRespond.aiStatusRespond(status: $status)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $AiStatusRespondCopyWith<$Res> implements $BaseRespondCopyWith<$Res> {
+  factory $AiStatusRespondCopyWith(AiStatusRespond value, $Res Function(AiStatusRespond) _then) = _$AiStatusRespondCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'data') AiStatusRecord? status
+});
+
+
+$AiStatusRecordCopyWith<$Res>? get status;
+
+}
+/// @nodoc
+class _$AiStatusRespondCopyWithImpl<$Res>
+    implements $AiStatusRespondCopyWith<$Res> {
+  _$AiStatusRespondCopyWithImpl(this._self, this._then);
+
+  final AiStatusRespond _self;
+  final $Res Function(AiStatusRespond) _then;
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? status = freezed,}) {
+  return _then(AiStatusRespond(
+status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as AiStatusRecord?,
+  ));
+}
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AiStatusRecordCopyWith<$Res>? get status {
+    if (_self.status == null) {
+    return null;
+  }
+
+  return $AiStatusRecordCopyWith<$Res>(_self.status!, (value) {
+    return _then(_self.copyWith(status: value));
+  });
+}
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class AiDraftRespond extends BaseRespond {
+   AiDraftRespond({@JsonKey(name: 'data') this.draft, final  String? $type}): $type = $type ?? 'aiDraftRespond',super._();
+  factory AiDraftRespond.fromJson(Map<String, dynamic> json) => _$AiDraftRespondFromJson(json);
+
+@JsonKey(name: 'data') final  AiDraftRecord? draft;
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$AiDraftRespondCopyWith<AiDraftRespond> get copyWith => _$AiDraftRespondCopyWithImpl<AiDraftRespond>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$AiDraftRespondToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AiDraftRespond&&(identical(other.draft, draft) || other.draft == draft));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,draft);
+
+@override
+String toString() {
+  return 'BaseRespond.aiDraftRespond(draft: $draft)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $AiDraftRespondCopyWith<$Res> implements $BaseRespondCopyWith<$Res> {
+  factory $AiDraftRespondCopyWith(AiDraftRespond value, $Res Function(AiDraftRespond) _then) = _$AiDraftRespondCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'data') AiDraftRecord? draft
+});
+
+
+$AiDraftRecordCopyWith<$Res>? get draft;
+
+}
+/// @nodoc
+class _$AiDraftRespondCopyWithImpl<$Res>
+    implements $AiDraftRespondCopyWith<$Res> {
+  _$AiDraftRespondCopyWithImpl(this._self, this._then);
+
+  final AiDraftRespond _self;
+  final $Res Function(AiDraftRespond) _then;
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? draft = freezed,}) {
+  return _then(AiDraftRespond(
+draft: freezed == draft ? _self.draft : draft // ignore: cast_nullable_to_non_nullable
+as AiDraftRecord?,
+  ));
+}
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AiDraftRecordCopyWith<$Res>? get draft {
+    if (_self.draft == null) {
+    return null;
+  }
+
+  return $AiDraftRecordCopyWith<$Res>(_self.draft!, (value) {
+    return _then(_self.copyWith(draft: value));
+  });
+}
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class BridgeSessionListRespond extends BaseRespond {
+   BridgeSessionListRespond({@JsonKey(name: 'data', fromJson: bridgeSessionList) final  List<BridgeSessionRecord> sessions = const <BridgeSessionRecord>[], final  String? $type}): _sessions = sessions,$type = $type ?? 'bridgeSessionListRespond',super._();
+  factory BridgeSessionListRespond.fromJson(Map<String, dynamic> json) => _$BridgeSessionListRespondFromJson(json);
+
+ final  List<BridgeSessionRecord> _sessions;
+@JsonKey(name: 'data', fromJson: bridgeSessionList) List<BridgeSessionRecord> get sessions {
+  if (_sessions is EqualUnmodifiableListView) return _sessions;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_sessions);
+}
+
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$BridgeSessionListRespondCopyWith<BridgeSessionListRespond> get copyWith => _$BridgeSessionListRespondCopyWithImpl<BridgeSessionListRespond>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$BridgeSessionListRespondToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BridgeSessionListRespond&&const DeepCollectionEquality().equals(other._sessions, _sessions));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_sessions));
+
+@override
+String toString() {
+  return 'BaseRespond.bridgeSessionListRespond(sessions: $sessions)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $BridgeSessionListRespondCopyWith<$Res> implements $BaseRespondCopyWith<$Res> {
+  factory $BridgeSessionListRespondCopyWith(BridgeSessionListRespond value, $Res Function(BridgeSessionListRespond) _then) = _$BridgeSessionListRespondCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'data', fromJson: bridgeSessionList) List<BridgeSessionRecord> sessions
+});
+
+
+
+
+}
+/// @nodoc
+class _$BridgeSessionListRespondCopyWithImpl<$Res>
+    implements $BridgeSessionListRespondCopyWith<$Res> {
+  _$BridgeSessionListRespondCopyWithImpl(this._self, this._then);
+
+  final BridgeSessionListRespond _self;
+  final $Res Function(BridgeSessionListRespond) _then;
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? sessions = null,}) {
+  return _then(BridgeSessionListRespond(
+sessions: null == sessions ? _self._sessions : sessions // ignore: cast_nullable_to_non_nullable
+as List<BridgeSessionRecord>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class BridgeSessionRespond extends BaseRespond {
+   BridgeSessionRespond({@JsonKey(name: 'data') this.session, final  String? $type}): $type = $type ?? 'bridgeSessionRespond',super._();
+  factory BridgeSessionRespond.fromJson(Map<String, dynamic> json) => _$BridgeSessionRespondFromJson(json);
+
+@JsonKey(name: 'data') final  BridgeSessionRecord? session;
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$BridgeSessionRespondCopyWith<BridgeSessionRespond> get copyWith => _$BridgeSessionRespondCopyWithImpl<BridgeSessionRespond>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$BridgeSessionRespondToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BridgeSessionRespond&&(identical(other.session, session) || other.session == session));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,session);
+
+@override
+String toString() {
+  return 'BaseRespond.bridgeSessionRespond(session: $session)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $BridgeSessionRespondCopyWith<$Res> implements $BaseRespondCopyWith<$Res> {
+  factory $BridgeSessionRespondCopyWith(BridgeSessionRespond value, $Res Function(BridgeSessionRespond) _then) = _$BridgeSessionRespondCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'data') BridgeSessionRecord? session
+});
+
+
+$BridgeSessionRecordCopyWith<$Res>? get session;
+
+}
+/// @nodoc
+class _$BridgeSessionRespondCopyWithImpl<$Res>
+    implements $BridgeSessionRespondCopyWith<$Res> {
+  _$BridgeSessionRespondCopyWithImpl(this._self, this._then);
+
+  final BridgeSessionRespond _self;
+  final $Res Function(BridgeSessionRespond) _then;
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? session = freezed,}) {
+  return _then(BridgeSessionRespond(
+session: freezed == session ? _self.session : session // ignore: cast_nullable_to_non_nullable
+as BridgeSessionRecord?,
+  ));
+}
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$BridgeSessionRecordCopyWith<$Res>? get session {
+    if (_self.session == null) {
+    return null;
+  }
+
+  return $BridgeSessionRecordCopyWith<$Res>(_self.session!, (value) {
+    return _then(_self.copyWith(session: value));
+  });
+}
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class CareHandoffListRespond extends BaseRespond {
+   CareHandoffListRespond({@JsonKey(name: 'data', fromJson: careHandoffList) final  List<CareHandoff> handoffs = const <CareHandoff>[], final  String? $type}): _handoffs = handoffs,$type = $type ?? 'careHandoffListRespond',super._();
+  factory CareHandoffListRespond.fromJson(Map<String, dynamic> json) => _$CareHandoffListRespondFromJson(json);
+
+ final  List<CareHandoff> _handoffs;
+@JsonKey(name: 'data', fromJson: careHandoffList) List<CareHandoff> get handoffs {
+  if (_handoffs is EqualUnmodifiableListView) return _handoffs;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_handoffs);
+}
+
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CareHandoffListRespondCopyWith<CareHandoffListRespond> get copyWith => _$CareHandoffListRespondCopyWithImpl<CareHandoffListRespond>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$CareHandoffListRespondToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CareHandoffListRespond&&const DeepCollectionEquality().equals(other._handoffs, _handoffs));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_handoffs));
+
+@override
+String toString() {
+  return 'BaseRespond.careHandoffListRespond(handoffs: $handoffs)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $CareHandoffListRespondCopyWith<$Res> implements $BaseRespondCopyWith<$Res> {
+  factory $CareHandoffListRespondCopyWith(CareHandoffListRespond value, $Res Function(CareHandoffListRespond) _then) = _$CareHandoffListRespondCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'data', fromJson: careHandoffList) List<CareHandoff> handoffs
+});
+
+
+
+
+}
+/// @nodoc
+class _$CareHandoffListRespondCopyWithImpl<$Res>
+    implements $CareHandoffListRespondCopyWith<$Res> {
+  _$CareHandoffListRespondCopyWithImpl(this._self, this._then);
+
+  final CareHandoffListRespond _self;
+  final $Res Function(CareHandoffListRespond) _then;
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? handoffs = null,}) {
+  return _then(CareHandoffListRespond(
+handoffs: null == handoffs ? _self._handoffs : handoffs // ignore: cast_nullable_to_non_nullable
+as List<CareHandoff>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class CareHandoffRespond extends BaseRespond {
+   CareHandoffRespond({@JsonKey(name: 'data') this.handoff, final  String? $type}): $type = $type ?? 'careHandoffRespond',super._();
+  factory CareHandoffRespond.fromJson(Map<String, dynamic> json) => _$CareHandoffRespondFromJson(json);
+
+@JsonKey(name: 'data') final  CareHandoff? handoff;
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CareHandoffRespondCopyWith<CareHandoffRespond> get copyWith => _$CareHandoffRespondCopyWithImpl<CareHandoffRespond>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$CareHandoffRespondToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CareHandoffRespond&&(identical(other.handoff, handoff) || other.handoff == handoff));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,handoff);
+
+@override
+String toString() {
+  return 'BaseRespond.careHandoffRespond(handoff: $handoff)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $CareHandoffRespondCopyWith<$Res> implements $BaseRespondCopyWith<$Res> {
+  factory $CareHandoffRespondCopyWith(CareHandoffRespond value, $Res Function(CareHandoffRespond) _then) = _$CareHandoffRespondCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'data') CareHandoff? handoff
+});
+
+
+$CareHandoffCopyWith<$Res>? get handoff;
+
+}
+/// @nodoc
+class _$CareHandoffRespondCopyWithImpl<$Res>
+    implements $CareHandoffRespondCopyWith<$Res> {
+  _$CareHandoffRespondCopyWithImpl(this._self, this._then);
+
+  final CareHandoffRespond _self;
+  final $Res Function(CareHandoffRespond) _then;
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? handoff = freezed,}) {
+  return _then(CareHandoffRespond(
+handoff: freezed == handoff ? _self.handoff : handoff // ignore: cast_nullable_to_non_nullable
+as CareHandoff?,
+  ));
+}
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CareHandoffCopyWith<$Res>? get handoff {
+    if (_self.handoff == null) {
+    return null;
+  }
+
+  return $CareHandoffCopyWith<$Res>(_self.handoff!, (value) {
+    return _then(_self.copyWith(handoff: value));
+  });
+}
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class DayStoryRespond extends BaseRespond {
+   DayStoryRespond({@JsonKey(name: 'data') this.story, final  String? $type}): $type = $type ?? 'dayStoryRespond',super._();
+  factory DayStoryRespond.fromJson(Map<String, dynamic> json) => _$DayStoryRespondFromJson(json);
+
+@JsonKey(name: 'data') final  DayStoryRecord? story;
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$DayStoryRespondCopyWith<DayStoryRespond> get copyWith => _$DayStoryRespondCopyWithImpl<DayStoryRespond>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$DayStoryRespondToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DayStoryRespond&&(identical(other.story, story) || other.story == story));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,story);
+
+@override
+String toString() {
+  return 'BaseRespond.dayStoryRespond(story: $story)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $DayStoryRespondCopyWith<$Res> implements $BaseRespondCopyWith<$Res> {
+  factory $DayStoryRespondCopyWith(DayStoryRespond value, $Res Function(DayStoryRespond) _then) = _$DayStoryRespondCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'data') DayStoryRecord? story
+});
+
+
+$DayStoryRecordCopyWith<$Res>? get story;
+
+}
+/// @nodoc
+class _$DayStoryRespondCopyWithImpl<$Res>
+    implements $DayStoryRespondCopyWith<$Res> {
+  _$DayStoryRespondCopyWithImpl(this._self, this._then);
+
+  final DayStoryRespond _self;
+  final $Res Function(DayStoryRespond) _then;
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? story = freezed,}) {
+  return _then(DayStoryRespond(
+story: freezed == story ? _self.story : story // ignore: cast_nullable_to_non_nullable
+as DayStoryRecord?,
+  ));
+}
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$DayStoryRecordCopyWith<$Res>? get story {
+    if (_self.story == null) {
+    return null;
+  }
+
+  return $DayStoryRecordCopyWith<$Res>(_self.story!, (value) {
+    return _then(_self.copyWith(story: value));
+  });
+}
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class SavedDayStoryRespond extends BaseRespond {
+   SavedDayStoryRespond({@JsonKey(name: 'data') this.saved, final  String? $type}): $type = $type ?? 'savedDayStoryRespond',super._();
+  factory SavedDayStoryRespond.fromJson(Map<String, dynamic> json) => _$SavedDayStoryRespondFromJson(json);
+
+@JsonKey(name: 'data') final  SavedDayStoryRecord? saved;
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SavedDayStoryRespondCopyWith<SavedDayStoryRespond> get copyWith => _$SavedDayStoryRespondCopyWithImpl<SavedDayStoryRespond>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$SavedDayStoryRespondToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SavedDayStoryRespond&&(identical(other.saved, saved) || other.saved == saved));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,saved);
+
+@override
+String toString() {
+  return 'BaseRespond.savedDayStoryRespond(saved: $saved)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SavedDayStoryRespondCopyWith<$Res> implements $BaseRespondCopyWith<$Res> {
+  factory $SavedDayStoryRespondCopyWith(SavedDayStoryRespond value, $Res Function(SavedDayStoryRespond) _then) = _$SavedDayStoryRespondCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'data') SavedDayStoryRecord? saved
+});
+
+
+$SavedDayStoryRecordCopyWith<$Res>? get saved;
+
+}
+/// @nodoc
+class _$SavedDayStoryRespondCopyWithImpl<$Res>
+    implements $SavedDayStoryRespondCopyWith<$Res> {
+  _$SavedDayStoryRespondCopyWithImpl(this._self, this._then);
+
+  final SavedDayStoryRespond _self;
+  final $Res Function(SavedDayStoryRespond) _then;
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? saved = freezed,}) {
+  return _then(SavedDayStoryRespond(
+saved: freezed == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
+as SavedDayStoryRecord?,
+  ));
+}
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SavedDayStoryRecordCopyWith<$Res>? get saved {
+    if (_self.saved == null) {
+    return null;
+  }
+
+  return $SavedDayStoryRecordCopyWith<$Res>(_self.saved!, (value) {
+    return _then(_self.copyWith(saved: value));
+  });
+}
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class ChatConversationListRespond extends BaseRespond {
+   ChatConversationListRespond({@JsonKey(name: 'data', fromJson: chatConversationList) final  List<ChatConversation> conversations = const <ChatConversation>[], final  String? $type}): _conversations = conversations,$type = $type ?? 'chatConversationListRespond',super._();
+  factory ChatConversationListRespond.fromJson(Map<String, dynamic> json) => _$ChatConversationListRespondFromJson(json);
+
+ final  List<ChatConversation> _conversations;
+@JsonKey(name: 'data', fromJson: chatConversationList) List<ChatConversation> get conversations {
+  if (_conversations is EqualUnmodifiableListView) return _conversations;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_conversations);
+}
+
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ChatConversationListRespondCopyWith<ChatConversationListRespond> get copyWith => _$ChatConversationListRespondCopyWithImpl<ChatConversationListRespond>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$ChatConversationListRespondToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatConversationListRespond&&const DeepCollectionEquality().equals(other._conversations, _conversations));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_conversations));
+
+@override
+String toString() {
+  return 'BaseRespond.chatConversationListRespond(conversations: $conversations)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ChatConversationListRespondCopyWith<$Res> implements $BaseRespondCopyWith<$Res> {
+  factory $ChatConversationListRespondCopyWith(ChatConversationListRespond value, $Res Function(ChatConversationListRespond) _then) = _$ChatConversationListRespondCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'data', fromJson: chatConversationList) List<ChatConversation> conversations
+});
+
+
+
+
+}
+/// @nodoc
+class _$ChatConversationListRespondCopyWithImpl<$Res>
+    implements $ChatConversationListRespondCopyWith<$Res> {
+  _$ChatConversationListRespondCopyWithImpl(this._self, this._then);
+
+  final ChatConversationListRespond _self;
+  final $Res Function(ChatConversationListRespond) _then;
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? conversations = null,}) {
+  return _then(ChatConversationListRespond(
+conversations: null == conversations ? _self._conversations : conversations // ignore: cast_nullable_to_non_nullable
+as List<ChatConversation>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class ChatMessagePageRespond extends BaseRespond {
+   ChatMessagePageRespond({@JsonKey(name: 'data') this.page, final  String? $type}): $type = $type ?? 'chatMessagePageRespond',super._();
+  factory ChatMessagePageRespond.fromJson(Map<String, dynamic> json) => _$ChatMessagePageRespondFromJson(json);
+
+@JsonKey(name: 'data') final  ChatMessagePage? page;
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ChatMessagePageRespondCopyWith<ChatMessagePageRespond> get copyWith => _$ChatMessagePageRespondCopyWithImpl<ChatMessagePageRespond>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$ChatMessagePageRespondToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatMessagePageRespond&&(identical(other.page, page) || other.page == page));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,page);
+
+@override
+String toString() {
+  return 'BaseRespond.chatMessagePageRespond(page: $page)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ChatMessagePageRespondCopyWith<$Res> implements $BaseRespondCopyWith<$Res> {
+  factory $ChatMessagePageRespondCopyWith(ChatMessagePageRespond value, $Res Function(ChatMessagePageRespond) _then) = _$ChatMessagePageRespondCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'data') ChatMessagePage? page
+});
+
+
+$ChatMessagePageCopyWith<$Res>? get page;
+
+}
+/// @nodoc
+class _$ChatMessagePageRespondCopyWithImpl<$Res>
+    implements $ChatMessagePageRespondCopyWith<$Res> {
+  _$ChatMessagePageRespondCopyWithImpl(this._self, this._then);
+
+  final ChatMessagePageRespond _self;
+  final $Res Function(ChatMessagePageRespond) _then;
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? page = freezed,}) {
+  return _then(ChatMessagePageRespond(
+page: freezed == page ? _self.page : page // ignore: cast_nullable_to_non_nullable
+as ChatMessagePage?,
+  ));
+}
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ChatMessagePageCopyWith<$Res>? get page {
+    if (_self.page == null) {
+    return null;
+  }
+
+  return $ChatMessagePageCopyWith<$Res>(_self.page!, (value) {
+    return _then(_self.copyWith(page: value));
+  });
+}
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class ChatMessageRespond extends BaseRespond {
+   ChatMessageRespond({@JsonKey(name: 'data') this.message, final  String? $type}): $type = $type ?? 'chatMessageRespond',super._();
+  factory ChatMessageRespond.fromJson(Map<String, dynamic> json) => _$ChatMessageRespondFromJson(json);
+
+@JsonKey(name: 'data') final  ChatMessage? message;
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ChatMessageRespondCopyWith<ChatMessageRespond> get copyWith => _$ChatMessageRespondCopyWithImpl<ChatMessageRespond>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$ChatMessageRespondToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatMessageRespond&&(identical(other.message, message) || other.message == message));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,message);
+
+@override
+String toString() {
+  return 'BaseRespond.chatMessageRespond(message: $message)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ChatMessageRespondCopyWith<$Res> implements $BaseRespondCopyWith<$Res> {
+  factory $ChatMessageRespondCopyWith(ChatMessageRespond value, $Res Function(ChatMessageRespond) _then) = _$ChatMessageRespondCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'data') ChatMessage? message
+});
+
+
+$ChatMessageCopyWith<$Res>? get message;
+
+}
+/// @nodoc
+class _$ChatMessageRespondCopyWithImpl<$Res>
+    implements $ChatMessageRespondCopyWith<$Res> {
+  _$ChatMessageRespondCopyWithImpl(this._self, this._then);
+
+  final ChatMessageRespond _self;
+  final $Res Function(ChatMessageRespond) _then;
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? message = freezed,}) {
+  return _then(ChatMessageRespond(
+message: freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as ChatMessage?,
+  ));
+}
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ChatMessageCopyWith<$Res>? get message {
+    if (_self.message == null) {
+    return null;
+  }
+
+  return $ChatMessageCopyWith<$Res>(_self.message!, (value) {
+    return _then(_self.copyWith(message: value));
+  });
+}
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class ChatReadRespond extends BaseRespond {
+   ChatReadRespond({@JsonKey(name: 'data') this.result, final  String? $type}): $type = $type ?? 'chatReadRespond',super._();
+  factory ChatReadRespond.fromJson(Map<String, dynamic> json) => _$ChatReadRespondFromJson(json);
+
+@JsonKey(name: 'data') final  ChatReadResult? result;
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ChatReadRespondCopyWith<ChatReadRespond> get copyWith => _$ChatReadRespondCopyWithImpl<ChatReadRespond>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$ChatReadRespondToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatReadRespond&&(identical(other.result, result) || other.result == result));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,result);
+
+@override
+String toString() {
+  return 'BaseRespond.chatReadRespond(result: $result)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ChatReadRespondCopyWith<$Res> implements $BaseRespondCopyWith<$Res> {
+  factory $ChatReadRespondCopyWith(ChatReadRespond value, $Res Function(ChatReadRespond) _then) = _$ChatReadRespondCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'data') ChatReadResult? result
+});
+
+
+$ChatReadResultCopyWith<$Res>? get result;
+
+}
+/// @nodoc
+class _$ChatReadRespondCopyWithImpl<$Res>
+    implements $ChatReadRespondCopyWith<$Res> {
+  _$ChatReadRespondCopyWithImpl(this._self, this._then);
+
+  final ChatReadRespond _self;
+  final $Res Function(ChatReadRespond) _then;
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? result = freezed,}) {
+  return _then(ChatReadRespond(
+result: freezed == result ? _self.result : result // ignore: cast_nullable_to_non_nullable
+as ChatReadResult?,
+  ));
+}
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ChatReadResultCopyWith<$Res>? get result {
+    if (_self.result == null) {
+    return null;
+  }
+
+  return $ChatReadResultCopyWith<$Res>(_self.result!, (value) {
+    return _then(_self.copyWith(result: value));
+  });
+}
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class GrowthListRespond extends BaseRespond {
+   GrowthListRespond({@JsonKey(name: 'data') this.growth, final  String? $type}): $type = $type ?? 'growthListRespond',super._();
+  factory GrowthListRespond.fromJson(Map<String, dynamic> json) => _$GrowthListRespondFromJson(json);
+
+@JsonKey(name: 'data') final  GrowthListRecord? growth;
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$GrowthListRespondCopyWith<GrowthListRespond> get copyWith => _$GrowthListRespondCopyWithImpl<GrowthListRespond>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$GrowthListRespondToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GrowthListRespond&&(identical(other.growth, growth) || other.growth == growth));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,growth);
+
+@override
+String toString() {
+  return 'BaseRespond.growthListRespond(growth: $growth)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $GrowthListRespondCopyWith<$Res> implements $BaseRespondCopyWith<$Res> {
+  factory $GrowthListRespondCopyWith(GrowthListRespond value, $Res Function(GrowthListRespond) _then) = _$GrowthListRespondCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'data') GrowthListRecord? growth
+});
+
+
+$GrowthListRecordCopyWith<$Res>? get growth;
+
+}
+/// @nodoc
+class _$GrowthListRespondCopyWithImpl<$Res>
+    implements $GrowthListRespondCopyWith<$Res> {
+  _$GrowthListRespondCopyWithImpl(this._self, this._then);
+
+  final GrowthListRespond _self;
+  final $Res Function(GrowthListRespond) _then;
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? growth = freezed,}) {
+  return _then(GrowthListRespond(
+growth: freezed == growth ? _self.growth : growth // ignore: cast_nullable_to_non_nullable
+as GrowthListRecord?,
+  ));
+}
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$GrowthListRecordCopyWith<$Res>? get growth {
+    if (_self.growth == null) {
+    return null;
+  }
+
+  return $GrowthListRecordCopyWith<$Res>(_self.growth!, (value) {
+    return _then(_self.copyWith(growth: value));
+  });
+}
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class GrowthEntryRespond extends BaseRespond {
+   GrowthEntryRespond({@JsonKey(name: 'data') this.entry, final  String? $type}): $type = $type ?? 'growthEntryRespond',super._();
+  factory GrowthEntryRespond.fromJson(Map<String, dynamic> json) => _$GrowthEntryRespondFromJson(json);
+
+@JsonKey(name: 'data') final  GrowthEntry? entry;
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$GrowthEntryRespondCopyWith<GrowthEntryRespond> get copyWith => _$GrowthEntryRespondCopyWithImpl<GrowthEntryRespond>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$GrowthEntryRespondToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GrowthEntryRespond&&(identical(other.entry, entry) || other.entry == entry));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,entry);
+
+@override
+String toString() {
+  return 'BaseRespond.growthEntryRespond(entry: $entry)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $GrowthEntryRespondCopyWith<$Res> implements $BaseRespondCopyWith<$Res> {
+  factory $GrowthEntryRespondCopyWith(GrowthEntryRespond value, $Res Function(GrowthEntryRespond) _then) = _$GrowthEntryRespondCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'data') GrowthEntry? entry
+});
+
+
+$GrowthEntryCopyWith<$Res>? get entry;
+
+}
+/// @nodoc
+class _$GrowthEntryRespondCopyWithImpl<$Res>
+    implements $GrowthEntryRespondCopyWith<$Res> {
+  _$GrowthEntryRespondCopyWithImpl(this._self, this._then);
+
+  final GrowthEntryRespond _self;
+  final $Res Function(GrowthEntryRespond) _then;
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? entry = freezed,}) {
+  return _then(GrowthEntryRespond(
+entry: freezed == entry ? _self.entry : entry // ignore: cast_nullable_to_non_nullable
+as GrowthEntry?,
+  ));
+}
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$GrowthEntryCopyWith<$Res>? get entry {
+    if (_self.entry == null) {
+    return null;
+  }
+
+  return $GrowthEntryCopyWith<$Res>(_self.entry!, (value) {
+    return _then(_self.copyWith(entry: value));
+  });
+}
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class YearBookRespond extends BaseRespond {
+   YearBookRespond({@JsonKey(name: 'data') this.book, final  String? $type}): $type = $type ?? 'yearBookRespond',super._();
+  factory YearBookRespond.fromJson(Map<String, dynamic> json) => _$YearBookRespondFromJson(json);
+
+@JsonKey(name: 'data') final  YearBookRecord? book;
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$YearBookRespondCopyWith<YearBookRespond> get copyWith => _$YearBookRespondCopyWithImpl<YearBookRespond>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$YearBookRespondToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is YearBookRespond&&(identical(other.book, book) || other.book == book));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,book);
+
+@override
+String toString() {
+  return 'BaseRespond.yearBookRespond(book: $book)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $YearBookRespondCopyWith<$Res> implements $BaseRespondCopyWith<$Res> {
+  factory $YearBookRespondCopyWith(YearBookRespond value, $Res Function(YearBookRespond) _then) = _$YearBookRespondCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'data') YearBookRecord? book
+});
+
+
+$YearBookRecordCopyWith<$Res>? get book;
+
+}
+/// @nodoc
+class _$YearBookRespondCopyWithImpl<$Res>
+    implements $YearBookRespondCopyWith<$Res> {
+  _$YearBookRespondCopyWithImpl(this._self, this._then);
+
+  final YearBookRespond _self;
+  final $Res Function(YearBookRespond) _then;
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? book = freezed,}) {
+  return _then(YearBookRespond(
+book: freezed == book ? _self.book : book // ignore: cast_nullable_to_non_nullable
+as YearBookRecord?,
+  ));
+}
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$YearBookRecordCopyWith<$Res>? get book {
+    if (_self.book == null) {
+    return null;
+  }
+
+  return $YearBookRecordCopyWith<$Res>(_self.book!, (value) {
+    return _then(_self.copyWith(book: value));
+  });
+}
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class YearBookListRespond extends BaseRespond {
+   YearBookListRespond({@JsonKey(name: 'data') this.books, final  String? $type}): $type = $type ?? 'yearBookListRespond',super._();
+  factory YearBookListRespond.fromJson(Map<String, dynamic> json) => _$YearBookListRespondFromJson(json);
+
+@JsonKey(name: 'data') final  YearBookList? books;
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$YearBookListRespondCopyWith<YearBookListRespond> get copyWith => _$YearBookListRespondCopyWithImpl<YearBookListRespond>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$YearBookListRespondToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is YearBookListRespond&&(identical(other.books, books) || other.books == books));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,books);
+
+@override
+String toString() {
+  return 'BaseRespond.yearBookListRespond(books: $books)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $YearBookListRespondCopyWith<$Res> implements $BaseRespondCopyWith<$Res> {
+  factory $YearBookListRespondCopyWith(YearBookListRespond value, $Res Function(YearBookListRespond) _then) = _$YearBookListRespondCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'data') YearBookList? books
+});
+
+
+$YearBookListCopyWith<$Res>? get books;
+
+}
+/// @nodoc
+class _$YearBookListRespondCopyWithImpl<$Res>
+    implements $YearBookListRespondCopyWith<$Res> {
+  _$YearBookListRespondCopyWithImpl(this._self, this._then);
+
+  final YearBookListRespond _self;
+  final $Res Function(YearBookListRespond) _then;
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? books = freezed,}) {
+  return _then(YearBookListRespond(
+books: freezed == books ? _self.books : books // ignore: cast_nullable_to_non_nullable
+as YearBookList?,
+  ));
+}
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$YearBookListCopyWith<$Res>? get books {
+    if (_self.books == null) {
+    return null;
+  }
+
+  return $YearBookListCopyWith<$Res>(_self.books!, (value) {
+    return _then(_self.copyWith(books: value));
+  });
+}
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class MonthRecapRespond extends BaseRespond {
+   MonthRecapRespond({@JsonKey(name: 'data') this.recap, final  String? $type}): $type = $type ?? 'monthRecapRespond',super._();
+  factory MonthRecapRespond.fromJson(Map<String, dynamic> json) => _$MonthRecapRespondFromJson(json);
+
+@JsonKey(name: 'data') final  MonthRecapRecord? recap;
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$MonthRecapRespondCopyWith<MonthRecapRespond> get copyWith => _$MonthRecapRespondCopyWithImpl<MonthRecapRespond>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$MonthRecapRespondToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MonthRecapRespond&&(identical(other.recap, recap) || other.recap == recap));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,recap);
+
+@override
+String toString() {
+  return 'BaseRespond.monthRecapRespond(recap: $recap)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $MonthRecapRespondCopyWith<$Res> implements $BaseRespondCopyWith<$Res> {
+  factory $MonthRecapRespondCopyWith(MonthRecapRespond value, $Res Function(MonthRecapRespond) _then) = _$MonthRecapRespondCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'data') MonthRecapRecord? recap
+});
+
+
+$MonthRecapRecordCopyWith<$Res>? get recap;
+
+}
+/// @nodoc
+class _$MonthRecapRespondCopyWithImpl<$Res>
+    implements $MonthRecapRespondCopyWith<$Res> {
+  _$MonthRecapRespondCopyWithImpl(this._self, this._then);
+
+  final MonthRecapRespond _self;
+  final $Res Function(MonthRecapRespond) _then;
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? recap = freezed,}) {
+  return _then(MonthRecapRespond(
+recap: freezed == recap ? _self.recap : recap // ignore: cast_nullable_to_non_nullable
+as MonthRecapRecord?,
+  ));
+}
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$MonthRecapRecordCopyWith<$Res>? get recap {
+    if (_self.recap == null) {
+    return null;
+  }
+
+  return $MonthRecapRecordCopyWith<$Res>(_self.recap!, (value) {
+    return _then(_self.copyWith(recap: value));
   });
 }
 }
@@ -7907,6 +9704,87 @@ $WeeklyRecapRecordCopyWith<$Res>? get recap {
     return _then(_self.copyWith(recap: value));
   });
 }
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class RecapTimelineRespond extends BaseRespond {
+   RecapTimelineRespond({@JsonKey(name: 'data') final  Map<String, dynamic>? result, final  String? $type}): _result = result,$type = $type ?? 'recapTimelineRespond',super._();
+  factory RecapTimelineRespond.fromJson(Map<String, dynamic> json) => _$RecapTimelineRespondFromJson(json);
+
+ final  Map<String, dynamic>? _result;
+@JsonKey(name: 'data') Map<String, dynamic>? get result {
+  final value = _result;
+  if (value == null) return null;
+  if (_result is EqualUnmodifiableMapView) return _result;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(value);
+}
+
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$RecapTimelineRespondCopyWith<RecapTimelineRespond> get copyWith => _$RecapTimelineRespondCopyWithImpl<RecapTimelineRespond>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$RecapTimelineRespondToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecapTimelineRespond&&const DeepCollectionEquality().equals(other._result, _result));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_result));
+
+@override
+String toString() {
+  return 'BaseRespond.recapTimelineRespond(result: $result)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $RecapTimelineRespondCopyWith<$Res> implements $BaseRespondCopyWith<$Res> {
+  factory $RecapTimelineRespondCopyWith(RecapTimelineRespond value, $Res Function(RecapTimelineRespond) _then) = _$RecapTimelineRespondCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'data') Map<String, dynamic>? result
+});
+
+
+
+
+}
+/// @nodoc
+class _$RecapTimelineRespondCopyWithImpl<$Res>
+    implements $RecapTimelineRespondCopyWith<$Res> {
+  _$RecapTimelineRespondCopyWithImpl(this._self, this._then);
+
+  final RecapTimelineRespond _self;
+  final $Res Function(RecapTimelineRespond) _then;
+
+/// Create a copy of BaseRespond
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? result = freezed,}) {
+  return _then(RecapTimelineRespond(
+result: freezed == result ? _self._result : result // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,
+  ));
+}
+
+
 }
 
 /// @nodoc

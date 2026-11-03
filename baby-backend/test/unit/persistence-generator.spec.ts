@@ -36,7 +36,7 @@ describe('Persistence code generation', () => {
           ['tools/database/generate-persistence.mjs', ...args],
           { cwd: fixture, encoding: 'utf8', stdio: 'pipe' },
         );
-      expect(run()).toContain('Generated 122');
+      expect(run()).toContain('Generated 128');
       const target = path.join(fixture, 'src/models/ai-usage-monthly.model.ts');
       const original = await readFile(target, 'utf8');
       const modified = `${original}\n// Preserved custom helper.\n`;
@@ -46,9 +46,9 @@ describe('Persistence code generation', () => {
       expect(() => run('--check', '--force')).toThrow(
         'Generated file was customized',
       );
-      expect(run('--force')).toContain('Generated 122');
+      expect(run('--force')).toContain('Generated 128');
       expect(await readFile(target, 'utf8')).toBe(original);
-      expect(run('--check')).toContain('Verified 122');
+      expect(run('--check')).toContain('Verified 128');
     } finally {
       await rm(fixture, { recursive: true, force: true });
     }

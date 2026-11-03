@@ -1,6 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { AuthPrincipal } from '../common/auth/auth-principal';
-import { NotFoundError, ValidationError } from '../common/errors/domain.error';
+import {
+  DomainError,
+  NotFoundError,
+  ValidationError,
+} from '../common/errors/domain.error';
 import { WEEKLY_RECAP_POLICY } from '../config/weekly-recap-policy';
 import type {
   WeeklyRecapQueryDto,
@@ -97,6 +101,9 @@ export class WeeklyRecapService implements IWeeklyRecapService {
     )
       throw new ValidationError('Invalid recap cursor.');
     const viewer = await this.viewer(actor, familyId);
+    const plan = viewer.isParent
+      ? await this.repository.sharePlan(familyId)
+      : null;
     const rows = await this.repository.list(
       familyId,
       !viewer.isParent,
@@ -121,6 +128,8 @@ export class WeeklyRecapService implements IWeeklyRecapService {
         visibility: row.visibility,
         content: result.content(),
         coverAssetId: result.coverAssetId,
+        memoryId: viewer.isParent ? row.memoryId : null,
+        ...(plan ? { canShare: plan.share ?? plan.circle } : {}),
         ...(viewer.isParent
           ? {
               contentParentsOnly: {
@@ -141,6 +150,70 @@ export class WeeklyRecapService implements IWeeklyRecapService {
     if (!page.items[0]) throw new NotFoundError('Weekly recap was not found.');
     return page.items[0];
   }
+  async share(
+    actor: AuthPrincipal,
+    familyId: string,
+    recapId: string,
+    shared: boolean,
+  ) {
+    await this.access.requireParent(actor, familyId, 'write');
+    const plan = await this.repository.sharePlan(familyId);
+    if (shared && !(plan.share ?? plan.circle))
+      throw new DomainError(
+        'Sharing with relatives needs the Family plan.',
+        'PLAN_REQUIRED_FAMILY',
+        402,
+      );
+    await this.repository.share(familyId, recapId, shared, actor.userId);
+    return this.one(actor, familyId, recapId);
+  }
+
+  async saveToTimeline(
+    actor: AuthPrincipal,
+    familyId: string,
+    recapId: string,
+  ) {
+    await this.access.requireParent(actor, familyId, 'write');
+    const recap = await this.repository.find(familyId, recapId);
+    if (!recap) throw new NotFoundError('Weekly recap was not found.');
+    const day = (date: Date) =>
+      `${String(date.getUTCDate()).padStart(2, '0')}/${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
+    const titles = Object.fromEntries(
+      Object.entries(WEEKLY_RECAP_POLICY.timelineTitle).map(
+        ([locale, text]) => [
+          locale,
+          text
+            .replace('{start}', day(recap.periodStart))
+            .replace('{end}', day(recap.periodEnd)),
+        ],
+      ),
+    );
+    // Ký ức nằm ở cuối tuần (12:00 theo giờ gia đình ~ không lệch ngày).
+    const memoryId = await this.repository.saveToTimeline(familyId, recapId, {
+      authorUserId: actor.userId,
+      titles,
+      occurredAt: new Date(
+        `${recap.periodEnd.toISOString().slice(0, 10)}T05:00:00.000Z`,
+      ),
+      localDate: recap.periodEnd,
+      maxPhotos: WEEKLY_RECAP_POLICY.timelineMaxPhotos,
+    });
+    return { memoryId };
+  }
+
+  /** Một recap theo id (Parent) sau khi đổi. */
+  private async one(actor: AuthPrincipal, familyId: string, recapId: string) {
+    const recap = await this.repository.find(familyId, recapId);
+    if (!recap) throw new NotFoundError('Weekly recap was not found.');
+    const cursor = new Date(recap.periodStart.getTime() + 86400000)
+      .toISOString()
+      .slice(0, 10);
+    const page = await this.list(actor, familyId, { cursor, limit: 1 });
+    const item = page.items.find((entry) => entry.id === recapId);
+    if (!item) throw new NotFoundError('Weekly recap was not found.');
+    return item;
+  }
+
   async stats(actor: AuthPrincipal, familyId: string) {
     const viewer = await this.viewer(actor, familyId);
     const start = weekStart(new Date(), viewer.family.timezone);

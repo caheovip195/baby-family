@@ -1209,6 +1209,7 @@ model MilestoneTemplate {
   remindDaysBefore Int?        @map("remind_days_before") @db.SmallInt
   sortOrder        Int         @default(0) @map("sort_order")
   status           String      @default("ACTIVE") @db.VarChar(10)
+  version          Int         @default(1)
   createdAt        DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt        DateTime    @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   deletedAt        DateTime?   @map("deleted_at") @db.Timestamptz(3)
@@ -3791,5 +3792,128 @@ model OfflineMemoryChange {
   // Partial cursor/latest indexes and foreign keys are owned by the DDL migration.
   @@ignore
   @@map("offline_memory_changes")
+  @@schema("app")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// BF-20261028-004: CHD-06 cân nặng / chiều cao theo ngày (FK khai báo trong migration).
+model GrowthMeasurement {
+  id          String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  familyId    String    @map("family_id") @db.Uuid
+  childId     String    @map("child_id") @db.Uuid
+  measuredOn  DateTime  @map("measured_on") @db.Date
+  weightGrams Int?      @map("weight_grams")
+  heightMm    Int?      @map("height_mm")
+  note        String?   @db.VarChar(200)
+  createdBy   String    @map("created_by") @db.Uuid
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(3)
+
+  @@index([familyId, childId, measuredOn], map: "ix_growth_measurements_family", where: raw("(deleted_at IS NULL)"))
+  @@map("growth_measurements")
+  @@schema("app")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// BF-20261028-006: REC-01 Câu chuyện ngày (FK khai báo trong migration).
+model DayStory {
+  id           String     @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  familyId     String     @map("family_id") @db.Uuid
+  childId      String     @map("child_id") @db.Uuid
+  localDate    DateTime   @map("local_date") @db.Date
+  title        String     @db.VarChar(120)
+  body         String?    @db.VarChar(5000)
+  coverAssetId String?    @map("cover_asset_id") @db.Uuid
+  memoryIds    String[]   @default([]) @map("memory_ids") @db.Uuid
+  assetIds     String[]   @default([]) @map("asset_ids") @db.Uuid
+  visibility   Visibility @default(PARENTS)
+  createdBy    String     @map("created_by") @db.Uuid
+  updatedBy    String     @map("updated_by") @db.Uuid
+  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime   @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt    DateTime?  @map("deleted_at") @db.Timestamptz(3)
+
+  @@index([familyId, localDate], map: "ix_day_stories_family", where: raw("(deleted_at IS NULL)"))
+  @@map("day_stories")
+  @@schema("app")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// BF-20261028-007: Bàn giao ca giữa hai Parent (FK khai báo trong migration).
+model CareHandoff {
+  id             String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  familyId       String    @map("family_id") @db.Uuid
+  coupleSpaceId  String    @map("couple_space_id") @db.Uuid
+  fromUserId     String    @map("from_user_id") @db.Uuid
+  toUserId       String    @map("to_user_id") @db.Uuid
+  idempotencyKey String    @map("idempotency_key") @db.Uuid
+  childIds       String[]  @default([]) @map("child_ids") @db.Uuid
+  fedAt          DateTime? @map("fed_at") @db.Timestamptz(3)
+  sleptAt        DateTime? @map("slept_at") @db.Timestamptz(3)
+  wokeAt         DateTime? @map("woke_at") @db.Timestamptz(3)
+  noteEnc        Bytes?    @map("note_enc")
+  requestId      String?   @map("request_id") @db.Uuid
+  acknowledgedAt DateTime? @map("acknowledged_at") @db.Timestamptz(3)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt      DateTime? @map("deleted_at") @db.Timestamptz(3)
+
+  @@unique([fromUserId, idempotencyKey], map: "uq_care_handoff_key")
+  @@index([coupleSpaceId, createdAt(sort: Desc)], map: "ix_care_handoffs_space", where: raw("(deleted_at IS NULL)"))
+  @@map("care_handoffs")
+  @@schema("us")
+}
+
+/// BF-20261101-001: cuộc trò chuyện FAMILY (cả nhà) hoặc COUPLE (Papa & Mama).
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model ChatConversation {
+  id            String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  familyId      String    @map("family_id") @db.Uuid
+  kind          String    @db.VarChar(20)
+  coupleSpaceId String?   @map("couple_space_id") @db.Uuid
+  lastSeq       Int       @default(0) @map("last_seq")
+  lastMessageAt DateTime? @map("last_message_at") @db.Timestamptz(3)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt     DateTime? @map("deleted_at") @db.Timestamptz(3)
+
+  @@index([familyId], map: "ix_chat_conversations_family", where: raw("(deleted_at IS NULL)"))
+  @@map("chat_conversations")
+  @@schema("app")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model ChatMessage {
+  id             String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  conversationId String    @map("conversation_id") @db.Uuid
+  familyId       String    @map("family_id") @db.Uuid
+  senderUserId   String    @map("sender_user_id") @db.Uuid
+  seq            Int
+  idempotencyKey String    @map("idempotency_key") @db.Uuid
+  body           String?
+  bodyEnc        Bytes?    @map("body_enc")
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt      DateTime? @map("deleted_at") @db.Timestamptz(3)
+
+  @@unique([conversationId, seq], map: "uq_chat_message_seq")
+  @@unique([conversationId, senderUserId, idempotencyKey], map: "uq_chat_message_key")
+  @@map("chat_messages")
+  @@schema("app")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model ChatReadState {
+  id             String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  conversationId String    @map("conversation_id") @db.Uuid
+  userId         String    @map("user_id") @db.Uuid
+  lastReadSeq    Int       @default(0) @map("last_read_seq")
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt      DateTime? @map("deleted_at") @db.Timestamptz(3)
+
+  @@unique([conversationId, userId], map: "uq_chat_read_state")
+  @@map("chat_read_states")
   @@schema("app")
 }

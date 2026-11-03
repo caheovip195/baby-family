@@ -229,13 +229,22 @@ class BridgeStartController extends BaseNotifier {
       await usService.saveBridgeDraft(value);
       await usService.sendBridgeInvite(value.id);
       final sessions = await usService.bridgeSessions();
-      final live = sessions
-          .where(
-            (session) =>
-                session.status == BridgeStatus.active ||
-                session.status == BridgeStatus.nextStep,
-          )
-          .firstOrNull;
+      // Phiên chung đang mở của hai người (bản server có id mới khác id nháp).
+      final live =
+          sessions
+              .where(
+                (session) =>
+                    session.status == BridgeStatus.active ||
+                    session.status == BridgeStatus.nextStep,
+              )
+              .firstOrNull ??
+          sessions
+              .where(
+                (session) =>
+                    session.status == BridgeStatus.invited ||
+                    session.status == BridgeStatus.paused,
+              )
+              .firstOrNull;
       return live?.id ?? value.id;
     } catch (_) {
       return null;

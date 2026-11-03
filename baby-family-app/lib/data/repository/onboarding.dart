@@ -60,5 +60,5 @@ abstract class IOnboardingRepository extends IBaseRepository {
   Future<List<MyCircleRecord>> myCircles();
 
   /// `POST /v1/families/{familyId}/circle/leave` (SET-10).
-  Future<void> leaveCircle(String familyId);
+  Future<void> leaveCircle(String familyId, {bool removeContent = false});
 }

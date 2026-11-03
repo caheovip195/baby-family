@@ -8594,4 +8594,527 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get memCommentsOff => 'この思い出のコメントはオフです';
+
+  @override
+  String get errorLastSignInMethod =>
+      'ログイン方法は少なくとも1つ必要です。先に別の方法を連携してから解除してください。';
+
+  @override
+  String get errorIdentityInUse => 'このアカウントは別のプロフィールに連携済みか、この種類はすでに連携されています。';
+
+  @override
+  String get errorReauthIdentity => '連携済みのアカウントで再認証してください。';
+
+  @override
+  String get setSignInReauthTitle => '再認証';
+
+  @override
+  String get growthTitle => '成長';
+
+  @override
+  String get growthEntry => '成長記録';
+
+  @override
+  String get growthEntryHint => '日付ごとの体重・身長';
+
+  @override
+  String get growthWeight => '体重';
+
+  @override
+  String get growthHeight => '身長';
+
+  @override
+  String get growthAdd => '測定を追加';
+
+  @override
+  String get growthEdit => '測定を編集';
+
+  @override
+  String get growthEmpty => 'まだ測定がありません。最近の健診の体重か身長を追加しましょう。';
+
+  @override
+  String get growthChartHint => 'グラフには2回以上の測定が必要です。';
+
+  @override
+  String get growthDisclaimer =>
+      'グラフはお子さま自身の測定値のみで、基準との比較はしません。医師の助言に代わるものではありません。';
+
+  @override
+  String get growthPrivacy => '測定値はパパとママだけが見られます。';
+
+  @override
+  String get growthDate => '測定日';
+
+  @override
+  String get growthWeightLabel => '体重 (kg)';
+
+  @override
+  String get growthHeightLabel => '身長 (cm)';
+
+  @override
+  String get growthNote => 'メモ';
+
+  @override
+  String get growthNeedValue => '正しい体重か身長を入力してください。';
+
+  @override
+  String get growthPending => '同期待ち';
+
+  @override
+  String get growthSaved => '測定を保存しました。';
+
+  @override
+  String get errorGrowthDate => '測定日は誕生日から今日までにしてください。';
+
+  @override
+  String growthKg(String value) {
+    return '$value kg';
+  }
+
+  @override
+  String growthCm(String value) {
+    return '$value cm';
+  }
+
+  @override
+  String memUploadProgressPercent(String progress, int percent) {
+    return '$progress · $percent%';
+  }
+
+  @override
+  String recapDayDefaultTitle(String name) {
+    return '$nameの一日';
+  }
+
+  @override
+  String get usHandoff => '引き継ぎ';
+
+  @override
+  String usHandoffTitle(String name) {
+    return '$nameに引き継ぐ';
+  }
+
+  @override
+  String usHandoffHint(String name) {
+    return '$nameが引き継げるよう、赤ちゃんの様子を手短に書きましょう。';
+  }
+
+  @override
+  String get usHandoffChildren => 'どの子';
+
+  @override
+  String get usHandoffFed => '授乳・食事';
+
+  @override
+  String get usHandoffSlept => '寝た時間';
+
+  @override
+  String get usHandoffWoke => '起きた時間';
+
+  @override
+  String get usHandoffPickTime => '時間を選ぶ';
+
+  @override
+  String get usHandoffNote => 'メモ';
+
+  @override
+  String get usHandoffNoteHint => '例：少しぐずり気味、おむつ交換済み…';
+
+  @override
+  String usHandoffAttachRequest(String name) {
+    return '$nameに続きの用事をお願いする';
+  }
+
+  @override
+  String get usHandoffSend => '引き継ぎを送る';
+
+  @override
+  String usHandoffSent(String name) {
+    return '$nameに引き継ぎを送りました';
+  }
+
+  @override
+  String get usHandoffNeedContent => '時間を1つ以上選ぶか、メモを書いてください。';
+
+  @override
+  String usHandoffFrom(String name, String time) {
+    return '$nameからの引き継ぎ · $time';
+  }
+
+  @override
+  String usHandoffMine(String time) {
+    return 'あなたの引き継ぎ · $time';
+  }
+
+  @override
+  String usHandoffFedAt(String time) {
+    return '$timeに授乳・食事';
+  }
+
+  @override
+  String usHandoffSleptAt(String time) {
+    return '$timeに就寝';
+  }
+
+  @override
+  String usHandoffWokeAt(String time) {
+    return '$timeに起床';
+  }
+
+  @override
+  String get usHandoffAck => '受け取りました';
+
+  @override
+  String usHandoffAcked(String name) {
+    return '$nameが引き継ぎました';
+  }
+
+  @override
+  String usHandoffWaiting(String name) {
+    return '$nameの確認待ち';
+  }
+
+  @override
+  String get usHandoffPending => '同期待ち';
+
+  @override
+  String get usHandoffNotMedical => '手短な共有用で、医療記録ではありません。';
+
+  @override
+  String get errorHandoffTime => '時間は過去24時間以内にしてください。';
+
+  @override
+  String get usHandoffAckedByMe => '引き継ぎを受け取りました';
+
+  @override
+  String get aiConsentTitle => 'AIの提案を使いますか？';
+
+  @override
+  String aiConsentBody(String data) {
+    return '提案のため、Baby Family は $data を AI プロバイダー（OpenRouter）に送信します。写真や個人日記、個人の下書きは送信しません。提案は編集・破棄できる下書きです。';
+  }
+
+  @override
+  String get aiConsentAccept => '同意して続ける';
+
+  @override
+  String get aiDataCaption => '入力した言葉と思い出の種類';
+
+  @override
+  String get aiDataDayStory => 'その日に選んだ思い出のキャプション';
+
+  @override
+  String get aiDataRewrite => '書き直したい文';
+
+  @override
+  String get aiDataBridge => 'このセッションで二人が共有した内容';
+
+  @override
+  String get aiCaptionSheetTitle => 'キャプションの提案';
+
+  @override
+  String get errorAiUnavailable => 'AIは一時的に利用できません。後でもう一度お試しください。';
+
+  @override
+  String get errorAiNotInPlan => '現在のプランにはAI提案が含まれていません。';
+
+  @override
+  String get errorAiDisabled => '設定でAIをオフにしています。';
+
+  @override
+  String get errorAiQuota => '今月のAI利用回数を使い切りました。';
+
+  @override
+  String get usBridgeAiSummary => '✨ 二人のためにまとめる';
+
+  @override
+  String get usBridgeAiSummaryTitle => '二人が共有したこと';
+
+  @override
+  String get aiDataMission => 'お子さまの年齢層、用意されたタスク一覧、過去14日のカテゴリ別完了数';
+
+  @override
+  String get careAiSuggest => '✨ 今日のおすすめ';
+
+  @override
+  String get careAiSuggestTitle => '今日のおすすめ';
+
+  @override
+  String get yearBookEntry => '成長アルバム';
+
+  @override
+  String get yearBookEntryHint => '月ごとのベスト写真、PDFで書き出し';
+
+  @override
+  String get yearBookTitle => '成長アルバム';
+
+  @override
+  String yearBookDefaultTitle(String name, String year) {
+    return '$nameの$year年';
+  }
+
+  @override
+  String get yearBookPdfSubtitle => '家族で残した瞬間';
+
+  @override
+  String yearBookChapter(String month) {
+    return '$month月';
+  }
+
+  @override
+  String get yearBookBookName => 'アルバム名';
+
+  @override
+  String get yearBookChapterName => '章のタイトル';
+
+  @override
+  String get yearBookCaption => 'キャプション';
+
+  @override
+  String get yearBookHint => '写真をタップで選択/解除、キャプションをタップで編集。';
+
+  @override
+  String get yearBookEmpty => 'この年のお子さまの思い出はまだありません。';
+
+  @override
+  String yearBookSelected(String count) {
+    return 'アルバムに$count件の思い出';
+  }
+
+  @override
+  String get yearBookPreviewOnly => '現在のプランはプレビューのみです。PDFを書き出すにはアップグレードしてください。';
+
+  @override
+  String get yearBookUpgrade => 'アップグレード';
+
+  @override
+  String get yearBookPending => 'この端末に保存しました。オンラインになると同期します。';
+
+  @override
+  String get yearBookExport => 'PDFを書き出す';
+
+  @override
+  String get yearBookExporting => 'アルバムを作成中…';
+
+  @override
+  String get yearBookUnsaved => '未保存の変更があります。';
+
+  @override
+  String get yearBookFamily => '家族みんな';
+
+  @override
+  String get yearBookFamilyTitle => '家族の本';
+
+  @override
+  String yearBookFamilyDefaultTitle(String year) {
+    return '$year年のわが家';
+  }
+
+  @override
+  String get yearBookFamilyEmpty => 'この年の家族の思い出はまだありません。';
+
+  @override
+  String get yearBookPreview => 'プレビュー';
+
+  @override
+  String get yearBookShared => 'わが家の年の本';
+
+  @override
+  String get yearBookSharedEmpty => 'まだ共有された本はありません。';
+
+  @override
+  String get yearBookShareTitle => '祖父母・親族と共有';
+
+  @override
+  String get yearBookShareHint => 'お子さまを見られる親族が、保存した本（選んだ思い出のみ）を読めます。';
+
+  @override
+  String get yearBookShareLocked => 'Familyプランで本を祖父母・親族と共有できます。';
+
+  @override
+  String get notiCircleLeft => '親族の1人が家族の輪を離れました';
+
+  @override
+  String get notiYearBookShared => 'パパとママが年の本を共有しました';
+
+  @override
+  String get recapUnshared => '親族との共有を停止しました';
+
+  @override
+  String get recapSharedStop => '共有中・タップで停止';
+
+  @override
+  String get memVoiceStop => '停止';
+
+  @override
+  String get notiOpen => '見る';
+
+  @override
+  String get chatTitle => 'メッセージ';
+
+  @override
+  String chatListSubtitle(String familyName, int count) {
+    return '$familyName · $count件の会話';
+  }
+
+  @override
+  String get chatFamilyTitle => '家族みんな';
+
+  @override
+  String get chatCoupleTitle => 'Papa & Mama';
+
+  @override
+  String get chatOnlyTwo => 'ふたりだけが見られます';
+
+  @override
+  String chatMembersSummary(String parents, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$parents + 親族$count人',
+      zero: '$parents',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String chatPreviewMine(String text) {
+    return 'あなた: $text';
+  }
+
+  @override
+  String chatPreviewOther(String name, String text) {
+    return '$name: $text';
+  }
+
+  @override
+  String get chatNoMessagesYet => 'まだメッセージはありません';
+
+  @override
+  String get chatToday => '今日';
+
+  @override
+  String get chatYesterday => '昨日';
+
+  @override
+  String get chatInfoNote =>
+      '家族ごとに会話は2つ：「家族みんな」はPapa、Mamaと親族用、「Papa & Mama」はふたりだけの会話です。';
+
+  @override
+  String get chatListEmptyTitle => 'まだ会話がありません';
+
+  @override
+  String get chatListEmptyDescription => '家族の会話はここに表示されます。';
+
+  @override
+  String chatMembersCount(int count) {
+    return 'メンバー$count人';
+  }
+
+  @override
+  String get chatMembersTooltip => 'メンバー';
+
+  @override
+  String get chatCoupleSubtitle => 'ふたりだけのメッセージ。親族には見えません';
+
+  @override
+  String get chatCoupleNote => 'この会話はPapa & Mamaだけが見られます';
+
+  @override
+  String get chatComposerHint => '家族にメッセージ…';
+
+  @override
+  String chatComposerCoupleHint(String callName) {
+    return '$callNameにメッセージ…';
+  }
+
+  @override
+  String get chatSend => '送信';
+
+  @override
+  String get chatSending => '送信中…';
+
+  @override
+  String get chatWaiting => '送信待ち';
+
+  @override
+  String get chatFailed => '送信できませんでした · タップして再送';
+
+  @override
+  String get chatSent => '送信済み';
+
+  @override
+  String get chatSeen => '既読';
+
+  @override
+  String chatSeenBy(String names) {
+    return '既読 · $names';
+  }
+
+  @override
+  String chatSeenByMore(String names, int count) {
+    return '既読 · $names +$count';
+  }
+
+  @override
+  String chatTyping(String name) {
+    return '$nameが入力中…';
+  }
+
+  @override
+  String chatTypingMany(int count) {
+    return '$count人が入力中…';
+  }
+
+  @override
+  String chatOfflineSubtitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'オンラインに戻ると自動で送信します · $count件待機中',
+      zero: 'オンラインに戻ると自動で送信します',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatReconnectingTitle => '再接続中…';
+
+  @override
+  String get chatReconnectingSubtitle => '接続が戻るとすぐに新しいメッセージが表示されます';
+
+  @override
+  String get chatEmptyTitle => 'まだメッセージはありません';
+
+  @override
+  String get chatEmptyDescription => '家族に最初のあいさつを送りましょう 👋';
+
+  @override
+  String get chatEmptyCoupleDescription => 'ふたりで最初のメッセージを送りましょう ❤️';
+
+  @override
+  String get chatHelloSuggestion => 'みんな、こんにちは 👋';
+
+  @override
+  String get chatNotFound => 'この会話は開けません';
+
+  @override
+  String chatUnread(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '未読$count件',
+      zero: '新しいメッセージはありません',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatCoupleEntry => 'ふたりのチャット';
+
+  @override
+  String get chatSomeone => 'メンバー';
+
+  @override
+  String get chatLoadError => '新しいメッセージを読み込めませんでした。保存済みを表示しています。';
 }

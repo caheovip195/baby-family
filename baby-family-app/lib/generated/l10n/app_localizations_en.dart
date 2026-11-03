@@ -9160,4 +9160,560 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get memCommentsOff => 'Comments are turned off for this memory';
+
+  @override
+  String get errorLastSignInMethod =>
+      'Keep at least one way to sign in. Link another method first, then remove this one.';
+
+  @override
+  String get errorIdentityInUse =>
+      'This account is already linked to another profile, or you have already linked this type.';
+
+  @override
+  String get errorReauthIdentity =>
+      'Please verify with the account that is already linked.';
+
+  @override
+  String get setSignInReauthTitle => 'Verify again';
+
+  @override
+  String get growthTitle => 'Growth';
+
+  @override
+  String get growthEntry => 'Growth';
+
+  @override
+  String get growthEntryHint => 'Weight and height by date';
+
+  @override
+  String get growthWeight => 'Weight';
+
+  @override
+  String get growthHeight => 'Height';
+
+  @override
+  String get growthAdd => 'Add measurement';
+
+  @override
+  String get growthEdit => 'Edit measurement';
+
+  @override
+  String get growthEmpty =>
+      'No measurements yet. Add the weight or height from the latest check-up.';
+
+  @override
+  String get growthChartHint =>
+      'At least 2 measurements are needed for a chart.';
+
+  @override
+  String get growthDisclaimer =>
+      'The chart only shows your child’s own measurements. It is not compared with any standard and does not replace a doctor’s advice.';
+
+  @override
+  String get growthPrivacy => 'Only Papa and Mama can see measurements.';
+
+  @override
+  String get growthDate => 'Date';
+
+  @override
+  String get growthWeightLabel => 'Weight (kg)';
+
+  @override
+  String get growthHeightLabel => 'Height (cm)';
+
+  @override
+  String get growthNote => 'Note';
+
+  @override
+  String get growthNeedValue => 'Enter a valid weight or height.';
+
+  @override
+  String get growthPending => 'Waiting to sync';
+
+  @override
+  String get growthSaved => 'Measurement saved.';
+
+  @override
+  String get errorGrowthDate => 'The date must be between birth and today.';
+
+  @override
+  String growthKg(String value) {
+    return '$value kg';
+  }
+
+  @override
+  String growthCm(String value) {
+    return '$value cm';
+  }
+
+  @override
+  String memUploadProgressPercent(String progress, int percent) {
+    return '$progress · $percent%';
+  }
+
+  @override
+  String recapDayDefaultTitle(String name) {
+    return 'A day with $name';
+  }
+
+  @override
+  String get usHandoff => 'Handoff';
+
+  @override
+  String usHandoffTitle(String name) {
+    return 'Hand over to $name';
+  }
+
+  @override
+  String usHandoffHint(String name) {
+    return 'Jot down how the baby is doing so $name is up to speed.';
+  }
+
+  @override
+  String get usHandoffChildren => 'Which child';
+
+  @override
+  String get usHandoffFed => 'Fed at';
+
+  @override
+  String get usHandoffSlept => 'Fell asleep at';
+
+  @override
+  String get usHandoffWoke => 'Woke up at';
+
+  @override
+  String get usHandoffPickTime => 'Pick a time';
+
+  @override
+  String get usHandoffNote => 'Note';
+
+  @override
+  String get usHandoffNoteHint => 'E.g. a bit fussy, diaper changed…';
+
+  @override
+  String usHandoffAttachRequest(String name) {
+    return 'Ask $name to take over a task';
+  }
+
+  @override
+  String get usHandoffSend => 'Send handoff';
+
+  @override
+  String usHandoffSent(String name) {
+    return 'Handoff sent to $name';
+  }
+
+  @override
+  String get usHandoffNeedContent => 'Pick at least one time or write a note.';
+
+  @override
+  String usHandoffFrom(String name, String time) {
+    return '$name handed over · $time';
+  }
+
+  @override
+  String usHandoffMine(String time) {
+    return 'You handed over · $time';
+  }
+
+  @override
+  String usHandoffFedAt(String time) {
+    return 'Fed at $time';
+  }
+
+  @override
+  String usHandoffSleptAt(String time) {
+    return 'Asleep since $time';
+  }
+
+  @override
+  String usHandoffWokeAt(String time) {
+    return 'Awake since $time';
+  }
+
+  @override
+  String get usHandoffAck => 'Got it';
+
+  @override
+  String usHandoffAcked(String name) {
+    return '$name took over';
+  }
+
+  @override
+  String usHandoffWaiting(String name) {
+    return 'Waiting for $name';
+  }
+
+  @override
+  String get usHandoffPending => 'Waiting to sync';
+
+  @override
+  String get usHandoffNotMedical =>
+      'Just a quick update, not medical tracking.';
+
+  @override
+  String get errorHandoffTime => 'Times must be within the last 24 hours.';
+
+  @override
+  String get usHandoffAckedByMe => 'You took over';
+
+  @override
+  String get aiConsentTitle => 'Use AI suggestions?';
+
+  @override
+  String aiConsentBody(String data) {
+    return 'To make suggestions, Baby Family sends $data to an AI provider (OpenRouter). No photos, private journals or private drafts are sent. Suggestions are drafts you can edit or discard.';
+  }
+
+  @override
+  String get aiConsentAccept => 'Agree & continue';
+
+  @override
+  String get aiDataCaption => 'the few words you typed and the memory type';
+
+  @override
+  String get aiDataDayStory =>
+      'the captions of the memories you picked for the day';
+
+  @override
+  String get aiDataRewrite => 'the sentence you want to rewrite';
+
+  @override
+  String get aiDataBridge => 'what you both chose to share in this session';
+
+  @override
+  String get aiCaptionSheetTitle => 'Caption ideas';
+
+  @override
+  String get errorAiUnavailable =>
+      'AI is taking a short break. Please try again later.';
+
+  @override
+  String get errorAiNotInPlan =>
+      'AI suggestions are not included in your plan.';
+
+  @override
+  String get errorAiDisabled => 'You turned AI off in Settings.';
+
+  @override
+  String get errorAiQuota => 'This month’s AI uses are used up.';
+
+  @override
+  String get usBridgeAiSummary => '✨ Summarize for you both';
+
+  @override
+  String get usBridgeAiSummaryTitle => 'What you both shared';
+
+  @override
+  String get aiDataMission =>
+      'your child’s age group, the built-in mission list and how many missions were done per category in the last 14 days';
+
+  @override
+  String get careAiSuggest => '✨ Ideas for today';
+
+  @override
+  String get careAiSuggestTitle => 'Ideas for today';
+
+  @override
+  String get yearBookEntry => 'Year book';
+
+  @override
+  String get yearBookEntryHint => 'Best photos month by month, export as PDF';
+
+  @override
+  String get yearBookTitle => 'Year book';
+
+  @override
+  String yearBookDefaultTitle(String name, String year) {
+    return '$name\'s $year';
+  }
+
+  @override
+  String get yearBookPdfSubtitle => 'The moments our family kept';
+
+  @override
+  String yearBookChapter(String month) {
+    return 'Month $month';
+  }
+
+  @override
+  String get yearBookBookName => 'Book title';
+
+  @override
+  String get yearBookChapterName => 'Chapter title';
+
+  @override
+  String get yearBookCaption => 'Caption';
+
+  @override
+  String get yearBookHint =>
+      'Tap a photo to add or remove it, tap a caption to edit it.';
+
+  @override
+  String get yearBookEmpty => 'No memories of your child in this year yet.';
+
+  @override
+  String yearBookSelected(String count) {
+    return '$count memories in the book';
+  }
+
+  @override
+  String get yearBookPreviewOnly =>
+      'Your current plan can only preview the book. Upgrade to export a PDF.';
+
+  @override
+  String get yearBookUpgrade => 'Upgrade';
+
+  @override
+  String get yearBookPending => 'Saved on this device, will sync when online.';
+
+  @override
+  String get yearBookExport => 'Export PDF';
+
+  @override
+  String get yearBookExporting => 'Building the book…';
+
+  @override
+  String get yearBookUnsaved => 'You have unsaved changes.';
+
+  @override
+  String get yearBookFamily => 'Whole family';
+
+  @override
+  String get yearBookFamilyTitle => 'Family book';
+
+  @override
+  String yearBookFamilyDefaultTitle(String year) {
+    return 'Our family in $year';
+  }
+
+  @override
+  String get yearBookFamilyEmpty => 'No family memories this year yet.';
+
+  @override
+  String get yearBookPreview => 'Preview';
+
+  @override
+  String get yearBookShared => 'Family year books';
+
+  @override
+  String get yearBookSharedEmpty => 'No books have been shared yet.';
+
+  @override
+  String get yearBookShareTitle => 'Share with grandparents and relatives';
+
+  @override
+  String get yearBookShareHint =>
+      'Relatives who can see the child can read the saved book, only the chosen memories.';
+
+  @override
+  String get yearBookShareLocked =>
+      'The Family plan lets you share the book with grandparents and relatives.';
+
+  @override
+  String get notiCircleLeft => 'A relative has left your family circle';
+
+  @override
+  String get notiYearBookShared =>
+      'The parents just shared a year book with you';
+
+  @override
+  String get recapUnshared => 'Stopped sharing with relatives';
+
+  @override
+  String get recapSharedStop => 'Shared · tap to stop';
+
+  @override
+  String get memVoiceStop => 'Stop';
+
+  @override
+  String get notiOpen => 'View';
+
+  @override
+  String get chatTitle => 'Messages';
+
+  @override
+  String chatListSubtitle(String familyName, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count conversations',
+      one: '1 conversation',
+    );
+    return '$familyName · $_temp0';
+  }
+
+  @override
+  String get chatFamilyTitle => 'Whole family';
+
+  @override
+  String get chatCoupleTitle => 'Papa & Mama';
+
+  @override
+  String get chatOnlyTwo => 'Only you two can see';
+
+  @override
+  String chatMembersSummary(String parents, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$parents + $count relatives',
+      one: '$parents + 1 relative',
+      zero: '$parents',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String chatPreviewMine(String text) {
+    return 'You: $text';
+  }
+
+  @override
+  String chatPreviewOther(String name, String text) {
+    return '$name: $text';
+  }
+
+  @override
+  String get chatNoMessagesYet => 'No messages yet';
+
+  @override
+  String get chatToday => 'Today';
+
+  @override
+  String get chatYesterday => 'Yesterday';
+
+  @override
+  String get chatInfoNote =>
+      'Each family has 2 conversations: “Whole family” for Papa, Mama and relatives; “Papa & Mama” just for the two of you.';
+
+  @override
+  String get chatListEmptyTitle => 'No conversations yet';
+
+  @override
+  String get chatListEmptyDescription =>
+      'Your family conversations will show up here.';
+
+  @override
+  String chatMembersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count members',
+      one: '1 member',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatMembersTooltip => 'Members';
+
+  @override
+  String get chatCoupleSubtitle =>
+      'Private messages for you two — relatives can’t see them';
+
+  @override
+  String get chatCoupleNote => 'Only Papa & Mama can see this conversation';
+
+  @override
+  String get chatComposerHint => 'Message the family…';
+
+  @override
+  String chatComposerCoupleHint(String callName) {
+    return 'Message $callName privately…';
+  }
+
+  @override
+  String get chatSend => 'Send';
+
+  @override
+  String get chatSending => 'Sending…';
+
+  @override
+  String get chatWaiting => 'Waiting to send';
+
+  @override
+  String get chatFailed => 'Not sent · Tap to retry';
+
+  @override
+  String get chatSent => 'Sent';
+
+  @override
+  String get chatSeen => 'Seen';
+
+  @override
+  String chatSeenBy(String names) {
+    return 'Seen by $names';
+  }
+
+  @override
+  String chatSeenByMore(String names, int count) {
+    return 'Seen by $names +$count';
+  }
+
+  @override
+  String chatTyping(String name) {
+    return '$name is typing…';
+  }
+
+  @override
+  String chatTypingMany(int count) {
+    return '$count people are typing…';
+  }
+
+  @override
+  String chatOfflineSubtitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Messages will send when you’re back online · $count waiting',
+      one: 'Messages will send when you’re back online · 1 waiting',
+      zero: 'Messages will send when you’re back online',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatReconnectingTitle => 'Reconnecting…';
+
+  @override
+  String get chatReconnectingSubtitle =>
+      'New messages will appear as soon as you’re connected';
+
+  @override
+  String get chatEmptyTitle => 'No messages yet';
+
+  @override
+  String get chatEmptyDescription => 'Send the first hello to the family 👋';
+
+  @override
+  String get chatEmptyCoupleDescription =>
+      'Send each other the first private note ❤️';
+
+  @override
+  String get chatHelloSuggestion => 'Hi everyone 👋';
+
+  @override
+  String get chatNotFound => 'This conversation can’t be opened';
+
+  @override
+  String chatUnread(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count unread messages',
+      one: '1 unread message',
+      zero: 'No new messages',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatCoupleEntry => 'Private chat';
+
+  @override
+  String get chatSomeone => 'Member';
+
+  @override
+  String get chatLoadError => 'Couldn’t load new messages. Showing saved ones.';
 }

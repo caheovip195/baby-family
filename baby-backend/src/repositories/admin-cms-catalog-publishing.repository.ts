@@ -11,6 +11,7 @@ import { DomainError } from '../common/errors/domain.error';
 import type {
   CatalogPublishingKind,
   CatalogPublishingInput,
+  CatalogMilestoneInput,
   CatalogMissionInput,
   CatalogPlanInput,
   CatalogTrialInput,
@@ -129,6 +130,20 @@ export class AdminCmsCatalogPublishingRepository implements IAdminCmsCatalogPubl
     reason: string,
   ) {
     return this.transaction(async (tx) => {
+      if (kind === 'milestones') {
+        const { dateRule, promptI18n, ...milestone } =
+          input as CatalogMilestoneInput;
+        const row = await tx.milestoneTemplate.create({
+          data: {
+            ...milestone,
+            promptI18n: promptI18n ?? Prisma.DbNull,
+            dateRule: dateRule ?? Prisma.DbNull,
+            status: 'DRAFT',
+          },
+        });
+        await this.audit(tx, adminId, kind, row.code, 'DRAFT_CREATE', reason);
+        return model(row, 'DRAFT');
+      }
       if (kind === 'missions') {
         const row = await tx.missionTemplate.create({
           data: {
@@ -224,6 +239,19 @@ export class AdminCmsCatalogPublishingRepository implements IAdminCmsCatalogPubl
     rolloutPct: number,
   ) {
     return this.transaction(async (tx) => {
+      if (kind === 'milestones') {
+        const row = await tx.milestoneTemplate.findFirst({
+          where: { code: id, deletedAt: null },
+        });
+        if (!row) throw missing();
+        if (row.status !== 'DRAFT') throw conflict();
+        const published = await tx.milestoneTemplate.update({
+          where: { code: id },
+          data: { status: 'ACTIVE' },
+        });
+        await this.audit(tx, adminId, kind, id, 'PUBLISH', reason);
+        return model(published, 'PUBLISHED');
+      }
       if (kind === 'missions') {
         const row = await tx.missionTemplate.findFirst({
           where: { code: id, deletedAt: null },
@@ -321,7 +349,17 @@ export class AdminCmsCatalogPublishingRepository implements IAdminCmsCatalogPubl
   ) {
     return this.transaction(async (tx) => {
       let row: object;
-      if (kind === 'missions') {
+      if (kind === 'milestones') {
+        const found = await tx.milestoneTemplate.findFirst({
+          where: { code: id, deletedAt: null },
+        });
+        if (!found) throw missing();
+        // Cột mốc đã ghi vẫn giữ mã; chỉ không gợi ý mới.
+        row = await tx.milestoneTemplate.update({
+          where: { code: id },
+          data: { status: 'RETIRED' },
+        });
+      } else if (kind === 'missions') {
         const found = await tx.missionTemplate.findFirst({
           where: { code: id, deletedAt: null },
         });
@@ -408,6 +446,13 @@ export class AdminCmsCatalogPublishingRepository implements IAdminCmsCatalogPubl
     });
   }
   async drafts(kind: CatalogPublishingKind) {
+    if (kind === 'milestones')
+      return (
+        await this.prisma.milestoneTemplate.findMany({
+          where: { status: 'DRAFT', deletedAt: null },
+          orderBy: { code: 'asc' },
+        })
+      ).map((row) => model(row, 'DRAFT'));
     if (kind === 'missions')
       return (
         await this.prisma.missionTemplate.findMany({

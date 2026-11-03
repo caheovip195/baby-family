@@ -19,8 +19,10 @@ import {
   canWriteCatalog,
   catalogDefaults,
   catalogPayload,
+  isCodeCatalog,
   isWritableCatalog,
 } from '../components/catalog-form';
+import type { WritableCatalogKind } from '../components/catalog-form';
 
 const labels: Record<string, string> = {
   missions: 'Nhiệm vụ',
@@ -44,7 +46,7 @@ export function catalogState(
   if (row.status === 'DRAFT') return 'DRAFT';
   if (row.status === 'RETIRED' || row.retiredAt || row.status === 'INACTIVE')
     return 'RETIRED';
-  if (kind === 'missions') return String(row.status ?? '');
+  if (isCodeCatalog(kind)) return String(row.status ?? '');
   if (kind === 'plan-versions') return 'PUBLISHED';
   if (kind === 'trial-policies') return row.publishedAt ? 'PUBLISHED' : 'DRAFT';
   return String(row.status ?? '');
@@ -70,7 +72,7 @@ export function CatalogPage() {
     setLoading(true);
     Promise.all([
       adminApi.catalog(kind, 0, 100),
-      writable && kind !== 'missions'
+      writable && !isCodeCatalog(kind)
         ? adminApi.catalogDrafts(kind)
         : Promise.resolve({ items: [] }),
     ])
@@ -127,7 +129,7 @@ export function CatalogPage() {
     try {
       await adminApi.transitionCatalog(
         kind,
-        String(kind === 'missions' ? transition.row.code : transition.row.id),
+        String(isCodeCatalog(kind) ? transition.row.code : transition.row.id),
         transition.action,
         {
           reason: values.reason.trim(),
@@ -176,11 +178,7 @@ export function CatalogPage() {
           style={{ marginBottom: 16 }}
           onClick={() => {
             form.resetFields();
-            form.setFieldsValue(
-              catalogDefaults(
-                kind as 'missions' | 'plan-versions' | 'trial-policies',
-              ),
-            );
+            form.setFieldsValue(catalogDefaults(kind as WritableCatalogKind));
             setEditing(true);
           }}
         >
@@ -276,7 +274,7 @@ export function CatalogPage() {
           <Typography.Paragraph>
             {String(transition?.row.code ?? transition?.row.id ?? '')}
           </Typography.Paragraph>
-          {transition?.action === 'publish' && kind !== 'missions' && (
+          {transition?.action === 'publish' && !isCodeCatalog(kind) && (
             <Form.Item
               name="availableFrom"
               label="Có hiệu lực từ (giờ địa phương)"

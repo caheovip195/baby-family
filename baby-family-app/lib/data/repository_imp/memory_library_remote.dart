@@ -63,8 +63,14 @@ class MemoryLibraryRemoteRepositoryImp extends BaseRepositoryImp
   }
 
   @override
-  Future<List<DownloadUrlRecord>> downloadUrls(String memoryId) async {
-    final rs = await client!.getDownloadUrls(memoryId);
+  Future<List<DownloadUrlRecord>> downloadUrls(
+    String memoryId, {
+    String? perspectiveId,
+  }) async {
+    final rs = await client!.getDownloadUrls(
+      memoryId,
+      perspectiveId: perspectiveId,
+    );
     return rs.list?.items ?? const [];
   }
 
@@ -77,9 +83,9 @@ class MemoryLibraryRemoteRepositoryImp extends BaseRepositoryImp
   @override
   Future<PerspectiveRecord?> putPerspective(
     String memoryId,
-    String body,
+    JsonMap body,
   ) async {
-    final rs = await client!.putPerspective(memoryId, {'body': body});
+    final rs = await client!.putPerspective(memoryId, body);
     return rs.perspective;
   }
 
@@ -119,6 +125,28 @@ class MemoryLibraryRemoteRepositoryImp extends BaseRepositoryImp
   @override
   Future<void> review(String memoryId, String action, JsonMap body) =>
       client!.reviewMemory(memoryId, action, body);
+
+  @override
+  Future<WeeklyRecapRecord?> shareWeeklyRecap(
+    String familyId,
+    String recapId, {
+    required bool shared,
+  }) async => (await client!.shareWeeklyRecap(familyId, recapId, {
+    'shared': shared,
+  })).recap;
+
+  @override
+  Future<String?> saveWeeklyRecapToTimeline(
+    String familyId,
+    String recapId,
+  ) async {
+    final result = (await client!.saveWeeklyRecapToTimeline(
+      familyId,
+      recapId,
+    )).result;
+    final id = result?['memoryId'];
+    return id is String ? id : null;
+  }
 
   @override
   Future<WeeklyRecapRecord?> latestWeeklyRecap(String familyId) async {

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'enum_part/ai_feature.dart';
 part 'enum_part/app_button_style.dart';
 part 'enum_part/app_language.dart';
 part 'enum_part/app_text_size.dart';
@@ -9,6 +10,8 @@ part 'enum_part/auth_method.dart';
 part 'enum_part/bridge_status.dart';
 part 'enum_part/calendar_event_kind.dart';
 part 'enum_part/checkin_share_mode.dart';
+part 'enum_part/chat_connection_banner.dart';
+part 'enum_part/chat_send_state.dart';
 part 'enum_part/child_gender.dart';
 part 'enum_part/child_kind.dart';
 part 'enum_part/circle_tab.dart';
@@ -59,6 +62,7 @@ part 'enum_part/relative_relation.dart';
 part 'enum_part/report_status.dart';
 part 'enum_part/report_target.dart';
 part 'enum_part/request_kind.dart';
+part 'enum_part/realtime_status.dart';
 part 'enum_part/request_status.dart';
 part 'enum_part/request_urgency.dart';
 part 'enum_part/rewrite_tone.dart';

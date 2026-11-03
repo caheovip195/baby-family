@@ -26,6 +26,22 @@ class _FakeTokens extends Fake implements IPushTokenRepository {
 
   @override
   Stream<String> get onTokenRefresh => refresh.stream;
+
+  String? initial;
+  final opened = StreamController<String>.broadcast();
+
+  @override
+  Future<String?> initialLink() async => initial;
+
+  @override
+  Stream<String> get onOpenedLink => opened.stream;
+
+  final foreground =
+      StreamController<({String title, String body, String? link})>();
+
+  @override
+  Stream<({String title, String body, String? link})> get onForeground =>
+      foreground.stream;
 }
 
 class _FakeAuthRepository extends Fake implements IAuthRepository {
@@ -99,4 +115,34 @@ void main() {
     await push.syncIfAuthorized();
     expect(repository.devices.single['pushEnabled'], isTrue);
   });
+
+  test('BF-20261030-005: the tapped notification that opened the app comes '
+      'first, then taps while running', () async {
+    tokens.initial = 'babyfamily://recaps/weekly';
+    final links = <String>[];
+    final subscription = push.openedLinks().listen(links.add);
+    addTearDown(subscription.cancel);
+    await Future<void>.delayed(Duration.zero);
+    tokens.opened.add('babyfamily://year-books');
+    await Future<void>.delayed(Duration.zero);
+    expect(links, ['babyfamily://recaps/weekly', 'babyfamily://year-books']);
+    await tokens.opened.close();
+  });
+
+  test(
+    'BF-20261030-006: foreground messages without text are skipped',
+    () async {
+      final seen = <String>[];
+      final subscription = push.foregroundMessages().listen(
+        (message) => seen.add('${message.title}|${message.link}'),
+      );
+      addTearDown(subscription.cancel);
+      tokens.foreground
+        ..add((title: '', body: '', link: null))
+        ..add((title: 'Ký ức mới', body: '', link: 'babyfamily://memories/m'));
+      await Future<void>.delayed(Duration.zero);
+      expect(seen, ['Ký ức mới|babyfamily://memories/m']);
+      await tokens.foreground.close();
+    },
+  );
 }

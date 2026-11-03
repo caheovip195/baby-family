@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/data/model/settings/delete_account_info.dart';
 import 'package:baby_family/page/general/delete_account/delete_account_controller.dart';
 import 'package:baby_family/utils/constants/colors.dart';
+import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/extension/date_time.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
@@ -66,6 +67,9 @@ class DeleteAccountMobileView extends HookConsumerWidget {
     Future<void> verifyOtp() =>
         runWithErrorSnackBar(context, controller.verifyOtp);
 
+    Future<void> verifyWith(AuthMethod method) =>
+        runWithErrorSnackBar(context, () => controller.verifyWith(method));
+
     Widget body;
     if (controller.hasError) {
       body = Center(child: ErrorState(onRetry: controller.load));
@@ -89,6 +93,7 @@ class DeleteAccountMobileView extends HookConsumerWidget {
               onDelete: delete,
               onSendOtp: sendOtp,
               onVerifyOtp: verifyOtp,
+              onVerifyWith: verifyWith,
             ),
           },
         ],

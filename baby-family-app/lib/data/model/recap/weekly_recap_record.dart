@@ -15,6 +15,8 @@ abstract class WeeklyRecapRecord with _$WeeklyRecapRecord {
     @JsonKey(name: 'periodEnd') String? periodEnd,
     @JsonKey(name: 'visibility') String? visibility,
     @JsonKey(name: 'content') WeeklyRecapContent? content,
+    @JsonKey(name: 'memoryId') String? memoryId,
+    @JsonKey(name: 'canShare') @Default(false) bool canShare,
   }) = _WeeklyRecapRecord;
 
   factory WeeklyRecapRecord.fromJson(Map<String, dynamic> json) =>

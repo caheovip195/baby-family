@@ -16,6 +16,7 @@ import 'package:baby_family/utils/widget/app_bottom_sheet.dart';
 import 'package:baby_family/utils/widget/app_button.dart';
 import 'package:baby_family/utils/widget/app_text_field.dart';
 import 'package:baby_family/utils/widget/base_scaffold.dart';
+import 'package:baby_family/utils/widget/chat_entry_button.dart';
 import 'package:baby_family/utils/widget/child_avatar.dart';
 import 'package:baby_family/utils/widget/circle_big_action.dart';
 import 'package:baby_family/utils/widget/empty_state.dart';
@@ -102,16 +103,28 @@ class CircleHomeMobileView extends HookConsumerWidget {
           AppSpacing.s6 + MediaQuery.paddingOf(context).bottom,
         ),
         children: [
-          Text(
-            l10n.cirHello(viewer.callName),
-            style: AppTypography.adapt(
-              context,
-              AppTypography.h3.copyWith(
-                fontFamily: AppTypography.bodyFamily,
-                fontWeight: FontWeight.w400,
-                color: kColorTextSecondary6B625B,
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  l10n.cirHello(viewer.callName),
+                  style: AppTypography.adapt(
+                    context,
+                    AppTypography.h3.copyWith(
+                      fontFamily: AppTypography.bodyFamily,
+                      fontWeight: FontWeight.w400,
+                      color: kColorTextSecondary6B625B,
+                    ),
+                  ),
+                ),
               ),
-            ),
+              // CHAT-04: tin nhắn cả nhà cho người thân.
+              if (controller.chatAvailable)
+                ChatEntryButton(
+                  unread: controller.chatUnread,
+                  onTap: () => context.router.push(const ChatListRoute()),
+                ),
+            ],
           ),
           const SizedBox(height: AppSpacing.s1),
           Text(

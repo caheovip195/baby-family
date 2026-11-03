@@ -7,10 +7,13 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 /// US-09
 @RoutePage()
 class BridgeRewritePage extends BaseHookWidget {
-  const BridgeRewritePage({super.key});
+  const BridgeRewritePage({@QueryParam('text') this.original, super.key});
+
+  /// Câu người dùng muốn viết lại (bản server gửi cho AI).
+  final String? original;
 
   @override
   Widget buildWidget(BuildContext context, WidgetRef ref) {
-    return const BridgeRewriteMobileView();
+    return BridgeRewriteMobileView(original: original);
   }
 }

@@ -2,6 +2,7 @@ import 'package:baby_family/data/dto/circle_view.dart';
 import 'package:baby_family/data/model/child/child.dart';
 import 'package:baby_family/data/model/memory/memory.dart';
 import 'package:baby_family/data/model/session/app_session.dart';
+import 'package:baby_family/data/provider/chat.dart';
 import 'package:baby_family/data/provider/circle.dart';
 import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/provider/memory.dart';
@@ -22,9 +23,19 @@ final circleHomeControllerProvider =
 
 class CircleHomeController extends BaseNotifier {
   CircleHomeController(super.ref) {
+    // CHAT-04: tin nhắn cả nhà + số chưa đọc (BF-20261101-001).
+    ref.listen(chatConversationsProvider, (_, _) => notifyListeners());
     // Nạp sau microtask: không đổi trạng thái khi provider đang được dựng.
     Future.microtask(load);
   }
+
+  /// Người thân chỉ có “Cả nhà” (server không trả Papa & Mama).
+  bool get chatAvailable => ref.read(chatServiceProvider).available;
+
+  int get chatUnread => ref
+      .read(chatServiceProvider)
+      .conversations
+      .fold(0, (sum, item) => sum + item.unreadCount);
 
   ICircleService get circleService => ref.read(circleServiceProvider);
 

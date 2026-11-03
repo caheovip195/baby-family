@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:ui' as ui;
+
 import 'package:auto_route/auto_route.dart';
 import 'package:baby_family/data/model/memory/memory.dart';
 import 'package:baby_family/data/model/memory/weekly_recap.dart';
@@ -7,6 +10,7 @@ import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/extension/date_time.dart';
 import 'package:baby_family/utils/extension/l10n.dart';
 import 'package:baby_family/utils/helper/app_snack_bar.dart';
+import 'package:baby_family/utils/helper/application_directory.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
 import 'package:baby_family/utils/helper/media_image.dart';
 import 'package:baby_family/utils/helper/theme.dart';
@@ -19,8 +23,11 @@ import 'package:baby_family/utils/widget/recap_next_hint.dart';
 import 'package:baby_family/utils/widget/recap_stat_card.dart';
 import 'package:baby_family/utils/widget/recap_story_header.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 
 part '../widgets/recap_collage.dart';
 part '../widgets/recap_highlight_row.dart';
@@ -35,6 +42,7 @@ class WeeklyRecapMobileView extends HookConsumerWidget {
     final controller = ref.watch(weeklyRecapControllerProvider);
     final l10n = context.l10n;
     final recap = controller.recap;
+    final summaryKey = useMemoized(GlobalKey.new);
     final Widget body;
     if (!controller.loaded) {
       body = const Center(child: CircleLoadingProgress());
@@ -43,7 +51,7 @@ class WeeklyRecapMobileView extends HookConsumerWidget {
     } else if (recap == null) {
       body = EmptyState(title: l10n.recapWeekTitle);
     } else {
-      body = _content(context, controller, recap);
+      body = _content(context, controller, recap, summaryKey);
     }
     return Scaffold(
       backgroundColor: AppColors.resolve(context, kColorBgFFFBF7),
@@ -87,9 +95,10 @@ class WeeklyRecapMobileView extends HookConsumerWidget {
     BuildContext context,
     WeeklyRecapController controller,
     WeeklyRecap recap,
+    GlobalKey summaryKey,
   ) {
     final l10n = context.l10n;
-    final items = <Widget>[
+    final summary = <Widget>[
       if (recap.heroAssets.isNotEmpty) _RecapCollage(assets: recap.heroAssets),
       Text(
         recap.headline,
@@ -137,6 +146,20 @@ class WeeklyRecapMobileView extends HookConsumerWidget {
           ],
         ),
       ),
+    ];
+    final items = <Widget>[
+      // “Tải ảnh tổng kết” chụp đúng phần này (ảnh ghép + số liệu).
+      RepaintBoundary(
+        key: summaryKey,
+        child: ColoredBox(
+          color: AppColors.resolve(context, kColorBgFFFBF7),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: AppSpacing.s4,
+            children: summary,
+          ),
+        ),
+      ),
       if (recap.highlights.isNotEmpty)
         Container(
           padding: const EdgeInsets.symmetric(
@@ -163,11 +186,13 @@ class WeeklyRecapMobileView extends HookConsumerWidget {
           ),
         ),
       if (recap.togetherTitle != null) _together(context, recap),
-      RecapActions(
-        onShare: () => showAppSnackBar(context, l10n.recapShared),
-        onSave: () => showAppSnackBar(context, l10n.recapSaved),
-        onDownload: () => showAppSnackBar(context, l10n.memViewerDownloaded),
-      ),
+      if (!controller.readOnly)
+        RecapActions(
+          shared: recap.shared,
+          onShare: () => _share(context, controller, recap),
+          onSave: () => _save(context, controller),
+          onDownload: () => _download(context, summaryKey, recap),
+        ),
     ];
     return ListView(
       padding: const EdgeInsets.fromLTRB(
@@ -183,6 +208,67 @@ class WeeklyRecapMobileView extends HookConsumerWidget {
         ],
       ],
     );
+  }
+
+  /// Gói chưa có Family Circle → SUB-01; có → bật/tắt chia sẻ.
+  Future<void> _share(
+    BuildContext context,
+    WeeklyRecapController controller,
+    WeeklyRecap recap,
+  ) async {
+    final l10n = context.l10n;
+    if (!recap.shared && !recap.canShare && recap.id != null) {
+      await context.router.push(const UpgradePlanRoute());
+      return;
+    }
+    var shared = recap.shared;
+    final done = await runWithErrorSnackBar(context, () async {
+      shared = await controller.toggleShare();
+    });
+    if (done && context.mounted) {
+      showAppSnackBar(context, shared ? l10n.recapShared : l10n.recapUnshared);
+    }
+  }
+
+  Future<void> _save(
+    BuildContext context,
+    WeeklyRecapController controller,
+  ) async {
+    final l10n = context.l10n;
+    final done = await runWithErrorSnackBar(context, controller.saveToTimeline);
+    if (done && context.mounted) {
+      showAppSnackBar(context, l10n.recapSaved);
+    }
+  }
+
+  /// Ảnh tổng kết dựng trên máy (PNG) rồi mở bảng chia sẻ / lưu của hệ thống.
+  Future<void> _download(
+    BuildContext context,
+    GlobalKey summaryKey,
+    WeeklyRecap recap,
+  ) async {
+    await runWithErrorSnackBar(context, () async {
+      final boundary =
+          summaryKey.currentContext?.findRenderObject()
+              as RenderRepaintBoundary?;
+      if (boundary == null) {
+        return;
+      }
+      final image = await boundary.toImage(pixelRatio: 3);
+      final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+      image.dispose();
+      if (bytes == null) {
+        return;
+      }
+      final file = File(
+        '${ApplicationDirectory().tempApplicationFolder.path}/'
+        'week-${recap.start.toIso8601String().substring(0, 10)}.png',
+      );
+      await file.writeAsBytes(bytes.buffer.asUint8List(), flush: true);
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(file.path, mimeType: 'image/png')]),
+      );
+    });
   }
 
   Widget _highlight(

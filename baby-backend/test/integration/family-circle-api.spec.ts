@@ -74,8 +74,12 @@ describe('Family Circle API (focused Nest module + PostgreSQL)', () => {
     relativeB = randomUUID(),
     stranger = randomUUID(),
     waiting = randomUUID(),
-    third = randomUUID();
+    third = randomUUID(),
+    leaver = randomUUID(),
+    keeper = randomUUID();
   const users = [
+    leaver,
+    keeper,
     parent,
     parentB,
     relative,
@@ -823,5 +827,86 @@ describe('Family Circle API (focused Nest module + PostgreSQL)', () => {
         where: { circleMemberId: m.id, status: 'ACTIVE', deletedAt: null },
       }),
     ).toBe(0);
+  });
+  it('BF-20261030-003: leaving keeps content by default or removes it, and tells Parents neutrally', async () => {
+    const post_ = async (author: string, role: 'CIRCLE' | 'PARENT') =>
+      prisma.memory.create({
+        data: {
+          familyId: fid,
+          kind: 'MOMENT',
+          body: 'Synthetic leave memory',
+          authorUserId: author,
+          authorRole: role,
+          occurredAt: new Date(),
+          occurredLocalDate: new Date(),
+          visibility: 'FAMILY',
+          status: 'PUBLISHED',
+          publishedAt: new Date(),
+        },
+      });
+    const comment = (memoryId: string, author: string, parentId?: string) =>
+      prisma.comment.create({
+        data: {
+          familyId: fid,
+          memoryId,
+          authorUserId: author,
+          body: 'Synthetic comment',
+          parentCommentId: parentId ?? null,
+        },
+      });
+    for (const user of [leaver, keeper])
+      await accept(await invite(), user).expect(200);
+    const parentPost = await post_(parent, 'PARENT');
+    const removed = await post_(leaver, 'CIRCLE');
+    const kept = await post_(keeper, 'CIRCLE');
+    const own = await comment(parentPost.id, leaver);
+    const reply = await comment(parentPost.id, parent, own.id);
+    const other = await comment(parentPost.id, keeper);
+    await prisma.memory.update({
+      where: { id: parentPost.id },
+      data: { commentCount: 3 },
+    });
+    const since = new Date();
+
+    // Mặc định: giữ lại cho gia đình.
+    await post(`${root}/circle/leave`, {}, keeper).expect(204);
+    expect(
+      (await prisma.memory.findUniqueOrThrow({ where: { id: kept.id } }))
+        .status,
+    ).toBe('PUBLISHED');
+    // Gỡ toàn bộ: ký ức vào thùng rác, bình luận (kèm trả lời) bị gỡ.
+    await post(`${root}/circle/leave`, { removeContent: 'yes' }, leaver).expect(
+      400,
+    );
+    await post(`${root}/circle/leave`, { removeContent: true }, leaver).expect(
+      204,
+    );
+    expect(
+      await prisma.memory.findUniqueOrThrow({ where: { id: removed.id } }),
+    ).toMatchObject({ status: 'TRASHED', trashedBy: leaver });
+    const statuses = await prisma.comment.findMany({
+      where: { id: { in: [own.id, reply.id, other.id] } },
+      orderBy: { createdAt: 'asc' },
+    });
+    expect(statuses.map((c) => c.status)).toEqual([
+      'DELETED',
+      'DELETED',
+      'ACTIVE',
+    ]);
+    expect(
+      (await prisma.memory.findUniqueOrThrow({ where: { id: parentPost.id } }))
+        .commentCount,
+    ).toBe(1);
+    const left = await prisma.outboxEvent.findMany({
+      where: {
+        familyId: fid,
+        eventType: 'circle.left',
+        createdAt: { gte: since },
+      },
+    });
+    expect(left).toHaveLength(2);
+    expect(
+      left.every((event) => !JSON.stringify(event.payload).includes('remove')),
+    ).toBe(true);
   });
 });

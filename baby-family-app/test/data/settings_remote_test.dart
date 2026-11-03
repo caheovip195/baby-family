@@ -25,6 +25,7 @@ import 'package:baby_family/data/provider/settings.dart';
 import 'package:baby_family/data/repository/account_remote.dart';
 import 'package:baby_family/data/repository/base.dart';
 import 'package:baby_family/data/repository/media.dart';
+import 'package:baby_family/data/repository/social_credential.dart';
 import 'package:baby_family/data/service_imp/settings_remote.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
@@ -33,6 +34,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../helpers/design_qa.dart';
+
+/// Apple / Google giả: trả JWT cố định, không mở hộp thoại.
+class _FakeSocial implements ISocialCredentialRepository {
+  @override
+  Future<AppleCredential> apple() async =>
+      const AppleCredential(identityToken: 'apple-jwt', rawNonce: 'nonce-1');
+
+  @override
+  Future<String> google() async => 'google-jwt';
+}
 
 /// API tài khoản giả (BF-20261018-013).
 class _FakeAccount implements IAccountRemoteRepository {
@@ -230,6 +241,33 @@ class _FakeAccount implements IAccountRemoteRepository {
   Future<void> verifyPhoneChange(String phone, String code) async =>
       phoneCalls.add('verify:$phone:$code');
 
+  final identityCalls = <String>[];
+
+  @override
+  Future<void> linkIdentity(
+    String provider,
+    JsonMap credential,
+    String reauthToken,
+  ) async => identityCalls.add(
+    'link:$provider:${credential['idToken'] ?? credential['identityToken']}'
+    ':${credential['nonce']}:$reauthToken',
+  );
+
+  @override
+  Future<void> unlinkIdentity(String provider, String reauthToken) async =>
+      identityCalls.add('unlink:$provider:$reauthToken');
+
+  @override
+  Future<ReauthTokenRecord?> reauthWithIdentity(
+    String provider,
+    JsonMap credential,
+  ) async {
+    identityCalls.add(
+      'reauth:$provider:${credential['idToken'] ?? credential['identityToken']}',
+    );
+    return const ReauthTokenRecord(reauthToken: 'reauth-social');
+  }
+
   @override
   Future<List<SignInMethodRecord>> signInMethods() async {
     if (offlineSignIn) {
@@ -339,8 +377,9 @@ class _FakeMedia extends Fake implements IMediaRepository {
   @override
   Future<List<JsonMap>> uploadBytes(
     UploadInstruction instruction,
-    Uint8List bytes,
-  ) async {
+    Uint8List bytes, {
+    UploadProgress? onProgress,
+  }) async {
     uploaded.add(bytes.length);
     return const [];
   }
@@ -398,6 +437,7 @@ void main() {
     remote,
     container.read(sessionServiceProvider),
     media,
+    _FakeSocial(),
   );
 
   test(
@@ -633,6 +673,32 @@ void main() {
     },
   );
 
+  test(
+    'BF-20261028-001: link/unlink Apple, Google need a fresh reauth',
+    () async {
+      final settings = service();
+      await expectLater(
+        settings.linkSignIn(AuthMethod.apple),
+        throwsStateError,
+      );
+      await settings.requestReauthOtp();
+      await settings.verifyReauth('123456');
+      await settings.linkSignIn(AuthMethod.apple);
+      // Mã xác thực lại dùng một lần.
+      await expectLater(
+        settings.unlinkSignIn(AuthMethod.google),
+        throwsStateError,
+      );
+      await settings.reauthWithSignIn(AuthMethod.google);
+      await settings.unlinkSignIn(AuthMethod.google);
+      expect(remote.identityCalls, [
+        'link:apple:apple-jwt:nonce-1:reauth-1',
+        'reauth:google:google-jwt',
+        'unlink:google:reauth-social',
+      ]);
+    },
+  );
+
   test('Sign-in methods mirror the server list', () async {
     final methods = (await service().profileSettings()).signInMethods;
     final byMethod = {for (final item in methods) item.method: item};
@@ -763,6 +829,8 @@ void main() {
       final info = await settings.deleteAccountInfo();
       expect(info.maskedPhone, '••• 456');
       expect(info.maskedAppleAccount, isNull);
+      // BF-20261030-003: Google đã liên kết → xác thực lại bằng Google.
+      expect(info.maskedGoogleAccount, 'a***@example.com');
       expect(info.onlyParent, isFalse);
 
       await expectLater(settings.deleteAccount(), throwsStateError);
@@ -782,6 +850,14 @@ void main() {
       expect(remote.deletions, hasLength(1));
     },
   );
+
+  test('BF-20261030-003: deletion accepts a Google reauth', () async {
+    final settings = service();
+    await settings.deleteAccountInfo();
+    await settings.reauthWithSignIn(AuthMethod.google);
+    await settings.deleteAccount();
+    expect(remote.deletions.single['reauthToken'], 'reauth-social');
+  });
 
   test(
     'SET-07: devices are my server sessions; sign-out goes to the server',

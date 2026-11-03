@@ -22,6 +22,7 @@ import 'package:baby_family/data/model/pregnancy/prep_summary.dart';
 import 'package:baby_family/data/model/session/app_session.dart';
 import 'package:baby_family/data/provider/app_setting.dart';
 import 'package:baby_family/data/provider/care.dart';
+import 'package:baby_family/data/provider/chat.dart';
 import 'package:baby_family/data/provider/child.dart';
 import 'package:baby_family/data/provider/family.dart';
 import 'package:baby_family/data/provider/memory.dart';
@@ -48,7 +49,9 @@ class HomeTabController extends BaseNotifier {
     ref
       ..listen(selectedSubjectProvider, (_, _) => load())
       ..listen(mockRevisionProvider, (_, _) => load(silent: true))
-      ..listen(appLanguageProvider, (_, _) => load(silent: true));
+      ..listen(appLanguageProvider, (_, _) => load(silent: true))
+      // CHAT-04: số tin chưa đọc cạnh chuông (BF-20261101-001).
+      ..listen(chatConversationsProvider, (_, _) => notifyListeners());
     load();
   }
 
@@ -75,6 +78,14 @@ class HomeTabController extends BaseNotifier {
   List<Member> members = const [];
   Member? me;
   int unreadCount = 0;
+
+  /// CHAT-04: có nhắn tin (chạy với server) + tổng tin chưa đọc.
+  bool get chatAvailable => ref.read(chatServiceProvider).available;
+
+  int get chatUnread => ref
+      .read(chatServiceProvider)
+      .conversations
+      .fold(0, (sum, item) => sum + item.unreadCount);
 
   /// SUB-06: gói của gia đình (banner thanh toán gia hạn chưa thành công).
   Family? family;
@@ -163,6 +174,17 @@ class HomeTabController extends BaseNotifier {
 
   /// Ký ức đang chờ gửi lên server (băng ngoại tuyến).
   int get pendingSync => ref.read(memoryServiceProvider).pendingSyncCount;
+
+  /// MEM-06 “Thử lại” / “Huỷ” trên bài đang tải nền ở Home.
+  Future<void> retryUpload(String memoryId) async {
+    await ref.read(memoryServiceProvider).retryUpload(memoryId);
+    await load(silent: true);
+  }
+
+  Future<void> cancelUpload(String memoryId) async {
+    await ref.read(memoryServiceProvider).cancelUpload(memoryId);
+    await load(silent: true);
+  }
 
   Future<void> load({bool silent = false}) async {
     final revision = ++_revision;

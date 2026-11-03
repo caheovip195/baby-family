@@ -1,22 +1,28 @@
 PODS:
   - Flutter (1.0.0)
+  - printing (1.0.0):
+    - Flutter
   - video_compress (0.3.0):
     - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - printing (from `.symlinks/plugins/printing/ios`)
   - video_compress (from `.symlinks/plugins/video_compress/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  printing:
+    :path: ".symlinks/plugins/printing/ios"
   video_compress:
     :path: ".symlinks/plugins/video_compress/ios"
 
 SPEC CHECKSUMS:
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  printing: 54ff03f28fe9ba3aa93358afb80a8595a071dd07
   video_compress: f2133a07762889d67f0711ac831faa26f956980e
 
-PODFILE CHECKSUM: 3c63482e143d1b91d2d2560aee9fb04ecc74ac7e
+PODFILE CHECKSUM: 1f40b02276b6d22b9fb6b58d0839c3d5c04e6cfb
 
 COCOAPODS: 1.17.0

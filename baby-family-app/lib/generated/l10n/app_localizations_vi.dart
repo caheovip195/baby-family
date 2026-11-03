@@ -8809,4 +8809,547 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get memCommentsOff => 'Bình luận đã tắt cho ký ức này';
+
+  @override
+  String get errorLastSignInMethod =>
+      'Cần giữ ít nhất một cách đăng nhập. Bạn liên kết cách khác trước rồi gỡ nhé.';
+
+  @override
+  String get errorIdentityInUse =>
+      'Tài khoản này đã liên kết với một hồ sơ khác hoặc bạn đã liên kết loại này rồi.';
+
+  @override
+  String get errorReauthIdentity =>
+      'Bạn xác thực lại bằng đúng tài khoản đã liên kết nhé.';
+
+  @override
+  String get setSignInReauthTitle => 'Xác thực lại';
+
+  @override
+  String get growthTitle => 'Tăng trưởng';
+
+  @override
+  String get growthEntry => 'Tăng trưởng';
+
+  @override
+  String get growthEntryHint => 'Cân nặng, chiều cao theo ngày';
+
+  @override
+  String get growthWeight => 'Cân nặng';
+
+  @override
+  String get growthHeight => 'Chiều cao';
+
+  @override
+  String get growthAdd => 'Thêm lần đo';
+
+  @override
+  String get growthEdit => 'Sửa lần đo';
+
+  @override
+  String get growthEmpty =>
+      'Chưa có lần đo nào. Thêm cân nặng hoặc chiều cao của lần khám gần nhất nhé.';
+
+  @override
+  String get growthChartHint => 'Cần ít nhất 2 lần đo để vẽ biểu đồ.';
+
+  @override
+  String get growthDisclaimer =>
+      'Biểu đồ chỉ là số đo của bé, không so với chuẩn và không thay thế tư vấn của bác sĩ.';
+
+  @override
+  String get growthPrivacy => 'Chỉ Papa và Mama xem được số đo.';
+
+  @override
+  String get growthDate => 'Ngày đo';
+
+  @override
+  String get growthWeightLabel => 'Cân nặng (kg)';
+
+  @override
+  String get growthHeightLabel => 'Chiều cao (cm)';
+
+  @override
+  String get growthNote => 'Ghi chú';
+
+  @override
+  String get growthNeedValue => 'Nhập cân nặng hoặc chiều cao hợp lệ.';
+
+  @override
+  String get growthPending => 'Chờ đồng bộ';
+
+  @override
+  String get growthSaved => 'Đã lưu lần đo.';
+
+  @override
+  String get errorGrowthDate => 'Ngày đo phải từ ngày sinh tới hôm nay.';
+
+  @override
+  String growthKg(String value) {
+    return '$value kg';
+  }
+
+  @override
+  String growthCm(String value) {
+    return '$value cm';
+  }
+
+  @override
+  String memUploadProgressPercent(String progress, int percent) {
+    return '$progress · $percent%';
+  }
+
+  @override
+  String recapDayDefaultTitle(String name) {
+    return 'Một ngày của $name';
+  }
+
+  @override
+  String get usHandoff => 'Bàn giao ca';
+
+  @override
+  String usHandoffTitle(String name) {
+    return 'Bàn giao ca cho $name';
+  }
+
+  @override
+  String usHandoffHint(String name) {
+    return 'Ghi nhanh tình trạng của bé để $name nắm khi nhận ca.';
+  }
+
+  @override
+  String get usHandoffChildren => 'Bé nào';
+
+  @override
+  String get usHandoffFed => 'Đã ăn lúc';
+
+  @override
+  String get usHandoffSlept => 'Đã ngủ lúc';
+
+  @override
+  String get usHandoffWoke => 'Đã dậy lúc';
+
+  @override
+  String get usHandoffPickTime => 'Chọn giờ';
+
+  @override
+  String get usHandoffNote => 'Ghi chú';
+
+  @override
+  String get usHandoffNoteHint => 'Ví dụ: bé hơi quấy, đã thay tã…';
+
+  @override
+  String usHandoffAttachRequest(String name) {
+    return 'Nhờ $name làm tiếp việc gì đó';
+  }
+
+  @override
+  String get usHandoffSend => 'Gửi bàn giao';
+
+  @override
+  String usHandoffSent(String name) {
+    return 'Đã gửi bàn giao cho $name';
+  }
+
+  @override
+  String get usHandoffNeedContent =>
+      'Chọn ít nhất một mốc giờ hoặc viết ghi chú.';
+
+  @override
+  String usHandoffFrom(String name, String time) {
+    return '$name bàn giao ca · $time';
+  }
+
+  @override
+  String usHandoffMine(String time) {
+    return 'Bạn đã bàn giao · $time';
+  }
+
+  @override
+  String usHandoffFedAt(String time) {
+    return 'Đã ăn lúc $time';
+  }
+
+  @override
+  String usHandoffSleptAt(String time) {
+    return 'Đã ngủ lúc $time';
+  }
+
+  @override
+  String usHandoffWokeAt(String time) {
+    return 'Đã dậy lúc $time';
+  }
+
+  @override
+  String get usHandoffAck => 'Đã nhận';
+
+  @override
+  String usHandoffAcked(String name) {
+    return '$name đã nhận ca';
+  }
+
+  @override
+  String usHandoffWaiting(String name) {
+    return 'Chờ $name nhận';
+  }
+
+  @override
+  String get usHandoffPending => 'Chờ đồng bộ';
+
+  @override
+  String get usHandoffNotMedical =>
+      'Chỉ để nắm nhanh, không phải theo dõi y tế.';
+
+  @override
+  String get errorHandoffTime => 'Mốc giờ phải trong 24 giờ qua.';
+
+  @override
+  String get usHandoffAckedByMe => 'Bạn đã nhận ca';
+
+  @override
+  String get aiConsentTitle => 'Dùng gợi ý AI?';
+
+  @override
+  String aiConsentBody(String data) {
+    return 'Để gợi ý, Baby Family gửi $data tới nhà cung cấp AI (OpenRouter). Không gửi ảnh, nhật ký riêng hay nháp riêng. Gợi ý chỉ là bản nháp để bạn sửa hoặc bỏ.';
+  }
+
+  @override
+  String get aiConsentAccept => 'Đồng ý & tiếp tục';
+
+  @override
+  String get aiDataCaption => 'vài từ bạn gõ và loại ký ức';
+
+  @override
+  String get aiDataDayStory => 'chú thích các ký ức bạn chọn trong ngày';
+
+  @override
+  String get aiDataRewrite => 'câu bạn muốn viết lại';
+
+  @override
+  String get aiDataBridge => 'những ý hai bạn đã chọn chia sẻ trong phiên';
+
+  @override
+  String get aiCaptionSheetTitle => 'Gợi ý chú thích';
+
+  @override
+  String get errorAiUnavailable => 'AI đang tạm nghỉ, bạn thử lại sau nhé.';
+
+  @override
+  String get errorAiNotInPlan => 'Gói hiện tại chưa có gợi ý AI.';
+
+  @override
+  String get errorAiDisabled => 'Bạn đã tắt AI trong Cài đặt.';
+
+  @override
+  String get errorAiQuota => 'Đã dùng hết lượt AI của tháng này.';
+
+  @override
+  String get usBridgeAiSummary => '✨ Tóm tắt giúp hai bạn';
+
+  @override
+  String get usBridgeAiSummaryTitle => 'Hai bạn đã chia sẻ';
+
+  @override
+  String get aiDataMission =>
+      'nhóm tuổi của bé, danh sách việc gợi ý có sẵn và số việc đã xong theo nhóm 14 ngày qua';
+
+  @override
+  String get careAiSuggest => '✨ Gợi ý cho hôm nay';
+
+  @override
+  String get careAiSuggestTitle => 'Gợi ý cho hôm nay';
+
+  @override
+  String get yearBookEntry => 'Sách của con';
+
+  @override
+  String get yearBookEntryHint => 'Ảnh đẹp nhất theo từng tháng, xuất PDF';
+
+  @override
+  String get yearBookTitle => 'Sách của con';
+
+  @override
+  String yearBookDefaultTitle(String name, String year) {
+    return 'Năm $year của $name';
+  }
+
+  @override
+  String get yearBookPdfSubtitle => 'Những khoảnh khắc nhà mình đã lưu';
+
+  @override
+  String yearBookChapter(String month) {
+    return 'Tháng $month';
+  }
+
+  @override
+  String get yearBookBookName => 'Tên sách';
+
+  @override
+  String get yearBookChapterName => 'Tên chương';
+
+  @override
+  String get yearBookCaption => 'Chú thích';
+
+  @override
+  String get yearBookHint => 'Chạm ảnh để chọn hoặc bỏ, chạm chú thích để sửa.';
+
+  @override
+  String get yearBookEmpty => 'Năm này chưa có ký ức nào của bé.';
+
+  @override
+  String yearBookSelected(String count) {
+    return '$count ký ức trong sách';
+  }
+
+  @override
+  String get yearBookPreviewOnly =>
+      'Gói hiện tại chỉ xem trước sách. Nâng cấp để xuất PDF.';
+
+  @override
+  String get yearBookUpgrade => 'Nâng cấp';
+
+  @override
+  String get yearBookPending => 'Đã lưu trên máy, sẽ đồng bộ khi có mạng.';
+
+  @override
+  String get yearBookExport => 'Xuất PDF';
+
+  @override
+  String get yearBookExporting => 'Đang dựng sách…';
+
+  @override
+  String get yearBookUnsaved => 'Bạn có thay đổi chưa lưu.';
+
+  @override
+  String get yearBookFamily => 'Cả nhà';
+
+  @override
+  String get yearBookFamilyTitle => 'Sách cả nhà';
+
+  @override
+  String yearBookFamilyDefaultTitle(String year) {
+    return 'Năm $year của nhà mình';
+  }
+
+  @override
+  String get yearBookFamilyEmpty => 'Năm này nhà mình chưa có ký ức nào.';
+
+  @override
+  String get yearBookPreview => 'Xem trước';
+
+  @override
+  String get yearBookShared => 'Sách năm của nhà';
+
+  @override
+  String get yearBookSharedEmpty => 'Bố mẹ chưa chia sẻ sách nào.';
+
+  @override
+  String get yearBookShareTitle => 'Chia sẻ với ông bà, người thân';
+
+  @override
+  String get yearBookShareHint =>
+      'Người thân được xem bé đọc được bản đã lưu, chỉ những ký ức đã chọn.';
+
+  @override
+  String get yearBookShareLocked =>
+      'Gói Family cho phép chia sẻ sách với ông bà, người thân.';
+
+  @override
+  String get notiCircleLeft => 'Một người thân đã rời vòng tròn gia đình';
+
+  @override
+  String get notiYearBookShared =>
+      'Bố mẹ vừa chia sẻ một cuốn sách năm với bạn';
+
+  @override
+  String get recapUnshared => 'Đã dừng chia sẻ với người thân';
+
+  @override
+  String get recapSharedStop => 'Đã chia sẻ · chạm để dừng';
+
+  @override
+  String get memVoiceStop => 'Dừng';
+
+  @override
+  String get notiOpen => 'Xem';
+
+  @override
+  String get chatTitle => 'Tin nhắn';
+
+  @override
+  String chatListSubtitle(String familyName, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cuộc trò chuyện',
+      one: '1 cuộc trò chuyện',
+    );
+    return '$familyName · $_temp0';
+  }
+
+  @override
+  String get chatFamilyTitle => 'Cả nhà';
+
+  @override
+  String get chatCoupleTitle => 'Papa & Mama';
+
+  @override
+  String get chatOnlyTwo => 'Chỉ hai bạn thấy';
+
+  @override
+  String chatMembersSummary(String parents, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$parents + $count người thân',
+      zero: '$parents',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String chatPreviewMine(String text) {
+    return 'Bạn: $text';
+  }
+
+  @override
+  String chatPreviewOther(String name, String text) {
+    return '$name: $text';
+  }
+
+  @override
+  String get chatNoMessagesYet => 'Chưa có tin nhắn';
+
+  @override
+  String get chatToday => 'Hôm nay';
+
+  @override
+  String get chatYesterday => 'Hôm qua';
+
+  @override
+  String get chatInfoNote =>
+      'Mỗi gia đình có 2 cuộc trò chuyện: “Cả nhà” cho Papa, Mama và người thân; “Papa & Mama” chỉ dành cho hai bạn.';
+
+  @override
+  String get chatListEmptyTitle => 'Chưa có cuộc trò chuyện nào';
+
+  @override
+  String get chatListEmptyDescription =>
+      'Cuộc trò chuyện của nhà mình sẽ hiện ở đây.';
+
+  @override
+  String chatMembersCount(int count) {
+    return '$count thành viên';
+  }
+
+  @override
+  String get chatMembersTooltip => 'Thành viên';
+
+  @override
+  String get chatCoupleSubtitle =>
+      'Tin nhắn riêng của hai bạn, người thân không xem được';
+
+  @override
+  String get chatCoupleNote => 'Chỉ Papa & Mama thấy cuộc trò chuyện này';
+
+  @override
+  String get chatComposerHint => 'Nhắn cho cả nhà…';
+
+  @override
+  String chatComposerCoupleHint(String callName) {
+    return 'Nhắn riêng cho $callName…';
+  }
+
+  @override
+  String get chatSend => 'Gửi';
+
+  @override
+  String get chatSending => 'Đang gửi…';
+
+  @override
+  String get chatWaiting => 'Đang chờ gửi';
+
+  @override
+  String get chatFailed => 'Chưa gửi được · Chạm để gửi lại';
+
+  @override
+  String get chatSent => 'Đã gửi';
+
+  @override
+  String get chatSeen => 'Đã xem';
+
+  @override
+  String chatSeenBy(String names) {
+    return 'Đã xem · $names';
+  }
+
+  @override
+  String chatSeenByMore(String names, int count) {
+    return 'Đã xem · $names +$count';
+  }
+
+  @override
+  String chatTyping(String name) {
+    return '$name đang nhập…';
+  }
+
+  @override
+  String chatTypingMany(int count) {
+    return '$count người đang nhập…';
+  }
+
+  @override
+  String chatOfflineSubtitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Tin nhắn sẽ tự gửi khi có mạng · $count tin đang chờ',
+      zero: 'Tin nhắn sẽ tự gửi khi có mạng',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatReconnectingTitle => 'Đang kết nối lại…';
+
+  @override
+  String get chatReconnectingSubtitle =>
+      'Tin nhắn mới sẽ hiện ngay khi kết nối xong';
+
+  @override
+  String get chatEmptyTitle => 'Chưa có tin nhắn nào';
+
+  @override
+  String get chatEmptyDescription => 'Gửi lời chào đầu tiên tới cả nhà 👋';
+
+  @override
+  String get chatEmptyCoupleDescription =>
+      'Gửi lời nhắn riêng đầu tiên cho nhau ❤️';
+
+  @override
+  String get chatHelloSuggestion => 'Chào cả nhà 👋';
+
+  @override
+  String get chatNotFound => 'Không mở được cuộc trò chuyện này';
+
+  @override
+  String chatUnread(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tin chưa đọc',
+      zero: 'Không có tin mới',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatCoupleEntry => 'Nhắn riêng';
+
+  @override
+  String get chatSomeone => 'Thành viên';
+
+  @override
+  String get chatLoadError => 'Chưa tải được tin mới. Đang hiện tin đã lưu.';
 }

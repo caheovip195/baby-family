@@ -65,13 +65,13 @@ function monthlyFixture() {
 
 describe('Generated persistence contracts', () => {
   it('covers each non-Note Prisma table with a concrete DI provider', () => {
-    expect(PERSISTENCE_TABLES).toHaveLength(122);
-    expect(DATABASE_REPOSITORY_PROVIDERS).toHaveLength(122);
+    expect(PERSISTENCE_TABLES).toHaveLength(128);
+    expect(DATABASE_REPOSITORY_PROVIDERS).toHaveLength(128);
     expect(
       new Set(
         PERSISTENCE_TABLES.map((table) => `${table.schema}.${table.table}`),
       ).size,
-    ).toBe(122);
+    ).toBe(128);
     expect(PERSISTENCE_TABLES.filter((table) => table.appendOnly)).toHaveLength(
       18,
     );

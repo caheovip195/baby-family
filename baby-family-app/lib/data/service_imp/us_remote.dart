@@ -3,11 +3,18 @@ import 'dart:convert';
 import 'package:baby_family/data/dto/couple_today.dart';
 import 'package:baby_family/data/model/sync/outbox_entry.dart';
 import 'package:baby_family/data/model/us/appreciation_record.dart';
+import 'package:baby_family/data/model/us/bridge_next_step.dart';
 import 'package:baby_family/data/model/us/bridge_session.dart';
+import 'package:baby_family/data/model/us/bridge_session_record.dart';
+import 'package:baby_family/data/model/us/bridge_share.dart';
+import 'package:baby_family/data/model/us/care_handoff.dart';
 import 'package:baby_family/data/model/us/checkin_record.dart';
+import 'package:baby_family/data/model/us/couple_question_record.dart';
 import 'package:baby_family/data/model/us/couple_request.dart';
 import 'package:baby_family/data/model/us/couple_settings.dart';
 import 'package:baby_family/data/model/us/couple_week.dart';
+import 'package:baby_family/data/model/us/couple_week_item.dart';
+import 'package:baby_family/data/model/us/daily_question.dart';
 import 'package:baby_family/data/model/us/journal_entry.dart';
 import 'package:baby_family/data/model/us/journal_entry_record.dart';
 import 'package:baby_family/data/model/us/mood_checkin.dart';
@@ -30,9 +37,11 @@ import 'package:baby_family/data/service_imp/us.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/helper/app_clock.dart';
+import 'package:baby_family/utils/helper/app_l10n.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
+import 'package:uuid/uuid.dart';
 
 /// Papa & Mama qua server thật (US-01 hôm nay, US-02 check-in, US-03/04 lời
 /// nhờ — BF-20261018-005). Kết quả server được phản chiếu vào kho trên máy
@@ -140,10 +149,31 @@ class UsRemoteServiceImp extends UsServiceImp {
   static const _requestKind = 'us.request';
   static const _thanksKind = 'us.thanks';
   static const _journalKind = 'us.journal';
+  static const _requestActionKind = 'us.request-action';
+  static const _handoffKind = 'us.handoff';
+  static const _uuid = Uuid();
 
   late final OutboxRunner _outbox = OutboxRunner(
     send: _sendEntry,
     onState: (entry, state) {
+      if (entry.kind == _handoffKind) {
+        // Server từ chối (vd mốc giờ quá 24 giờ khi gửi muộn): bỏ bản chờ.
+        if (state == OutboxState.failed) {
+          _outbox.remove(entry.id);
+        }
+        return;
+      }
+      if (entry.kind == _requestActionKind) {
+        // Server từ chối chuyển trạng thái → trả lời nhờ về bản trước đó.
+        if (state == OutboxState.failed) {
+          _store.updateRequest(
+            entry.args['requestId'] as String,
+            Map<String, dynamic>.from(entry.placeholder),
+          );
+          _local.schedule();
+        }
+        return;
+      }
       if (state == OutboxState.done || state == OutboxState.failed) {
         _removePlaceholder(entry);
       }
@@ -286,6 +316,21 @@ class UsRemoteServiceImp extends UsServiceImp {
           throw StateError('Journal entry was not saved');
         }
         _sent[entry.id] = _mirrorJournal(record!, photoAsset: photo);
+      case _handoffKind:
+        final record = await _remote.createHandoff(serverFamilyId, key, body);
+        if (record == null) {
+          throw StateError('Handoff was not sent');
+        }
+      case _requestActionKind:
+        final record = await _remote.requestAction(
+          serverFamilyId,
+          entry.args['requestId'] as String,
+          entry.args['action'] as String,
+          body,
+        );
+        if (record != null) {
+          _mirrorRequest(record);
+        }
     }
     _local.schedule();
   }
@@ -304,6 +349,17 @@ class UsRemoteServiceImp extends UsServiceImp {
   }
 
   void _restorePlaceholder(OutboxEntry entry) {
+    if (entry.kind == _requestActionKind) {
+      // Mở app khi thao tác chưa gửi: hiện lại trạng thái đã chọn.
+      final id = entry.args['requestId'] as String;
+      if (_store.request(id) != null) {
+        _store.updateRequest(
+          id,
+          Map<String, dynamic>.from(entry.args['optimistic'] as Map),
+        );
+      }
+      return;
+    }
     final row = {...entry.placeholder, 'familyId': familyId};
     switch (entry.kind) {
       case _checkinKind
@@ -345,17 +401,66 @@ class UsRemoteServiceImp extends UsServiceImp {
     await _hydrateLocal();
     await _sync();
     final today = await super.coupleToday();
-    // Câu hỏi kết nối hằng ngày là bản 1.1 (chưa có API): bản server không
-    // hiện câu hỏi mẫu cho gia đình thật.
-    if (_serverFamilyId == null) {
+    final serverFamilyId = _serverFamilyId;
+    if (serverFamilyId == null) {
       return today;
     }
     return CoupleToday(
       myCheckin: today.myCheckin,
       partnerCheckin: today.partnerCheckin,
       openRequests: today.openRequests,
+      // Câu hỏi kết nối của server (BF-20261027-002) thay câu mẫu.
+      question: await _serverQuestion(serverFamilyId),
       recentThanks: today.recentThanks,
     );
+  }
+
+  // ------------------------------- Câu hỏi kết nối + US-14 (BF-20261027-002)
+
+  String? get _serverUserId =>
+      sessionRepository.session()[kValueSessionKeyServerUserId] as String?;
+
+  /// Câu hôm nay; lỗi / chưa đọc được khi mất mạng → không hiện khối câu hỏi
+  /// (không làm hỏng màn Papa & Mama).
+  Future<DailyQuestion?> _serverQuestion(String serverFamilyId) async {
+    try {
+      final record = await _reads.read([
+        'question',
+        serverFamilyId,
+        _serverUserId,
+      ], () => _remote.questionToday(serverFamilyId));
+      return record == null ? null : _questionOf(record);
+    } on Object catch (error) {
+      Logger().w('Không đọc được câu hỏi kết nối: $error');
+      return null;
+    }
+  }
+
+  DailyQuestion? _questionOf(CoupleQuestionRecord record) {
+    final code = record.code;
+    final day = DateTime.tryParse(record.date ?? '');
+    final text =
+        record.textI18n[currentAppLanguage().code] ?? record.textI18n['vi'];
+    if (code == null || day == null || text == null) {
+      return null;
+    }
+    return DailyQuestion(
+      id: code,
+      date: day,
+      text: text,
+      myAnswer: record.myAnswer,
+      partnerAnswer: record.partnerAnswer,
+      partnerAnswered: record.partnerAnswered,
+    );
+  }
+
+  @override
+  Future<void> answerQuestion(String answer) async {
+    final serverFamilyId = _serverFamilyId;
+    if (serverFamilyId == null) {
+      return super.answerQuestion(answer);
+    }
+    await _remote.answerQuestion(serverFamilyId, answer.trim());
   }
 
   @override
@@ -378,20 +483,188 @@ class UsRemoteServiceImp extends UsServiceImp {
         : CoupleRequest.fromJson(row);
   }
 
-  /// BF-20261023-001: Cầu nối chưa có API; chỉ mở phiên do gia đình này lưu,
-  /// không giải quyết id của phiên mẫu trong MockStore.
+  // ------------------------------ Cầu nối (US-08…12, BF-20261028-008)
+
+  /// Nháp riêng chỉ ở trên máy (không bao giờ lên server); phiên đã mời đọc
+  /// từ server. Id lạ / phiên của gia đình khác → null (BF-20261023-001).
   @override
   Future<BridgeSession?> bridgeSession(String id) async {
-    if (_serverFamilyId == null) {
+    final serverFamilyId = _serverFamilyId;
+    if (serverFamilyId == null) {
       return super.bridgeSession(id);
+    }
+    await ready();
+    final local = _store
+        .bridgeSessions(familyId)
+        .where(
+          (item) =>
+              item['id'] == id && item['status'] == BridgeStatus.draft.name,
+        )
+        .firstOrNull;
+    if (local != null) {
+      return BridgeSession.fromJson(local);
+    }
+    try {
+      final record = await _reads.read([
+        'bridge',
+        serverFamilyId,
+        id,
+      ], () => _remote.bridge(serverFamilyId, id));
+      return record == null ? null : _bridgeOf(record);
+    } on DioException catch (error) {
+      final status = error.response?.statusCode;
+      if (status == 404 || status == 400) {
+        return null;
+      }
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<BridgeSession>> bridgeSessions() async {
+    final serverFamilyId = _serverFamilyId;
+    if (serverFamilyId == null) {
+      return super.bridgeSessions();
+    }
+    final records = await _reads.read([
+      'bridges',
+      serverFamilyId,
+    ], () => _remote.bridges(serverFamilyId));
+    return [for (final record in records) _bridgeOf(record)];
+  }
+
+  /// Gửi đúng các ý đã chọn chia sẻ (đã xem trước); nháp riêng ở lại máy rồi
+  /// được xoá khỏi bản trên máy sau khi gửi.
+  @override
+  Future<void> sendBridgeInvite(String draftId) async {
+    final serverFamilyId = _serverFamilyId;
+    if (serverFamilyId == null) {
+      return super.sendBridgeInvite(draftId);
     }
     await ready();
     final row = _store
         .bridgeSessions(familyId)
-        .where((item) => item['id'] == id)
+        .where((item) => item['id'] == draftId)
         .firstOrNull;
-    return row == null ? null : BridgeSession.fromJson(row);
+    if (row == null) {
+      throw StateError('Bridge draft not found');
+    }
+    final draft = BridgeSession.fromJson(row);
+    final mine = draft.shares
+        .where((share) => share.userId == myUserId)
+        .firstOrNull;
+    await _remote.createBridge(serverFamilyId, OutboxRunner.keyOf(draftId), {
+      'feelings': mine?.feelings ?? const <String>[],
+      'needs': mine?.needs ?? const <String>[],
+      'topic': ?mine?.topic,
+      'message': ?mine?.message,
+      'retentionDays': draft.retentionDays,
+    });
+    _store.updateBridgeSession(draftId, {
+      'status': BridgeStatus.closed.name,
+      'privateNote': null,
+      'shares': const <Object>[],
+    });
   }
+
+  Future<void> _bridgeAction(
+    String sessionId,
+    String action,
+    Future<void> Function() local, [
+    JsonMap body = const {},
+  ]) async {
+    final serverFamilyId = _serverFamilyId;
+    if (serverFamilyId == null) {
+      return local();
+    }
+    await _remote.bridgeAction(serverFamilyId, sessionId, action, body);
+  }
+
+  @override
+  Future<void> joinBridge(String sessionId) =>
+      _bridgeAction(sessionId, 'join', () => super.joinBridge(sessionId));
+
+  @override
+  Future<void> pauseBridge(String sessionId) =>
+      _bridgeAction(sessionId, 'pause', () => super.pauseBridge(sessionId));
+
+  @override
+  Future<void> markBridgeUnderstood(String sessionId) => _bridgeAction(
+    sessionId,
+    'understood',
+    () => super.markBridgeUnderstood(sessionId),
+  );
+
+  @override
+  Future<void> clarifyBridgeShare(String sessionId, String message) =>
+      _bridgeAction(
+        sessionId,
+        'clarify',
+        () => super.clarifyBridgeShare(sessionId, message),
+        {'message': message},
+      );
+
+  @override
+  Future<void> chooseNextStep(String sessionId, BridgeNextStep step) async {
+    final serverFamilyId = _serverFamilyId;
+    if (serverFamilyId == null) {
+      return super.chooseNextStep(sessionId, step);
+    }
+    await _remote.bridgeNextStep(serverFamilyId, sessionId, {
+      'code': step.code,
+      'text': ?step.whenLabel,
+      'at': ?step.at?.toUtc().toIso8601String(),
+    });
+  }
+
+  @override
+  Future<void> confirmNextStep(String sessionId) => _bridgeAction(
+    sessionId,
+    'confirm',
+    () => super.confirmNextStep(sessionId),
+  );
+
+  @override
+  Future<void> closeBridge(String sessionId) =>
+      _bridgeAction(sessionId, 'close', () => super.closeBridge(sessionId));
+
+  BridgeSession _bridgeOf(BridgeSessionRecord record) => BridgeSession(
+    id: record.id,
+    status: switch (record.status) {
+      'ACTIVE' => BridgeStatus.active,
+      'PAUSED' => BridgeStatus.paused,
+      'NEXT_STEP' => BridgeStatus.nextStep,
+      'CLOSED' || 'EXPIRED' => BridgeStatus.closed,
+      _ => BridgeStatus.invited,
+    },
+    initiatorUserId: _localUserId(record.initiatorUserId),
+    startedAt: record.startedAt?.toLocal(),
+    retentionDays: record.retentionDays,
+    shares: [
+      for (final share in record.shares)
+        BridgeShare(
+          userId: _localUserId(share.userId),
+          feelings: share.feelings,
+          needs: share.needs,
+          topic: share.topic,
+          message: share.message,
+          understood: share.understood,
+          readDone: share.understood,
+        ),
+    ],
+    nextStep: switch (record.nextStep) {
+      final step? => BridgeNextStep(
+        code: step.code,
+        whenLabel: step.text,
+        at: step.at?.toLocal(),
+        agreedUserIds: [for (final id in step.agreedUserIds) _localUserId(id)],
+      ),
+      null => null,
+    },
+    closeAgreedUserIds: [
+      for (final id in record.closeAgreedUserIds) _localUserId(id),
+    ],
+  );
 
   @override
   Future<MoodCheckin> checkIn({
@@ -554,29 +827,62 @@ class UsRemoteServiceImp extends UsServiceImp {
     {'at': at.toUtc().toIso8601String()},
   );
 
-  /// Lời nhờ của server → chuyển trạng thái qua API rồi phản chiếu kết quả;
-  /// lời nhờ chỉ có trên máy (bản mẫu) giữ luồng cũ.
+  /// Lời nhờ của server → đổi trạng thái trên máy ngay rồi gửi qua outbox
+  /// (mất mạng: tự gửi khi có mạng; server từ chối: trả về bản trước và báo
+  /// lỗi); lời nhờ chỉ có trên máy (bản mẫu) giữ luồng cũ.
   Future<void> _act(
     String id,
     String action,
     Future<void> Function() local, [
     JsonMap body = const {},
   ]) async {
-    final serverFamilyId = _serverFamilyId;
-    if (serverFamilyId == null || _store.request(id)?['remote'] != true) {
+    await _hydrateLocal();
+    final before = _store.request(id);
+    if (_serverFamilyId == null || before?['remote'] != true) {
       return local();
     }
-    await ready();
-    final record = await _remote.requestAction(
-      serverFamilyId,
-      id,
-      action,
-      body,
+    final optimistic = _optimisticRequest(action, body);
+    _store.updateRequest(id, optimistic);
+    _local.schedule();
+    await _outbox.submit(
+      OutboxEntry(
+        id: _uuid.v4(),
+        kind: _requestActionKind,
+        args: {
+          'requestId': id,
+          'action': action,
+          'body': body,
+          'optimistic': optimistic,
+        },
+        // Bản trước khi đổi, chỉ các field bị đổi (trả lại khi bị từ chối).
+        placeholder: {for (final key in optimistic.keys) key: before![key]},
+        createdAt: now,
+      ),
     );
-    if (record != null) {
-      _mirrorRequest(record);
-      _local.schedule();
-    }
+  }
+
+  /// Trạng thái hiện ngay trên máy cho [action]; server vẫn là nguồn đúng
+  /// (Hearts của lời nhờ xong do server ghi, BR-068).
+  JsonMap _optimisticRequest(String action, JsonMap body) {
+    final at = now.toIso8601String();
+    return switch (action) {
+      'seen' => {'status': RequestStatus.seen.name, 'seenAt': at},
+      'accept' => {'status': RequestStatus.accepted.name, 'acceptedAt': at},
+      'decline' => {
+        'status': RequestStatus.declined.name,
+        'declinedAt': at,
+        'declineReason': body['reasonCode'],
+      },
+      'done' => {'status': RequestStatus.done.name, 'doneAt': at},
+      'acknowledge' => {'status': RequestStatus.acknowledged.name},
+      'cancel' => {'status': RequestStatus.cancelled.name},
+      'remind-me' => {
+        'remindAt': DateTime.parse(
+          body['at'] as String,
+        ).toLocal().toIso8601String(),
+      },
+      _ => const {},
+    };
   }
 
   // ------------------------------------------------ US-05/06 cảm ơn
@@ -1057,9 +1363,114 @@ class UsRemoteServiceImp extends UsServiceImp {
 
   /// Chưa có API tổng kết tuần / gợi ý viết lại: gia đình thật hiện trạng
   /// thái rỗng thay cho nội dung mẫu (BF-20261022-006).
+  // ------------------------------------------- bàn giao ca (BF-20261028-007)
+
   @override
-  Future<CoupleWeek?> coupleWeek() async =>
-      _serverFamilyId == null ? super.coupleWeek() : null;
+  Future<List<CareHandoff>> handoffs() async {
+    final serverFamilyId = _serverFamilyId;
+    if (serverFamilyId == null) {
+      return super.handoffs();
+    }
+    await _hydrateLocal();
+    final server = await _reads.read([
+      'handoffs',
+      serverFamilyId,
+    ], () => _remote.handoffs(serverFamilyId));
+    final pending = [
+      for (final entry in _outbox.entries)
+        if (entry.kind == _handoffKind)
+          CareHandoff.fromJson({...entry.placeholder, 'pending': true}),
+    ];
+    return [...pending.reversed, ...server];
+  }
+
+  @override
+  Future<CareHandoff> sendHandoff({
+    List<String> childIds = const [],
+    DateTime? fedAt,
+    DateTime? sleptAt,
+    DateTime? wokeAt,
+    String? note,
+  }) async {
+    final serverFamilyId = _serverFamilyId;
+    if (serverFamilyId == null) {
+      return super.sendHandoff(
+        childIds: childIds,
+        fedAt: fedAt,
+        sleptAt: sleptAt,
+        wokeAt: wokeAt,
+        note: note,
+      );
+    }
+    await _hydrateLocal();
+    final draft = UsServiceImp.handoffOf(
+      id: _uuid.v4(),
+      childIds: childIds,
+      fedAt: fedAt,
+      sleptAt: sleptAt,
+      wokeAt: wokeAt,
+      note: note,
+      createdAt: now,
+    );
+    String? utc(DateTime? value) => value?.toUtc().toIso8601String();
+    final sent = await _outbox.submit(
+      OutboxEntry(
+        id: draft.id,
+        kind: _handoffKind,
+        args: {
+          'body': {
+            if (childIds.isNotEmpty) 'childIds': childIds,
+            'fedAt': ?utc(fedAt),
+            'sleptAt': ?utc(sleptAt),
+            'wokeAt': ?utc(wokeAt),
+            'note': ?draft.note,
+          },
+        },
+        placeholder: draft.toJson(),
+        createdAt: now,
+      ),
+    );
+    return draft.copyWith(pending: !sent);
+  }
+
+  @override
+  Future<void> acknowledgeHandoff(String handoffId) async {
+    final serverFamilyId = _serverFamilyId;
+    if (serverFamilyId == null) {
+      return super.acknowledgeHandoff(handoffId);
+    }
+    await _remote.acknowledgeHandoff(serverFamilyId, handoffId);
+  }
+
+  @override
+  Future<CoupleWeek?> coupleWeek() async {
+    final serverFamilyId = _serverFamilyId;
+    if (serverFamilyId == null) {
+      return super.coupleWeek();
+    }
+    final record = await _reads.read([
+      'coupleWeek',
+      serverFamilyId,
+    ], () => _remote.week(serverFamilyId));
+    final start = DateTime.tryParse(record?.weekStart ?? '');
+    final end = DateTime.tryParse(record?.weekEnd ?? '');
+    if (record == null || start == null || end == null) {
+      return null;
+    }
+    return CoupleWeek(
+      start: start,
+      end: end,
+      checkins: record.checkins,
+      requestsHelped: record.requestsHelped,
+      thanks: record.thanks,
+      togetherMissions: record.togetherMissions,
+      together: [
+        for (final item in record.together)
+          if ((item.title, item.date) case (final String title, final date?))
+            CoupleWeekItem(title: title, date: date.toLocal()),
+      ],
+    );
+  }
 
   @override
   Future<RewriteSuggestion?> rewriteSuggestion() async =>

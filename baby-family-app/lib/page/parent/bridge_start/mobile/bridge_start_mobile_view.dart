@@ -290,7 +290,9 @@ class BridgeStartMobileView extends HookConsumerWidget {
   }
 
   Future<void> _rewrite(BuildContext context, BridgeStartController c) async {
-    final text = await context.router.push<String>(const BridgeRewriteRoute());
+    final text = await context.router.push<String>(
+      BridgeRewriteRoute(original: c.message.trim().isEmpty ? null : c.message),
+    );
     if (text != null && text.trim().isNotEmpty) {
       c.useRewrite(text);
     }

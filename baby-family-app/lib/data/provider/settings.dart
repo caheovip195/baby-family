@@ -6,7 +6,9 @@ import 'package:baby_family/data/provider/session.dart';
 import 'package:baby_family/data/repository/account_remote.dart';
 import 'package:baby_family/data/repository/settings.dart';
 import 'package:baby_family/data/repository_imp/account_remote.dart';
+import 'package:baby_family/data/repository_imp/ai_remote.dart';
 import 'package:baby_family/data/repository_imp/settings.dart';
+import 'package:baby_family/data/repository_imp/social_credential.dart';
 import 'package:baby_family/data/service/settings.dart';
 import 'package:baby_family/data/service_imp/settings.dart';
 import 'package:baby_family/data/service_imp/settings_remote.dart';
@@ -34,6 +36,8 @@ final settingsServiceProvider = Provider<ISettingsService>(
           ref.watch(accountRemoteRepositoryProvider),
           ref.watch(sessionServiceProvider),
           ref.watch(mediaRepositoryProvider),
+          SocialCredentialRepositoryImp(),
+          AiRemoteRepositoryImp(),
         )
       : SettingsServiceImp(
           ref.watch(sessionRepositoryProvider),

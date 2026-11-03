@@ -2,6 +2,7 @@ import 'package:baby_family/data/dto/couple_today.dart';
 import 'package:baby_family/data/model/us/bridge_next_step.dart';
 import 'package:baby_family/data/model/us/bridge_option.dart';
 import 'package:baby_family/data/model/us/bridge_session.dart';
+import 'package:baby_family/data/model/us/care_handoff.dart';
 import 'package:baby_family/data/model/us/couple_request.dart';
 import 'package:baby_family/data/model/us/couple_settings.dart';
 import 'package:baby_family/data/model/us/couple_week.dart';
@@ -597,5 +598,63 @@ class UsServiceImp extends MockServiceImp implements IUsService {
     await ready();
     final row = _repository.coupleWeek();
     return row.isEmpty ? null : CoupleWeek.fromJson(row);
+  }
+
+  /// Bản mock: bàn giao chỉ trong bộ nhớ của phiên.
+  final _handoffs = <CareHandoff>[];
+
+  @override
+  Future<List<CareHandoff>> handoffs() async => [..._handoffs];
+
+  @override
+  Future<CareHandoff> sendHandoff({
+    List<String> childIds = const [],
+    DateTime? fedAt,
+    DateTime? sleptAt,
+    DateTime? wokeAt,
+    String? note,
+  }) async {
+    final handoff = handoffOf(
+      id: 'handoff-${now.microsecondsSinceEpoch}',
+      childIds: childIds,
+      fedAt: fedAt,
+      sleptAt: sleptAt,
+      wokeAt: wokeAt,
+      note: note,
+      createdAt: now,
+    );
+    _handoffs.insert(0, handoff);
+    return handoff;
+  }
+
+  @override
+  Future<void> acknowledgeHandoff(String handoffId) async {}
+
+  /// Kiểm tra nội dung giống server: cần một mốc giờ hoặc ghi chú.
+  static CareHandoff handoffOf({
+    required String id,
+    required List<String> childIds,
+    required DateTime createdAt,
+    DateTime? fedAt,
+    DateTime? sleptAt,
+    DateTime? wokeAt,
+    String? note,
+    bool pending = false,
+  }) {
+    final trimmed = note?.trim();
+    final text = trimmed == null || trimmed.isEmpty ? null : trimmed;
+    if (fedAt == null && sleptAt == null && wokeAt == null && text == null) {
+      throw ArgumentError('A time or a note is required');
+    }
+    return CareHandoff(
+      id: id,
+      childIds: childIds,
+      fedAt: fedAt,
+      sleptAt: sleptAt,
+      wokeAt: wokeAt,
+      note: text,
+      createdAt: createdAt,
+      pending: pending,
+    );
   }
 }

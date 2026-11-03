@@ -33,6 +33,20 @@ class PushRemoteServiceImp implements IPushService {
   }
 
   @override
+  Stream<({String title, String body, String? link})> foregroundMessages() =>
+      _tokens.onForeground.where(
+        (message) => message.title.isNotEmpty || message.body.isNotEmpty,
+      );
+
+  @override
+  Stream<String> openedLinks() async* {
+    if (await _tokens.initialLink() case final link?) {
+      yield link;
+    }
+    yield* _tokens.onOpenedLink;
+  }
+
+  @override
   Future<bool> enable() async {
     final allowed = await _tokens.requestPermission();
     await _register(allowed);

@@ -84,6 +84,10 @@ class ChildProfileMobileView extends HookConsumerWidget {
               profile: profile,
               today: controller.today,
               onArchive: archive,
+              onGrowth: () =>
+                  context.router.push(GrowthRoute(childId: child.id)),
+              onYearBook: () =>
+                  context.router.push(YearBookRoute(childId: child.id)),
             ),
           ),
         ],

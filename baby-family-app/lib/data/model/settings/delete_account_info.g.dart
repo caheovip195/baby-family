@@ -20,6 +20,7 @@ _DeleteAccountInfo _$DeleteAccountInfoFromJson(Map<String, dynamic> json) =>
       postedMemories: (json['postedMemories'] as num?)?.toInt() ?? 0,
       onlyParent: json['onlyParent'] as bool? ?? false,
       maskedAppleAccount: json['maskedAppleAccount'] as String?,
+      maskedGoogleAccount: json['maskedGoogleAccount'] as String?,
       maskedPhone: json['maskedPhone'] as String?,
       purgeDate: DateTime.parse(json['purgeDate'] as String),
     );
@@ -34,6 +35,7 @@ Map<String, dynamic> _$DeleteAccountInfoToJson(_DeleteAccountInfo instance) =>
       'postedMemories': instance.postedMemories,
       'onlyParent': instance.onlyParent,
       'maskedAppleAccount': instance.maskedAppleAccount,
+      'maskedGoogleAccount': instance.maskedGoogleAccount,
       'maskedPhone': instance.maskedPhone,
       'purgeDate': instance.purgeDate.toIso8601String(),
     };

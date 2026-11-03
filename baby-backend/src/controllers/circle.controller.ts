@@ -17,6 +17,7 @@ import type { AuthPrincipal } from '../common/auth/auth-principal';
 import { CurrentActor } from '../common/auth/current-actor.decorator';
 import {
   CreateCircleInviteDto,
+  LeaveCircleDto,
   UpdateCircleMemberDto,
 } from '../dto/circle/circle-commands.dto';
 import { FAMILY_CIRCLE_SERVICE } from '../interfaces/services/family-circle-service.interface';
@@ -129,8 +130,9 @@ export class CircleController {
   leave(
     @CurrentActor() actor: AuthPrincipal,
     @Param('fid', ParseUUIDPipe) fid: string,
+    @Body() input: LeaveCircleDto,
   ) {
-    return this.service.leave(actor, fid);
+    return this.service.leave(actor, fid, input.removeContent === true);
   }
   @Get('families/:fid/overview')
   overview(

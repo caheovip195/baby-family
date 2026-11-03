@@ -14,8 +14,12 @@ class RecapActions extends StatelessWidget {
     required this.onShare,
     required this.onSave,
     required this.onDownload,
+    this.shared = false,
     super.key,
   });
+
+  /// Đã chia sẻ với người thân (nút chính đổi thành “dừng chia sẻ”).
+  final bool shared;
 
   final VoidCallback onShare;
   final VoidCallback onSave;
@@ -94,11 +98,15 @@ class RecapActions extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(LucideIcons.send, size: 18, color: onPrimary),
+                      Icon(
+                        shared ? LucideIcons.check : LucideIcons.send,
+                        size: 18,
+                        color: onPrimary,
+                      ),
                       const SizedBox(width: AppSpacing.s2),
                       Flexible(
                         child: Text(
-                          l10n.recapShareFamily,
+                          shared ? l10n.recapSharedStop : l10n.recapShareFamily,
                           style: AppTypography.label.copyWith(
                             fontWeight: FontWeight.w700,
                             height: 19 / 15,

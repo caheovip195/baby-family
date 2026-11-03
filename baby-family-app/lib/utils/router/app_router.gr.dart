@@ -418,18 +418,54 @@ class BridgeNextStepRouteArgs {
 
 /// generated route for
 /// [BridgeRewritePage]
-class BridgeRewriteRoute extends PageRouteInfo<void> {
-  const BridgeRewriteRoute({List<PageRouteInfo>? children})
-    : super(BridgeRewriteRoute.name, initialChildren: children);
+class BridgeRewriteRoute extends PageRouteInfo<BridgeRewriteRouteArgs> {
+  BridgeRewriteRoute({
+    String? original,
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
+         BridgeRewriteRoute.name,
+         args: BridgeRewriteRouteArgs(original: original, key: key),
+         rawQueryParams: {'text': original},
+         initialChildren: children,
+       );
 
   static const String name = 'BridgeRewriteRoute';
 
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      return const BridgeRewritePage();
+      final queryParams = data.queryParams;
+      final args = data.argsAs<BridgeRewriteRouteArgs>(
+        orElse: () =>
+            BridgeRewriteRouteArgs(original: queryParams.optString('text')),
+      );
+      return BridgeRewritePage(original: args.original, key: args.key);
     },
   );
+}
+
+class BridgeRewriteRouteArgs {
+  const BridgeRewriteRouteArgs({this.original, this.key});
+
+  final String? original;
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'BridgeRewriteRouteArgs{original: $original, key: $key}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! BridgeRewriteRouteArgs) return false;
+    return original == other.original && key == other.key;
+  }
+
+  @override
+  int get hashCode => original.hashCode ^ key.hashCode;
 }
 
 /// generated route for
@@ -561,6 +597,81 @@ class ChangePhoneRoute extends PageRouteInfo<void> {
     name,
     builder: (data) {
       return const ChangePhonePage();
+    },
+  );
+}
+
+/// generated route for
+/// [ChatConversationPage]
+class ChatConversationRoute extends PageRouteInfo<ChatConversationRouteArgs> {
+  ChatConversationRoute({
+    required String conversationId,
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
+         ChatConversationRoute.name,
+         args: ChatConversationRouteArgs(
+           conversationId: conversationId,
+           key: key,
+         ),
+         rawPathParams: {'conversationId': conversationId},
+         initialChildren: children,
+       );
+
+  static const String name = 'ChatConversationRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final pathParams = data.inheritedPathParams;
+      final args = data.argsAs<ChatConversationRouteArgs>(
+        orElse: () => ChatConversationRouteArgs(
+          conversationId: pathParams.getString('conversationId'),
+        ),
+      );
+      return ChatConversationPage(
+        conversationId: args.conversationId,
+        key: args.key,
+      );
+    },
+  );
+}
+
+class ChatConversationRouteArgs {
+  const ChatConversationRouteArgs({required this.conversationId, this.key});
+
+  final String conversationId;
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'ChatConversationRouteArgs{conversationId: $conversationId, key: $key}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! ChatConversationRouteArgs) return false;
+    return conversationId == other.conversationId && key == other.key;
+  }
+
+  @override
+  int get hashCode => conversationId.hashCode ^ key.hashCode;
+}
+
+/// generated route for
+/// [ChatListPage]
+class ChatListRoute extends PageRouteInfo<void> {
+  const ChatListRoute({List<PageRouteInfo>? children})
+    : super(ChatListRoute.name, initialChildren: children);
+
+  static const String name = 'ChatListRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const ChatListPage();
     },
   );
 }
@@ -915,6 +1026,22 @@ class CircleWaitingRoute extends PageRouteInfo<void> {
     name,
     builder: (data) {
       return const CircleWaitingPage();
+    },
+  );
+}
+
+/// generated route for
+/// [CircleYearBooksPage]
+class CircleYearBooksRoute extends PageRouteInfo<void> {
+  const CircleYearBooksRoute({List<PageRouteInfo>? children})
+    : super(CircleYearBooksRoute.name, initialChildren: children);
+
+  static const String name = 'CircleYearBooksRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const CircleYearBooksPage();
     },
   );
 }
@@ -1321,6 +1448,57 @@ class FirstsRouteArgs {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! FirstsRouteArgs) return false;
+    return childId == other.childId && key == other.key;
+  }
+
+  @override
+  int get hashCode => childId.hashCode ^ key.hashCode;
+}
+
+/// generated route for
+/// [GrowthPage]
+class GrowthRoute extends PageRouteInfo<GrowthRouteArgs> {
+  GrowthRoute({
+    required String childId,
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
+         GrowthRoute.name,
+         args: GrowthRouteArgs(childId: childId, key: key),
+         rawPathParams: {'childId': childId},
+         initialChildren: children,
+       );
+
+  static const String name = 'GrowthRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final pathParams = data.inheritedPathParams;
+      final args = data.argsAs<GrowthRouteArgs>(
+        orElse: () => GrowthRouteArgs(childId: pathParams.getString('childId')),
+      );
+      return GrowthPage(childId: args.childId, key: args.key);
+    },
+  );
+}
+
+class GrowthRouteArgs {
+  const GrowthRouteArgs({required this.childId, this.key});
+
+  final String childId;
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'GrowthRouteArgs{childId: $childId, key: $key}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! GrowthRouteArgs) return false;
     return childId == other.childId && key == other.key;
   }
 
@@ -2574,13 +2752,19 @@ class PhotoViewerRoute extends PageRouteInfo<PhotoViewerRouteArgs> {
   PhotoViewerRoute({
     required String memoryId,
     int? index,
+    String? perspectiveId,
     Key? key,
     List<PageRouteInfo>? children,
   }) : super(
          PhotoViewerRoute.name,
-         args: PhotoViewerRouteArgs(memoryId: memoryId, index: index, key: key),
+         args: PhotoViewerRouteArgs(
+           memoryId: memoryId,
+           index: index,
+           perspectiveId: perspectiveId,
+           key: key,
+         ),
          rawPathParams: {'memoryId': memoryId},
-         rawQueryParams: {'index': index},
+         rawQueryParams: {'index': index, 'perspective': perspectiveId},
          initialChildren: children,
        );
 
@@ -2595,11 +2779,13 @@ class PhotoViewerRoute extends PageRouteInfo<PhotoViewerRouteArgs> {
         orElse: () => PhotoViewerRouteArgs(
           memoryId: pathParams.getString('memoryId'),
           index: queryParams.optInt('index'),
+          perspectiveId: queryParams.optString('perspective'),
         ),
       );
       return PhotoViewerPage(
         memoryId: args.memoryId,
         index: args.index,
+        perspectiveId: args.perspectiveId,
         key: args.key,
       );
     },
@@ -2607,17 +2793,24 @@ class PhotoViewerRoute extends PageRouteInfo<PhotoViewerRouteArgs> {
 }
 
 class PhotoViewerRouteArgs {
-  const PhotoViewerRouteArgs({required this.memoryId, this.index, this.key});
+  const PhotoViewerRouteArgs({
+    required this.memoryId,
+    this.index,
+    this.perspectiveId,
+    this.key,
+  });
 
   final String memoryId;
 
   final int? index;
 
+  final String? perspectiveId;
+
   final Key? key;
 
   @override
   String toString() {
-    return 'PhotoViewerRouteArgs{memoryId: $memoryId, index: $index, key: $key}';
+    return 'PhotoViewerRouteArgs{memoryId: $memoryId, index: $index, perspectiveId: $perspectiveId, key: $key}';
   }
 
   @override
@@ -2626,11 +2819,16 @@ class PhotoViewerRouteArgs {
     if (other is! PhotoViewerRouteArgs) return false;
     return memoryId == other.memoryId &&
         index == other.index &&
+        perspectiveId == other.perspectiveId &&
         key == other.key;
   }
 
   @override
-  int get hashCode => memoryId.hashCode ^ index.hashCode ^ key.hashCode;
+  int get hashCode =>
+      memoryId.hashCode ^
+      index.hashCode ^
+      perspectiveId.hashCode ^
+      key.hashCode;
 }
 
 /// generated route for
@@ -3256,4 +3454,148 @@ class WelcomeRoute extends PageRouteInfo<void> {
       return const WelcomePage();
     },
   );
+}
+
+/// generated route for
+/// [YearBookPage]
+class YearBookRoute extends PageRouteInfo<YearBookRouteArgs> {
+  YearBookRoute({
+    String? childId,
+    int? year,
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
+         YearBookRoute.name,
+         args: YearBookRouteArgs(childId: childId, year: year, key: key),
+         rawQueryParams: {'childId': childId, 'year': year},
+         initialChildren: children,
+       );
+
+  static const String name = 'YearBookRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final queryParams = data.queryParams;
+      final args = data.argsAs<YearBookRouteArgs>(
+        orElse: () => YearBookRouteArgs(
+          childId: queryParams.optString('childId'),
+          year: queryParams.optInt('year'),
+        ),
+      );
+      return YearBookPage(
+        childId: args.childId,
+        year: args.year,
+        key: args.key,
+      );
+    },
+  );
+}
+
+class YearBookRouteArgs {
+  const YearBookRouteArgs({this.childId, this.year, this.key});
+
+  final String? childId;
+
+  final int? year;
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'YearBookRouteArgs{childId: $childId, year: $year, key: $key}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! YearBookRouteArgs) return false;
+    return childId == other.childId && year == other.year && key == other.key;
+  }
+
+  @override
+  int get hashCode => childId.hashCode ^ year.hashCode ^ key.hashCode;
+}
+
+/// generated route for
+/// [YearBookPreviewPage]
+class YearBookPreviewRoute extends PageRouteInfo<YearBookPreviewRouteArgs> {
+  YearBookPreviewRoute({
+    required Uint8List bytes,
+    required String title,
+    required String fileName,
+    required bool canExport,
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
+         YearBookPreviewRoute.name,
+         args: YearBookPreviewRouteArgs(
+           bytes: bytes,
+           title: title,
+           fileName: fileName,
+           canExport: canExport,
+           key: key,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'YearBookPreviewRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<YearBookPreviewRouteArgs>();
+      return YearBookPreviewPage(
+        bytes: args.bytes,
+        title: args.title,
+        fileName: args.fileName,
+        canExport: args.canExport,
+        key: args.key,
+      );
+    },
+  );
+}
+
+class YearBookPreviewRouteArgs {
+  const YearBookPreviewRouteArgs({
+    required this.bytes,
+    required this.title,
+    required this.fileName,
+    required this.canExport,
+    this.key,
+  });
+
+  final Uint8List bytes;
+
+  final String title;
+
+  final String fileName;
+
+  final bool canExport;
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'YearBookPreviewRouteArgs{bytes: $bytes, title: $title, fileName: $fileName, canExport: $canExport, key: $key}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! YearBookPreviewRouteArgs) return false;
+    return bytes == other.bytes &&
+        title == other.title &&
+        fileName == other.fileName &&
+        canExport == other.canExport &&
+        key == other.key;
+  }
+
+  @override
+  int get hashCode =>
+      bytes.hashCode ^
+      title.hashCode ^
+      fileName.hashCode ^
+      canExport.hashCode ^
+      key.hashCode;
 }

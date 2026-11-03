@@ -243,7 +243,7 @@ export class EventReminderScheduleRepository implements IEventReminderScheduleRe
             continue;
           }
           // Reminder id is the inbox event id; unique key survives retries and inbox deletion.
-          await tx.notification.upsert({
+          const inbox = await tx.notification.upsert({
             where: {
               eventId_recipientUserId_templateCode: {
                 eventId: reminder.id,
@@ -274,6 +274,28 @@ export class EventReminderScheduleRepository implements IEventReminderScheduleRe
               ),
             },
           });
+          // CAL-02 (BF-20261030-010): nhắc đúng giờ người dùng chọn → một
+          // lượt push ngay (không tính trần thông báo thường); push sender
+          // vẫn kiểm lại quyền, tuỳ chọn và giờ yên tĩnh trước khi gửi.
+          if (
+            !(await tx.notificationDelivery.findFirst({
+              where: {
+                notificationId: inbox.id,
+                channel: 'PUSH',
+                deletedAt: null,
+              },
+              select: { id: true },
+            }))
+          )
+            await tx.notificationDelivery.create({
+              data: {
+                notificationId: inbox.id,
+                channel: 'PUSH',
+                targetKey: userId,
+                status: 'PENDING',
+                nextAttemptAt: now,
+              },
+            });
           await tx.eventReminder.update({
             where: { id: row.id },
             data: { sentAt: now },
