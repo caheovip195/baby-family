@@ -1902,3 +1902,54 @@ Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hi�
 - Kết quả / trạng thái: Hoàn thành review (2026-11-06T19:32:53+07:00). Tái hiện bằng dữ liệu tổng hợp và rà nguồn, chưa thay đổi sản phẩm hoặc thêm tracking.
 - Theo dõi: Khi có task sửa, xác minh tính toàn vẹn xóa/xuất, tỷ lệ đồng bộ media và độ trễ outbox bằng ca lỗi tương ứng. Đo Recap với dữ liệu giả có kích thước đại diện trước khi tối ưu.
 - Session: [BF-20261106-007](SESSIONS.md#bf-20261106-007).
+
+
+<a id="bf-20261119-001"></a>
+
+## BF-20261119-001 — Upload presigned POST policy, checksum và chặn sai loại file
+
+- Ngày làm: 2026-11-19T11:36:35+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Client khai `Content-Type` là ảnh nhưng upload file mp4 qua link presigned thì xử lý thế nào; làm luồng upload thẳng lên storage bằng POST có policy, checksum đầy đủ; storage dùng Contabo.
+- Role: ARCHITECT, BACKEND, MOBILE, SECURITY_PRIVACY, TESTER, QUALITY.
+- Vấn đề / mục tiêu: Ký ức và avatar chỉ được chứa đúng loại file đã khai báo (ảnh là ảnh, video là video), dữ liệu không hỏng trên đường truyền, và server yếu không phải xử lý file.
+- Quan sát: Trước task, presigned PUT đã ký Content-Type và SHA-256 nhưng complete chỉ HEAD (size, MIME khai báo), nên MP4 khai `image/jpeg` được chấp nhận. Probe MinIO: POST policy và checksum chặn đúng các sai lệch so với khai báo, nhưng không chặn được việc khai báo sai ngay từ đầu.
+- Phân tích / quyết định: Upload trực tiếp bằng S3 POST có policy (key, Content-Type, đúng size, SHA-256) khi storage hỗ trợ; part multipart ký Content-Length, app gửi Content-MD5. Complete kiểm SHA-256 khi storage trả và magic bytes 4 KiB đầu. Không decode, không thêm package, không migration. Giữ chế độ PUT bằng cấu hình.
+- Tác động: Upload sai loại hoặc sai nội dung bị từ chối 422, object bị xoá, quota giữ chỗ được trả. Hợp đồng API: `upload.method` có thể là `POST` kèm `fields`; app cũ chỉ biết PUT. Không đổi UI.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo. Có thể theo dõi tỷ lệ asset FAILED theo `failure_reason` (`CHECKSUM_MISMATCH`, `CONTENT_TYPE_MISMATCH`) sau khi triển khai; không thêm tracking.
+- Kết quả / trạng thái: Đã triển khai backend + app, kiểm chứng trên MinIO local. Chưa thử trên thiết bị.
+- Theo dõi: Rebuild API/worker; SHA toàn file cho multipart nếu cần.
+- Đính chính 2026-11-19 (từ BF-20261119-002/003): với Contabo dùng PUT (POST bị 401, checksum bị bỏ qua); bỏ việc server tải cả file ≤20 MiB để băm, chỉ đọc 4 KiB đầu.
+- Ghi chú khôi phục 2026-11-19T12:08+07:00: file này bị lệnh của agent làm trống khi ghi BF-20261119-002; đã khôi phục từ commit `1503236` (11:38:01+07:00) và ghi lại các entry BF-20261119-001..003. Xem [SESSIONS](SESSIONS.md#bf-20261119-001).
+- Session: [BF-20261119-001](SESSIONS.md#bf-20261119-001).
+
+<a id="bf-20261119-002"></a>
+
+## BF-20261119-002 — Kiểm tra cấu hình và upload trên Contabo Object Storage
+
+- Ngày làm: 2026-11-19T11:58:28+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Người dùng đã cấu hình storage Contabo trong env, chưa bật public bucket; kiểm tra giúp.
+- Role: DEVOPS, BACKEND, SECURITY_PRIVACY, TESTER, QUALITY.
+- Vấn đề / mục tiêu: Chạy media trên Contabo, bucket private, server yếu.
+- Quan sát: Contabo không hỗ trợ POST Object, bỏ qua checksum SHA-256, nhưng kiểm Content-Type/Content-Length đã ký, Content-MD5 và Range. Bucket private dùng presigned GET được. Backend chưa đọc các biến `S3_CONTABO_*`.
+- Phân tích / quyết định: Dùng PUT có ký Content-Length cho Contabo; giữ kiểm magic bytes. Không cần bật public bucket.
+- Tác động: Upload trên Contabo vẫn chặn được sai loại, sai dung lượng, sai Content-Type; không chặn được nội dung khác SHA khai báo (ảnh hưởng dedup). Không đổi UI.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo.
+- Kết quả / trạng thái: Đã kiểm trên Contabo bằng probe; chưa chuyển `.env` sang Contabo.
+- Theo dõi: Cấu hình `.env`, rebuild, thử app thật; đổi key Contabo.
+- Session: [BF-20261119-002](SESSIONS.md#bf-20261119-002).
+
+<a id="bf-20261119-003"></a>
+
+## BF-20261119-003 — Kiểm tra file upload chỉ đọc vài byte đầu, không tải cả file
+
+- Ngày làm: 2026-11-19T12:03:18+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Khi backend kiểm tra file trên storage S3 có hợp lệ không, không được tải cả file về; chỉ đọc vài byte đầu chứa thông tin định dạng.
+- Role: BACKEND, SECURITY_PRIVACY, TESTER, QUALITY.
+- Vấn đề / mục tiêu: Server yếu không tải file người dùng về khi kiểm tra.
+- Quan sát: Đo trên Contabo: mỗi lần kiểm chỉ nhận 4096 byte.
+- Phân tích / quyết định: Bỏ băm SHA-256 phía server; chấp nhận không kiểm SHA khi storage không hỗ trợ checksum.
+- Tác động: Băng thông kiểm tra cố định 4 KiB/object. Không đổi UI hay API.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo trên server thật.
+- Kết quả / trạng thái: Đã triển khai và kiểm chứng.
+- Theo dõi: Không trong phạm vi.
+- Session: [BF-20261119-003](SESSIONS.md#bf-20261119-003).

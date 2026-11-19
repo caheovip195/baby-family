@@ -40,6 +40,44 @@ interface PartUrl {
   n: number;
   url: string;
 }
+/** Single upload instruction: POST (signed policy fields) or PUT (signed headers). */
+interface DirectUpload {
+  mode: string;
+  url: string;
+  method?: string;
+  headers?: Record<string, string>;
+  fields?: Record<string, string>;
+}
+const JPEG_MAGIC = Buffer.from('ffd8ffe000104a464946', 'hex');
+/** `ftyp` boxes: MP4 video (isom) and M4A audio. */
+const MP4_MAGIC = Buffer.from(
+  '0000001c667479706973736f6d0000020069736f6d69736f326d703431',
+  'hex',
+);
+const M4A_MAGIC = Buffer.from(
+  '0000001c667479704d344120000000004d34412069736f6d6d703432',
+  'hex',
+);
+/** Random body of `size` bytes that starts with a real container signature. */
+const withMagic = (magic: Buffer, size: number) =>
+  Buffer.concat([magic, randomBytes(size - magic.length)]);
+
+/** Sends one object straight to storage the way the app does. */
+function send(upload: DirectUpload, bytes: Buffer): Promise<Response> {
+  if (upload.method === 'POST') {
+    const form = new FormData();
+    for (const [name, value] of Object.entries(upload.fields ?? {}))
+      form.append(name, value);
+    // The file must be the last field (S3 POST Object).
+    form.append('file', new Blob([new Uint8Array(bytes)]));
+    return fetch(upload.url, { method: 'POST', body: form });
+  }
+  return fetch(upload.url, {
+    method: 'PUT',
+    headers: upload.headers,
+    body: bytes,
+  });
+}
 /** Loose view of the JSON responses used by this suite. */
 interface ApiBody {
   assetId: string;
@@ -48,17 +86,9 @@ interface ApiBody {
   deduplicated: boolean;
   variantUploads: {
     code: string;
-    upload: {
-      mode: string;
-      url: string;
-      method: string;
-      headers: Record<string, string>;
-    };
+    upload: DirectUpload;
   }[];
-  upload: {
-    mode: string;
-    url: string;
-    headers: Record<string, string>;
+  upload: DirectUpload & {
     partCount: number;
     parts: PartUrl[];
   };
@@ -340,7 +370,7 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
     }
   });
 
-  const photo = randomBytes(64 * 1024);
+  const photo = withMagic(JPEG_MAGIC, 64 * 1024);
   let photoId = '';
 
   it('creates a signed single upload, replays it idempotently and completes it', async () => {
@@ -357,7 +387,7 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
     expect(body(created)).toMatchObject({
       status: 'PENDING_UPLOAD',
       deduplicated: false,
-      upload: { mode: 'single', method: 'PUT' },
+      upload: { mode: 'single', method: 'POST' },
     });
     photoId = body(created).assetId;
     expect((await usage()).reservedStorageBytes).toBe(reserved(photo.length));
@@ -370,24 +400,37 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
     );
     expect(body(reused).error.code).toBe('IDEMPOTENCY_KEY_REUSED');
 
-    const upload = body(created).upload as {
-      url: string;
-      headers: Record<string, string>;
-    };
-    expect(upload.headers['x-amz-checksum-sha256']).toBeTruthy();
-    // The signed checksum makes storage reject any other body.
-    const tampered = await fetch(upload.url, {
-      method: 'PUT',
-      headers: upload.headers,
-      body: randomBytes(photo.length),
+    const upload = body(created).upload;
+    expect(upload.fields).toMatchObject({
+      key: `fam/${familyId}/a/${photoId}/orig`,
+      'Content-Type': 'image/jpeg',
+      'x-amz-checksum-sha256': createHash('sha256')
+        .update(photo)
+        .digest('base64'),
     });
-    expect(tampered.ok).toBe(false);
-    const put = await fetch(upload.url, {
-      method: 'PUT',
-      headers: upload.headers,
-      body: photo,
-    });
-    expect(put.status).toBe(200);
+    // The signed policy makes storage reject any other body, type, size or key.
+    const tampered = await send(upload, withMagic(JPEG_MAGIC, photo.length));
+    expect(tampered.status).toBe(400);
+    const retyped = await send(
+      {
+        ...upload,
+        fields: { ...upload.fields, 'Content-Type': 'video/mp4' },
+      },
+      photo,
+    );
+    expect(retyped.status).toBe(403);
+    const rekeyed = await send(
+      {
+        ...upload,
+        fields: { ...upload.fields, key: `${upload.fields!.key}x` },
+      },
+      photo,
+    );
+    expect(rekeyed.status).toBe(403);
+    const longer = await send(upload, Buffer.concat([photo, Buffer.from('x')]));
+    expect(longer.status).toBe(400);
+    const sent = await send(upload, photo);
+    expect(sent.status).toBe(204);
 
     await complete(parentB, photoId).expect(403);
     await complete(outsider, photoId).expect(404);
@@ -417,6 +460,58 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
       where: { assetId: photoId },
     });
     expect(reservation).toMatchObject({ status: 'CONFIRMED' });
+  });
+
+  it('rejects an MP4 body declared as image/jpeg even with a matching checksum', async () => {
+    // The client lies consistently: policy, checksum and Content-Type all match
+    // the declaration, only the bytes are a video. Magic bytes catch it.
+    const video = withMagic(MP4_MAGIC, 4096);
+    const created = body(
+      await intent(parentA, {
+        kind: 'IMAGE',
+        mime: 'image/jpeg',
+        size: video.length,
+        sha256: sha256(video),
+      }).expect(201),
+    );
+    expect((await send(created.upload, video)).status).toBe(204);
+    const before = (await usage()).reservedStorageBytes;
+    const rejected = await complete(parentA, created.assetId).expect(422);
+    expect(body(rejected).error.code).toBe('UPLOAD_CONTENT_TYPE_MISMATCH');
+    const failed = await prisma.asset.findUniqueOrThrow({
+      where: { id: created.assetId },
+    });
+    expect(failed).toMatchObject({
+      status: 'FAILED',
+      failureReason: 'CONTENT_TYPE_MISMATCH',
+    });
+    await expect(
+      storage.headObject({ bucket: 'media', key: failed.storageKey }),
+    ).resolves.toBeNull();
+    expect((await usage()).reservedStorageBytes).toBe(
+      before - reserved(video.length),
+    );
+  });
+
+  it('verifies a PUT upload the same way when POST is switched off', async () => {
+    configuration.set('MEDIA_SINGLE_UPLOAD_METHOD', 'put');
+    try {
+      const bytes = withMagic(JPEG_MAGIC, 2048);
+      const created = body(
+        await intent(parentA, {
+          kind: 'IMAGE',
+          mime: 'image/jpeg',
+          size: bytes.length,
+          sha256: sha256(bytes),
+        }).expect(201),
+      );
+      expect(created.upload).toMatchObject({ mode: 'single', method: 'PUT' });
+      expect(created.upload.headers!['x-amz-checksum-sha256']).toBeTruthy();
+      expect((await send(created.upload, bytes)).status).toBe(200);
+      await complete(parentA, created.assetId).expect(202);
+    } finally {
+      configuration.set('MEDIA_SINGLE_UPLOAD_METHOD', 'post');
+    }
   });
 
   it("deduplicates per uploader and never hands out the partner's unshared copy", async () => {
@@ -514,9 +609,25 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
     for (const part of parts) {
       const url =
         part.n === 3 ? (body(resigned).parts[0]?.url ?? '') : part.url;
+      const bytes =
+        part.n === 1
+          ? withMagic(MP4_MAGIC, sizes[0]!)
+          : randomBytes(sizes[part.n - 1]!);
+      // Content-MD5 is optional for the URL but storage verifies it when sent.
+      const corrupted = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-MD5': createHash('md5').update('other').digest('base64'),
+        },
+        body: bytes,
+      });
+      expect(corrupted.status).toBe(400);
       const response = await fetch(url, {
         method: 'PUT',
-        body: randomBytes(sizes[part.n - 1]!),
+        headers: {
+          'Content-MD5': createHash('md5').update(bytes).digest('base64'),
+        },
+        body: bytes,
       });
       expect(response.status).toBe(200);
       etags.push({ n: part.n, etag: response.headers.get('etag')! });
@@ -529,35 +640,41 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
     const pending = await intent(parentA, video).expect(409);
     expect(body(pending).error.code).toBe('UPLOAD_PENDING_VERIFICATION');
 
-    // Oversized: parts total more than declared + 5 %.
+    // Part URLs sign Content-Length: storage refuses an oversized last part, so
+    // the object can never exceed the declared size.
     const declared = { ...video, sha256: sha256(randomBytes(8)) };
-    const oversized = await intent(parentA, declared).expect(201);
-    const oversizedId = body(oversized).assetId;
+    const other = await intent(parentA, declared).expect(201);
+    const otherId = body(other).assetId;
     const reservedBefore = (await usage()).reservedStorageBytes;
-    const bigParts: { n: number; etag: string }[] = [];
-    for (const part of body(oversized).upload.parts as {
-      n: number;
-      url: string;
-    }[]) {
+    const otherParts = body(other).upload.parts;
+    const oversizedPart = await fetch(otherParts[2]!.url, {
+      method: 'PUT',
+      body: randomBytes(8 * MIB), // declared last part is 5 MiB
+    });
+    expect(oversizedPart.ok).toBe(false);
+    // Correct sizes, but the body is not an MP4: rejected at completion.
+    const wrongParts: { n: number; etag: string }[] = [];
+    for (const part of otherParts) {
       const response = await fetch(part.url, {
         method: 'PUT',
-        body: randomBytes(8 * MIB), // 24 MiB > 21 MiB + 5 %
+        body: randomBytes(sizes[part.n - 1]!),
       });
-      bigParts.push({ n: part.n, etag: response.headers.get('etag')! });
+      expect(response.status).toBe(200);
+      wrongParts.push({ n: part.n, etag: response.headers.get('etag')! });
     }
-    const rejected = await complete(parentA, oversizedId, {
-      parts: bigParts,
+    const rejected = await complete(parentA, otherId, {
+      parts: wrongParts,
     }).expect(422);
-    expect(body(rejected).error.code).toBe('UPLOAD_SIZE_MISMATCH');
+    expect(body(rejected).error.code).toBe('UPLOAD_CONTENT_TYPE_MISMATCH');
     expect((await usage()).reservedStorageBytes).toBe(
       reservedBefore - reserved(size),
     );
     const failed = await prisma.asset.findUniqueOrThrow({
-      where: { id: oversizedId },
+      where: { id: otherId },
     });
     expect(failed).toMatchObject({
       status: 'FAILED',
-      failureReason: 'SIZE_MISMATCH',
+      failureReason: 'CONTENT_TYPE_MISMATCH',
     });
     await expect(
       storage.headObject({ bucket: 'media', key: failed.storageKey }),
@@ -680,7 +797,7 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
   });
 
   it('allows Circle MEMORY uploads, rechecks grants and charges the family quota', async () => {
-    const bytes = randomBytes(32);
+    const bytes = withMagic(JPEG_MAGIC, 32);
     const payload = {
       kind: 'IMAGE',
       mime: 'image/jpeg',
@@ -762,15 +879,7 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
       where: { familyId },
       data: { validUntil: future() },
     });
-    expect(
-      (
-        await fetch(created.upload.url, {
-          method: 'PUT',
-          headers: created.upload.headers,
-          body: bytes,
-        })
-      ).status,
-    ).toBe(200);
+    expect((await send(created.upload, bytes)).status).toBe(204);
     await complete(parentA, created.assetId).expect(403);
     await complete(relative, photoId).expect(403);
     await complete(relative, created.assetId).expect(202);
@@ -931,8 +1040,15 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
       kind: 'IMAGE' | 'VIDEO' | 'AUDIO' = 'IMAGE',
       purpose = 'MEMORY',
     ) {
-      const bytes = randomBytes(2048);
-      const variantBytes = randomBytes(256);
+      const bytes = withMagic(
+        kind === 'IMAGE'
+          ? JPEG_MAGIC
+          : kind === 'VIDEO'
+            ? MP4_MAGIC
+            : M4A_MAGIC,
+        2048,
+      );
+      const variantBytes = withMagic(JPEG_MAGIC, 256);
       const codes =
         kind === 'IMAGE'
           ? ['m1080', 't320']
@@ -967,16 +1083,9 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
       };
     }
 
-    async function put(
-      upload: { url: string; headers: Record<string, string> },
-      bytes: Buffer,
-    ) {
-      const response = await fetch(upload.url, {
-        method: 'PUT',
-        headers: upload.headers,
-        body: bytes,
-      });
-      expect(response.status).toBe(200);
+    async function put(upload: DirectUpload, bytes: Buffer) {
+      const response = await send(upload, bytes);
+      expect(response.ok).toBe(true);
     }
 
     for (const kind of ['IMAGE', 'VIDEO', 'AUDIO'] as const) {
@@ -998,11 +1107,14 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
         );
         await put(result.upload, file.bytes);
         for (const item of result.variantUploads) {
-          expect(item.upload).toMatchObject({ mode: 'single', method: 'PUT' });
-          expect(item.upload.headers['x-amz-checksum-sha256']).toBeTruthy();
-          expect(new URL(item.upload.url).pathname).toContain(
-            `/fam/${familyId}/a/${result.assetId}/${item.code}`,
-          );
+          expect(item.upload).toMatchObject({ mode: 'single', method: 'POST' });
+          expect(item.upload.fields).toMatchObject({
+            key: `fam/${familyId}/a/${result.assetId}/${item.code}`,
+            'Content-Type': 'image/jpeg',
+            'x-amz-checksum-sha256': createHash('sha256')
+              .update(file.variantBytes)
+              .digest('base64'),
+          });
           await put(item.upload, file.variantBytes);
         }
         const done = body(await complete(parentA, result.assetId).expect(202));
@@ -1277,9 +1389,11 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
       });
     }
 
-    for (const mismatch of ['missing', 'size'] as const) {
+    for (const mismatch of ['missing', 'size', 'content'] as const) {
       it(`fails and removes every uploaded object when a variant has ${mismatch} data`, async () => {
         const file = clientFile();
+        // A variant body that is a video, declared (and hashed) as JPEG.
+        const fake = withMagic(MP4_MAGIC, file.variantBytes.length);
         const payload =
           mismatch === 'size'
             ? {
@@ -1289,20 +1403,41 @@ describeStack('Media upload + view URLs (PostgreSQL + MinIO + ES256)', () => {
                   size: 1,
                 })),
               }
-            : file.payload;
+            : mismatch === 'content'
+              ? {
+                  ...file.payload,
+                  variants: file.payload.variants.map((variant) =>
+                    variant.code === 't320'
+                      ? { ...variant, sha256: sha256(fake) }
+                      : variant,
+                  ),
+                }
+              : file.payload;
         const before = await usage();
         const result = body(await intent(parentA, payload).expect(201));
         await put(result.upload, file.bytes);
         for (const item of result.variantUploads) {
           if (mismatch === 'missing' && item.code === 't320') continue;
-          await put(item.upload, file.variantBytes);
+          if (mismatch === 'size') {
+            // The policy pins the exact size: storage refuses the body itself.
+            expect((await send(item.upload, file.variantBytes)).status).toBe(
+              400,
+            );
+            continue;
+          }
+          await put(
+            item.upload,
+            mismatch === 'content' && item.code === 't320'
+              ? fake
+              : file.variantBytes,
+          );
         }
         expect(
           body(await complete(parentA, result.assetId).expect(422)).error.code,
         ).toBe(
-          mismatch === 'missing'
-            ? 'UPLOAD_VARIANT_MISSING'
-            : 'UPLOAD_VARIANT_SIZE_MISMATCH',
+          mismatch === 'content'
+            ? 'UPLOAD_VARIANT_CONTENT_TYPE_MISMATCH'
+            : 'UPLOAD_VARIANT_MISSING',
         );
         const failed = await prisma.asset.findUniqueOrThrow({
           where: { id: result.assetId },

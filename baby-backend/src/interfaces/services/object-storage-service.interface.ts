@@ -15,6 +15,11 @@ export interface UploadUrlInput extends ObjectLocation {
   contentType: string;
   /** Base64 SHA-256 of the body; signed so storage rejects any other content. */
   sha256Base64?: string;
+  /**
+   * Exact body size; signs `Content-Length` so storage rejects any other size
+   * (storage without POST Object support, e.g. Contabo, still bounds the size).
+   */
+  sizeBytes?: number;
   /** Defaults to 900 seconds (spec §10.2). */
   expiresInSeconds?: number;
 }
@@ -24,6 +29,28 @@ export interface DownloadUrlInput extends ObjectLocation {
   expiresInSeconds?: number;
   /** Sets `Content-Disposition: attachment` for downloads of originals. */
   downloadFileName?: string;
+}
+
+/**
+ * Browser-style POST upload (S3 POST Object): storage enforces the signed policy
+ * (key, Content-Type, exact size, SHA-256) before accepting the body.
+ */
+export interface UploadPostInput extends ObjectLocation {
+  contentType: string;
+  /** Exact body size the policy accepts (`content-length-range`). */
+  sizeBytes: number;
+  /** Base64 SHA-256 of the body; storage that supports checksums rejects others. */
+  sha256Base64?: string;
+  /** Defaults to 900 seconds (spec §10.2). */
+  expiresInSeconds?: number;
+}
+
+export interface PresignedPost {
+  method: 'POST';
+  url: string;
+  /** Form fields to send unchanged, before the `file` field. */
+  fields: Record<string, string>;
+  expiresAt: Date;
 }
 
 export interface PresignedRequest {
@@ -41,6 +68,12 @@ export interface MultipartUploadInput extends ObjectLocation {
 export interface PartUploadUrlsInput extends ObjectLocation {
   uploadId: string;
   partNumbers: number[];
+  /**
+   * With the part size and total, each URL signs `Content-Length`, so storage
+   * rejects any part whose size differs (bounds the multipart object size).
+   */
+  partSizeBytes?: number;
+  totalBytes?: bigint;
   /** Defaults to 3600 seconds (spec §10.2). */
   expiresInSeconds?: number;
 }
@@ -64,6 +97,8 @@ export interface StoredObjectMetadata {
   size: number;
   contentType: string | null;
   etag: string | null;
+  /** Full-object SHA-256 (base64) when storage keeps checksums; null otherwise. */
+  checksumSha256: string | null;
 }
 
 /**
@@ -79,7 +114,16 @@ export interface IObjectStorageService {
   /** Logical bucket for a persisted physical name, or null if not configured. */
   bucketOf(name: string): ObjectStorageBucket | null;
   createUploadUrl(input: UploadUrlInput): Promise<PresignedRequest>;
+  createUploadPost(input: UploadPostInput): Promise<PresignedPost>;
   createDownloadUrl(input: DownloadUrlInput): Promise<PresignedRequest>;
+  /**
+   * First `bytes` of an object by ranged GET (at most 64 KiB), for format
+   * detection; never the whole object. Null when the object does not exist.
+   */
+  readObjectPrefix(
+    location: ObjectLocation,
+    bytes: number,
+  ): Promise<Buffer | null>;
   headObject(location: ObjectLocation): Promise<StoredObjectMetadata | null>;
   deleteObject(location: ObjectLocation): Promise<void>;
   /**

@@ -2,7 +2,13 @@ import { createHash } from 'node:crypto';
 import { Inject, Injectable, Optional } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Environment } from '../config/environment';
-import { validateClientMedia, verifyClientUpload } from './client-media-upload';
+import {
+  inspectStoredContent,
+  signSingleUpload,
+  validateClientMedia,
+  verifyClientUpload,
+  type SingleUploadMethod,
+} from './client-media-upload';
 import { z } from 'zod';
 import type { AuthPrincipal } from '../common/auth/auth-principal';
 import {
@@ -217,27 +223,17 @@ export class MediaService implements IMediaService {
     const variantUploads = await Promise.all(
       upload.variants
         .filter((v) => v.storageKey !== upload.asset.storageKey)
-        .map(async (v) => {
-          const signed = await this.storage.createUploadUrl({
+        .map(async (v) => ({
+          code: v.variantCode,
+          upload: await signSingleUpload(this.storage, this.singleMethod(), {
             ...this.locationOf(upload.asset),
             key: v.storageKey,
             contentType: v.mime,
-            sha256Base64: v.checksumSha256
-              ? Buffer.from(v.checksumSha256).toString('base64')
-              : undefined,
+            sizeBytes: v.sizeBytes,
+            sha256: v.checksumSha256,
             expiresInSeconds: MEDIA_POLICY.uploadUrlTtlSeconds,
-          });
-          return {
-            code: v.variantCode,
-            upload: {
-              mode: 'single' as const,
-              method: 'PUT' as const,
-              url: signed.url,
-              headers: signed.headers,
-              expiresAt: signed.expiresAt,
-            },
-          };
-        }),
+          }),
+        })),
     );
     return {
       ...response,
@@ -263,6 +259,8 @@ export class MediaService implements IMediaService {
       ...this.locationOf(upload.asset),
       uploadId,
       partNumbers,
+      partSizeBytes: MEDIA_POLICY.partSizeBytes,
+      totalBytes: upload.asset.declaredSize,
       expiresInSeconds: MEDIA_POLICY.partUrlTtlSeconds,
     });
     return {
@@ -351,10 +349,12 @@ export class MediaService implements IMediaService {
     const stored = await this.storage.headObject(location);
     if (!stored)
       throw mediaError('Uploaded file was not found.', 'UPLOAD_NOT_FOUND', 409);
-    const reason = upload.rejectionReason(
-      stored,
-      maxAcceptedSize(asset.declaredSize),
-    );
+    const reason =
+      upload.rejectionReason(stored, maxAcceptedSize(asset.declaredSize)) ??
+      (await inspectStoredContent(this.storage, location, stored, {
+        mime: asset.mime,
+        sha256: asset.sha256,
+      }));
     if (reason) {
       await this.storage.deleteObject(location);
       await this.media.failUpload(assetId, reason);
@@ -544,6 +544,8 @@ export class MediaService implements IMediaService {
         ...this.locationOf(asset),
         uploadId,
         partNumbers: range(Math.min(partCount, 1000)),
+        partSizeBytes: MEDIA_POLICY.partSizeBytes,
+        totalBytes: asset.declaredSize,
         expiresInSeconds: MEDIA_POLICY.partUrlTtlSeconds,
       });
       return {
@@ -554,21 +556,20 @@ export class MediaService implements IMediaService {
         expiresAt: signed.expiresAt,
       };
     }
-    const signed = await this.storage.createUploadUrl({
+    return signSingleUpload(this.storage, this.singleMethod(), {
       ...this.locationOf(asset),
       contentType: asset.mime,
-      sha256Base64: asset.sha256
-        ? Buffer.from(asset.sha256).toString('base64')
-        : undefined,
+      sizeBytes: asset.declaredSize,
+      sha256: asset.sha256,
       expiresInSeconds: MEDIA_POLICY.uploadUrlTtlSeconds,
     });
-    return {
-      mode: 'single',
-      method: 'PUT',
-      url: signed.url,
-      headers: signed.headers,
-      expiresAt: signed.expiresAt,
-    };
+  }
+
+  private singleMethod(): SingleUploadMethod {
+    return this.config?.get('MEDIA_SINGLE_UPLOAD_METHOD', { infer: true }) ===
+      'put'
+      ? 'PUT'
+      : 'POST';
   }
 
   /** Starts the multipart upload once; a lost race aborts the extra upload. */

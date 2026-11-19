@@ -2167,3 +2167,52 @@ Các mục 001–005 được **ghi bù ngày 2026-10-11** từ hội thoại hi
 - Kiểm chứng: Backend typecheck, 354 unit + 35 HTTP đạt. Guard 12 migration đạt, đã áp dụng 12 migration trên PostgreSQL 18.6 tạm và xác nhận 131 bảng đủ ba cột audit, 26 integration test chọn lọc đạt. Tái hiện xóa gia đình còn xuất được ký ức, lỗi request đầu chặn batch và pause Valkey làm kẹt relay. Flutter 3.44.5 format/analyze đạt, 960 test đạt, 3 probe tách biệt tái hiện mất file, race refresh và gửi nhầm family (fake API). Admin typecheck/build và 16 test đạt. Compose backend/storage đạt, database config với env mẫu lỗi vì ba biến bắt buộc rỗng. Các nhận định bổ sung từ đối chiếu code và probe mô phỏng.
 - Còn lại: Chưa chạy toàn bộ integration, luồng Store/OTP/FCM hoặc media trên thiết bị thật, chưa đo tải/EXPLAIN hay diễn tập restore. Phát hiện được bàn giao để xử lý trong task riêng.
 - Product history: [BF-20261106-007](PRODUCT_ANALYTICS_HISTORY.md#bf-20261106-007).
+
+
+<a id="bf-20261119-001"></a>
+
+## BF-20261119-001 — Upload presigned POST policy, checksum và chặn sai loại file
+
+- Ngày làm: 2026-11-19T11:36:35+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Client khai `Content-Type` là ảnh nhưng upload file mp4 qua link presigned thì xử lý thế nào; làm luồng upload thẳng lên storage bằng POST có policy, checksum đầy đủ; storage dùng Contabo.
+- Liên quan: BF-20261106-003, BF-20261106-005, BF-20261021-008.
+- Role: Chủ trì ARCHITECT; BACKEND, MOBILE, SECURITY_PRIVACY; review TESTER, QUALITY. Góc nhìn do agent chính áp dụng.
+- Trạng thái: Hoàn thành trên MinIO local (2026-11-19T11:56:12+07:00). Chưa thử trên thiết bị/simulator.
+- Phân tích: Policy, Content-Type ký và checksum chỉ chứng minh client gửi đúng thứ nó khai báo; client khai `image/jpeg` và tính SHA trên chính file MP4 vẫn qua mọi chữ ký. Chỉ đọc nội dung thật mới bắt được, nên chọn đọc magic bytes 4 KiB đầu (ranged GET, không decode) khi complete. Probe MinIO trước khi code: POST policy chặn sai Content-Type (403), sai SHA-256 (400 `XAmzContentChecksumMismatch`), sai MD5 (400 `BadDigest`), vượt dung lượng (400); part PUT có `Content-MD5` không ký vẫn được kiểm (400 khi sai). Tìm web không có tài liệu Contabo xác nhận POST/checksum. Ký policy SigV4 bằng `node:crypto`, không thêm package. Không cần migration (dùng `checksum_sha256` sẵn có).
+- Kết quả backend: `IObjectStorageService.createUploadPost` (policy ghim key, Content-Type, `content-length-range` đúng size, `x-amz-checksum-sha256`), `headObject` trả `checksumSha256` (ChecksumMode), URL part ký `Content-Length`. Mới `src/services/media-content-signature.ts` (JPEG/PNG/GIF/WebP/HEIF/AVIF/MP4/M4A/QuickTime/MP3/AAC). `client-media-upload.ts`: `signSingleUpload`, `inspectStoredContent`; áp dụng cho media gia đình, avatar (`profile-image.service.ts`), đường legacy và reconciler. Mã lỗi mới `UPLOAD_(VARIANT_)CHECKSUM_MISMATCH`, `UPLOAD_(VARIANT_)CONTENT_TYPE_MISMATCH`. Env `MEDIA_SINGLE_UPLOAD_METHOD` (mặc định `post`), `.env.example`, `docs/media-client-processing.md`.
+- Kết quả app: `UploadInstruction.fields`; `MediaRepositoryImp` gửi `multipart/form-data` (fields trước, file cuối, đọc file theo stream) khi `method == POST`, giữ PUT; mỗi part multipart gửi `Content-MD5` (băm theo khúc, không giữ 8 MiB trong RAM).
+- Kiểm chứng: Backend `npm run check` EXIT 0 (361 unit, 35 e2e, compiled, lint, format). Integration với Postgres `baby_family_test` (cổng 5433, override qua script vì `.env` trỏ 45223) + MinIO: `media-api` 23/23 (mới: MP4 khai jpeg → 422 `UPLOAD_CONTENT_TYPE_MISMATCH` và object bị xoá; POST sai body/type/key/size bị storage chặn; part sai Content-MD5 400; part quá size bị chặn; chế độ `put`; biến thể nội dung sai), `profile-avatar-api` 6/6, `supporting-services` + `media-worker` đạt. App `make check` EXIT 0 (962 test, analyze sạch), thêm 2 test (form POST, Content-MD5). Probe thật: Dio 5.10.0 (cùng cách app gửi) + policy do backend ký → MinIO 204; part sai MD5 400, đúng 200; MP4 khai jpeg → `CONTENT_TYPE_MISMATCH`.
+- Còn lại: Container API/worker local vẫn chạy image cũ (chưa rebuild; `.env` còn cổng DB 45223). App cũ không upload được với server ở chế độ `post`, app mới vẫn chạy với PUT. Multipart chưa có SHA toàn file. Chưa thử upload trên simulator/thiết bị. Không commit.
+- Đính chính 2026-11-19 (từ BF-20261119-002/003): Contabo không hỗ trợ POST Object (401) và bỏ qua checksum SHA-256, nên với Contabo phải dùng `MEDIA_SINGLE_UPLOAD_METHOD=put`; PUT giờ ký thêm Content-Length. Cơ chế dự phòng (server tải cả file ≤20 MiB để băm khi storage không trả checksum) đã bị gỡ theo yêu cầu người dùng: server chỉ đọc 4 KiB đầu.
+- Ghi chú khôi phục 2026-11-19T12:08+07:00: Lệnh ghi entry BF-20261119-002 của agent đã làm trống `SESSIONS.md` và `PRODUCT_ANALYTICS_HISTORY.md`. Hai file được khôi phục từ commit `1503236` (2026-11-19T11:38:01+07:00, chứa lịch sử tới BF-20261106-007), sau đó ghi lại ba entry BF-20261119-001..003 từ nội dung agent đã ghi trong phiên. Thay đổi khác giữa commit đó và lúc file bị làm trống, nếu có, đã không còn.
+- Product history: [BF-20261119-001](PRODUCT_ANALYTICS_HISTORY.md#bf-20261119-001).
+
+<a id="bf-20261119-002"></a>
+
+## BF-20261119-002 — Kiểm tra cấu hình và upload trên Contabo Object Storage
+
+- Ngày làm: 2026-11-19T11:58:28+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Người dùng đã cấu hình storage Contabo trong env, chưa bật public bucket; kiểm tra giúp.
+- Liên quan: BF-20261119-001.
+- Role: Chủ trì DEVOPS; BACKEND, SECURITY_PRIVACY; review TESTER, QUALITY. Góc nhìn do agent chính áp dụng.
+- Trạng thái: Hoàn thành (2026-11-19T12:08+07:00). Chưa đổi `.env` (backend vẫn trỏ MinIO), chưa chạy app trên Contabo.
+- Phân tích: Backend chỉ đọc `S3_ENDPOINT`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET_*`; các biến `S3_CONTABO_*` mới không được dùng, nên API vẫn chạy MinIO. `S3_CONTABO_ENDPOINT` kèm `/baby-family` (HeadBucket 404); `S3_CONTABO_PUBLIC_ENDPOINT` là URL tenant cho bucket public, không dùng để ký presigned. Tài khoản có bucket `baby-family` và một bucket khác; một bucket cho cả 4 bucket logic vẫn chạy (khác nhau theo prefix key, quyền kiểm ở DB).
+- Kết quả: Probe bằng adapter backend đã build, object thử dưới `probe/` đã xoá hết. HeadBucket đạt với region `us-east-1`/`usc1`/`default`. POST Object: mọi biến thể trả 401 `{"message":"Unauthorized"}` từ gateway, tức Contabo không hỗ trợ (cả Dio như app). PUT: Content-Type khác bản ký → 403; `x-amz-checksum-sha256` bị bỏ qua (body sai vẫn 200), HEAD không trả checksum. Multipart: part sai size (Content-Length ký) 403, sai Content-MD5 400, complete đạt. Bucket private: GET không ký 401, presigned GET 200 đúng byte. Magic bytes: MP4 khai jpeg → `CONTENT_TYPE_MISMATCH`. Bổ sung code: PUT ký `Content-Length` (`UploadUrlInput.sizeBytes`), Contabo chặn body lớn hơn/nhỏ hơn (403). Tài liệu thêm mục Contabo, `.env.example`.
+- Kiểm chứng: 4 script probe trên Contabo; backend `npm run check` EXIT 0 (361 unit, 35 e2e); integration media + avatar 29/29 trên MinIO.
+- Còn lại: Người dùng đổi `.env`: `S3_ENDPOINT`/`S3_DOCKER_ENDPOINT`/`S3_PUBLIC_ENDPOINT=https://usc1.contabostorage.com`, `S3_ACCESS_KEY_ID`/`S3_SECRET_ACCESS_KEY`, `S3_BUCKET_*=baby-family` (hoặc tạo bucket riêng), `MEDIA_SINGLE_UPLOAD_METHOD=put`, rồi rebuild API/worker. Với Contabo, server không kiểm được SHA-256. Secret Contabo đã hiện trong output công cụ của phiên này do lệnh che chưa đủ; nên đổi key. Không commit.
+- Product history: [BF-20261119-002](PRODUCT_ANALYTICS_HISTORY.md#bf-20261119-002).
+
+<a id="bf-20261119-003"></a>
+
+## BF-20261119-003 — Kiểm tra file upload chỉ đọc vài byte đầu, không tải cả file
+
+- Ngày làm: 2026-11-19T12:03:18+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Khi backend kiểm tra file trên storage S3 có hợp lệ không, không được tải cả file về; chỉ đọc vài byte đầu chứa thông tin định dạng.
+- Liên quan: BF-20261119-001, BF-20261119-002.
+- Role: Chủ trì BACKEND; SECURITY_PRIVACY; review TESTER, QUALITY. Góc nhìn do agent chính áp dụng.
+- Trạng thái: Hoàn thành (2026-11-19T12:08+07:00).
+- Phân tích: Bản BF-20261119-001 tải cả object ≤20 MiB để băm khi storage không trả checksum (đúng trường hợp Contabo). Gỡ hẳn khả năng này thay vì chỉ tắt cờ: interface không còn hàm đọc cả file cho bước kiểm tra.
+- Kết quả: `IObjectStorageService.readObjectPrefix(location, bytes)` chỉ ranged GET, trần 64 KiB; storage bỏ qua Range thì ngắt khi đủ byte. Xoá `readObjectSample`, `ObjectSample`, `checksumStreamMaxBytes`. `inspectStoredContent` chỉ so SHA-256 khi storage trả qua HEAD, rồi đọc 4 KiB đầu kiểm magic bytes. `downloadToFile` chỉ còn ở đường `MEDIA_SERVER_PROCESSING=legacy` (mặc định tắt). Cập nhật unit test và tài liệu.
+- Kiểm chứng: Contabo thật: file 2 MiB, server nhận đúng 4096 byte; JPEG → OK, MP4 khai jpeg → `CONTENT_TYPE_MISMATCH`. `npm run check` EXIT 0 (361 unit, 35 e2e); integration media/avatar/supporting 35/35 trên MinIO.
+- Còn lại: Với storage không có checksum (Contabo), server không kiểm SHA-256. Không commit.
+- Product history: [BF-20261119-003](PRODUCT_ANALYTICS_HISTORY.md#bf-20261119-003).

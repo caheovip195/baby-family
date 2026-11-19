@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
@@ -318,18 +319,53 @@ class MediaRepositoryImp extends BaseRepositoryImp implements IMediaRepository {
     if (instruction.mode != 'single' || url == null) {
       throw UnsupportedError('Upload mode ${instruction.mode} is unsupported');
     }
-    await _put(
-      url,
-      instruction.headers,
-      read(0, length),
-      length,
-      onProgress == null ? null : (sent, _) => onProgress(sent, length),
-    );
+    final progress = onProgress == null
+        ? null
+        : (int sent, int _) =>
+              onProgress(sent < length ? sent : length, length);
+    if (instruction.method == 'POST') {
+      await _post(url, instruction.fields, read, length, progress);
+    } else {
+      await _put(url, instruction.headers, read(0, length), length, progress);
+    }
     return const [];
   }
 
+  /// S3 POST Object: các field policy đã ký đi trước, file là field cuối.
+  /// Storage tự từ chối nếu sai key, Content-Type, dung lượng hay SHA-256.
+  Future<void> _post(
+    String url,
+    Map<String, String> fields,
+    Stream<List<int>> Function(int start, int end) read,
+    int length,
+    ProgressCallback? onSendProgress,
+  ) async {
+    final form = FormData()
+      ..fields.addAll(fields.entries)
+      ..files.add(
+        MapEntry(
+          'file',
+          MultipartFile.fromStream(
+            () => read(0, length),
+            length,
+            // Có filename thì storage mới coi đây là nội dung file.
+            filename: 'upload',
+            contentType: DioMediaType.parse(
+              fields['Content-Type'] ?? 'application/octet-stream',
+            ),
+          ),
+        ),
+      );
+    await StorageDio.instance.post<void>(
+      url,
+      data: form,
+      onSendProgress: onSendProgress,
+    );
+  }
+
   /// Mỗi part [UploadInstruction.partSize] byte (part cuối ngắn hơn); ETag
-  /// của từng PUT gửi lại khi complete.
+  /// của từng PUT gửi lại khi complete. URL part đã ký Content-Length; app
+  /// gửi thêm Content-MD5 để storage từ chối part bị hỏng trên đường truyền.
   Future<List<JsonMap>> _uploadParts(
     UploadInstruction instruction,
     int length,
@@ -347,9 +383,11 @@ class MediaRepositoryImp extends BaseRepositoryImp implements IMediaRepository {
         break;
       }
       final end = start + size > length ? length : start + size;
+      // Băm theo khúc 64 KB (đọc part hai lần thay vì giữ 8 MiB trong RAM).
+      final digest = await md5.bind(read(start, end)).first;
       final response = await _put(
         part.url,
-        const {},
+        {'Content-MD5': base64Encode(digest.bytes)},
         read(start, end),
         end - start,
         onProgress == null

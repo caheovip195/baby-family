@@ -1,6 +1,7 @@
 import type { UpdateUserDto } from '../../dto/user/update-user.dto';
 import type { AuthPrincipal } from '../../common/auth/auth-principal';
 import type { AvatarUploadIntentDto } from '../../dto/user/avatar-upload.dto';
+import type { UploadInstructionDto } from '../../dto/media/media-response.dto';
 export const PROFILE_IMAGE_SERVICE = Symbol('PROFILE_IMAGE_SERVICE');
 export interface AvatarUrls {
   avatarUrl: string | null;
@@ -14,23 +15,9 @@ export interface IProfileImageService {
   ): Promise<{
     assetId: string;
     status: string;
-    variantUploads?: {
-      code: string;
-      upload: {
-        mode: 'single';
-        method: 'PUT';
-        url: string;
-        headers: Record<string, string>;
-        expiresAt: Date;
-      };
-    }[];
-    upload?: {
-      mode: 'single';
-      method: 'PUT';
-      url: string;
-      headers: Record<string, string>;
-      expiresAt: Date;
-    };
+    variantUploads?: { code: string; upload: UploadInstructionDto }[];
+    /** Single POST (signed policy) or PUT, per `MEDIA_SINGLE_UPLOAD_METHOD`. */
+    upload?: UploadInstructionDto;
   }>;
   complete(
     actor: AuthPrincipal,

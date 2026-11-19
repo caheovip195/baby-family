@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
 import {
   ConflictError,
@@ -19,6 +20,11 @@ const actor: AuthPrincipal = {
 };
 const familyId = '00000000-0000-4000-8000-0000000000f1';
 const assetId = '00000000-0000-4000-8000-0000000000a1';
+/** `ftyp` box of an MP4 file (major brand isom). */
+const MP4_PREFIX = Buffer.from(
+  '0000001c667479706973736f6d0000020069736f6d69736f326d703431',
+  'hex',
+);
 
 function asset(overrides: Partial<AssetAttributes> = {}): Asset {
   const now = new Date();
@@ -92,11 +98,13 @@ describe('MediaService', () => {
     bucketName: jest.fn().mockReturnValue('bf-media'),
     bucketOf: jest.fn().mockReturnValue('media'),
     headObject: jest.fn(),
+    readObjectPrefix: jest.fn(),
     deleteObject: jest.fn(),
     createMultipartUpload: jest.fn(),
     abortMultipartUpload: jest.fn(),
     createPartUploadUrls: jest.fn(),
     createUploadUrl: jest.fn(),
+    createUploadPost: jest.fn(),
     createDownloadUrl: jest.fn(),
     completeMultipartUpload: jest.fn(),
   };
@@ -125,6 +133,90 @@ describe('MediaService', () => {
     access.requireParent.mockResolvedValue({});
     storage.isConfigured.mockReturnValue(true);
     storage.bucketOf.mockReturnValue('media');
+    storage.readObjectPrefix.mockResolvedValue(MP4_PREFIX);
+  });
+
+  it('rejects an MP4 body uploaded as image/jpeg (magic bytes)', async () => {
+    const body = Buffer.concat([MP4_PREFIX, Buffer.alloc(968)]);
+    const digest = createHash('sha256').update(body).digest();
+    media.findUpload.mockResolvedValueOnce(
+      new MediaUpload(asset({ sha256: digest }), reservation()),
+    );
+    // Storage without checksum support (e.g. Contabo): no SHA from HEAD.
+    storage.headObject.mockResolvedValueOnce({
+      size: 1000,
+      contentType: 'image/jpeg',
+      etag: null,
+      checksumSha256: null,
+    });
+    storage.readObjectPrefix.mockClear();
+    await expect(
+      service.completeUpload(actor, assetId, {}),
+    ).rejects.toMatchObject({
+      code: 'UPLOAD_CONTENT_TYPE_MISMATCH',
+      statusCode: 422,
+    });
+    // Only the first 4 KiB are read, never the whole object.
+    expect(storage.readObjectPrefix).toHaveBeenCalledTimes(1);
+    expect(storage.readObjectPrefix).toHaveBeenCalledWith(
+      expect.anything(),
+      4096,
+    );
+    expect(storage.deleteObject).toHaveBeenCalled();
+    expect(media.failUpload).toHaveBeenCalledWith(
+      assetId,
+      'CONTENT_TYPE_MISMATCH',
+    );
+    expect(media.confirmUpload).not.toHaveBeenCalled();
+  });
+
+  it('rejects a body whose SHA-256 differs from the intent', async () => {
+    media.findUpload.mockResolvedValueOnce(
+      new MediaUpload(asset(), reservation()),
+    );
+    // Storage reports its own checksum: no download is needed to compare it.
+    storage.headObject.mockResolvedValueOnce({
+      size: 1000,
+      contentType: 'image/jpeg',
+      etag: null,
+      checksumSha256: Buffer.alloc(32, 1).toString('base64'),
+    });
+    storage.readObjectPrefix.mockClear();
+    await expect(
+      service.completeUpload(actor, assetId, {}),
+    ).rejects.toMatchObject({ code: 'UPLOAD_CHECKSUM_MISMATCH' });
+    expect(storage.readObjectPrefix).not.toHaveBeenCalled();
+    expect(media.failUpload).toHaveBeenCalledWith(assetId, 'CHECKSUM_MISMATCH');
+  });
+
+  it('signs a POST policy for single uploads by default', async () => {
+    catalog.findFamilyBillingState.mockResolvedValueOnce({
+      effectivePlan: { quotas: { storageBytes: 10_000_000 } },
+    });
+    media.reserveUpload.mockResolvedValueOnce({
+      outcome: 'created',
+      upload: new MediaUpload(asset(), reservation()),
+    });
+    storage.createUploadPost.mockResolvedValueOnce({
+      method: 'POST',
+      url: 'http://s3/bf-media',
+      fields: { key: 'k', Policy: 'p' },
+      expiresAt: new Date(),
+    });
+    const result = await service.createUploadIntent(actor, 'k', intent);
+    expect(result.upload).toMatchObject({
+      mode: 'single',
+      method: 'POST',
+      fields: { key: 'k', Policy: 'p' },
+    });
+    expect(storage.createUploadPost).toHaveBeenCalledWith(
+      expect.objectContaining({
+        contentType: 'image/jpeg',
+        sizeBytes: 1000,
+        sha256Base64: Buffer.alloc(32).toString('base64'),
+      }),
+    );
+    expect(storage.createUploadUrl).not.toHaveBeenCalled();
   });
 
   it('fails closed when plan quotas or storage are unavailable', async () => {

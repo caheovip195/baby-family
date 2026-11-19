@@ -16,6 +16,11 @@ _UploadInstruction _$UploadInstructionFromJson(Map<String, dynamic> json) =>
             (k, e) => MapEntry(k, e as String),
           ) ??
           const <String, String>{},
+      fields:
+          (json['fields'] as Map<String, dynamic>?)?.map(
+            (k, e) => MapEntry(k, e as String),
+          ) ??
+          const <String, String>{},
       partSize: (json['partSize'] as num?)?.toInt(),
       partCount: (json['partCount'] as num?)?.toInt(),
       parts:
@@ -34,6 +39,7 @@ Map<String, dynamic> _$UploadInstructionToJson(_UploadInstruction instance) =>
       'method': instance.method,
       'url': instance.url,
       'headers': instance.headers,
+      'fields': instance.fields,
       'partSize': instance.partSize,
       'partCount': instance.partCount,
       'parts': instance.parts.map((e) => e.toJson()).toList(),

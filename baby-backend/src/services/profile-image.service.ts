@@ -32,6 +32,11 @@ import {
 } from '../interfaces/services/object-storage-service.interface';
 import type { IProfileImageService } from '../interfaces/services/profile-image-service.interface';
 import type { UserAsset } from '../models/user-asset.model';
+import {
+  inspectStoredContent,
+  signSingleUpload,
+  type SingleUploadMethod,
+} from './client-media-upload';
 
 @Injectable()
 export class ProfileImageService implements IProfileImageService {
@@ -163,58 +168,46 @@ export class ProfileImageService implements IProfileImageService {
     });
     if (asset.status !== 'PENDING_UPLOAD' || this.expired(asset))
       return { assetId: id, status: asset.status };
-    const signed = await this.storage.createUploadUrl({
-      ...this.location(asset),
-      contentType: asset.mime,
-      sha256Base64: Buffer.from(asset.sha256!).toString('base64'),
-      expiresInSeconds: Math.max(
-        1,
-        Math.min(
-          POLICY.uploadTtlSeconds,
-          Math.floor((asset.purgeAfter!.getTime() - Date.now()) / 1000),
-        ),
+    const expiresInSeconds = Math.max(
+      1,
+      Math.min(
+        POLICY.uploadTtlSeconds,
+        Math.floor((asset.purgeAfter!.getTime() - Date.now()) / 1000),
       ),
-    });
+    );
+    const method = this.singleMethod();
     return {
       assetId: id,
       status: asset.status,
       variantUploads: client
         ? await Promise.all(
-            (input.variants ?? []).map(async (v) => {
-              const upload = await this.storage.createUploadUrl({
+            (input.variants ?? []).map(async (v) => ({
+              code: v.code,
+              upload: await signSingleUpload(this.storage, method, {
                 bucket: this.location(asset).bucket,
                 key: `usr/${actor.userId}/avatar/${id}/${v.code}`,
-                contentType: v.mime,
-                sha256Base64: Buffer.from(v.sha256, 'hex').toString('base64'),
-                expiresInSeconds: Math.max(
-                  1,
-                  Math.min(
-                    POLICY.uploadTtlSeconds,
-                    Math.floor(
-                      (asset.purgeAfter!.getTime() - Date.now()) / 1000,
-                    ),
-                  ),
-                ),
-              });
-              return {
-                code: v.code,
-                upload: {
-                  ...upload,
-                  mode: 'single' as const,
-                  method: 'PUT' as const,
-                },
-              };
-            }),
+                contentType: v.mime.toLowerCase(),
+                sizeBytes: BigInt(v.size),
+                sha256: Buffer.from(v.sha256, 'hex'),
+                expiresInSeconds,
+              }),
+            })),
           )
         : undefined,
-      upload: {
-        mode: 'single' as const,
-        method: 'PUT' as const,
-        url: signed.url,
-        headers: signed.headers,
-        expiresAt: signed.expiresAt,
-      },
+      upload: await signSingleUpload(this.storage, method, {
+        ...this.location(asset),
+        contentType: asset.mime,
+        sizeBytes: asset.declaredSize,
+        sha256: asset.sha256,
+        expiresInSeconds,
+      }),
     };
+  }
+
+  private singleMethod(): SingleUploadMethod {
+    return this.config?.get<string>('MEDIA_SINGLE_UPLOAD_METHOD') === 'put'
+      ? 'PUT'
+      : 'POST';
   }
   async complete(actor: AuthPrincipal, assetId: string) {
     const asset = await this.repository.ownAsset(actor.userId, assetId);
@@ -260,7 +253,14 @@ export class ProfileImageService implements IProfileImageService {
             : head.contentType?.split(';')[0]?.trim().toLowerCase() !==
                 variant.mime
               ? 'UPLOAD_VARIANT_METADATA_MISMATCH'
-              : null;
+              : await inspectStoredContent(
+                  this.storage,
+                  { ...location, key: variant.storageKey },
+                  head,
+                  { mime: variant.mime, sha256: variant.checksumSha256 },
+                ).then((reason) =>
+                  reason ? `UPLOAD_VARIANT_${reason}` : null,
+                );
         if (code) {
           await this.repository.fail(actor.userId, assetId);
           for (const v of variants)

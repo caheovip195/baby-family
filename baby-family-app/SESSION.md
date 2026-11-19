@@ -1016,3 +1016,9 @@ do agent tự đặt tên (06/10, 09/10, 11/10).
 - Phạm vi review chỉ đọc. Phát hiện ưu tiên gồm outbox dọn file của service khác, refresh ghi đè phiên, retry upload sang gia đình đang mở, target product bật phiên local, payload audio thiếu `variants: []` và tuỳ chọn Face ID chưa khoá màn.
 - Kiểm chứng Flutter 3.44.5 trên bản sao tách biệt: format 0 thay đổi, analyze sạch, 960 test đạt. Ba probe độc lập tái hiện mất file với Hive/filesystem, refresh muộn ghi đè certificate và payload retry gửi sang gia đình khác qua fake API.
 - Chưa build release hoặc thử push, Store và ghi âm với thiết bị thật trong lượt này. Xem [review chung](../SESSIONS.md#bf-20261106-007).
+
+## 2026-11-19 — BF-20261119-001: upload POST policy + Content-MD5
+
+- `UploadInstruction.fields`; `MediaRepositoryImp._post` gửi `multipart/form-data` (fields policy trước, file cuối, `filename: upload`, đọc file theo stream) khi `method == POST`; PUT giữ nguyên cho server cũ/cấu hình `put`.
+- Multipart: mỗi part gửi `Content-MD5` (băm stream, đọc part hai lần thay vì giữ 8 MiB trong RAM); storage trả 400 nếu part hỏng.
+- Kiểm chứng: `make check` 962 pass; thêm test form POST và Content-MD5; probe Dio 5.10.0 + MinIO local với policy backend ký: 204, part sai MD5 400. Chưa thử trên simulator/thiết bị hay Contabo. Xem [nhật ký chung](../SESSIONS.md#bf-20261119-001).

@@ -42,7 +42,8 @@ interface Intent {
     mode: string;
     method: string;
     url: string;
-    headers: Record<string, string>;
+    headers?: Record<string, string>;
+    fields?: Record<string, string>;
     expiresAt: string;
   };
 }
@@ -100,12 +101,14 @@ describe('AUTH-04 account avatar (focused Nest + PostgreSQL + MinIO)', () => {
       .set('Authorization', auth(user))
       .send(body);
   async function put(upload: NonNullable<Intent['upload']>, bytes: Buffer) {
-    const result = await fetch(upload.url, {
-      method: 'PUT',
-      headers: upload.headers,
-      body: new Uint8Array(bytes),
-    });
-    expect(result.status).toBe(200);
+    // Default: S3 POST with a signed policy (fields first, then the file).
+    expect(upload.method).toBe('POST');
+    const form = new FormData();
+    for (const [name, value] of Object.entries(upload.fields ?? {}))
+      form.append(name, value);
+    form.append('file', new Blob([new Uint8Array(bytes)]));
+    const result = await fetch(upload.url, { method: 'POST', body: form });
+    expect(result.status).toBe(204);
   }
   async function uploadAll(value: Intent, bytes = image) {
     await put(value.upload!, bytes);
@@ -353,9 +356,20 @@ describe('AUTH-04 account avatar (focused Nest + PostgreSQL + MinIO)', () => {
       ...body,
       variants: body.variants.map((v) => ({ ...v, size: v.size + 1 })),
     }).expect(409);
-    await uploadAll(value);
+    await put(value.upload!, image);
+    // The policy pins the declared size: storage refuses the smaller body.
+    for (const variant of value.variantUploads ?? []) {
+      const form = new FormData();
+      for (const [name, field] of Object.entries(variant.upload.fields ?? {}))
+        form.append(name, field);
+      form.append('file', new Blob([new Uint8Array(thumbnail)]));
+      expect(
+        (await fetch(variant.upload.url, { method: 'POST', body: form }))
+          .status,
+      ).toBe(400);
+    }
     expect(errorCode(await complete(value.assetId).expect(422))).toBe(
-      'UPLOAD_VARIANT_SIZE_MISMATCH',
+      'UPLOAD_VARIANT_MISSING',
     );
     expect(
       (

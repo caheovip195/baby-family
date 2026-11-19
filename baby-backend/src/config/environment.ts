@@ -173,6 +173,12 @@ const environmentSchema = z.object({
   // Background worker (src/workers). Media tools must be on PATH or configured here.
   WORKER_ID: optional(z.string().min(1).max(100)),
   MEDIA_SERVER_PROCESSING: z.enum(['disabled', 'legacy']).default('disabled'),
+  /**
+   * Direct upload of single (non-multipart) objects: `post` = S3 POST with a signed
+   * policy (key, type, exact size, SHA-256); `put` = presigned PUT for storage
+   * without POST Object support. Completion verifies the object either way.
+   */
+  MEDIA_SINGLE_UPLOAD_METHOD: z.enum(['post', 'put']).default('post'),
   MEDIA_WORKER_CONCURRENCY: z.coerce.number().int().min(1).max(16).default(2),
   FFMPEG_PATH: z.string().min(1).default('ffmpeg'),
   FFPROBE_PATH: z.string().min(1).default('ffprobe'),

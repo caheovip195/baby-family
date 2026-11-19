@@ -8,7 +8,12 @@ export class UploadPartUrlDto {
 
 export class UploadInstructionDto {
   @ApiProperty({ enum: ['single', 'multipart'] }) mode!: 'single' | 'multipart';
-  @ApiPropertyOptional({ enum: ['PUT'] }) method?: 'PUT';
+  @ApiPropertyOptional({
+    enum: ['POST', 'PUT'],
+    description:
+      'POST: multipart/form-data to `url` with `fields` first, then the body as `file`. PUT: raw body with `headers`.',
+  })
+  method?: 'POST' | 'PUT';
   @ApiPropertyOptional() url?: string;
   @ApiPropertyOptional({
     type: 'object',
@@ -16,6 +21,13 @@ export class UploadInstructionDto {
     description: 'Headers to send unchanged with the PUT (they are signed).',
   })
   headers?: Record<string, string>;
+  @ApiPropertyOptional({
+    type: 'object',
+    additionalProperties: { type: 'string' },
+    description:
+      'POST form fields (signed policy: key, Content-Type, exact size, SHA-256).',
+  })
+  fields?: Record<string, string>;
   @ApiPropertyOptional() partSize?: number;
   @ApiPropertyOptional() partCount?: number;
   @ApiPropertyOptional({ type: [UploadPartUrlDto] }) parts?: UploadPartUrlDto[];

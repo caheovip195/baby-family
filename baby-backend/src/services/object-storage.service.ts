@@ -1,3 +1,4 @@
+import { createHmac } from 'node:crypto';
 import { createReadStream, createWriteStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import type { Readable } from 'node:stream';
@@ -37,8 +38,10 @@ import type {
   ObjectStorageBucket,
   PartUploadUrls,
   PartUploadUrlsInput,
+  PresignedPost,
   PresignedRequest,
   StoredObjectMetadata,
+  UploadPostInput,
   UploadUrlInput,
 } from '../interfaces/services/object-storage-service.interface';
 
@@ -60,6 +63,17 @@ const REQUEST_TIMEOUT_MS = 5000;
 const TRANSFER_TIMEOUT_MS = 10 * 60 * 1000;
 const KEY_PATTERN = /^[A-Za-z0-9][A-Za-z0-9!_.*'()/-]{0,1023}$/;
 const CONTENT_TYPE_PATTERN = /^[a-z0-9][a-z0-9.+-]*\/[a-z0-9][a-z0-9.+-]*$/i;
+/** Format detection only: ranged reads never fetch more than this. */
+const MAX_PREFIX_BYTES = 64 * 1024;
+
+/** What POST policies need besides the SDK client (signed locally with SigV4). */
+interface PostSigner {
+  accessKeyId: string;
+  secretAccessKey: string;
+  region: string;
+  /** Form action URL per bucket (path-style or virtual-hosted, public endpoint). */
+  actionUrl: (bucket: string) => string;
+}
 
 interface S3Clients {
   /** Server-side operations over the internal endpoint (e.g. Docker network). */
@@ -72,6 +86,7 @@ interface S3Clients {
 /** S3 API adapter (path-style for MinIO); no provider-specific calls (spec §10.8). */
 export class ObjectStorageService implements IObjectStorageService {
   private readonly clients: S3Clients | null;
+  private readonly postSigner: PostSigner | null = null;
   private readonly buckets: Record<ObjectStorageBucket, string>;
 
   constructor(config: ConfigService<Environment, true>) {
@@ -101,6 +116,19 @@ export class ObjectStorageService implements IObjectStorageService {
       });
     const publicEndpoint =
       config.get('S3_PUBLIC_ENDPOINT', { infer: true }) ?? endpoint;
+    const pathStyle = config.get('S3_FORCE_PATH_STYLE', { infer: true });
+    this.postSigner = {
+      accessKeyId,
+      secretAccessKey,
+      region: config.get('S3_REGION', { infer: true }),
+      actionUrl: (bucket) => {
+        const base = new URL(publicEndpoint);
+        if (pathStyle)
+          base.pathname = `${base.pathname.replace(/\/+$/, '')}/${bucket}`;
+        else base.hostname = `${bucket}.${base.hostname}`;
+        return base.toString();
+      },
+    };
     const internal = create(endpoint);
     this.clients = {
       internal,
@@ -149,10 +177,18 @@ export class ObjectStorageService implements IObjectStorageService {
     ) {
       throw new ValidationError('SHA-256 checksum is invalid.');
     }
+    if (
+      input.sizeBytes !== undefined &&
+      (!Number.isSafeInteger(input.sizeBytes) || input.sizeBytes < 1)
+    )
+      throw new ValidationError('Upload size is invalid.');
     const command = new PutObjectCommand({
       ...this.resolve(input),
       ContentType: input.contentType,
       ...(input.sha256Base64 ? { ChecksumSHA256: input.sha256Base64 } : {}),
+      ...(input.sizeBytes !== undefined
+        ? { ContentLength: input.sizeBytes }
+        : {}),
     });
     // The presigner leaves content-type unsigned by default; sign it so the
     // client cannot store a different type than the one that was authorized.
@@ -165,6 +201,9 @@ export class ObjectStorageService implements IObjectStorageService {
       signed.push('x-amz-checksum-sha256');
       headers['x-amz-checksum-sha256'] = input.sha256Base64;
     }
+    // Signed but not returned: HTTP clients set Content-Length from the body,
+    // which must therefore be exactly the declared size.
+    if (input.sizeBytes !== undefined) signed.push('content-length');
     const url = await this.sign(clients, command, expiresIn, signed);
     return {
       method: 'PUT',
@@ -172,6 +211,119 @@ export class ObjectStorageService implements IObjectStorageService {
       headers,
       expiresAt: new Date(Date.now() + expiresIn * 1000),
     };
+  }
+
+  createUploadPost(input: UploadPostInput): Promise<PresignedPost> {
+    this.requireClients();
+    const signer = this.postSigner!;
+    const expiresIn = presignTtl(
+      input.expiresInSeconds,
+      DEFAULT_UPLOAD_TTL_SECONDS,
+    );
+    assertContentType(input.contentType);
+    if (!Number.isSafeInteger(input.sizeBytes) || input.sizeBytes < 1)
+      throw new ValidationError('Upload size is invalid.');
+    if (
+      input.sha256Base64 !== undefined &&
+      !SHA256_BASE64_PATTERN.test(input.sha256Base64)
+    )
+      throw new ValidationError('SHA-256 checksum is invalid.');
+    const { Bucket, Key } = this.resolve(input);
+    const now = new Date();
+    const amzDate = now
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\.\d{3}/, '');
+    const day = amzDate.slice(0, 8);
+    const fields: Record<string, string> = {
+      key: Key,
+      'Content-Type': input.contentType,
+      ...(input.sha256Base64
+        ? {
+            'x-amz-checksum-algorithm': 'SHA256',
+            'x-amz-checksum-sha256': input.sha256Base64,
+          }
+        : {}),
+      'x-amz-algorithm': 'AWS4-HMAC-SHA256',
+      'x-amz-credential': `${signer.accessKeyId}/${day}/${signer.region}/s3/aws4_request`,
+      'x-amz-date': amzDate,
+    };
+    const expiresAt = new Date(now.getTime() + expiresIn * 1000);
+    // Every form field is pinned by an exact match and the size range is exact,
+    // so storage refuses another key, type, length or (when supported) checksum.
+    const policy = Buffer.from(
+      JSON.stringify({
+        expiration: expiresAt.toISOString(),
+        conditions: [
+          { bucket: Bucket },
+          ...Object.entries(fields).map(([name, value]) => [
+            'eq',
+            `$${name}`,
+            value,
+          ]),
+          ['content-length-range', input.sizeBytes, input.sizeBytes],
+        ],
+      }),
+    ).toString('base64');
+    let signingKey: Buffer | string = `AWS4${signer.secretAccessKey}`;
+    for (const part of [day, signer.region, 's3', 'aws4_request'])
+      signingKey = createHmac('sha256', signingKey).update(part).digest();
+    return Promise.resolve({
+      method: 'POST',
+      url: signer.actionUrl(Bucket),
+      fields: {
+        ...fields,
+        Policy: policy,
+        'x-amz-signature': createHmac('sha256', signingKey)
+          .update(policy)
+          .digest('hex'),
+      },
+      expiresAt,
+    });
+  }
+
+  async readObjectPrefix(
+    location: ObjectLocation,
+    bytes: number,
+  ): Promise<Buffer | null> {
+    const clients = this.requireClients();
+    if (!Number.isSafeInteger(bytes) || bytes < 1 || bytes > MAX_PREFIX_BYTES)
+      throw new ValidationError('Prefix size is invalid.');
+    const abort = new AbortController();
+    try {
+      const result = await clients.internal.send(
+        new GetObjectCommand({
+          ...this.resolve(location),
+          Range: `bytes=0-${bytes - 1}`,
+        }),
+        {
+          abortSignal: AbortSignal.any([
+            abort.signal,
+            AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+          ]),
+        },
+      );
+      if (!result.Body) throw new Error('Empty body');
+      const chunks: Buffer[] = [];
+      let kept = 0;
+      // A storage that ignores Range would send the whole object: stop reading
+      // and drop the connection as soon as the prefix is complete.
+      for await (const chunk of result.Body as Readable) {
+        const slice = (chunk as Buffer).subarray(0, bytes - kept);
+        chunks.push(slice);
+        kept += slice.length;
+        if (kept >= bytes) break;
+      }
+      abort.abort();
+      return Buffer.concat(chunks);
+    } catch (error) {
+      if (error instanceof S3ServiceException) {
+        if (error.$metadata.httpStatusCode === 404) return null;
+        // An empty object cannot satisfy a range request.
+        if (error.$metadata.httpStatusCode === 416) return Buffer.alloc(0);
+      }
+      throw new ServiceUnavailableError('Object storage is unavailable.');
+    }
   }
 
   async createDownloadUrl(input: DownloadUrlInput): Promise<PresignedRequest> {
@@ -205,13 +357,23 @@ export class ObjectStorageService implements IObjectStorageService {
     const clients = this.requireClients();
     try {
       const result = await clients.internal.send(
-        new HeadObjectCommand(this.resolve(location)),
+        // Storage without checksum support ignores the mode and returns none.
+        new HeadObjectCommand({
+          ...this.resolve(location),
+          ChecksumMode: 'ENABLED',
+        }),
         { abortSignal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) },
       );
       return {
         size: result.ContentLength ?? 0,
         contentType: result.ContentType ?? null,
         etag: result.ETag ?? null,
+        // A composite multipart checksum (`…-N`) is not a full-object digest.
+        checksumSha256:
+          result.ChecksumSHA256 &&
+          SHA256_BASE64_PATTERN.test(result.ChecksumSHA256)
+            ? result.ChecksumSHA256
+            : null,
       };
     } catch (error) {
       if (
@@ -376,6 +538,15 @@ export class ObjectStorageService implements IObjectStorageService {
       DEFAULT_PART_TTL_SECONDS,
     );
     const location = this.resolve(input);
+    const sized =
+      input.partSizeBytes !== undefined && input.totalBytes !== undefined;
+    if (
+      sized &&
+      (!Number.isSafeInteger(input.partSizeBytes) ||
+        input.partSizeBytes! < 1 ||
+        input.totalBytes! < 1n)
+    )
+      throw new ValidationError('Part sizes are invalid.');
     if (
       input.partNumbers.length === 0 ||
       input.partNumbers.length > MAX_PARTS_PER_SIGNING ||
@@ -386,18 +557,28 @@ export class ObjectStorageService implements IObjectStorageService {
       throw new ValidationError('Part numbers are invalid.');
     }
     const parts = await Promise.all(
-      input.partNumbers.map(async (partNumber) => ({
-        partNumber,
-        url: await this.sign(
-          clients,
-          new UploadPartCommand({
-            ...location,
-            UploadId: input.uploadId,
-            PartNumber: partNumber,
-          }),
-          expiresIn,
-        ),
-      })),
+      input.partNumbers.map(async (partNumber) => {
+        // Signed Content-Length: storage rejects a part of any other size.
+        const length = sized
+          ? partLength(partNumber, input.partSizeBytes!, input.totalBytes!)
+          : undefined;
+        if (length !== undefined && length < 1)
+          throw new ValidationError('Part number is out of range.');
+        return {
+          partNumber,
+          url: await this.sign(
+            clients,
+            new UploadPartCommand({
+              ...location,
+              UploadId: input.uploadId,
+              PartNumber: partNumber,
+              ...(length !== undefined ? { ContentLength: length } : {}),
+            }),
+            expiresIn,
+            length !== undefined ? ['content-length'] : [],
+          ),
+        };
+      }),
     );
     return { parts, expiresAt: new Date(Date.now() + expiresIn * 1000) };
   }
@@ -491,6 +672,16 @@ export class ObjectStorageService implements IObjectStorageService {
       throw new ServiceUnavailableError('Object storage is unavailable.');
     }
   }
+}
+
+/** Bytes of one part: full parts, then the remainder (≤ 0 when out of range). */
+function partLength(
+  partNumber: number,
+  partSize: number,
+  total: bigint,
+): number {
+  const remaining = total - BigInt(partNumber - 1) * BigInt(partSize);
+  return Number(remaining < BigInt(partSize) ? remaining : BigInt(partSize));
 }
 
 function assertContentType(contentType: string): void {

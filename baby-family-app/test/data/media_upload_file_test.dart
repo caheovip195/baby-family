@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -202,6 +203,72 @@ void main() {
       expect(put.headers['content-length'], content.length);
       expect(put.chunks.every((size) => size <= 64 * kib), isTrue);
       expect(sha256.convert(put.body.takeBytes()), sha256.convert(content));
+    });
+
+    test(
+      'single POST sends the signed policy fields first, the file last',
+      () async {
+        final content = _content(200 * kib);
+        final path = await writeFile(content);
+        const fields = {
+          'key': 'fam/f/a/a/orig',
+          'Content-Type': 'image/jpeg',
+          'x-amz-checksum-sha256': 'c2lnbmVk',
+          'Policy': 'cG9saWN5',
+          'x-amz-signature': 'sig',
+        };
+        final seen = <(int, int)>[];
+
+        final parts = await repository.uploadFile(
+          const UploadInstruction(
+            mode: 'single',
+            method: 'POST',
+            url: 'https://storage.test/bf-media',
+            fields: fields,
+          ),
+          path,
+          onProgress: (sent, total) => seen.add((sent, total)),
+        );
+
+        expect(parts, isEmpty);
+        final post = storage.requests.single;
+        expect(post.url, 'https://storage.test/bf-media');
+        expect(
+          post.headers['content-type'],
+          startsWith('multipart/form-data; boundary='),
+        );
+        final body = post.body.takeBytes();
+        final text = latin1.decode(body);
+        // Mọi field có mặt nguyên giá trị và đứng trước field file.
+        final fileAt = text.indexOf('name="file"');
+        expect(fileAt, greaterThan(0));
+        for (final entry in fields.entries) {
+          final at = text.indexOf('name="${entry.key}"\r\n\r\n${entry.value}');
+          expect(at, inInclusiveRange(0, fileAt), reason: entry.key);
+        }
+        expect(text, contains('filename="upload"'));
+        // Nội dung file nằm nguyên vẹn trong form.
+        final start = text.indexOf('\r\n\r\n', fileAt) + 4;
+        expect(
+          sha256.convert(body.sublist(start, start + content.length)),
+          sha256.convert(content),
+        );
+        expect(seen.last, (content.length, content.length));
+        expect(post.chunks.every((size) => size <= 64 * kib), isTrue);
+      },
+    );
+
+    test('each multipart part carries its own Content-MD5', () async {
+      const partSize = 64 * kib;
+      final content = _content(partSize + 10 * kib);
+      final path = await writeFile(content);
+
+      await repository.uploadFile(_multipart(partSize, 2), path);
+
+      expect(storage.requests.map((put) => put.headers['Content-MD5']), [
+        base64Encode(md5.convert(content.sublist(0, partSize)).bytes),
+        base64Encode(md5.convert(content.sublist(partSize)).bytes),
+      ]);
     });
 
     test('an unknown upload mode is rejected', () async {

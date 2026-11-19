@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UploadInstruction {
 
-@JsonKey(name: 'mode') String? get mode;@JsonKey(name: 'method') String? get method;@JsonKey(name: 'url') String? get url;@JsonKey(name: 'headers') Map<String, String> get headers;@JsonKey(name: 'partSize') int? get partSize;@JsonKey(name: 'partCount') int? get partCount;@JsonKey(name: 'parts') List<UploadPartUrl> get parts;@JsonKey(name: 'expiresAt') DateTime? get expiresAt;
+@JsonKey(name: 'mode') String? get mode;@JsonKey(name: 'method') String? get method;@JsonKey(name: 'url') String? get url;@JsonKey(name: 'headers') Map<String, String> get headers;@JsonKey(name: 'fields') Map<String, String> get fields;@JsonKey(name: 'partSize') int? get partSize;@JsonKey(name: 'partCount') int? get partCount;@JsonKey(name: 'parts') List<UploadPartUrl> get parts;@JsonKey(name: 'expiresAt') DateTime? get expiresAt;
 /// Create a copy of UploadInstruction
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $UploadInstructionCopyWith<UploadInstruction> get copyWith => _$UploadInstructio
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UploadInstruction&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.method, method) || other.method == method)&&(identical(other.url, url) || other.url == url)&&const DeepCollectionEquality().equals(other.headers, headers)&&(identical(other.partSize, partSize) || other.partSize == partSize)&&(identical(other.partCount, partCount) || other.partCount == partCount)&&const DeepCollectionEquality().equals(other.parts, parts)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UploadInstruction&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.method, method) || other.method == method)&&(identical(other.url, url) || other.url == url)&&const DeepCollectionEquality().equals(other.headers, headers)&&const DeepCollectionEquality().equals(other.fields, fields)&&(identical(other.partSize, partSize) || other.partSize == partSize)&&(identical(other.partCount, partCount) || other.partCount == partCount)&&const DeepCollectionEquality().equals(other.parts, parts)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,mode,method,url,const DeepCollectionEquality().hash(headers),partSize,partCount,const DeepCollectionEquality().hash(parts),expiresAt);
+int get hashCode => Object.hash(runtimeType,mode,method,url,const DeepCollectionEquality().hash(headers),const DeepCollectionEquality().hash(fields),partSize,partCount,const DeepCollectionEquality().hash(parts),expiresAt);
 
 @override
 String toString() {
-  return 'UploadInstruction(mode: $mode, method: $method, url: $url, headers: $headers, partSize: $partSize, partCount: $partCount, parts: $parts, expiresAt: $expiresAt)';
+  return 'UploadInstruction(mode: $mode, method: $method, url: $url, headers: $headers, fields: $fields, partSize: $partSize, partCount: $partCount, parts: $parts, expiresAt: $expiresAt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $UploadInstructionCopyWith<$Res>  {
   factory $UploadInstructionCopyWith(UploadInstruction value, $Res Function(UploadInstruction) _then) = _$UploadInstructionCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'mode') String? mode,@JsonKey(name: 'method') String? method,@JsonKey(name: 'url') String? url,@JsonKey(name: 'headers') Map<String, String> headers,@JsonKey(name: 'partSize') int? partSize,@JsonKey(name: 'partCount') int? partCount,@JsonKey(name: 'parts') List<UploadPartUrl> parts,@JsonKey(name: 'expiresAt') DateTime? expiresAt
+@JsonKey(name: 'mode') String? mode,@JsonKey(name: 'method') String? method,@JsonKey(name: 'url') String? url,@JsonKey(name: 'headers') Map<String, String> headers,@JsonKey(name: 'fields') Map<String, String> fields,@JsonKey(name: 'partSize') int? partSize,@JsonKey(name: 'partCount') int? partCount,@JsonKey(name: 'parts') List<UploadPartUrl> parts,@JsonKey(name: 'expiresAt') DateTime? expiresAt
 });
 
 
@@ -65,12 +65,13 @@ class _$UploadInstructionCopyWithImpl<$Res>
 
 /// Create a copy of UploadInstruction
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? mode = freezed,Object? method = freezed,Object? url = freezed,Object? headers = null,Object? partSize = freezed,Object? partCount = freezed,Object? parts = null,Object? expiresAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? mode = freezed,Object? method = freezed,Object? url = freezed,Object? headers = null,Object? fields = null,Object? partSize = freezed,Object? partCount = freezed,Object? parts = null,Object? expiresAt = freezed,}) {
   return _then(_self.copyWith(
 mode: freezed == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
 as String?,method: freezed == method ? _self.method : method // ignore: cast_nullable_to_non_nullable
 as String?,url: freezed == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
 as String?,headers: null == headers ? _self.headers : headers // ignore: cast_nullable_to_non_nullable
+as Map<String, String>,fields: null == fields ? _self.fields : fields // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,partSize: freezed == partSize ? _self.partSize : partSize // ignore: cast_nullable_to_non_nullable
 as int?,partCount: freezed == partCount ? _self.partCount : partCount // ignore: cast_nullable_to_non_nullable
 as int?,parts: null == parts ? _self.parts : parts // ignore: cast_nullable_to_non_nullable
@@ -155,7 +156,7 @@ return $default(_that);case _:
 
 @JsonSerializable(explicitToJson: true)
 class _UploadInstruction implements UploadInstruction {
-  const _UploadInstruction({@JsonKey(name: 'mode') this.mode, @JsonKey(name: 'method') this.method, @JsonKey(name: 'url') this.url, @JsonKey(name: 'headers') final  Map<String, String> headers = const <String, String>{}, @JsonKey(name: 'partSize') this.partSize, @JsonKey(name: 'partCount') this.partCount, @JsonKey(name: 'parts') final  List<UploadPartUrl> parts = const <UploadPartUrl>[], @JsonKey(name: 'expiresAt') this.expiresAt}): _headers = headers,_parts = parts;
+  const _UploadInstruction({@JsonKey(name: 'mode') this.mode, @JsonKey(name: 'method') this.method, @JsonKey(name: 'url') this.url, @JsonKey(name: 'headers') final  Map<String, String> headers = const <String, String>{}, @JsonKey(name: 'fields') final  Map<String, String> fields = const <String, String>{}, @JsonKey(name: 'partSize') this.partSize, @JsonKey(name: 'partCount') this.partCount, @JsonKey(name: 'parts') final  List<UploadPartUrl> parts = const <UploadPartUrl>[], @JsonKey(name: 'expiresAt') this.expiresAt}): _headers = headers,_fields = fields,_parts = parts;
   factory _UploadInstruction.fromJson(Map<String, dynamic> json) => _$UploadInstructionFromJson(json);
 
 @override@JsonKey(name: 'mode') final  String? mode;
@@ -166,6 +167,13 @@ class _UploadInstruction implements UploadInstruction {
   if (_headers is EqualUnmodifiableMapView) return _headers;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableMapView(_headers);
+}
+
+ final  Map<String, String> _fields;
+@override@JsonKey(name: 'fields') Map<String, String> get fields {
+  if (_fields is EqualUnmodifiableMapView) return _fields;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(_fields);
 }
 
 @override@JsonKey(name: 'partSize') final  int? partSize;
@@ -192,16 +200,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UploadInstruction&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.method, method) || other.method == method)&&(identical(other.url, url) || other.url == url)&&const DeepCollectionEquality().equals(other._headers, _headers)&&(identical(other.partSize, partSize) || other.partSize == partSize)&&(identical(other.partCount, partCount) || other.partCount == partCount)&&const DeepCollectionEquality().equals(other._parts, _parts)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UploadInstruction&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.method, method) || other.method == method)&&(identical(other.url, url) || other.url == url)&&const DeepCollectionEquality().equals(other._headers, _headers)&&const DeepCollectionEquality().equals(other._fields, _fields)&&(identical(other.partSize, partSize) || other.partSize == partSize)&&(identical(other.partCount, partCount) || other.partCount == partCount)&&const DeepCollectionEquality().equals(other._parts, _parts)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,mode,method,url,const DeepCollectionEquality().hash(_headers),partSize,partCount,const DeepCollectionEquality().hash(_parts),expiresAt);
+int get hashCode => Object.hash(runtimeType,mode,method,url,const DeepCollectionEquality().hash(_headers),const DeepCollectionEquality().hash(_fields),partSize,partCount,const DeepCollectionEquality().hash(_parts),expiresAt);
 
 @override
 String toString() {
-  return 'UploadInstruction(mode: $mode, method: $method, url: $url, headers: $headers, partSize: $partSize, partCount: $partCount, parts: $parts, expiresAt: $expiresAt)';
+  return 'UploadInstruction(mode: $mode, method: $method, url: $url, headers: $headers, fields: $fields, partSize: $partSize, partCount: $partCount, parts: $parts, expiresAt: $expiresAt)';
 }
 
 
@@ -212,7 +220,7 @@ abstract mixin class _$UploadInstructionCopyWith<$Res> implements $UploadInstruc
   factory _$UploadInstructionCopyWith(_UploadInstruction value, $Res Function(_UploadInstruction) _then) = __$UploadInstructionCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'mode') String? mode,@JsonKey(name: 'method') String? method,@JsonKey(name: 'url') String? url,@JsonKey(name: 'headers') Map<String, String> headers,@JsonKey(name: 'partSize') int? partSize,@JsonKey(name: 'partCount') int? partCount,@JsonKey(name: 'parts') List<UploadPartUrl> parts,@JsonKey(name: 'expiresAt') DateTime? expiresAt
+@JsonKey(name: 'mode') String? mode,@JsonKey(name: 'method') String? method,@JsonKey(name: 'url') String? url,@JsonKey(name: 'headers') Map<String, String> headers,@JsonKey(name: 'fields') Map<String, String> fields,@JsonKey(name: 'partSize') int? partSize,@JsonKey(name: 'partCount') int? partCount,@JsonKey(name: 'parts') List<UploadPartUrl> parts,@JsonKey(name: 'expiresAt') DateTime? expiresAt
 });
 
 
@@ -229,12 +237,13 @@ class __$UploadInstructionCopyWithImpl<$Res>
 
 /// Create a copy of UploadInstruction
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? mode = freezed,Object? method = freezed,Object? url = freezed,Object? headers = null,Object? partSize = freezed,Object? partCount = freezed,Object? parts = null,Object? expiresAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? mode = freezed,Object? method = freezed,Object? url = freezed,Object? headers = null,Object? fields = null,Object? partSize = freezed,Object? partCount = freezed,Object? parts = null,Object? expiresAt = freezed,}) {
   return _then(_UploadInstruction(
 mode: freezed == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
 as String?,method: freezed == method ? _self.method : method // ignore: cast_nullable_to_non_nullable
 as String?,url: freezed == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
 as String?,headers: null == headers ? _self._headers : headers // ignore: cast_nullable_to_non_nullable
+as Map<String, String>,fields: null == fields ? _self._fields : fields // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,partSize: freezed == partSize ? _self.partSize : partSize // ignore: cast_nullable_to_non_nullable
 as int?,partCount: freezed == partCount ? _self.partCount : partCount // ignore: cast_nullable_to_non_nullable
 as int?,parts: null == parts ? _self._parts : parts // ignore: cast_nullable_to_non_nullable

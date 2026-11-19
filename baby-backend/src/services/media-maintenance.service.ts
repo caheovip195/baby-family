@@ -1,4 +1,7 @@
-import { verifyClientUpload } from './client-media-upload';
+import {
+  inspectStoredContent,
+  verifyClientUpload,
+} from './client-media-upload';
 import type { JobContext } from '../interfaces/services/job-runner-service.interface';
 import path from 'node:path';
 import { Inject, Injectable, Logger } from '@nestjs/common';
@@ -141,10 +144,15 @@ export class MediaMaintenanceService implements IMediaMaintenanceService {
         stats.waiting++;
         continue;
       }
-      const reason = upload.rejectionReason(
-        stored,
-        maxAcceptedSize(upload.asset.declaredSize),
-      );
+      const reason =
+        upload.rejectionReason(
+          stored,
+          maxAcceptedSize(upload.asset.declaredSize),
+        ) ??
+        (await inspectStoredContent(this.storage, location, stored, {
+          mime: upload.asset.mime,
+          sha256: upload.asset.sha256,
+        }));
       try {
         if (reason) {
           await this.media.failUpload(upload.asset.id, reason);
