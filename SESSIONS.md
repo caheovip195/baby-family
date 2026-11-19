@@ -2061,3 +2061,109 @@ Các mục 001–005 được **ghi bù ngày 2026-10-11** từ hội thoại hi
   - Dữ liệu dev: gia hạn trial gia đình test trên DB dev local (+7 ngày, hết hạn từ 22/10) và onboarding tạo thêm 2 thai kỳ test “Bean”.
 - Còn lại: Chưa thử push FCM thật (chưa cấu hình FCM) và chưa thử app ở nền nhận push; chưa thử tắt mạng trên simulator (offline queue mới có unit test). Chưa có ảnh/tệp, sửa/xoá tin, màn thành viên, chat 1–1 với người thân; phiên bị thu hồi vẫn giữ socket tới khi token hết hạn (≤15 phút). Test `admin-cms-moderation` cần dọn DB test. `flutter build ios --simulator` lỗi `lipo` với Xcode 27 (dùng `flutter run`). Chưa commit.
 - Product history: [BF-20261101-001](PRODUCT_ANALYTICS_HISTORY.md#bf-20261101-001).
+
+<a id="bf-20261106-001"></a>
+## BF-20261106-001 — Khởi tạo Firebase trên Flutter từ file native, env FCM backend
+
+- Ngày làm: 2026-11-06 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Người dùng đã cài Firebase native Android/iOS; cài cho Flutter không dùng flutterfire, dùng file setup có sẵn; Firebase Admin đã có; cho biết env cần đặt ở backend.
+- Liên quan: BF-20261030-012, BF-20261018-014.
+- Role: Chủ trì MOBILE + DEVOPS; INTEGRATION (FCM), SECURITY_PRIVACY (service account); TESTER/QUALITY tự review (agent chính).
+- Trạng thái: Hoàn thành phần cấu hình; push thật chờ người dùng cấp quyền IAM.
+- Phân tích: Project `baby-family-fc83f`. Android chưa bật plugin; iOS plist đặt tên theo flavor nên Firebase không tìm thấy, bundle id xcconfig (`vn.babyfamily.app`) lệch plist (`com.tc.babyfamily`), thiếu entitlement push/background mode. Service account ở `baby-backend/config/firebase_service_account.json` (đã gitignore). Compose chưa mount khoá; `.dockerignore` chưa chặn `config/`.
+- Kết quả: App: `Firebase.initializeApp()` dùng file native, xoá `lib/firebase_options/`, bật plugin Android, build phase iOS chép plist theo flavor, đổi bundle id xcconfig, thêm `Runner.entitlements`, `UIBackgroundModes`, cập nhật README. Backend: `.env` đặt `FCM_PROJECT_ID`, `FCM_SERVICE_ACCOUNT_FILE`, `FCM_SERVICE_ACCOUNT_DOCKER_FILE`; compose mount `./config` read-only vào api/worker; `.dockerignore` chặn `/config`. Sửa bug `push-sender.provider.ts`: giá trị rỗng từ `${VAR:-}` làm worker crash khi dùng file (kèm unit test).
+- Kiểm chứng: `npm run check` EXIT 0 (unit 350/350, e2e 35/35); `make check` 946 pass; APK staging build được, `resources.arsc` có project id; `flutter run` trên iPhone Air: plist và bundle id khớp `com.tc.babyfamily.staging`, Crashlytics gọi được server; api/worker build lại healthy, `/health/ready` up. Probe FCM bằng token giả trong worker: OAuth 200 nhưng FCM 403 `cloudmessaging.messages.create` denied với `admin-baby-family@baby-family-fc83f.iam.gserviceaccount.com`.
+- Còn lại: Người dùng cấp role Firebase Cloud Messaging API Admin cho service account và upload APNs key lên Firebase; chưa thử nhận push thật; chưa chạy trên thiết bị/emulator Android; `flutter build ios --simulator` đủ hai kiến trúc lỗi Flutter.framework thiếu kiến trúc (không do Firebase, `flutter run -d` chạy được); `npm run test:integration` không chạy lại (đổi nhỏ ở provider, có unit test); chưa commit.
+- Product history: [BF-20261106-001](PRODUCT_ANALYTICS_HISTORY.md#bf-20261106-001).
+
+<a id="bf-20261106-002"></a>
+## BF-20261106-002 — Đổi tên file service account Firebase
+
+- Ngày làm: 2026-11-06 (Asia/Ho_Chi_Minh).
+- Yêu cầu: “Ở /baby-backend/config/ có firebase service account rùi kìa.”
+- Liên quan: BF-20261106-001.
+- Role: Chủ trì DEVOPS; INTEGRATION.
+- Trạng thái: Hoàn thành.
+- Phân tích: Người dùng đổi tên file thành `firebase_service_account.json` (cùng account, cùng key id) sau khi `.env` đã trỏ tên cũ; worker sẽ không khởi động được nếu giữ tên cũ.
+- Kết quả: `.env`, `.env.example` trỏ tên mới; api/worker tạo lại.
+- Kiểm chứng: `docker compose ps`; probe FCM bằng token giả trong worker (kết quả ghi ở câu trả lời cùng lượt).
+- Còn lại: Như BF-20261106-001 nếu probe vẫn 403 (cấp role).
+- Product history: [BF-20261106-002](PRODUCT_ANALYTICS_HISTORY.md#bf-20261106-002).
+
+<a id="bf-20261106-003"></a>
+## BF-20261106-003 — Kiểm tra media xử lý ở client, upload thẳng storage
+
+- Ngày làm: 2026-11-06 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Server yếu, không xử lý file trên server; xử lý ở client, server chỉ cấp phiên upload presigned, client đẩy thẳng lên storage. Yêu cầu kiểm tra.
+- Liên quan: BF-20261021-008, BF-20261015-009, BF-20261015-010.
+- Role: Chủ trì ARCHITECT; BACKEND, MOBILE, DEVOPS; QUALITY tự review (agent chính). Chỉ kiểm tra, không sửa code.
+- Trạng thái: Hoàn thành.
+- Phân tích: Đọc `media.service.ts`, `media.worker.ts`, `media-processing.service.ts`, `media-maintenance.service.ts`, `profile-image.service.ts`, `data-export.service.ts`, `docs/media-client-processing.md`, `media_uploader.dart`, `repository_imp/media.dart`.
+- Kết quả: Đúng yêu cầu từ BF-20261021-008: app nén và tạo biến thể; server chỉ ký URL, complete bằng HEAD (kiểm tồn tại, MIME, size ±5%) rồi READY; không tải file về. `MEDIA_SERVER_PROCESSING=disabled` trên api và worker, consumer media không khởi động; sharp/ffmpeg chỉ chạy ở chế độ `legacy`. Điểm còn lại: image worker vẫn cài ffmpeg, API/worker vẫn nạp sharp; app đọc cả video vào RAM (`readAsBytes`); server không kiểm nội dung file (rủi ro đã chấp nhận); xuất dữ liệu là JSON + manifest URL, không chạm media. `.env` backend bị đổi 15:15 sang cổng DB 45223 (không do agent) trong khi Postgres ở 5433.
+- Kiểm chứng: `printenv` trong 2 container = disabled; DB: job `media.process-asset` chỉ 1 lần ngày 2026-10-15; outbox `media.asset_uploaded` chỉ 1 sự kiện cùng ngày. `media-api.spec.ts` 20/20 với Postgres + MinIO (chạy với URL test trỏ cổng 5433; lần đầu dùng `.env` fail 20/20 vì P1001 không tới được cổng 45223). Không thử trên thiết bị trong lượt này.
+- Còn lại: Người dùng xác nhận cổng DB trong `.env`; đề xuất bỏ ffmpeg/sharp khỏi image và upload video theo stream (thẻ riêng).
+- Product history: [BF-20261106-003](PRODUCT_ANALYTICS_HISTORY.md#bf-20261106-003).
+
+<a id="bf-20261106-004"></a>
+
+## BF-20261106-004 — Giảm tài nguyên backend khi không xử lý media trên server
+
+- Ngày làm: 2026-11-06T15:24:01+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Server yếu; khi `MEDIA_SERVER_PROCESSING=disabled` không nạp sharp, image mặc định không có ffmpeg, vẫn build được bản legacy; đo RAM idle trước/sau. Xong khi `npm run check`, `npm run test:integration` đạt, api/worker healthy, có số RAM.
+- Liên quan: BF-20261106-003, BF-20261021-008.
+- Role: Chủ trì BACKEND; hỗ trợ DEVOPS; review TESTER, QUALITY. Góc nhìn do agent chính áp dụng, không dùng sub-agent.
+- Trạng thái: Chưa hoàn tất một tiêu chí: code và image xong, nhưng integration chưa xanh toàn bộ vì lỗi có sẵn không do task này (xem Kiểm chứng).
+- Phân tích: Trong `src` chỉ `image-processor.service.ts` import sharp, nên dùng dynamic import trong service thay vì provider theo cờ; lần gọi đầu mới nạp, disabled thì không bao giờ gọi. Bỏ ffmpeg sinh rủi ro mới: `legacy` trên image mặc định làm video retry đến FAILED, nên thêm kiểm tra lúc khởi động. Giữ sharp trong `node_modules` để legacy API (avatar) vẫn chạy.
+- Kết quả: `image-processor.service.ts` nạp sharp/exifr lúc dùng; `IMediaTranscoderService.assertAvailable()`, `media.worker.ts` gọi khi legacy và dừng với thông báo nêu `WORKER_BUILD_TARGET=worker-legacy`. Dockerfile: target `worker` không ffmpeg, thêm `worker-legacy`, bỏ stage `worker-dependencies` trùng. `compose.yaml` thêm `WORKER_BUILD_TARGET`; cập nhật `.env.example`, `docs/jobs.md`, `docs/media-client-processing.md`. Test: `test/unit/media-server-processing-load.spec.ts`, kiểm tra thêm ở `test/compiled-application.test.mjs`. Container api/worker đã recreate bằng image mới.
+- Kiểm chứng RAM: A/B có đối chứng (cùng image mới, 3 bản thường và 3 bản preload sharp+exifr mô phỏng import cũ, khởi động cùng lúc, DB tạm, Valkey db riêng), `docker stats` trung vị tại 600s: api 199,3 so với 212,8 MiB (giảm khoảng 13,5 MiB, 6%); worker 154,0 so với 153,9 MiB (không phân biệt được; `anon` thấp hơn khoảng 6 MiB). Container thật lúc 300s: api trước 199 MiB, sau 266 và 236 MiB ở hai lần đo (cao hơn, chưa rõ nguyên nhân, anon/heap dao động, không phải sharp vì `vips_maps=0`); worker trước 153,9, sau 169,5 và 147,6 MiB. Không kết luận giảm RAM từ số container thật. Image worker 1,71 GB còn 1,16 GB.
+- Kiểm chứng nạp thư viện: `/proc/*/maps` khớp vips/sharp từ 12 dòng còn 0 ở cả api và worker thật; ffmpeg từ `/usr/bin/ffmpeg` còn không có. Target `worker-legacy` build được, user `node`, ffmpeg 5.1.9. Trong container mới: `ImageProcessorService` đã biên dịch tạo đủ t320, m1080, l2048, orig; preflight báo đúng thông báo khi thiếu ffmpeg. Api/worker healthy, `/health/live` 200.
+- Kiểm chứng test: `npm run check` đạt (354 unit, 35 e2e, compiled đạt). `media-worker.spec.ts` (sharp, ffmpeg thật) 5/5. `test:integration`: DB dùng chung cổng 5433 thì 82/84 suite, 696/698 test; fail `admin-cms-moderation` (147 moderation_cases tồn đọng, API lấy 100) và `data-export-api` (325 export_jobs tồn đọng, đạt khi chạy riêng cùng spec moderation). Postgres tạm sạch đã migrate và seed: 83/84 suite, 696/698; chỉ `mission-catalog-90-days` fail 2 test, và fail y hệt trên code HEAD chưa sửa (worktree tạm), đạt 9/9 trên DB dùng chung. Một lần chạy kết hợp media-worker + mission báo 1 suite failed dù 14/14 test đạt, không lưu output, chạy lại đạt 2/2: chưa rõ nguyên nhân.
+- Môi trường: Không sửa `baby-backend/.env`. `.env` ghi `baby-postgres:45223` trong khi container Postgres lắng nghe 5432 (host 5433), nên recreate bằng `DATABASE_DOCKER_URL` override trên shell cho riêng lệnh đó, `--no-deps`, không chạy migrate. Đã dọn Postgres tạm, Valkey db 14, worktree tạm, image legacy kiểm tra.
+- Còn lại: Người dùng xác nhận cổng DB trong `.env` (chạy `docker compose up` theo `.env` hiện tại sẽ không tới được DB). Sửa nhiễu DB test và `mission-catalog-90-days` trên seed sạch. RAM api chủ yếu là heap V8 khoảng 200 MiB, muốn giảm đáng kể cần việc riêng. Không commit theo yêu cầu.
+- Đính chính 2026-11-06 (từ BF-20261106-006): Số api "sau" trên container thật không phải idle: api có traffic từ app (27 request ngoài health trong cửa sổ đo thứ hai) và cùng cấu hình dao động 196–243 MiB giữa các lần khởi động. Không dùng số container thật để so sánh; số A/B vẫn là căn cứ.
+- Product history: [BF-20261106-004](PRODUCT_ANALYTICS_HISTORY.md#bf-20261106-004).
+
+<a id="bf-20261106-005"></a>
+## BF-20261106-005 — Upload video theo file, không giữ cả video trong RAM
+
+- Ngày làm: 2026-11-06T15:25:14+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: (Từ phiên điều phối) Trong `baby-family-app`, đổi `repository_imp/media.dart` và `MediaUploader` sang làm việc theo file: băm SHA-256 bằng stream, PUT single và multipart đọc từng phần từ file (part 8 MiB), giữ nguyên contract upload-intents/parts/complete, Idempotency-Key, outbox offline; kiểm tra video đầu ra còn metadata GPS không. Xong khi `make check` đạt, có test multipart đọc từ file, thử thật video lớn trên simulator/emulator với backend local. Không commit.
+- Liên quan: BF-20261106-003, BF-20261021-008.
+- Role: Chủ trì MOBILE; SECURITY_PRIVACY (metadata GPS); TESTER, QUALITY tự review (agent chính, không có review độc lập).
+- Trạng thái: Hoàn thành phần upload theo file và kiểm tra GPS. Chưa thử được upload thật trên Android (bộ nén treo trên emulator). GPS còn lọt ở một nhánh, chờ quyết định.
+- Phân tích: Bản cũ đọc nguyên video vào RAM ở hai chỗ: `_readThenClean` và `MemoryRemoteServiceImp._upload` (đọc file gốc chỉ để băm fingerprint). Chọn: file chính của video và ghi âm nằm trên đĩa (`MediaLocalFile`: path, size, sha256, temporary), ảnh vẫn ở bộ nhớ vì đã nén nhỏ. Băm stream trong `Isolate.run` để không giật UI. Một đường `_upload` cho cả bytes và file, part đọc bằng `File.openRead(start, end)` theo khúc 64 KB. Part size lấy từ server (8 MiB). Chuỗi fingerprint giữ nguyên định dạng nên Idempotency-Key chờ cũ vẫn dùng được.
+- Kết quả: Thêm `dto/media_local_file.dart`, tách `dto/media_variant_file.dart` (Skill 9), `ProcessedMedia.file`, `IMediaRepository.hashLocalFile/describeLocalFile/deleteLocalFile/uploadFile`; bỏ `readLocalFile`, `_readThenClean` và tham số `bytes` của `upload` (hết nơi dùng). Bản nén tạm xoá trong `finally` khi upload xong hoặc lỗi, và khi tạo poster lỗi; không xoá file người dùng chọn. Sửa lỗi có sẵn do thử thật phát hiện: app gửi `source.size` mà backend từ chối (400 `property size should not exist`), khiến mọi upload ảnh/video qua server thật hỏng, DB chưa từng có asset có `source`; bỏ trường này. GPS: iOS bản đã nén không còn GPS (không có `udta`; `creation_time` thành giờ nén); iOS video giữ nguyên (mp4, cạnh ngắn ≤ 720, ≤ 4 Mbps) upload đúng file gốc nên CÒN GPS; nhánh bản nén to hơn gốc cũng dùng file gốc (theo code, chưa chạy). Android: picker xoá atom `loci` nhưng còn chuỗi `location` kiểu mdta; bộ nén có đoạn chép location (`DefaultTranscodeEngine$location$1`).
+- Kiểm chứng: `make check` EXIT 0 (960 test, analyze sạch; `analyze` loại trừ thư mục test). Test mới `test/data/media_upload_file_test.dart` 14 ca, gồm multipart đọc đúng offset từ file thật, khúc ≤ 64 KB, thiếu ETag, xoá file tạm. Thử thật iPhone Air simulator + backend/MinIO Docker local: video 642,65 MB, 170 giây, nén còn 227.177.491 byte, asset READY, ETag `…-28` (multipart 28 part), SHA-256 object tải về khớp `sha256` trong DB, `source_sha256` khớp file gốc, thư mục nén tạm trống sau upload, poster hiện trên timeline. RSS (bản debug trên simulator): trước khi lưu khoảng 800 MB, lúc nén tới 1.678 MB (phần native của AVFoundation), lúc upload khoảng 994 MB. Video nhỏ 4 MB: object giống hệt file gốc (`cmp`), `ffprobe` thấy GPS. Android Pixel_8: picker và bytecode thư viện đã kiểm; bộ nén dừng ở 2,3 MB, CPU 0%, hơn 4 phút, nên chưa có output/upload thật.
+- Còn lại: Quyết định cách bỏ GPS ở nhánh giữ nguyên file gốc (chưa sửa). Thử trên máy Android thật: nén, upload, GPS của output. Chưa đo trên máy thật yếu, chưa so RSS với bản cũ, không có review độc lập. Quan sát ngoài phạm vi: memory.create bị 400 thì ký ức biến mất, không báo lỗi cho người dùng; bộ nén treo thì outbox chờ mãi, không có timeout; bản sao của image_picker ở tmp không được xoá (642 MB mỗi lần chọn trên iOS); nén lại khi retry có thể đổi SHA và gặp 409 `IDEMPOTENCY_KEY_REUSED` (chưa kiểm chứng). Dữ liệu thử để lại trên local: 2 tài khoản số +84905510550/551, gia đình "The QA family", 2 video trong Photos iPhone Air và trong MinIO. Chưa commit.
+- Product history: [BF-20261106-005](PRODUCT_ANALYTICS_HISTORY.md#bf-20261106-005).
+
+<a id="bf-20261106-006"></a>
+
+## BF-20261106-006 — Đo heap API tìm chỗ giảm RAM
+
+- Ngày làm: 2026-11-06T16:02:33+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Đo heap API.
+- Liên quan: BF-20261106-004.
+- Role: Chủ trì BACKEND; hỗ trợ DEVOPS; review QUALITY. Góc nhìn do agent chính áp dụng.
+- Trạng thái: Hoàn thành phần đo; không sửa code hay cấu hình của dự án.
+- Phân tích: Chạy image API trong container tạm cùng cờ bảo mật, Postgres tạm, Valkey db riêng; probe mount read-only. Đo heap sau GC theo package, heap snapshot, `smaps`, RSS theo giai đoạn khởi động (3 lần, lệch dưới 3 MiB), A/B cờ runtime (3–4 bản mỗi loại, cùng lúc).
+- Kết quả: Heap JS giữ lại sau GC khoảng 92–103 MiB, chỉ khoảng một nửa `docker stats` (~200 MiB). RSS theo giai đoạn, tổng khoảng 295 MiB: node nền 45; Nest core +38; AWS S3 +10; Prisma +94 (module 10, `new PrismaClient` 44, connect 38, query 2); nạp AppModule 1397 file +76; DI + init +32. Thứ tự nạp ảnh hưởng phần chia cho dependency dùng chung. Snapshot: chuỗi 36 MiB (phần lớn mã nguồn, WASM Prisma base64 4,4 MiB hai bản); mảng metadata 25 MiB.
+- Kết quả A/B lúc idle: `LOG_FORMAT=json` 189 so với pretty 197 MiB, bỏ một thread. Thêm `--max-semi-space-size=2`: 180 MiB, đỉnh `VmHWM` lúc khởi động từ khoảng 352 MB còn khoảng 288 MB. `--max-old-space-size=128`: 192,5 so với 200,9 MiB, nhiễu cao. `MALLOC_ARENA_MAX=2`: tệ hơn, 231 MiB. Swagger bật/tắt: 203 so với 202 MiB, không khác.
+- Kiểm chứng: Mọi container tạm healthy. Nhiễu cùng cấu hình mặc định 196–243 MiB giữa các lần khởi động. Api thật có traffic app (hàng trăm request/route trong 40 phút), RSS 342 MB, `VmHWM` 571 MB. Chưa đo dưới tải; chưa đo tác động CPU của semi-space nhỏ; chưa thử `compilerBuild` Prisma hay bundling. Đã xóa container, Postgres tạm và snapshot.
+- Còn lại: Người dùng chọn có áp dụng log json + semi-space 2 không; đỉnh 571 MB dưới traffic chưa rõ nguyên nhân.
+- Product history: [BF-20261106-006](PRODUCT_ANALYTICS_HISTORY.md#bf-20261106-006).
+
+<a id="bf-20261106-007"></a>
+
+## BF-20261106-007 — Review kỹ thuật toàn dự án Baby Family
+
+- Ngày làm: 2026-11-06T19:24:29+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Review lỗi, cấu trúc và điểm cải thiện của toàn dự án, gồm backend, database, analytics, cache và Flutter. Chỉ review, không sửa code.
+- Liên quan: BF-20261106-003, BF-20261106-004, BF-20261106-005, BF-20261106-006.
+- Role: Chủ trì ORCHESTRATOR/QUALITY; phân công BACKEND/SECURITY_PRIVACY, DBA/DATA_ANALYST/DEVOPS và MOBILE/INTEGRATION; agent chính rà Admin, Storage, CI và kiểm chứng.
+- Trạng thái: Hoàn thành review (2026-11-06T19:32:53+07:00).
+- Phân tích: Rà working tree hiện tại trên nền 3ac5c34, kể cả thay đổi có sẵn. Ưu tiên quyền riêng tư, mất dữ liệu, luồng lỗi, vận hành và hợp đồng giữa các thành phần.
+- Kết quả: Đã review độc lập Backend/Security, DBA/Analytics/DevOps, Flutter và tổng hợp Admin/Storage/CI. Ưu tiên các lỗi xóa/xuất dữ liệu, kẹt batch và Valkey, race phiên Flutter, outbox mất file và đổi phạm vi gia đình, config bản product, hợp đồng upload audio, idempotency và tích hợp Play/OTP. Cấu trúc hiện tại có thể giữ, cần làm rõ ranh giới giao dịch, phiên, ACL và adapter. Chỉ cập nhật nhật ký.
+- Kiểm chứng: Backend typecheck, 354 unit + 35 HTTP đạt. Guard 12 migration đạt, đã áp dụng 12 migration trên PostgreSQL 18.6 tạm và xác nhận 131 bảng đủ ba cột audit, 26 integration test chọn lọc đạt. Tái hiện xóa gia đình còn xuất được ký ức, lỗi request đầu chặn batch và pause Valkey làm kẹt relay. Flutter 3.44.5 format/analyze đạt, 960 test đạt, 3 probe tách biệt tái hiện mất file, race refresh và gửi nhầm family (fake API). Admin typecheck/build và 16 test đạt. Compose backend/storage đạt, database config với env mẫu lỗi vì ba biến bắt buộc rỗng. Các nhận định bổ sung từ đối chiếu code và probe mô phỏng.
+- Còn lại: Chưa chạy toàn bộ integration, luồng Store/OTP/FCM hoặc media trên thiết bị thật, chưa đo tải/EXPLAIN hay diễn tập restore. Phát hiện được bàn giao để xử lý trong task riêng.
+- Product history: [BF-20261106-007](PRODUCT_ANALYTICS_HISTORY.md#bf-20261106-007).

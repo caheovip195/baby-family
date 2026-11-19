@@ -16,9 +16,13 @@ export const PUSH_SENDER_PROVIDER: FactoryProvider<IPushSender> = {
     // Test composition roots never access credentials or the network.
     if (config.get('NODE_ENV', { infer: true }) === 'test')
       return new LogPushSender();
-    const projectId = config.get('FCM_PROJECT_ID', { infer: true });
-    const json = config.get('FCM_SERVICE_ACCOUNT_JSON', { infer: true });
-    const file = config.get('FCM_SERVICE_ACCOUNT_FILE', { infer: true });
+    // ConfigService falls back to raw process.env, so Compose `${VAR:-}` arrives as ''.
+    const projectId =
+      config.get('FCM_PROJECT_ID', { infer: true }) || undefined;
+    const json =
+      config.get('FCM_SERVICE_ACCOUNT_JSON', { infer: true }) || undefined;
+    const file =
+      config.get('FCM_SERVICE_ACCOUNT_FILE', { infer: true }) || undefined;
     if (!projectId && !json && !file) return new LogPushSender();
     if (!projectId || Boolean(json) === Boolean(file))
       throw new Error(

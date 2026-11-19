@@ -3,11 +3,9 @@ import java.util.Properties
 
 plugins {
     id("com.android.application")
-    // Bật 2 plugin dưới sau khi thêm google-services.json cho từng flavor
-    // (android/app/src/staging/google-services.json, android/app/src/product/google-services.json)
-    // và khai báo version trong android/settings.gradle.kts.
-    // id("com.google.gms.google-services")
-    // id("com.google.firebase.crashlytics")
+    // Cấu hình Firebase theo flavor: android/app/src/{staging,product}/google-services.json.
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
@@ -22,7 +20,7 @@ if (hasReleaseKeystore) {
 }
 
 android {
-    namespace = "vn.babyfamily.baby_family"
+    namespace = "com.tc.babyfamily"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -38,7 +36,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "vn.babyfamily.app"
+        applicationId = "com.tc.babyfamily"
         // Android 8.0+ (tài liệu kỹ thuật mục 2).
         minSdk = maxOf(flutter.minSdkVersion, 26)
         targetSdk = flutter.targetSdkVersion

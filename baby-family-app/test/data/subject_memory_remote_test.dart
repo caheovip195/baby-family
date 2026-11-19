@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:baby_family/data/dto/media_local_file.dart';
+import 'package:baby_family/data/dto/media_variant_file.dart';
 import 'package:baby_family/data/dto/processed_media.dart';
 import 'package:baby_family/data/model/child/child_record.dart';
 import 'package:baby_family/data/model/child/child_stats_record.dart';
@@ -44,6 +46,7 @@ import 'package:baby_family/data/service_imp/memory_remote.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
 import 'package:baby_family/utils/helper/app_clock.dart';
+import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -149,11 +152,37 @@ class _FakePregnancies extends Fake implements IPregnancyRemoteRepository {
 class _FakeMedia implements IMediaRepository {
   final intents = <JsonMap>[];
   final uploaded = <int>[];
+  final deletedFiles = <String>[];
   final completed = <String>[];
 
   @override
-  Future<Uint8List> readLocalFile(String path) async =>
-      Uint8List.fromList(path.codeUnits);
+  Future<String> hashLocalFile(String path) async =>
+      sha256.convert(path.codeUnits).toString();
+
+  @override
+  Future<MediaLocalFile> describeLocalFile(
+    String path, {
+    bool temporary = false,
+  }) async => MediaLocalFile(
+    path: path,
+    size: path.length,
+    sha256: sha256.convert(path.codeUnits).toString(),
+    temporary: temporary,
+  );
+
+  @override
+  Future<void> deleteLocalFile(String path) async => deletedFiles.add(path);
+
+  @override
+  Future<List<JsonMap>> uploadFile(
+    UploadInstruction instruction,
+    String path, {
+    UploadProgress? onProgress,
+  }) => uploadBytes(
+    instruction,
+    Uint8List.fromList(path.codeUnits),
+    onProgress: onProgress,
+  );
 
   /// Lần xin upload tiếp theo trả multipart (file lớn).
   bool nextMultipart = false;
@@ -194,10 +223,10 @@ class _FakeMedia implements IMediaRepository {
   );
 
   @override
-  Future<ProcessedMedia> processVideo(String path) async => ProcessedMedia(
+  Future<ProcessedMedia> processVideo(String path) async => ProcessedMedia.file(
     kind: 'VIDEO',
     mime: 'video/mp4',
-    bytes: Uint8List.fromList(path.codeUnits),
+    file: await describeLocalFile('$path.compressed', temporary: true),
     width: 1920,
     height: 1080,
     durationMs: 95000,

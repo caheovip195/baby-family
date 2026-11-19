@@ -27,16 +27,15 @@ class MediaUploader {
   /// Ảnh, video hoặc ghi âm (theo đuôi file). Client tự nén và tạo mọi biến
   /// thể (BF-20261021-008); server chỉ cấp phiên upload presign và kiểm tra
   /// khi `complete` — không xử lý media. [idempotencyKey] giữ nguyên khi thử
-  /// lại; [bytes] là nội dung gốc khi đã đọc (ghi âm upload nguyên bản).
+  /// lại. Video và ghi âm đọc theo file, không nạp cả file vào bộ nhớ.
   Future<String> upload(
     String serverFamilyId,
     String path, {
     required String purpose,
     String? idempotencyKey,
-    Uint8List? bytes,
     void Function(double fraction)? onProgress,
   }) async {
-    final media = await _process(path, bytes);
+    final media = await _process(path);
     return _send(
       media,
       {'familyId': serverFamilyId, 'kind': media.kind, 'purpose': purpose},
@@ -70,6 +69,32 @@ class MediaUploader {
     complete,
     void Function(double fraction)? onProgress,
   }) async {
+    final file = media.file;
+    try {
+      return await _sendContent(
+        media,
+        base,
+        create: create,
+        complete: complete,
+        onProgress: onProgress,
+      );
+    } finally {
+      if (file != null && file.temporary) {
+        await _media.deleteLocalFile(file.path);
+      }
+    }
+  }
+
+  Future<String> _sendContent(
+    ProcessedMedia media,
+    JsonMap base, {
+    required Future<UploadIntent?> Function(JsonMap body) create,
+    required Future<void> Function(String assetId, List<JsonMap> parts)
+    complete,
+    void Function(double fraction)? onProgress,
+  }) async {
+    final file = media.file;
+    final bytes = media.bytes ?? Uint8List(0);
     final variants = [
       for (final variant in media.variants)
         (variant: variant, sha: sha256.convert(variant.bytes).toString()),
@@ -77,8 +102,8 @@ class MediaUploader {
     final intent = await create({
       ...base,
       'mime': media.mime,
-      'size': media.bytes.length,
-      'sha256': sha256.convert(media.bytes).toString(),
+      'size': media.size,
+      'sha256': file?.sha256 ?? sha256.convert(bytes).toString(),
       'width': ?media.width,
       'height': ?media.height,
       'durationMs': ?media.durationMs,
@@ -105,19 +130,17 @@ class MediaUploader {
     if (intent?.status == 'PENDING_UPLOAD' && upload != null) {
       // Tiến độ theo byte của file chính + mọi biến thể.
       final total =
-          media.bytes.length +
+          media.size +
           variants.fold<int>(0, (sum, item) => sum + item.variant.bytes.length);
       var sentBefore = 0;
       UploadProgress? progress() => onProgress == null
           ? null
           : (sent, _) => onProgress((sentBefore + sent) / total);
       // File chính và từng biến thể đi thẳng lên S3 qua URL presign.
-      final parts = await _media.uploadBytes(
-        upload,
-        media.bytes,
-        onProgress: progress(),
-      );
-      sentBefore += media.bytes.length;
+      final parts = file != null
+          ? await _media.uploadFile(upload, file.path, onProgress: progress())
+          : await _media.uploadBytes(upload, bytes, onProgress: progress());
+      sentBefore += media.size;
       final byCode = {
         for (final (:variant, sha: _) in variants) variant.code: variant,
       };
@@ -141,20 +164,19 @@ class MediaUploader {
   }
 
   /// Nén/tạo biến thể trên máy theo loại file.
-  Future<ProcessedMedia> _process(String path, Uint8List? bytes) async {
+  Future<ProcessedMedia> _process(String path) async {
     if (isVideo(path)) {
       return _media.processVideo(path);
     }
     if (isAudio(path)) {
-      final content = bytes ?? await _media.readLocalFile(path);
       final durationMs = await _media.mediaDurationMs(path);
       if (durationMs == null) {
         throw StateError('Audio duration is unknown');
       }
-      return ProcessedMedia(
+      return ProcessedMedia.file(
         kind: 'AUDIO',
         mime: mimeOf(path),
-        bytes: content,
+        file: await _media.describeLocalFile(path),
         durationMs: durationMs,
       );
     }

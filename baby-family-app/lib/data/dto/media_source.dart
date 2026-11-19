@@ -9,17 +9,11 @@
 ///   tạm — dễ nhận nhầm ảnh.
 /// - [capturedAt]: thời điểm chụp (EXIF) để thu hẹp ứng viên.
 class MediaSource {
-  const MediaSource({
-    required this.sha256,
-    required this.key,
-    this.capturedAt,
-    this.size,
-  });
+  const MediaSource({required this.sha256, required this.key, this.capturedAt});
 
   final String sha256;
   final String key;
   final DateTime? capturedAt;
-  final int? size;
 
   /// Khoá không phụ thuộc chiều xoay (ảnh dọc/ngang lưu khác nhau).
   static String keyOf({
@@ -38,6 +32,5 @@ class MediaSource {
     'sha256': sha256,
     'key': key,
     'capturedAt': ?capturedAt?.toUtc().toIso8601String(),
-    'size': ?size,
   };
 }

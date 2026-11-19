@@ -2,8 +2,6 @@ import { open, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { Injectable } from '@nestjs/common';
 import { encode } from 'blurhash';
-import exifr from 'exifr';
-import sharp from 'sharp';
 import type { Metadata, Sharp } from 'sharp';
 import { PermanentJobError } from '../common/errors/job.error';
 import {
@@ -28,15 +26,22 @@ const FORMATS: Record<string, { mime: string; extension: string }> = {
   gif: { mime: 'image/png', extension: 'png' },
 };
 
+// Native libvips costs RAM at import, so sharp and exifr load on first use. With
+// MEDIA_SERVER_PROCESSING=disabled nothing calls this service and neither loads.
+const loadSharp = async () => (await import('sharp')).default;
+type SharpFactory = Awaited<ReturnType<typeof loadSharp>>;
+
 @Injectable()
 export class ImageProcessorService implements IImageProcessorService {
   async process(
     inputPath: string,
     options: ImageProcessingOptions,
   ): Promise<ProcessedImage> {
+    // Outside the try: a broken install must not be reported as a bad image.
+    const sharp = await loadSharp();
     let metadata: Metadata;
     try {
-      metadata = await this.open(inputPath).metadata();
+      metadata = await this.open(sharp, inputPath).metadata();
     } catch {
       throw new PermanentJobError(
         'IMAGE_UNREADABLE',
@@ -51,7 +56,7 @@ export class ImageProcessorService implements IImageProcessorService {
       );
     const capturedAt = await capturedAtOf(inputPath);
     // .rotate() applies EXIF orientation; outputs carry no metadata by default.
-    const oriented = () => this.open(inputPath).rotate();
+    const oriented = () => this.open(sharp, inputPath).rotate();
     try {
       const variants = await Promise.all([
         this.write(oriented, options.workDir, 't320', 'webp', 320, (image) =>
@@ -99,8 +104,9 @@ export class ImageProcessorService implements IImageProcessorService {
   }
 
   async thumbnail(inputPath: string, workDir: string): Promise<ProcessedFile> {
+    const sharp = await loadSharp();
     return this.write(
-      () => this.open(inputPath).rotate(),
+      () => this.open(sharp, inputPath).rotate(),
       workDir,
       't320',
       'webp',
@@ -158,7 +164,7 @@ export class ImageProcessorService implements IImageProcessorService {
     return { ...file, mime: format.mime };
   }
 
-  private open(inputPath: string): Sharp {
+  private open(sharp: SharpFactory, inputPath: string): Sharp {
     return sharp(inputPath, {
       limitInputPixels: LIMIT_INPUT_PIXELS,
       failOn: 'error',
@@ -201,6 +207,7 @@ const MIME_BY_EXTENSION: Record<string, string> = {
 
 /** EXIF lives in the first segments; read a bounded head with an explicit close. */
 async function capturedAtOf(inputPath: string): Promise<Date | null> {
+  const { default: exifr } = await import('exifr');
   const file = await open(inputPath, 'r');
   try {
     const head = Buffer.alloc(EXIF_SCAN_BYTES);

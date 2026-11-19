@@ -20,7 +20,6 @@ import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 
 import 'app.dart';
-import 'firebase_options/firebase_options_stg.dart';
 
 Future<void> main() async {
   await runZonedGuarded(
@@ -73,9 +72,9 @@ Future<String?> _initial() async {
 
 Future<void> _setupFirebase() async {
   try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    // Cấu hình lấy từ file native của flavor: google-services.json (Android),
+    // GoogleService-Info.plist (iOS, build phase chép đúng file theo flavor).
+    await Firebase.initializeApp();
     FlutterError.onError = (details) {
       FlutterError.presentError(details);
       unawaited(

@@ -12,6 +12,8 @@ export interface MediaProbe {
 
 /** Video/audio processing (spec §10.4). Throws PermanentJobError for bad input. */
 export interface IMediaTranscoderService {
+  /** Rejects when ffmpeg/ffprobe cannot run (the default image ships neither). */
+  assertAvailable(): Promise<void>;
   probe(inputPath: string, signal: AbortSignal): Promise<MediaProbe>;
   /** H.264/AAC mp4, short side ≤ 1080, faststart, no metadata (`v1080`). */
   transcodeVideo(

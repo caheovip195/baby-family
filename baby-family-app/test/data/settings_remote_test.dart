@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:baby_family/data/dto/media_variant_file.dart';
 import 'package:baby_family/data/dto/processed_media.dart';
 import 'package:baby_family/data/model/account/data_export_record.dart';
 import 'package:baby_family/data/model/account/deletion_preview_record.dart';
@@ -29,6 +30,7 @@ import 'package:baby_family/data/repository/social_credential.dart';
 import 'package:baby_family/data/service_imp/settings_remote.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
+import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -371,8 +373,8 @@ class _FakeMedia extends Fake implements IMediaRepository {
   final uploaded = <int>[];
 
   @override
-  Future<Uint8List> readLocalFile(String path) async =>
-      Uint8List.fromList(path.codeUnits);
+  Future<String> hashLocalFile(String path) async =>
+      sha256.convert(path.codeUnits).toString();
 
   @override
   Future<List<JsonMap>> uploadBytes(

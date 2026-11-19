@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:baby_family/data/dto/media_variant_file.dart';
 import 'package:baby_family/data/dto/processed_media.dart';
 import 'package:baby_family/data/model/memory/upload_instruction.dart';
 import 'package:baby_family/data/model/memory/upload_intent.dart';
@@ -33,6 +34,7 @@ import 'package:baby_family/data/service_imp/media_uploader.dart';
 import 'package:baby_family/data/service_imp/us_remote.dart';
 import 'package:baby_family/utils/constants/enum.dart';
 import 'package:baby_family/utils/constants/values.dart';
+import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -66,8 +68,8 @@ class _FakeMedia extends Fake implements IMediaRepository {
   final purposes = <String>[];
 
   @override
-  Future<Uint8List> readLocalFile(String path) async =>
-      Uint8List.fromList(path.codeUnits);
+  Future<String> hashLocalFile(String path) async =>
+      sha256.convert(path.codeUnits).toString();
 
   @override
   Future<UploadIntent?> createUploadIntent(

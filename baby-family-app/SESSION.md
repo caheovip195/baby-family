@@ -994,3 +994,25 @@ do agent tự đặt tên (06/10, 09/10, 11/10).
 - Màn `page/general/chat_list` (CHAT-01), `page/general/chat_conversation` (CHAT-02/03a–d); lối vào: nút tin nhắn + số chưa đọc ở `home_app_bar` và CIR-01, nút “Nhắn riêng” ở US-01; deep link `babyfamily://chats/{id}`; SET-03 thêm nhóm “Tin nhắn cả nhà” (`CHAT`). 42 khoá l10n `chat*` vi/en/ja/zh. `AuthorizationInterceptor.currentCertificate({forceRenew})` dùng chung cho socket.
 - Kiểm tra: `make check` EXIT 0 (946 test, analyze sạch; agent chính chạy lại xác nhận). Chạy thật 2 simulator (iPhone Air = Mama, iPhone 17 Pro = Bố) với backend Docker local: nhắn qua lại realtime hai chiều, “đang nhập…”, “đã xem” cập nhật tức thì. Build iOS cần `Podfile` nâng deployment target pods lên 15.0 (Xcode 27); `flutter build ios --simulator` vẫn lỗi `lipo -verify_arch` của Xcode 27 nên dùng `flutter run -d`.
 - Phần app do sub-agent MOBILE thực hiện, agent chính review/chạy kiểm tra; chưa commit.
+
+## 2026-11-06 — BF-20261106-001: Firebase qua file native (không flutterfire)
+
+- `Firebase.initializeApp()` không truyền options; xoá `lib/firebase_options/` (placeholder).
+- Android: bật plugin google-services + crashlytics. iOS: build phase "Copy GoogleService-Info" chọn plist theo `FLUTTER_FLAVOR`;
+  bundle id xcconfig đổi sang `com.tc.babyfamily(.staging)` cho khớp plist; thêm `Runner.entitlements` (aps-environment) và `UIBackgroundModes: remote-notification`.
+- Kiểm chứng: `make check` 946 pass; APK staging build được; chạy iPhone Air simulator: plist đúng trong bundle, Crashlytics gọi được server.
+- Còn mở: chưa thử nhận push thật; `flutter build ios --simulator` (đủ hai kiến trúc) lỗi Flutter.framework thiếu kiến trúc, `flutter run -d` chạy được; cần upload APNs key lên Firebase.
+
+## 2026-11-06 — BF-20261106-005: upload video theo file
+
+- `ProcessedMedia.file` + `MediaLocalFile` (video, ghi âm trên đĩa; ảnh vẫn `bytes`); `IMediaRepository.hashLocalFile/describeLocalFile/deleteLocalFile/uploadFile`, bỏ `readLocalFile`. Băm stream trong `Isolate.run`; part đọc bằng `File.openRead(start, end)`; bản nén tạm xoá trong `finally`. Tách `dto/media_variant_file.dart`.
+- Sửa lỗi có sẵn: bỏ `MediaSource.size` vì backend từ chối (400), trước đó mọi upload ảnh/video qua server thật đều hỏng.
+- Kiểm chứng: `make check` 960 pass; iPhone Air simulator + backend local: video 642 MB, nén còn 227 MB, multipart 28 part, SHA khớp DB.
+- GPS: iOS bản nén sạch; video mp4 giữ nguyên (cạnh ngắn ≤ 720, ≤ 4 Mbps) còn GPS, chưa sửa, chờ quyết định.
+- Còn mở: bộ nén Android treo trên emulator Pixel_8 nên chưa thử upload thật trên Android; cần máy thật.
+
+## 2026-11-06 — BF-20261106-007: Review Flutter và hợp đồng API
+
+- Phạm vi review chỉ đọc. Phát hiện ưu tiên gồm outbox dọn file của service khác, refresh ghi đè phiên, retry upload sang gia đình đang mở, target product bật phiên local, payload audio thiếu `variants: []` và tuỳ chọn Face ID chưa khoá màn.
+- Kiểm chứng Flutter 3.44.5 trên bản sao tách biệt: format 0 thay đổi, analyze sạch, 960 test đạt. Ba probe độc lập tái hiện mất file với Hive/filesystem, refresh muộn ghi đè certificate và payload retry gửi sang gia đình khác qua fake API.
+- Chưa build release hoặc thử push, Store và ghi âm với thiết bị thật trong lượt này. Xem [review chung](../SESSIONS.md#bf-20261106-007).

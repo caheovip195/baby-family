@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "362386757714",
+    "project_id": "baby-family-fc83f",
+    "storage_bucket": "baby-family-fc83f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:362386757714:android:2285b4b9a3c74959b0678b",
+        "android_client_info": {
+          "package_name": "com.tc.babyfamily"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAORfJ0oqaqPgpH0H53hx9YCP5oCTK4ThI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:362386757714:android:d9a07651728dc2ecb0678b",
+        "android_client_info": {
+          "package_name": "com.tc.babyfamily.staging"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAORfJ0oqaqPgpH0H53hx9YCP5oCTK4ThI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

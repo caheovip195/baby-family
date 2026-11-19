@@ -48,7 +48,7 @@ x-app-env: &app-env
   MAIL_HOST: ${MAIL_HOST:-}
   FCM_PROJECT_ID: ${FCM_PROJECT_ID:-}
   FCM_SERVICE_ACCOUNT_JSON: ${FCM_SERVICE_ACCOUNT_JSON:-}
-  FCM_SERVICE_ACCOUNT_FILE: ${FCM_SERVICE_ACCOUNT_FILE:-}
+  FCM_SERVICE_ACCOUNT_FILE: ${FCM_SERVICE_ACCOUNT_DOCKER_FILE:-}
   # AI 1.2 (BF-20261028-010): key chỉ đặt trong .env / secret store.
   AI_BASE_URL: ${AI_BASE_URL:-https://openrouter.ai/api/v1}
   AI_API_KEY: ${AI_API_KEY:-}
@@ -112,6 +112,8 @@ services:
       - storage
     restart: unless-stopped
     init: true
+    volumes:
+      - ./config:/run/secrets/firebase:ro
     read_only: true
     tmpfs:
       - /tmp
@@ -121,11 +123,12 @@ services:
       - ALL
     stop_grace_period: 20s
 
-  # Background jobs: outbox relay, media processing, purge-orphans, reconcile-uploads.
+  # Background jobs: outbox relay, purge-orphans, reconcile-uploads. Server media
+  # processing needs MEDIA_SERVER_PROCESSING=legacy and WORKER_BUILD_TARGET=worker-legacy.
   worker:
     build:
       context: .
-      target: worker
+      target: ${WORKER_BUILD_TARGET:-worker}
     environment:
       <<: *app-env
       WORKER_ID: ${WORKER_ID:-}
@@ -141,8 +144,10 @@ services:
       - storage
     restart: unless-stopped
     init: true
+    volumes:
+      - ./config:/run/secrets/firebase:ro
     read_only: true
-    # Media is processed in /tmp; size bounds the largest file the worker can handle.
+    # Legacy media is processed in /tmp; size bounds the largest file it can handle.
     tmpfs:
       - /tmp:size=2g
     security_opt:

@@ -42,6 +42,18 @@ export class MediaTranscoderService implements IMediaTranscoderService {
     this.ffprobe = config.get('FFPROBE_PATH', { infer: true });
   }
 
+  async assertAvailable(): Promise<void> {
+    for (const tool of [this.ffmpeg, this.ffprobe]) {
+      try {
+        await run(tool, ['-version'], { timeout: PROBE_TIMEOUT_MS });
+      } catch {
+        throw new Error(
+          `${tool} cannot run. MEDIA_SERVER_PROCESSING=legacy needs the worker-legacy image (WORKER_BUILD_TARGET=worker-legacy).`,
+        );
+      }
+    }
+  }
+
   async probe(inputPath: string, signal: AbortSignal): Promise<MediaProbe> {
     let stdout: string;
     try {

@@ -129,6 +129,8 @@ Manifest phiên client được lưu trong `asset_variants` từ lúc reserve (s
 
 `MEDIA_SERVER_PROCESSING=disabled` mặc định. IMAGE/VIDEO/AUDIO không có trường variants bị chặn 422 `MEDIA_VARIANTS_REQUIRED` (AUDIO phải gửi mảng rỗng). `MEDIA_SERVER_PROCESSING=legacy` cho phép client cũ giữ đường UPLOADED → outbox → worker sharp/ffmpeg. Cờ này cũng bảo vệ xử lý trực tiếp, khởi động consumer media và requeue legacy; phiên có variants luôn đi đường client ngay cả khi cờ legacy bật. Worker giữ run/attempt history, lease/fencing và retry cũ. Không cần thêm DI token, composition root hoặc job mới; ConfigService được inject optional vào service cũ, mặc định an toàn disabled.
 
+Từ BF-20261106-004, sharp và exifr chỉ nạp ở lần xử lý đầu tiên nên chế độ disabled không tốn RAM cho chúng. Image `worker` mặc định không có ffmpeg. Bật `legacy` phải build lại bằng `WORKER_BUILD_TARGET=worker-legacy`; thiếu ffmpeg thì worker dừng ngay khi khởi động với thông báo rõ ràng.
+
 Migration avatar chỉ DDL, không seed/backfill tự động. Không đổi database Compose. Bật legacy trên cả API và worker khi chuyển tiếp; tắt sau khi client cũ và backlog đã được xử lý.
 
 ## Mã lỗi

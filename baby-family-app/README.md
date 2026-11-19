@@ -49,7 +49,6 @@ và người đăng nhập bằng `--dart-define=BABY_FAMILY_ACTOR=mama|papa`. L
 lib/
 ├── main_dev.dart / main_pro.dart   # khởi tạo theo flavor
 ├── app.dart                        # RootApp, appRouter, scaffoldMessengerKey
-├── firebase_options/               # sinh bằng `flutterfire configure`
 ├── gen/                            # flutter_gen (assets, fonts) — generated
 ├── generated/l10n/                 # AppLocalizations — generated (make l10n)
 ├── l10n/arb/                       # app_vi.arb (template), app_en.arb...
@@ -93,7 +92,7 @@ Luồng bắt buộc: **Page → Controller → Service → Repository → AppCl
 
 ## Việc cần làm trước khi chạy đầy đủ
 
-1. `flutterfire configure` cho 2 flavor (push, Crashlytics). Khi chưa cấu hình,
-   app vẫn chạy và bỏ qua Firebase.
+1. Firebase dùng file native theo flavor, không dùng flutterfire: `android/app/src/{staging,product}/google-services.json`,
+   `ios/Runner/Firebase/GoogleService-Info-{Staging,Product}.plist` (build phase chép đúng file vào bundle). Lỗi khởi tạo không chặn app.
 2. Android release: tạo `android/keystore.properties` (không commit).
 3. Icon & splash: thêm `assets/images/app_icon.png` rồi `make icon`.

@@ -11,6 +11,8 @@ import { JOB_RUNNER_SERVICE } from '../interfaces/services/job-runner-service.in
 import type { IJobRunnerService } from '../interfaces/services/job-runner-service.interface';
 import { MEDIA_PROCESSING_SERVICE } from '../interfaces/services/media-processing-service.interface';
 import type { IMediaProcessingService } from '../interfaces/services/media-processing-service.interface';
+import { MEDIA_TRANSCODER_SERVICE } from '../interfaces/services/media-transcoder-service.interface';
+import type { IMediaTranscoderService } from '../interfaces/services/media-transcoder-service.interface';
 import {
   createQueueConnection,
   drainWorker,
@@ -33,15 +35,19 @@ export class MediaQueueWorker
     @Inject(JOB_RUNNER_SERVICE) private readonly runner: IJobRunnerService,
     @Inject(MEDIA_PROCESSING_SERVICE)
     private readonly processing: IMediaProcessingService,
+    @Inject(MEDIA_TRANSCODER_SERVICE)
+    private readonly transcoder: IMediaTranscoderService,
   ) {}
 
-  onApplicationBootstrap(): void {
+  async onApplicationBootstrap(): Promise<void> {
     if (
       this.config.get('MEDIA_SERVER_PROCESSING', { infer: true }) !== 'legacy'
     )
       return;
     const url = this.config.get('REDIS_URL', { infer: true });
     if (!url) throw new Error('REDIS_URL is required for the worker.');
+    // Fail at start rather than retry every video until FAILED.
+    await this.transcoder.assertAvailable();
     this.worker = new Worker(
       QUEUES.media,
       (job, token) => this.handle(job, token),

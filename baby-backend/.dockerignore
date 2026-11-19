@@ -11,3 +11,5 @@ coverage
 src/generated
 test
 docs
+# Firebase Admin key is mounted at runtime, never baked into an image.
+/config

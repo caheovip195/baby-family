@@ -31,26 +31,17 @@ USER node
 CMD ["npm", "run", "db:migrate:deploy"]
 
 FROM build AS production-dependencies
-# Keep optional dependencies: the API also loads sharp (profile images), whose
-# native binaries ship as optional packages (BF-20261101-001 rebuild fix).
+# Keep optional dependencies: sharp's native binaries ship that way and legacy
+# processing still loads it on demand (BF-20261101-001 rebuild fix).
 RUN npm prune --omit=dev --ignore-scripts \
     && npm cache clean --force
 
-# The worker keeps optional dependencies: sharp ships its native binaries that way.
-FROM build AS worker-dependencies
-RUN npm prune --omit=dev --ignore-scripts \
-    && npm cache clean --force
-
+# Clients process media, so the default worker has no ffmpeg (BF-20261106-004).
 FROM base AS worker
-
-# ffmpeg/ffprobe for video and audio renditions (spec §10.4).
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends ffmpeg \
-    && rm -rf /var/lib/apt/lists/*
 
 ENV NODE_ENV=production
 
-COPY --from=worker-dependencies --chown=node:node /app/node_modules ./node_modules
+COPY --from=production-dependencies --chown=node:node /app/node_modules ./node_modules
 COPY --from=build --chown=node:node /app/dist ./dist
 COPY --from=build --chown=node:node /app/package.json ./package.json
 
@@ -61,6 +52,15 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
     CMD node -e "const f=require('path').join(require('os').tmpdir(),'baby-worker-heartbeat');try{process.exit(Date.now()-require('fs').statSync(f).mtimeMs<60000?0:1)}catch{process.exit(1)}"
 
 CMD ["node", "dist/workers/worker.js"]
+
+# Only for MEDIA_SERVER_PROCESSING=legacy: ffmpeg/ffprobe for video and audio
+# renditions (spec §10.4). Build with WORKER_BUILD_TARGET=worker-legacy.
+FROM worker AS worker-legacy
+USER root
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+USER node
 
 FROM base AS runtime
 

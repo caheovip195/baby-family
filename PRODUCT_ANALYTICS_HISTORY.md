@@ -1794,3 +1794,111 @@ Mục 001–005 được ghi bù ngày 2026-10-11 từ hội thoại/context hi�
 - Kết quả / trạng thái: Đã triển khai Pencil + backend + app, chạy thật hai tài khoản realtime trên local. Chưa có dữ liệu sử dụng.
 - Theo dõi: Người dùng xác nhận phạm vi (2 cuộc trò chuyện/gia đình, chưa có ảnh/1–1); khi phát hành, đo tỉ lệ gia đình có ≥1 tin/tuần và tác động lên người thân quay lại (chỉ đếm sự kiện, không lưu nội dung). Push FCM thật cần cấu hình.
 - Session: [BF-20261101-001](SESSIONS.md#bf-20261101-001).
+
+<a id="bf-20261106-001"></a>
+## BF-20261106-001 — Bật Firebase thật cho push
+
+- Ngày làm: 2026-11-06 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Cài Firebase cho Flutter từ file native; cấu hình FCM backend.
+- Role: MOBILE, DEVOPS, INTEGRATION, SECURITY_PRIVACY, DATA_ANALYST.
+- Vấn đề / mục tiêu: Thông báo đẩy (nhiệm vụ, chat khi offline, lời nhờ) cần Firebase thật.
+- Quan sát: App khởi tạo Firebase được; backend xác thực được với Google nhưng service account chưa có quyền gửi FCM.
+- Phân tích / quyết định: Dùng file native theo yêu cầu, không flutterfire. Khoá admin chỉ mount lúc chạy, không vào image.
+- Tác động: Crashlytics và đăng ký token hoạt động trên bản build có Firebase. Bundle id iOS đổi sang `com.tc.babyfamily(.staging)`. Push thật chưa gửi được cho tới khi cấp quyền.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo.
+- Kết quả / trạng thái: Cấu hình xong; chờ cấp IAM và APNs key.
+- Theo dõi: Thử push thật trên thiết bị rồi tick dòng Push trong checklist.
+- Session: [BF-20261106-001](SESSIONS.md#bf-20261106-001).
+
+<a id="bf-20261106-002"></a>
+## BF-20261106-002 — Đổi tên file service account Firebase
+
+- Ngày làm: 2026-11-06 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Dùng service account ở `baby-backend/config/`.
+- Role: DEVOPS, INTEGRATION, DATA_ANALYST.
+- Vấn đề / mục tiêu: Backend đọc đúng file khoá sau khi đổi tên.
+- Quan sát: Cùng account `admin-baby-family@…`, chỉ khác tên file.
+- Phân tích / quyết định: Sửa đường dẫn cấu hình.
+- Tác động: Không đổi hành vi sản phẩm.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo.
+- Kết quả / trạng thái: Đã cập nhật.
+- Theo dõi: Quyền IAM gửi FCM.
+- Session: [BF-20261106-002](SESSIONS.md#bf-20261106-002).
+
+<a id="bf-20261106-003"></a>
+## BF-20261106-003 — Media xử lý ở client
+
+- Ngày làm: 2026-11-06 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Kiểm tra luồng media không xử lý trên server.
+- Role: ARCHITECT, BACKEND, MOBILE, DEVOPS, DATA_ANALYST.
+- Vấn đề / mục tiêu: Server yếu không gánh xử lý và băng thông file.
+- Quan sát: Luồng hiện tại đã presign + PUT thẳng; server chỉ HEAD khi complete.
+- Phân tích / quyết định: Không đổi kiến trúc. Nếu storage chung máy với server thì MinIO vẫn gánh băng thông; production nên dùng dịch vụ S3 riêng.
+- Tác động: Không đổi hành vi sản phẩm.
+- Giả thuyết / đo lường: Chưa có dữ liệu đo.
+- Kết quả / trạng thái: Đã kiểm tra, đạt yêu cầu.
+- Theo dõi: Bỏ ffmpeg/sharp khỏi image; upload video theo stream.
+- Session: [BF-20261106-003](SESSIONS.md#bf-20261106-003).
+
+<a id="bf-20261106-004"></a>
+
+## BF-20261106-004 — Giảm tài nguyên backend khi media xử lý ở client
+
+- Ngày làm: 2026-11-06T15:24:01+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Không nạp sharp/ffmpeg khi `MEDIA_SERVER_PROCESSING=disabled`; đo RAM idle trước/sau.
+- Role: BACKEND, DEVOPS, TESTER, QUALITY.
+- Vấn đề / mục tiêu: Server yếu; backend không xử lý file nên không nên trả tài nguyên cho thư viện xử lý media.
+- Quan sát: Consumer media đã tắt từ BF-20261021-008, nhưng sharp vẫn nạp lúc khởi động và worker vẫn cài ffmpeg. RAM idle chủ yếu là heap V8, sharp chỉ là phần nhỏ.
+- Phân tích / quyết định: Dynamic import thay vì provider theo cờ để không đổi DI; giữ sharp trong image để legacy vẫn chạy mà không cần build riêng cho API; ffmpeg tách sang target `worker-legacy`; legacy thiếu ffmpeg thì dừng ngay lúc khởi động thay vì để video FAILED dần.
+- Tác động: Không đổi hành vi sản phẩm hay API ở chế độ disabled. Vận hành: bật `legacy` phải build với `WORKER_BUILD_TARGET=worker-legacy`.
+- Giả thuyết / đo lường: Đã đo A/B có đối chứng tại 600s: api giảm khoảng 13,5 MiB (199,3 so với 212,8 MiB); worker không phân biệt được (154,0 so với 153,9 MiB). Image worker giảm 1,71 GB còn 1,16 GB. Số container thật dao động và không cho thấy giảm ở api (199 trước; 266 và 236 MiB sau), chưa rõ nguyên nhân. Đo trên máy dev, chưa đo trên server thật hay dưới tải.
+- Kết quả / trạng thái: Đã triển khai; lợi ích RAM nhỏ, lợi ích dung lượng image rõ. Integration chưa xanh toàn bộ do lỗi có sẵn: dữ liệu tồn trong DB test dùng chung và `mission-catalog-90-days` fail trên seed sạch cả với code chưa sửa.
+- Theo dõi: Xác nhận cổng DB trong `.env`; sửa nhiễu test; nếu cần giảm RAM thêm thì đo heap API để tìm phần nạp lớn.
+- Session: [BF-20261106-004](SESSIONS.md#bf-20261106-004).
+
+<a id="bf-20261106-005"></a>
+## BF-20261106-005 — Upload video theo file
+
+- Ngày làm: 2026-11-06T15:25:14+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Đổi upload video sang đọc từ file để máy yếu không crash; kiểm tra metadata GPS của video đầu ra.
+- Role: MOBILE, SECURITY_PRIVACY, TESTER, QUALITY.
+- Vấn đề / mục tiêu: Bố mẹ đăng video dài trên máy yếu không bị crash vì hết RAM; vị trí GPS trong video không rời khỏi máy.
+- Quan sát: Thử thật với backend local: video 642 MB đăng thành công theo multipart 28 part, RSS lúc upload khoảng 994 MB trong bản debug simulator, không tăng theo kích thước file. Trước khi sửa, mọi upload ảnh/video qua server thật bị 400 do `source.size`. iOS: bản nén không còn GPS; video nhỏ giữ nguyên còn GPS. Android: chưa có kết quả output vì bộ nén treo trên emulator.
+- Phân tích / quyết định: Không đổi contract server và outbox. Không tự strip GPS ở nhánh giữ nguyên file vì cần chọn giải pháp và có thể mất chất lượng hoặc tăng dung lượng; chuyển cho người dùng quyết định. Không thêm package.
+- Tác động: Không đổi UI. Upload ảnh/video qua server thật chạy được trở lại. Rủi ro riêng tư còn mở: video nhỏ trên iOS gửi lên storage kèm GPS và thành viên gia đình tải về đọc được.
+- Giả thuyết / đo lường: Giả thuyết: giảm crash do hết bộ nhớ khi đăng video lớn. Chưa có dữ liệu đo; có thể theo dõi qua Crashlytics sau khi phát hành. Không thêm tracking.
+- Kết quả / trạng thái: Đã triển khai và thử trên iOS simulator; `make check` đạt 960 test. Android chưa thử upload thật. Chưa kết luận cải thiện metric.
+- Theo dõi: Quyết định bỏ GPS ở nhánh giữ nguyên file; thử Android máy thật; lỗi memory.create không báo người dùng; outbox không timeout khi bộ nén treo.
+- Session: [BF-20261106-005](SESSIONS.md#bf-20261106-005).
+
+<a id="bf-20261106-006"></a>
+
+## BF-20261106-006 — Đo heap API tìm chỗ giảm RAM
+
+- Ngày làm: 2026-11-06T16:02:33+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Đo heap API.
+- Role: BACKEND, DEVOPS, QUALITY.
+- Vấn đề / mục tiêu: Server yếu; tìm phần chiếm RAM thật của API để quyết định nơi đáng đầu tư.
+- Quan sát: Khoảng 295 MiB RSS sau khởi động: Prisma +94, AppModule +76, Nest +38, DI/init +32, node 45, AWS S3 +10. Heap JS sau GC chỉ khoảng 100 MiB.
+- Phân tích / quyết định: Chưa đổi gì, chỉ đo. Cấu hình rẻ nhất là log json + semi-space 2, giảm khoảng 17 MiB idle và 60 MB đỉnh khởi động. Loại `MALLOC_ARENA_MAX=2` (tăng RAM) và tắt Swagger (không khác). Phần lớn còn lại nằm ở Prisma và số module nạp, cần thử nghiệm riêng.
+- Tác động: Không đổi hành vi sản phẩm.
+- Giả thuyết / đo lường: Đã đo idle trên máy dev, chưa đo dưới tải hay trên server thật. Giả thuyết chưa kiểm chứng: `compilerBuild` Prisma và bundling có thể giảm thêm.
+- Kết quả / trạng thái: Hoàn thành phần đo.
+- Theo dõi: Quyết định áp dụng cấu hình; điều tra đỉnh 571 MB trên api thật dưới traffic.
+- Session: [BF-20261106-006](SESSIONS.md#bf-20261106-006).
+
+<a id="bf-20261106-007"></a>
+
+## BF-20261106-007 — Review kỹ thuật toàn dự án Baby Family
+
+- Ngày làm: 2026-11-06T19:24:29+07:00 (Asia/Ho_Chi_Minh).
+- Yêu cầu: Review lỗi, cấu trúc và điểm cải thiện của toàn dự án, gồm backend, database, analytics, cache và Flutter. Chỉ review, không sửa code.
+- Role: ORCHESTRATOR/QUALITY, BACKEND, SECURITY_PRIVACY, DBA, DATA_ANALYST, DEVOPS, MOBILE, INTEGRATION.
+- Vấn đề / mục tiêu: Xác định các lỗi và rủi ro kỹ thuật có căn cứ để ưu tiên xử lý.
+- Quan sát: Môi trường tạm xác nhận nội dung còn xuất được sau xóa gia đình, lỗi một yêu cầu có thể giữ cả batch, Valkey gián đoạn chặn relay, Flutter có thể mất file chờ và ghi đè phiên. Đối chiếu đặc tả §27.3 với code hiện tại chưa thấy pipeline ingest/WMFM. Metrics vận hành và thống kê trong sản phẩm có luồng riêng.
+- Phân tích / quyết định: Ưu tiên quyền gia đình, tính toàn vẹn dữ liệu, đồng bộ app và khả năng phục hồi; ghi rõ lỗi đã xác minh và giới hạn bằng chứng.
+- Tác động: Review kỹ thuật, không đổi hành vi sản phẩm.
+- Giả thuyết / đo lường: Chưa có dữ liệu KPI hoặc đo tải. Khi đo WMFM, cần định nghĩa gia đình hoạt động và biên tuần, dùng event nghiệp vụ đã commit và dedup theo eventId, lưu thuộc tính tối thiểu. Kiểm thử xóa cần đối chiếu payload, export và object versions sau khi job kết thúc.
+- Kết quả / trạng thái: Hoàn thành review (2026-11-06T19:32:53+07:00). Tái hiện bằng dữ liệu tổng hợp và rà nguồn, chưa thay đổi sản phẩm hoặc thêm tracking.
+- Theo dõi: Khi có task sửa, xác minh tính toàn vẹn xóa/xuất, tỷ lệ đồng bộ media và độ trễ outbox bằng ca lỗi tương ứng. Đo Recap với dữ liệu giả có kích thước đại diện trước khi tối ưu.
+- Session: [BF-20261106-007](SESSIONS.md#bf-20261106-007).

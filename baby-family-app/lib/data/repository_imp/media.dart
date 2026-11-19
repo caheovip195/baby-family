@@ -1,8 +1,11 @@
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:baby_family/data/dto/media_local_file.dart';
 import 'package:baby_family/data/dto/media_source.dart';
+import 'package:baby_family/data/dto/media_variant_file.dart';
 import 'package:baby_family/data/dto/processed_media.dart';
 import 'package:baby_family/data/model/memory/upload_instruction.dart';
 import 'package:baby_family/data/model/memory/upload_intent.dart';
@@ -29,7 +32,26 @@ class MediaRepositoryImp extends BaseRepositoryImp implements IMediaRepository {
   }
 
   @override
-  Future<Uint8List> readLocalFile(String path) => File(path).readAsBytes();
+  Future<String> hashLocalFile(String path) =>
+      Isolate.run(() => _sha256OfFile(path));
+
+  /// Băm từng khúc: bộ nhớ không tăng theo kích thước file.
+  static Future<String> _sha256OfFile(String path) async =>
+      (await sha256.bind(File(path).openRead()).first).toString();
+
+  @override
+  Future<MediaLocalFile> describeLocalFile(
+    String path, {
+    bool temporary = false,
+  }) async => MediaLocalFile(
+    path: path,
+    size: await File(path).length(),
+    sha256: await hashLocalFile(path),
+    temporary: temporary,
+  );
+
+  @override
+  Future<void> deleteLocalFile(String path) => _deleteQuietly(path);
 
   /// Ảnh (BF-20261028-005): bản chính cạnh dài 2560 px JPEG 85 — nét trên
   /// màn hình điện thoại / máy tính bảng, thường 0,6–1,2 MB thay vì 2–4 MB của
@@ -67,7 +89,6 @@ class MediaRepositoryImp extends BaseRepositoryImp implements IMediaRepository {
         sha256: sha256.convert(original).toString(),
         key: MediaSource.keyOf(kind: 'IMAGE', width: width, height: height),
         capturedAt: await _capturedAt(original),
-        size: original.length,
       ),
       variants: [
         for (final MapEntry(key: code, value: edge) in _variantEdges.entries)
@@ -79,9 +100,8 @@ class MediaRepositoryImp extends BaseRepositoryImp implements IMediaRepository {
   @override
   Future<ProcessedMedia> processVideo(String path) async {
     final source = await VideoCompress.getMediaInfo(path);
-    final original = File(path);
-    final sourceHash = await sha256.bind(original.openRead()).first;
-    final sourceBytes = await original.length();
+    final sourceHash = await hashLocalFile(path);
+    final sourceBytes = await File(path).length();
     final MediaInfo? info;
     if (_keepVideo(source, sourceBytes, path)) {
       info = source;
@@ -104,34 +124,40 @@ class MediaRepositoryImp extends BaseRepositoryImp implements IMediaRepository {
       await _deleteQuietly(output);
       output = path;
     }
-    final poster = await VideoCompress.getByteThumbnail(path, quality: 85);
-    if (poster == null) {
-      throw StateError('Video poster failed');
-    }
-    final (posterWidth, posterHeight) = await _size(poster);
-    final durationMs = info.duration?.round();
-    return ProcessedMedia(
-      kind: 'VIDEO',
-      mime: 'video/mp4',
-      bytes: await _readThenClean(output, keep: path),
-      width: output == path ? source.width : info.width,
-      height: output == path ? source.height : info.height,
-      durationMs: durationMs ?? await mediaDurationMs(output),
-      source: MediaSource(
-        sha256: sourceHash.toString(),
-        key: MediaSource.keyOf(
-          kind: 'VIDEO',
-          width: source.width ?? 0,
-          height: source.height ?? 0,
-          durationMs: source.duration?.round(),
+    try {
+      final poster = await VideoCompress.getByteThumbnail(path, quality: 85);
+      if (poster == null) {
+        throw StateError('Video poster failed');
+      }
+      final (posterWidth, posterHeight) = await _size(poster);
+      final durationMs = info.duration?.round();
+      return ProcessedMedia.file(
+        kind: 'VIDEO',
+        mime: 'video/mp4',
+        file: await describeLocalFile(output, temporary: output != path),
+        width: output == path ? source.width : info.width,
+        height: output == path ? source.height : info.height,
+        durationMs: durationMs ?? await mediaDurationMs(output),
+        source: MediaSource(
+          sha256: sourceHash,
+          key: MediaSource.keyOf(
+            kind: 'VIDEO',
+            width: source.width ?? 0,
+            height: source.height ?? 0,
+            durationMs: source.duration?.round(),
+          ),
         ),
-        size: await original.length(),
-      ),
-      variants: [
-        await _variant('poster', poster, posterWidth, posterHeight, 1080),
-        await _variant('t320', poster, posterWidth, posterHeight, 320),
-      ],
-    );
+        variants: [
+          await _variant('poster', poster, posterWidth, posterHeight, 1080),
+          await _variant('t320', poster, posterWidth, posterHeight, 320),
+        ],
+      );
+    } on Object {
+      if (output != path) {
+        await _deleteQuietly(output);
+      }
+      rethrow;
+    }
   }
 
   /// Giữ nguyên video mp4 đã nhỏ: cạnh ngắn ≤ 720 và bitrate ≤ 4 Mbps.
@@ -150,18 +176,6 @@ class MediaRepositoryImp extends BaseRepositoryImp implements IMediaRepository {
   static bool _isMp4(String path) {
     final name = path.toLowerCase();
     return name.endsWith('.mp4') || name.endsWith('.m4v');
-  }
-
-  /// Đọc file nén rồi xoá bản tạm (không xoá file gốc [keep]).
-  static Future<Uint8List> _readThenClean(
-    String path, {
-    required String keep,
-  }) async {
-    final bytes = await File(path).readAsBytes();
-    if (path != keep) {
-      await _deleteQuietly(path);
-    }
-    return bytes;
   }
 
   static Future<void> _deleteQuietly(String path) async {
@@ -265,9 +279,40 @@ class MediaRepositoryImp extends BaseRepositoryImp implements IMediaRepository {
     UploadInstruction instruction,
     Uint8List bytes, {
     UploadProgress? onProgress,
+  }) => _upload(
+    instruction,
+    bytes.length,
+    // Gửi từng khúc 64 KB để báo tiến độ theo byte.
+    (start, end) => Stream<List<int>>.fromIterable(
+      _chunks(Uint8List.sublistView(bytes, start, end)),
+    ),
+    onProgress,
+  );
+
+  @override
+  Future<List<JsonMap>> uploadFile(
+    UploadInstruction instruction,
+    String path, {
+    UploadProgress? onProgress,
   }) async {
+    final file = File(path);
+    return _upload(
+      instruction,
+      await file.length(),
+      // `openRead` đọc từng khúc 64 KB, theo nhịp socket nhận (backpressure).
+      file.openRead,
+      onProgress,
+    );
+  }
+
+  Future<List<JsonMap>> _upload(
+    UploadInstruction instruction,
+    int length,
+    Stream<List<int>> Function(int start, int end) read,
+    UploadProgress? onProgress,
+  ) async {
     if (instruction.mode == 'multipart') {
-      return _uploadParts(instruction, bytes, onProgress);
+      return _uploadParts(instruction, length, read, onProgress);
     }
     final url = instruction.url;
     if (instruction.mode != 'single' || url == null) {
@@ -276,8 +321,9 @@ class MediaRepositoryImp extends BaseRepositoryImp implements IMediaRepository {
     await _put(
       url,
       instruction.headers,
-      bytes,
-      onProgress == null ? null : (sent, _) => onProgress(sent, bytes.length),
+      read(0, length),
+      length,
+      onProgress == null ? null : (sent, _) => onProgress(sent, length),
     );
     return const [];
   }
@@ -286,7 +332,8 @@ class MediaRepositoryImp extends BaseRepositoryImp implements IMediaRepository {
   /// của từng PUT gửi lại khi complete.
   Future<List<JsonMap>> _uploadParts(
     UploadInstruction instruction,
-    Uint8List bytes,
+    int length,
+    Stream<List<int>> Function(int start, int end) read,
     UploadProgress? onProgress,
   ) async {
     final size = instruction.partSize;
@@ -296,17 +343,18 @@ class MediaRepositoryImp extends BaseRepositoryImp implements IMediaRepository {
     final done = <JsonMap>[];
     for (final part in instruction.parts) {
       final start = (part.n - 1) * size;
-      if (start >= bytes.length) {
+      if (start >= length) {
         break;
       }
-      final end = start + size > bytes.length ? bytes.length : start + size;
+      final end = start + size > length ? length : start + size;
       final response = await _put(
         part.url,
         const {},
-        Uint8List.sublistView(bytes, start, end),
+        read(start, end),
+        end - start,
         onProgress == null
             ? null
-            : (sent, _) => onProgress(start + sent, bytes.length),
+            : (sent, _) => onProgress(start + sent, length),
       );
       final etag = response.headers.value('etag');
       if (etag == null) {
@@ -320,14 +368,14 @@ class MediaRepositoryImp extends BaseRepositoryImp implements IMediaRepository {
   Future<Response<void>> _put(
     String url,
     Map<String, String> headers,
-    Uint8List bytes, [
+    Stream<List<int>> data,
+    int length, [
     ProgressCallback? onSendProgress,
   ]) => StorageDio.instance.put<void>(
     url,
-    // Gửi từng khúc 64 KB để báo tiến độ theo byte.
-    data: Stream<List<int>>.fromIterable(_chunks(bytes)),
+    data: data,
     options: Options(
-      headers: {...headers, Headers.contentLengthHeader: bytes.length},
+      headers: {...headers, Headers.contentLengthHeader: length},
     ),
     onSendProgress: onSendProgress,
   );

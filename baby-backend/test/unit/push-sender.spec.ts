@@ -1,5 +1,8 @@
 import { ConfigService } from '@nestjs/config';
 import { generateKeyPairSync, verify } from 'node:crypto';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import type { Environment } from '../../src/config/environment';
 import type { PushMessage } from '../../src/interfaces/services/push-sender.interface';
 import { FcmPushSender } from '../../src/services/push-senders/fcm-push-sender';
@@ -70,6 +73,26 @@ describe('Push sender adapters', () => {
     expect(await PUSH_SENDER_PROVIDER.useFactory(configured)).toBeInstanceOf(
       FcmPushSender,
     );
+  });
+
+  it('treats empty Compose values as unset and reads the service-account file', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'fcm-'));
+    const file = join(dir, 'firebase_service_account.json');
+    writeFileSync(file, credentials);
+    // ConfigService falls back to raw process.env, where `${VAR:-}` is ''.
+    const config = new ConfigService<Environment, true>({
+      NODE_ENV: 'production',
+      FCM_PROJECT_ID: 'test-project',
+      FCM_SERVICE_ACCOUNT_JSON: '',
+      FCM_SERVICE_ACCOUNT_FILE: file,
+    });
+    try {
+      expect(await PUSH_SENDER_PROVIDER.useFactory(config)).toBeInstanceOf(
+        FcmPushSender,
+      );
+    } finally {
+      rmSync(dir, { recursive: true });
+    }
   });
 
   it('rejects partial/ambiguous/invalid configuration without leaking secrets', async () => {

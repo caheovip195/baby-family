@@ -32,6 +32,14 @@ test('native-built Nest application retains DI, JWT guards, DTO metadata and ser
   });
   const { Test } = require('@nestjs/testing');
   const { AppModule } = require('../dist/app.module.js');
+  // A static import would pull native libvips into every API process.
+  assert.equal(
+    Object.keys(require.cache).some((file) =>
+      /node_modules[\\/]sharp[\\/]/.test(file),
+    ),
+    false,
+    'sharp must only load on first use',
+  );
   const { configureApp } = require('../dist/bootstrap.js');
   const {
     PROFILE_IMAGE_SERVICE,

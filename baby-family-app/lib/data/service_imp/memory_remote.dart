@@ -44,7 +44,6 @@ import 'package:baby_family/utils/helper/app_l10n.dart';
 import 'package:baby_family/utils/helper/child_age.dart';
 import 'package:baby_family/utils/helper/lenient_json.dart';
 import 'package:baby_family/utils/helper/memory_text.dart';
-import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
@@ -1214,14 +1213,13 @@ class MemoryRemoteServiceImp extends MemoryServiceImp {
     String path, {
     void Function(double fraction)? onProgress,
   }) async {
-    final bytes = await _media.readLocalFile(path);
-    final fingerprint = 'upload:$serverFamilyId:${sha256.convert(bytes)}';
+    final sourceHash = await _media.hashLocalFile(path);
+    final fingerprint = 'upload:$serverFamilyId:$sourceHash';
     final assetId = await MediaUploader(_media).upload(
       serverFamilyId,
       path,
       purpose: 'MEMORY',
       idempotencyKey: _keyFor(fingerprint),
-      bytes: bytes,
       onProgress: onProgress,
     );
     if (MediaUploader.isAudio(path)) {

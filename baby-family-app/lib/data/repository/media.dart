@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:baby_family/data/dto/media_local_file.dart';
 import 'package:baby_family/data/dto/processed_media.dart';
 import 'package:baby_family/data/model/memory/upload_instruction.dart';
 import 'package:baby_family/data/model/memory/upload_intent.dart';
@@ -15,15 +16,25 @@ abstract class IMediaRepository extends IBaseRepository {
   /// `POST /v1/media/upload-intents`; giữ nguyên [idempotencyKey] khi thử lại.
   Future<UploadIntent?> createUploadIntent(String idempotencyKey, JsonMap body);
 
-  /// Bytes của ảnh/video đã chọn trên máy (MEM-04).
-  Future<Uint8List> readLocalFile(String path);
+  /// SHA-256 (hex) của file trên máy, băm theo stream ngoài UI isolate.
+  Future<String> hashLocalFile(String path);
+
+  /// Kích thước + SHA-256 của file trên máy, không nạp file vào bộ nhớ.
+  Future<MediaLocalFile> describeLocalFile(
+    String path, {
+    bool temporary = false,
+  });
+
+  /// Xoá bản nén tạm; bỏ qua lỗi (file đã mất).
+  Future<void> deleteLocalFile(String path);
 
   /// Ảnh trên máy → bản `orig` đã nén (cạnh dài ≤ 4096) + biến thể `m1080`,
   /// `t320` (JPEG). Xử lý hoàn toàn trên client.
   Future<ProcessedMedia> processImage(String path);
 
-  /// Video trên máy → mp4 nén ≤ 1080p (file chính, server ghi là `v1080`) +
-  /// `poster` + `t320`, kèm thời lượng đo trên máy.
+  /// Video trên máy → mp4 nén (file chính, server ghi là `v1080`) + `poster` +
+  /// `t320`, kèm thời lượng đo trên máy. File chính nằm trên đĩa; người gọi xoá
+  /// khi [MediaLocalFile.temporary] sau khi upload.
   Future<ProcessedMedia> processVideo(String path);
 
   /// Thời lượng (ms) của video/âm thanh trên máy; null khi không đọc được.
@@ -35,6 +46,14 @@ abstract class IMediaRepository extends IBaseRepository {
   Future<List<JsonMap>> uploadBytes(
     UploadInstruction instruction,
     Uint8List bytes, {
+    UploadProgress? onProgress,
+  });
+
+  /// Như [uploadBytes] nhưng đọc từng khúc từ file [path] (mỗi part chỉ giữ
+  /// một khúc trong bộ nhớ).
+  Future<List<JsonMap>> uploadFile(
+    UploadInstruction instruction,
+    String path, {
     UploadProgress? onProgress,
   });
 

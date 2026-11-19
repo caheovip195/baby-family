@@ -37,6 +37,7 @@ node_modules/
 npm-debug.log*
 /logs/
 /baby-backend/logs/
+/baby-backend/config/
 
 # Local IDE state and editor temporary files
 .idea/
